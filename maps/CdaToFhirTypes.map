@@ -503,38 +503,38 @@ conceptmap "OIDtoURI" {
   s:"2.16.840.1.113883.6.121" == t:"urn:ietf:bcp:47"
 }
 
-uses "http://hl7.org/fhir/cda/StructureDefinition/ED" alias ED as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/II" as source
-uses "http://hl7.org/fhir/StructureDefinition/Identifier" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/TS" as source
-uses "http://hl7.org/fhir/StructureDefinition/instant" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/CS" as source
-uses "http://hl7.org/fhir/StructureDefinition/code" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/CE" as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/CD" as source
-uses "http://hl7.org/fhir/StructureDefinition/CodeableConcept" as target
-uses "http://hl7.org/fhir/StructureDefinition/Coding" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/ST" as source
-uses "http://hl7.org/fhir/StructureDefinition/string" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/EN" as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/PN" as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/PQ" alias PQ as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVXB_PQ" alias IVXB_PQ as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/ON" as source
-uses "http://hl7.org/fhir/StructureDefinition/HumanName" as target
-uses "http://hl7.org/fhir/StructureDefinition/Organization" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/AD" as source
-uses "http://hl7.org/fhir/StructureDefinition/Address" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/TEL" as source
-uses "http://hl7.org/fhir/StructureDefinition/ContactPoint" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/BL" as source
-uses "http://hl7.org/fhir/StructureDefinition/boolean" as target
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVL_TS" as source
-uses "http://hl7.org/fhir/cda/StructureDefinition/IVXB-TS" alias IVXB_TS as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ED" alias ED as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/II" alias II as source
+uses "http://hl7.org/fhir/StructureDefinition/Identifier" alias Identifier as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/TS" alias TS as source
+uses "http://hl7.org/fhir/StructureDefinition/instant" alias instant as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CS" alias CS as source
+uses "http://hl7.org/fhir/StructureDefinition/code" alias code as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CE" alias CE as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CD" alias CD as source
+uses "http://hl7.org/fhir/StructureDefinition/CodeableConcept" alias CodeableConcept as target
+uses "http://hl7.org/fhir/StructureDefinition/Coding" alias Coding as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ST" alias ST as source
+uses "http://hl7.org/fhir/StructureDefinition/string" alias string as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/EN" alias EN as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/PN" alias PN as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/PQ" alias PQ as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/IVXB-PQ" alias IVXB_PQ as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ON" alias ON as source
+uses "http://hl7.org/fhir/StructureDefinition/HumanName" alias HumanName as target
+uses "http://hl7.org/fhir/StructureDefinition/Organization" alias Organization as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/AD" alias AD as source
+uses "http://hl7.org/fhir/StructureDefinition/Address" alias Address as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/TEL" alias TEL as source
+uses "http://hl7.org/fhir/StructureDefinition/ContactPoint" alias ContactPoint as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/BL" alias BL as source
+uses "http://hl7.org/fhir/StructureDefinition/boolean" alias boolean as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/IVL-TS" alias IVL_TS as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/IVXB-TS" alias IVXB_TS as source
 
 uses "http://hl7.org/fhir/StructureDefinition/Quantity" alias Quantity as target
 uses "http://hl7.org/fhir/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
-uses "http://hl7.org/fhir/StructureDefinition/Period" as target
+uses "http://hl7.org/fhir/StructureDefinition/Period" alias Period as target
 
 group Any(source src, target tgt) {
 }
@@ -551,9 +551,10 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
   src.root as r where src.extension.empty() and src.root.contains('.')
      ->  tgt.system = 'urn:ietf:rfc:3986',  tgt.value = append('urn:oid:', r) "rootoid";
   src.extension as e -> tgt.value = e;
-  src.assigningAuthorityName as s ->  tgt.assigner as a,  a.display = s; // there's no equivalent for displayable in FHIR - and it probably will never matter, but if it does, it might map to Identifier.use.
+  src.assigningAuthorityName as s ->  tgt.assigner as a,  a.display = s;
+  // there's no equivalent for displayable in FHIR - and it probably will never matter, but if it does, it might map to Identifier.use.
   src.displayable as displayable -> tgt.extension as ext then {
-    displayable -> ext.url = 'http://hl7.org/fhir/cdaStructureDefinition/extension-displayable' "url";
+    displayable -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/extension-displayable' "url";
     displayable.value as v -> ext.value = cast(v, 'string');
   } "extension";
 }
@@ -568,14 +569,14 @@ group BL(source src : BL, target tgt: boolean) extends Any <<types>> {
 
 group TemplateID(source template : II, target tgt) {
   template -> tgt.extension as ext then {
-    template -> ext.url = 'http://hl7.org/fhir/cda/StructureDefinition/templateID' "url";
+    template -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/templateID' "url";
     template -> ext.value = create('Identifier') as value then II(template, value) "value";
   } "templateId";
 }
 
 group Negation(source negation : BL, target tgt) {
   negation -> tgt.modifierExtension as ext then {
-    negation -> ext.url = 'http://hl7.org/fhir/cda/StructureDefinition/negationIndicator' "url";
+    negation -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/negationIndicator' "url";
     negation as neg ->  ext.value = create('boolean'),  ext.value = neg "value";
   } "negation";
 }
@@ -595,7 +596,7 @@ group IVXB_TSDateTime(source src : IVXB_TS, target tgt : dateTime) extends TSDat
 
 group TSDate(source src : TS, target tgt : date) extends TSInstant <<types>> {
   // guaranteeing that only date will be transformed
-  src.value as v -> tgt.value = (v.substring(0,10));
+  src.value as v -> tgt.value = truncate(v,10) "TSdate";
 }
 
 group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any <<types>> {
@@ -608,14 +609,14 @@ group IVLTSDateTime(source src : IVL_TS, target tgt : dateTime) extends Any <<ty
 }
 
 group STstring(source src : ST, target tgt : string) extends Any <<types>> {
-  src as v -> tgt.value = cast(v, 'string') "value";
+  src as v -> tgt.value = (v.xmlText) "STstring";
 }
 
 group EDstring(source src : ED, target tgt : string) extends STstring <<types>> {
 }
 
 group ENstring(source src : EN, target tgt : string) extends Any <<types>> {
-  src as v -> tgt.value = (v.other) "value";
+  src as v -> tgt.value = (v.item.xmlText) "value";
 }
 
 group ONstring(source src : ON, target tgt : string) extends ENstring <<types>> {
@@ -670,14 +671,14 @@ group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends C
 group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept <<types>> {
 }
 
-group ENHumanName(source src : EN, target tgt : HumanName) extends Any <<types>> {
-  src.family as v -> tgt.family = (v.dataString);
-  src.given as v -> tgt.given = (v.dataString);
-  src.prefix as v -> tgt.prefix = (v.dataString);
-  src.suffix as v -> tgt.suffix = (v.dataString);
-  //src.use as c -> tgt.use = translate(c, 'http://hl7.org/fhir/ConceptMap/cm-name-use-v3', 'code');
-  src.validTime -> tgt.period;
-}
+// group ENHumanName(source src : EN, target tgt : HumanName) extends Any <<types>> {
+//   src.family as v -> tgt.family = (v.dataString);
+//   src.given as v -> tgt.given = (v.dataString);
+//   src.prefix as v -> tgt.prefix = (v.dataString);
+//   src.suffix as v -> tgt.suffix = (v.dataString);
+//   //src.use as c -> tgt.use = translate(c, 'http://hl7.org/fhir/ConceptMap/cm-name-use-v3', 'code');
+//   src.validTime -> tgt.period;
+// }
 
 // Source: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.9.12/2021-02-19T13:36:43
 //         https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.9.6/2021-02-19T13:36:49
@@ -685,55 +686,57 @@ group ENHumanName(source src : EN, target tgt : HumanName) extends Any <<types>>
 //         https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.11&effectiveDate=dynamic
 // Target: http://hl7.org/fhir/R4/datatypes.html#HumanName
 group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_humanName : HumanName) extends Any <<types>> {
-  // name.use
-  cda_name.use as cda_name_use -> fhir_humanName.use = translate(cda_name_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
+  cda_name.item as cda_name_item then {
+    // name.use
+    cda_name_item.use as cda_name_item_use -> fhir_humanName.use = translate(cda_name_item_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
 
-  // content of name-tag
-  cda_name.other as cda_name_text -> fhir_humanName.text = (cda_name_text);
+    // content of name-tag
+    cda_name_item.xmlText as cda_name_item_xmlText -> fhir_humanName.text = (cda_name_item_xmlText);
 
-  // name.prefix
-  cda_name.prefix as cda_name_prefix ->
     // name.prefix
-    fhir_humanName.prefix = (cda_name_prefix.dataString) as fhir_humanName_prefix,
-    // name.prefix.qualifier
-    fhir_humanName_prefix.extension as extension then {
-      cda_name_prefix where cda_name_prefix.qualifier.exists() ->
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
-        cda_name_prefix.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
-    } "CdaNamePrefixToFhirNamePrefix";
+    cda_name_item.prefix as cda_name_item_prefix ->
+      // name.prefix
+      fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix,
+      // name.prefix.qualifier
+      fhir_humanName_prefix.extension as extension then {
+        cda_name_item_prefix where cda_name_item_prefix.qualifier.exists() ->
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
+          cda_name_item_prefix.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
+      } "CdaNamePrefixToFhirNamePrefix";
 
-  // name.given
-  cda_name.given as cda_name_given ->
     // name.given
-    fhir_humanName.given = (cda_name_given.dataString) as fhir_humanName_given,
-    // name.given.qualifier
-    fhir_humanName_given.extension as extension then {
-      cda_name_given where cda_name_given.qualifier.exists() ->
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
-        cda_name_given.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
-    } "CdaNameGivenToFhirNameGiven";
+    cda_name_item.given as cda_name_item_given ->
+      // name.given
+      fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given,
+      // name.given.qualifier
+      fhir_humanName_given.extension as extension then {
+        cda_name_item_given where cda_name_item_given.qualifier.exists() ->
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
+          cda_name_item_given.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
+      } "CdaNameGivenToFhirNameGiven";
 
-  // name.family
-  cda_name.family as cda_name_family ->
     // name.family
-    fhir_humanName.family = (cda_name_family.dataString) as fhir_humanName_family,
-    // name.family.qualifier
-    fhir_humanName_family.extension as extension then {
-      cda_name_family where cda_name_family.qualifier.exists() ->
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
-        cda_name_family.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
-    } "CdaNameFamilyToFhirNameFamily";
+    cda_name_item.family as cda_name_item_family ->
+      // name.family
+      fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family,
+      // name.family.qualifier
+      fhir_humanName_family.extension as extension then {
+        cda_name_item_family where cda_name_item_family.qualifier.exists() ->
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
+          cda_name_item_family.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
+      } "CdaNameFamilyToFhirNameFamily";
 
-  // name.suffix
-  cda_name.suffix as cda_name_suffix ->
     // name.suffix
-    fhir_humanName.suffix = (cda_name_suffix.dataString) as fhir_humanName_suffix,
-    // name.suffix.qualifier
-    fhir_humanName_suffix.extension as extension then {
-      cda_name_suffix where cda_name_suffix.qualifier.exists() ->
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
-        cda_name_suffix.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
-    } "CdaNameSuffixToFhirNameSuffix";
+    cda_name_item.suffix as cda_name_item_suffix ->
+      // name.suffix
+      fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix,
+      // name.suffix.qualifier
+      fhir_humanName_suffix.extension as extension then {
+        cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() ->
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier' "extensionUrl";
+          cda_name_item_suffix.qualifier as qualifier -> extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code') "qualifierValue";
+      } "CdaNameSuffixToFhirNameSuffix";
+  } "CdaNameItem";
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
@@ -768,72 +771,76 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
       cda_use where (cda_use = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePostal";
     } "CdaAddressUseToFhirAddressUseAndType";
 
-  // addr.postalCode
-  cda_address.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.dataString);
-  // addr.city
-  cda_address.city as cda_city -> fhir_address.city = (cda_city.dataString);
-  // addr.state
-  cda_address.state as cda_state -> fhir_address.state = (cda_state.dataString);
-  // addr.country
-  cda_address.country as cda_country -> fhir_address.country = (cda_country.dataString);
+  cda_address.item as cda_address_item then {
+    // addr.postalCode
+    cda_address_item.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.xmlText);
+    // addr.city
+    cda_address_item.city as cda_city -> fhir_address.city = (cda_city.xmlText);
+    // addr.state
+    cda_address_item.state as cda_state -> fhir_address.state = (cda_state.xmlText);
+    // addr.country
+    cda_address_item.country as cda_country -> fhir_address.country = (cda_country.xmlText);
+  } "CdaAddressItemSimple";
 
-  // addr.streetName and addr.houseNumber (and additionalLocator)
-  cda_address where (cda_address.streetName.exists() and cda_address.houseNumber.exists()) ->
-    fhir_address.line as fhir_address_line
-    then {
-      // TODO deal with nullFlavor
-      // cda_address where (cda_address.houseNumber.nullFlavor.empty().not()) -> fhir_address_line.value = 'test' "asdfasdf";
+  // addr.streetName and addr.houseNumber and addr.additionalLocator
+  cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists()) ->
+    fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line then {
+      cda_address.item as cda_address_item then {
+        // extension for streetName
+        cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
+          extension.value = (cda_address_item_streetName.xmlText)
+          "CdaAdressToFhirStreetNameExtension";
 
-      // addr.streetName + addr.houseNumber + addr.additionalLocator
-      cda_address where (cda_address.additionalLocator.exists()) -> fhir_address_line.value = (cda_address.streetName.dataString + ' ' + cda_address.houseNumber.dataString + ' ' + cda_address.additionalLocator.dataString) "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
-      // addr.streetName + addr.houseNumber
-      cda_address where (cda_address.additionalLocator.exists().not()) -> fhir_address_line.value = (cda_address.streetName.dataString + ' ' + cda_address.houseNumber.dataString) "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+        // extension for houseNumber
+        cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
+          extension.value = (cda_address_item_houseNumber.xmlText)
+          "CdaAdressToFhirHouseNumberExtension";
 
-      // extension for streetName
-      cda_address.streetName as cda_address_streetName -> fhir_address_line.extension as extension,
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
-        extension.value = (cda_address_streetName.dataString)
-        "CdaAdressToFhirStreetNameExtension";
+        // extension for additionalLocator
+        cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
+          extension.value = (cda_address_item_additionalLocator.xmlText)
+          "CdaAdressToFhirAdditionalLocatorExtension";
+      } "CdaAddressItemWithAdditionalLocator";
+    } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
 
-      // extension for houseNumber
-      cda_address.houseNumber as cda_address_houseNumber -> fhir_address_line.extension as extension,
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
-        extension.value = (cda_address_houseNumber.dataString)
-        "CdaAdressToFhirHouseNumberExtension";
+  // addr.streetName and addr.houseNumber and NOT addr.additionalLocator
+  cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists().not()) ->
+    fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText) as fhir_address_line then {
+      cda_address.item as cda_address_item then {
+        // extension for streetName
+        cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
+          extension.value = (cda_address_item_streetName.xmlText)
+          "CdaAdressToFhirStreetNameExtension";
 
-      // extension for additionalLocator
-      cda_address.additionalLocator as cda_address_additionalLocator where (cda_address.additionalLocator.exists()) -> fhir_address_line.extension as extension,
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
-        extension.value = (cda_address_additionalLocator.dataString)
-        "CdaAdressToFhirAdditionalLocatorExtension";
-    }
+        // extension for houseNumber
+        cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
+          extension.value = (cda_address_item_houseNumber.xmlText)
+          "CdaAdressToFhirHouseNumberExtension";
+      } "CdaAddressItemWithoutAdditionalLocator";
+    } "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
 
-    "CdaAddressStreetNameAndHouseNumberToFhirAddressLine";
+    // addr.streetAddressLine and additionalLocator
+    cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists()) ->
+      fhir_address.line = (cda_address.item.streetAddressLine.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line
+      then {
+        cda_address.item as cda_address_item then {
+          // extension for additionalLocator
+          cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
+            extension.value = (cda_address_item_additionalLocator.xmlText)
+            "CdaAdressToFhirAdditionalLocatorExtension";
+        } "CdaAddressItemWithAdditionalLocator";
+      } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
 
-  // addr.streetAddressLine (and additionalLocator)
-  cda_address where (cda_address.streetAddressLine.exists()) ->
-    fhir_address.line as fhir_address_line
-    then {
-      // TODO deal with nullFlavor
-      // cda_address where (cda_address.houseNumber.nullFlavor.empty().not()) -> fhir_address_line.value = 'test' "asdfasdf";
-
-      // addr.streetAddressLine + addr.additionalLocator
-      cda_address where (cda_address.additionalLocator.exists()) -> fhir_address_line.value = (cda_address.streetAddressLine.dataString + ' ' + cda_address.additionalLocator.dataString) "CdaAddressStreetAddressLineWithAdditionalLocatorToFhirAddressLine";
-      // addr.streetAddressLine
-      cda_address where (cda_address.additionalLocator.exists().not()) -> fhir_address_line.value = (cda_address.streetAddressLine.dataString) "CdaAddressStreetAddressLineWithoutAdditionalLocatorToFhirAddressLine";
-
-      // extension for streetName will not be created as it is too tricky to separate streetName from houseNumber
-
-      // extension for houseNumber will not be created as it is too tricky to separate streetName from houseNumber
-
-      // extension for additionalLocator
-      cda_address.additionalLocator as cda_address_additionalLocator where (cda_address.additionalLocator.exists()) -> fhir_address_line.extension as extension,
-        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
-        extension.value = (cda_address_additionalLocator.dataString)
-        "CdaAdressToFhirAdditionalLocatorExtension";
-    }
-
-    "CdaAddressStreetNameAndHouseNumberToFhirAddressLine";
+    // addr.streetAddressLine and NOT additionalLocator
+    cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists().not()) ->
+      fhir_address.line = (cda_address.item.streetAddressLine.xmlText)
+      "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
 }
 
 // source: https://art-decor.org/mediawiki/index.php?title=DTr1_TEL.AT
