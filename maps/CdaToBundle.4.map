@@ -59,6 +59,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/PatientRole" alias Patien
 uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias StructuredBody as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObservation as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer as source
+
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias Patient as target
@@ -72,6 +73,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
+// uses "https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-immunization.html" alias at_aps_immunization as target
 
 // _________________________ Document Level Template  _________________________
 

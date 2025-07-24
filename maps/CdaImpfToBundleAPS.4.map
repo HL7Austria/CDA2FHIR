@@ -1,0 +1,35 @@
+map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-bundle" = "CdaToBundle"
+
+// Source 
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+// Target 
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
+//uses "https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle" alias Bundle as target 
+
+//uses "https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-composition" alias Composition as target
+
+group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+/*cda -> 
+    fhir_bundle.id = uuid(),
+    fhir_bundle.type = 'document',
+    fhir_bundle.meta as fhir_bundle_meta,
+    fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle' 
+    "FhirBundleMetadata";
+*/
+//cda.id -> fhir_bundle.identifier "identifier";
+cda.effectiveTime -> fhir_bundle.timestamp;
+    
+    
+/*cda ->
+    // create the composition to have it as reference for later transformations
+    fhir_bundle.entry as fhir_bundle_entry_1,
+    fhir_bundle_entry_1.resource = create('Composition') as fhir_composition
+
+    "CDAtoFHIRBundle";
+*/
+}
+
+//group CdaSectionImpfungToFhirCompositionSectionAps(source cda: ClinicalDocument, target fhir_composition: Composition){
+    //cda.section.title -> fhir_composition.section.title "title";
+//}
