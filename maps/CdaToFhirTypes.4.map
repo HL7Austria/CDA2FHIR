@@ -652,7 +652,7 @@ group CECoding(source src : CE, target tgt : Coding) extends Any <<types>> {
 
   // TODO for testing purposes (validation with java validator), no displayNames will be mapped
     //      later the NCPeH will have to translate them
-  // src.displayName as display -> tgt.display = cast(display, 'string');
+  src.displayName as display -> tgt.display = cast(display, 'string');
 }
 
 group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> {
