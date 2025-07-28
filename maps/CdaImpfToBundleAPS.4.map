@@ -67,31 +67,65 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
 
 group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization,  target fhir_bundle: Bundle) {
 
-
+    //1..1 M 	substanceAdministration.id --> AtApsImmunization.identifier 
     cda_substanceAdministration.id -> fhir_immunization.identifier;
+
+    // 1..1 M 	//substanceAdministration[@statusCode = 'Completed']		Fixer Wert: 'Completed' --> AtApsImmunization.status
     cda_substanceAdministration.statusCode -> fhir_immunization.status;
 
-    //cda_substanceAdministration.effectiveTime fhir_immunization.occurrence;
+    // 1..1 M 	substanceAdministration.effectiveTime --> AtApsImmunization. occurrenceDateTime
     cda_substanceAdministration.effectiveTime as cda_effectiveTime -> fhir_immunization.occurrence = create('dateTime') as fhir_immunization_occurrence then TSDateTime(cda_effectiveTime, fhir_immunization_occurrence) "CdaEffectiveTimeToFhirImmunizationOccurrence";
 
-    // cda_substanceAdministration.routeCode to fhir_immunization.route
+    // 0...1 	substanceAdministration.routeCode --> AtApsImmunization.route
     cda_substanceAdministration.routeCode -> fhir_immunization.route;
+    // 0...1 	substanceAdministration.doseQuantity --> AtApsImmunization.doseQuantity
+    // NullFlavor at cda_doseQuantity - Level --> Assumption that nested DataTypes do not have a NullFlavor
+    cda_substanceAdministration.doseQuantity as cda_doseQuantity where ($this.nullFlavor.exists().not()) -> fhir_immunization.doseQuantity;
+    cda_substanceAdministration.doseQuantity as cda_doseQuantity_nullFlavor where ($this.nullFlavor.exists()) then {
+        cda_doseQuantity_nullFlavor.nullFlavor -> 
+        fhir_immunization.doseQuantity as fhir_immunization_doseQuantity,
+        fhir_immunization_doseQuantity.extension as fhir_immunization_doseQuantity_extension then CdaNullFlavorToFhirNullFlavor(cda_doseQuantity_nullFlavor, fhir_immunization_doseQuantity_extension)
+        "CdaDoseQuantityNullFlavorToFhirImmunizationDoseQuantityDataAbsentReason";
+    };
+    
     
 
 
+    cda_substanceAdministration.consumable as cda_consumable,
+    cda_consumable.manufacturedProduct as cda_manufacturedProduct,
+    cda_manufacturedProduct.manufacturerOrganization as cda_manufacturerOrganization then {
+    cda_manufacturerOrganization ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+        fhir_organization.id = uuid() as fhir_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+        fhir_immunization.manufacturer = create('Reference') as fhir_immunization_organization,
+        fhir_immunization_organization.reference = append('urn:uuid:', fhir_organization_id),
+        fhir_immunization_organization.type = 'Organization' then
+        CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization);
+    }
+    cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+
+      // NullFlavor handling!!! 
+      cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
+      cda_manufacturedMaterial.lotNumberText as cda_lotNumberText where ($this.nullFlavor.exists()) then {
+        cda_lotNumberText.nullFlavor -> 
+        fhir_immunization.lotNumber as fhir_immunization_lotNumber,
+        fhir_immunization_lotNumber.extension as fhir_immunization_lotNumber_extension then CdaNullFlavorToFhirNullFlavor(cda_lotNumberText, fhir_immunization_lotNumber_extension)
+        "CdaLotNumberTextNullFlavorToFhirImmunizationLotNumberDataAbsentReason";
+      };
+    
+    
+      cda_manufacturedMaterial.code as cda_manufacturedMaterial_code ->
+    fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
+    CECodeableConcept(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode);
+    };
+    
+    // fhir_immunization.vaccineCode.text --> Werte werden nicht übernommen.
+    
 
 
-
-
-
-
-
-
-
-    // cda -> 
-    // fhir_bundle.entry as fhir_bundle_entry_2,
-    // fhir_bundle_entry_2.resource = create('Immunization') as fhir_immunization
-    // "CdaToFhirImmunization";
+  
 }
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
