@@ -2,6 +2,7 @@ map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-bundle" =
 
 // Source 
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias Material as source
 // Target 
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
@@ -92,7 +93,45 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
 
 
     cda_substanceAdministration.consumable as cda_consumable,
-    cda_consumable.manufacturedProduct as cda_manufacturedProduct,
+    cda_consumable.manufacturedProduct as cda_manufacturedProduct,    
+    cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+
+     cda_manufacturedMaterial then CdaManufacturedMaterialToFhirImmunizationMedication(cda_manufacturedMaterial, fhir_immunization, fhir_bundle);
+
+
+
+      
+
+
+
+      
+      
+      // 1...1 	manufracturedProduct.ManufacturedMaterial.lotNumberText --> AtApsImmunization.lotNumber
+
+      cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
+      cda_manufacturedMaterial.lotNumberText as cda_lotNumberText where ($this.nullFlavor.exists()) then {
+        cda_lotNumberText.nullFlavor -> 
+        fhir_immunization.lotNumber as fhir_immunization_lotNumber,
+        fhir_immunization_lotNumber.extension as fhir_immunization_lotNumber_extension then CdaNullFlavorToFhirNullFlavor(cda_lotNumberText, fhir_immunization_lotNumber_extension)
+        "CdaLotNumberTextNullFlavorToFhirImmunizationLotNumberDataAbsentReason";
+      
+      };
+
+      // 1...1 R 	manufracturedProduct.ManufacturedMaterial.code --> AtApsImmunization.vaccineCode
+      // fhir_immunization.vaccineCode.text --> Werte werden nicht übernommen.
+
+      // cda_manufacturedMaterial.code as cda_manufacturedMaterial_code ->
+      // fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
+      //   CECodeableConcept(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode);
+      
+    };
+    
+    // Offen
+    // manufracturedProduct.id 
+    //manufracturedProduct.ManufacturedMaterial.translation.displayName
+    // manufracturedProduct.ManufacturedMaterial.name
+    //0...*	manufracturedProduct.ManufacturedMaterial.pharm:ingredient. 
+
     cda_manufacturedProduct.manufacturerOrganization as cda_manufacturerOrganization then {
     cda_manufacturerOrganization ->
         fhir_bundle.entry as fhir_bundle_entry,
@@ -104,28 +143,44 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
         fhir_immunization_organization.type = 'Organization' then
         CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization);
     }
-    cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+  
+}
 
-      // NullFlavor handling!!! 
-      cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
-      cda_manufacturedMaterial.lotNumberText as cda_lotNumberText where ($this.nullFlavor.exists()) then {
-        cda_lotNumberText.nullFlavor -> 
-        fhir_immunization.lotNumber as fhir_immunization_lotNumber,
-        fhir_immunization_lotNumber.extension as fhir_immunization_lotNumber_extension then CdaNullFlavorToFhirNullFlavor(cda_lotNumberText, fhir_immunization_lotNumber_extension)
-        "CdaLotNumberTextNullFlavorToFhirImmunizationLotNumberDataAbsentReason";
+
+group CdaManufacturedMaterialToFhirImmunizationMedication(source cda_manufacturedMaterial : Material, target fhir_immunization : Immunization, target fhir_bundle : Bundle) {
+ 
+  cda_manufacturedMaterial.pharmIngredient as cda_ingredient 
+      where $this.exists() -> 
+        fhir_bundle.entry as fhir_bundle_entry_1,
+        fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
+        fhir_medication.id = uuid() as fhir_medication_id,
+        fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
+
+        fhir_immunization.extension as fhir_administeredProduct_extension,
+        fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
+        fhir_administeredProduct_extension.extension as fhir_reference_extension,
+        fhir_reference_extension.url = 'reference',
+        fhir_reference_extension.value = create('Reference') as fhir_reference_value,
+        fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
+        fhir_reference_value.type = 'Medication' then {
+          cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
+            cda_ingredient_ingredient.code -> fhir_medication.code;    
+          };
+          
+
       };
     
-    
-      cda_manufacturedMaterial.code as cda_manufacturedMaterial_code ->
-    fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
-    CECodeableConcept(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode);
-    };
-    
-    // fhir_immunization.vaccineCode.text --> Werte werden nicht übernommen.
-    
 
+
+
+  // cda_manufacturedMaterial.pharmIngredient as cda_ingredient,
+  //     cda_ingredient.pharmIngredient as cda_ingredient_ingredient,
+  //     cda_ingredient_ingredient.code as cda_ingredient_code -> 
+  //     fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
+  //     CECodeableConcept(cda_ingredient_code, fhir_immunization_vaccineCode);
 
   
+
 }
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
@@ -225,42 +280,3 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
       };
     } "CdaAuthorToFhirPractitionerRole";
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*group CDAToFhirImmunization(source cda: ClinicalDocument, target fhir_immunization: Immunization){
-
-
-
-
-
-
-}*/
-
-
-
-/*group CdaSectionImpfungToFhirCompositionSectionAps(source cda: ClinicalDocument, target fhir_composition: Composition){
-    cda.section.title -> fhir_composition.section.title "title";
-}*/
