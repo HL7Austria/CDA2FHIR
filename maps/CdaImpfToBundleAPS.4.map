@@ -78,60 +78,62 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
     cda_substanceAdministration.effectiveTime as cda_effectiveTime -> fhir_immunization.occurrence = create('dateTime') as fhir_immunization_occurrence then TSDateTime(cda_effectiveTime, fhir_immunization_occurrence) "CdaEffectiveTimeToFhirImmunizationOccurrence";
 
     // 0...1 	substanceAdministration.routeCode --> AtApsImmunization.route
-    cda_substanceAdministration.routeCode -> fhir_immunization.route;
+    cda_substanceAdministration.routeCode as cda_routeCode where ($this.nullFlavor.exists().not()) -> fhir_immunization.route;
     // 0...1 	substanceAdministration.doseQuantity --> AtApsImmunization.doseQuantity
     // NullFlavor at cda_doseQuantity - Level --> Assumption that nested DataTypes do not have a NullFlavor
     cda_substanceAdministration.doseQuantity as cda_doseQuantity where ($this.nullFlavor.exists().not()) -> fhir_immunization.doseQuantity;
-    cda_substanceAdministration.doseQuantity as cda_doseQuantity_nullFlavor where ($this.nullFlavor.exists()) then {
-        cda_doseQuantity_nullFlavor.nullFlavor -> 
-        fhir_immunization.doseQuantity as fhir_immunization_doseQuantity,
-        fhir_immunization_doseQuantity.extension as fhir_immunization_doseQuantity_extension then CdaNullFlavorToFhirNullFlavor(cda_doseQuantity_nullFlavor, fhir_immunization_doseQuantity_extension)
-        "CdaDoseQuantityNullFlavorToFhirImmunizationDoseQuantityDataAbsentReason";
-    };
+
+
+
+    // cda_substanceAdministration.doseQuantity as cda_doseQuantity_nullFlavor where ($this.nullFlavor.exists()) then {
+    //     cda_doseQuantity_nullFlavor.nullFlavor -> 
+    //     fhir_immunization.doseQuantity as fhir_immunization_doseQuantity,
+    //     fhir_immunization_doseQuantity.extension as fhir_immunization_doseQuantity_extension then CdaNullFlavorToFhirNullFlavor(cda_doseQuantity_nullFlavor, fhir_immunization_doseQuantity_extension)
+    //     "CdaDoseQuantityNullFlavorToFhirImmunizationDoseQuantityDataAbsentReason";
+    // };
     
     
 
 
     cda_substanceAdministration.consumable as cda_consumable,
-    cda_consumable.manufacturedProduct as cda_manufacturedProduct,    
+    cda_consumable.manufacturedProduct as cda_manufacturedProduct then {
+      cda_manufacturedProduct then CdaManufacturedMaterialToFhirImmunizationMedication(cda_manufacturedProduct, fhir_immunization, fhir_bundle);
+    };  
     cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
 
-     cda_manufacturedMaterial then CdaManufacturedMaterialToFhirImmunizationMedication(cda_manufacturedMaterial, fhir_immunization, fhir_bundle);
-
-
-
       
-
-
-
+      // cda_manufacturedMaterial.lotNumberText as cda_lotNumberText where ($this.nullFlavor.exists()) then {
+      //   cda_lotNumberText.nullFlavor -> 
+      //   fhir_immunization.lotNumber as fhir_immunization_lotNumber,
+      //   fhir_immunization_lotNumber.extension as fhir_immunization_lotNumber_extension then CdaNullFlavorToFhirNullFlavor(cda_lotNumberText, fhir_immunization_lotNumber_extension)
+      //   "CdaLotNumberTextNullFlavorToFhirImmunizationLotNumberDataAbsentReason";
       
-      
-      // 1...1 	manufracturedProduct.ManufacturedMaterial.lotNumberText --> AtApsImmunization.lotNumber
-
-      cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
-      cda_manufacturedMaterial.lotNumberText as cda_lotNumberText where ($this.nullFlavor.exists()) then {
-        cda_lotNumberText.nullFlavor -> 
-        fhir_immunization.lotNumber as fhir_immunization_lotNumber,
-        fhir_immunization_lotNumber.extension as fhir_immunization_lotNumber_extension then CdaNullFlavorToFhirNullFlavor(cda_lotNumberText, fhir_immunization_lotNumber_extension)
-        "CdaLotNumberTextNullFlavorToFhirImmunizationLotNumberDataAbsentReason";
-      
-      };
+      // };
 
       // 1...1 R 	manufracturedProduct.ManufacturedMaterial.code --> AtApsImmunization.vaccineCode
       // fhir_immunization.vaccineCode.text --> Werte werden nicht übernommen.
 
-      // cda_manufacturedMaterial.code as cda_manufacturedMaterial_code ->
-      // fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
-      //   CECodeableConcept(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode);
-      
-    };
-    
-    // Offen
-    // manufracturedProduct.id 
-    //manufracturedProduct.ManufacturedMaterial.translation.displayName
-    // manufracturedProduct.ManufacturedMaterial.name
-    //0...*	manufracturedProduct.ManufacturedMaterial.pharm:ingredient. 
 
+      // substanceAdministration - consumable: Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
+      cda_manufacturedMaterial.code where ($this.nullFlavor = 'NA') then {
+        cda_manufacturedMaterial.code as cda_manufacturedMaterial_code,
+        cda_manufacturedMaterial_code.nullFlavor ->
+        fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
+        fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension)
+        "CdaManufacturedMaterialCodeNullFlavorToFhirImmunizationVaccineCodeDataAbsentReason"; 
+      }; 
+      
+      cda_manufacturedMaterial.code where ($this.nullFlavor.exists().not()) then {
+        cda_manufacturedMaterial.code as cda_manufacturedMaterial_code ->
+      fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
+        CECodeableConcept(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode);
+      
+        // 1...1 	manufracturedProduct.ManufacturedMaterial.lotNumberText --> AtApsImmunization.lotNumber
+
+      cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
+      
+    
+    
     cda_manufacturedProduct.manufacturerOrganization as cda_manufacturerOrganization then {
     cda_manufacturerOrganization ->
         fhir_bundle.entry as fhir_bundle_entry,
@@ -142,44 +144,46 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
         fhir_immunization_organization.reference = append('urn:uuid:', fhir_organization_id),
         fhir_immunization_organization.type = 'Organization' then
         CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization);
-    }
+    };
+
+
+  };
   
 }
 
 
-group CdaManufacturedMaterialToFhirImmunizationMedication(source cda_manufacturedMaterial : Material, target fhir_immunization : Immunization, target fhir_bundle : Bundle) {
+group CdaManufacturedMaterialToFhirImmunizationMedication(source cda_manufacturedProduct : ManufacturedProduct, target fhir_immunization : Immunization, target fhir_bundle : Bundle) {
  
-  cda_manufacturedMaterial.pharmIngredient as cda_ingredient 
-      where $this.exists() -> 
-        fhir_bundle.entry as fhir_bundle_entry_1,
-        fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
-        fhir_medication.id = uuid() as fhir_medication_id,
-        fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
+  // cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+   
+  // cda_manufacturedMaterial.pharmIngredient as cda_ingredient
+  //     where $this.exists() ->
+  //       fhir_bundle.entry as fhir_bundle_entry_1,
+  //       fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
+  //       fhir_medication.id = uuid() as fhir_medication_id,
+  //       fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
 
-        fhir_immunization.extension as fhir_administeredProduct_extension,
-        fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
-        fhir_administeredProduct_extension.extension as fhir_reference_extension,
-        fhir_reference_extension.url = 'reference',
-        fhir_reference_extension.value = create('Reference') as fhir_reference_value,
-        fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
-        fhir_reference_value.type = 'Medication' then {
-          cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
-            cda_ingredient_ingredient.code -> fhir_medication.code;    
-          };
+  //       fhir_immunization.extension as fhir_administeredProduct_extension,
+  //       fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
+  //       fhir_administeredProduct_extension.extension as fhir_reference_extension,
+  //       fhir_reference_extension.url = 'reference',
+  //       fhir_reference_extension.value = create('Reference') as fhir_reference_value,
+  //       fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
+  //       fhir_reference_value.type = 'Medication' then {
+  //         cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
+
+  //           // Noch nicht funktionsbereit. 
+  //           cda_manufacturedProduct.id -> fhir_medication.identifier; 
+  //           // fhir_medication.ingredient as fhir_medication_ingredient,
+  //           // fhir_medication_ingredient.item as fhir_medication_ingredient_item,
+  //           // fhir_medication_ingredient_item.itemCodeableConcept as fhir_medication_ingredient_item_codeableConcept;
+  //           // //cda_ingredient_ingredient.code -> fhir_medication_ingredient_item_codeableConcept.code;
+  //           //cda_ingredient_ingredient.name -> fhir_medication_ingredient_item_codeableConcept.text; 
+
+  //         };
           
-
-      };
-    
-
-
-
-  // cda_manufacturedMaterial.pharmIngredient as cda_ingredient,
-  //     cda_ingredient.pharmIngredient as cda_ingredient_ingredient,
-  //     cda_ingredient_ingredient.code as cda_ingredient_code -> 
-  //     fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
-  //     CECodeableConcept(cda_ingredient_code, fhir_immunization_vaccineCode);
-
-  
+  //     };
+  // };
 
 }
 
