@@ -33,27 +33,63 @@ cda ->
     fhir_bundle.entry as fhir_bundle_entry_1,
     fhir_bundle_entry_1.resource = create('Composition') as fhir_composition
      "CDAtoFHIRBundle";
+     
+
+
 
 
 
 cda.component as cda_component then {
     cda_component.structuredBody as cda_structuredBody
     then(CdaBodyToFhirComposition(cda_structuredBody, fhir_composition,  fhir_bundle));
+    
 };
 }
 
 group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target fhir_composition: Composition,  target fhir_bundle: Bundle) {
     cda_structuredBody.component as cda_component then {
         cda_component.section as cda_section where code.where(code='11369-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section then CdaHistoryOfImmunizationSectionToFhirCompositionSection(cda_section, fhir_section, fhir_bundle);
-
+        cda_component.section as cda_history_of_past_illness_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_2 then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_history_of_past_illness_section, fhir_section_2, fhir_bundle);
     };
+    
     }
+
+
+
+group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_of_past_illness_section: Section, source fhir_section_2, target fhir_bundle: Bundle) {
+ cda_history_of_past_illness_section.entry as cda_section_entry then {
+
+     cda_section_entry.act as cda_act then {
+
+      cda_act -> fhir_bundle.entry as fhir_bundle_entry_4,
+      fhir_bundle_entry_4.resource = create('Condition') as fhir_condition,
+      fhir_condition.id = uuid() as fhir_condition_id,
+      fhir_bundle_entry_4.fullUrl = append('urn:uuid:', fhir_condition_id),
+      fhir_section_2.entry = create('Reference') as fhir_section_entry_reference,
+      fhir_section_entry_reference.reference = append('urn:uuid:', fhir_condition_id);
+      fhir_section_entry_reference.type = 'Condition' then CdaActToFhirCondition(cda_act, fhir_condition, fhir_bundle);
+     };
+   };
+}
+
+// group CdaActToFhirCondition(source cda_act: Act, target fhir_condition: Condition, target fhir_bundle: Bundle){
+
+
+//   cda_observation.id -> fhir_condition.identifier; 
+//   cda_observation.code -> fhir_condition.category;
+//   cda_observation.value -> fhir_condition.code;
+
+
+// }
+
+
 group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, source fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
-   // section.entry (Laboratory Report Data Processing Entry)
+
   cda_section.entry as cda_section_entry then {
     // section.entry.substanceAdministration
     cda_section_entry.substanceAdministration as cda_substanceAdministration then {
-             // create Immunization
+          
+          // create Immunization
           cda_substanceAdministration -> fhir_bundle.entry as fhir_bundle_entry,
           fhir_bundle_entry.resource = create('Immunization') as fhir_immunization,
           fhir_immunization.id = uuid() as fhir_immunization_id,
@@ -61,11 +97,48 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
             fhir_section.entry = create('Reference') as fhir_section_entry_reference,
            fhir_section_entry_reference.reference = append('urn:uuid:', fhir_immunization_id),
            fhir_section_entry_reference.type = 'Immunization' then CdaSubstanceAdministrationToFhirImmunization(cda_substanceAdministration, fhir_immunization, fhir_bundle);
-       };
 
-      };
-    }
+          // create the encounter corresponding to the immunization  
+          // cda_substanceAdministration.performer as cda_performer where $this.exists() -> fhir_bundle.entry as fhir_bundle_entry_2,
+          // fhir_bundle_entry_2.resource = create('Encounter') as fhir_encounter,
+          // fhir_encounter.id = uuid() as fhir_encounter_id,
+          // fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_encounter_id),
+          // fhir_immunization.encounter = create('Reference') as fhir_immunization_encounter,
+          // fhir_immunization_encounter.reference = append('urn:uuid:', fhir_encounter_id),
+          // fhir_immunization_encounter.type = 'Encounter',
 
+           cda_substanceAdministration.performer as cda_performer where $this.exists() then {
+            cda_performer -> fhir_bundle.entry as fhir_bundle_entry03,
+            fhir_bundle_entry03.resource = create('PractitionerRole') as fhir_practitionerRole,
+            fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+            fhir_bundle_entry03.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+            fhir_immunization.performer as fhir_immunization_performer,
+            fhir_immunization_performer.actor = create('Reference') as fhir_immunization_performer_actor,
+            fhir_immunization_performer_actor.reference = append('urn:uuid:', fhir_practitionerRole_id),
+            fhir_immunization_performer_actor.type = 'PractitionerRole' then CdaSubstanceAdministrationToPractitionerRole(cda_substanceAdministration,fhir_practitionerRole,fhir_bundle);
+          };
+
+          
+          cda_substanceAdministration.entryRelationship as cda_entryRelationship,
+          cda_entryRelationship.observation as cda_observation where $this.templateId.where(root='1.2.40.0.34.6.0.11.3.2') then CdaSubstanceAdministrationObservationToFhirImmunizationTargetDisease(cda_observation, fhir_immunization);
+            
+          };
+        cda_section_entry.history
+        };
+
+        
+
+        
+}
+
+group CdaSubstanceAdministrationObservationToFhirImmunizationTargetDisease(source cda_observation: Observation, target fhir_immunization: Immunization){
+
+  
+  cda_observation.code as cda_observation_code -> 
+  fhir_immunization.protocolApplied as fhir_immunization_protocolApplied,
+  fhir_immunization_protocolApplied.targetDisease as fhir_immunization_targetDisease then CECodeableConcept(cda_observation_code, fhir_immunization_targetDisease);
+
+}
 group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization,  target fhir_bundle: Bundle) {
 
     //1..1 M 	substanceAdministration.id --> AtApsImmunization.identifier 
@@ -283,4 +356,52 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
           CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
       };
     } "CdaAuthorToFhirPractitionerRole";
+}
+
+group CdaSubstanceAdministrationToPractitionerRole(source cda_substanceAdministration: SubstanceAdministration, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle) {
+
+  cda_substanceAdministration.performer as cda_performer then {
+    cda_performer.assignedEntity as cda_assignedEntity then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
+  }
+
+}
+
+group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : AssignedEntity, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+  cda_assignedEntity ->
+    // create the Practitioner
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+    fhir_practitioner.id = uuid() as fhir_practitioner_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+    fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+      // assignedEntity.id
+      cda_assignedEntity.id -> fhir_practitionerRole.identifier;
+
+      // assignedEntity.code - TODO here "external" laboratories (performer) could be identified - best place?
+      // TODO in CDA no value set is specified for this element, so mapping is not possible as it could be any code
+      //      in FHIR (MyHealth@EU Lab) however a required binding for this optional element exits
+      // cda_assignedEntity.code -> fhir_practitionerRole.code;
+
+      // assignedEntity.addr
+      cda_assignedEntity.addr -> fhir_practitioner.address;
+      // assignedEntity.telecom
+      cda_assignedEntity.telecom -> fhir_practitioner.telecom;
+      // assignedEntity.assignedPerson
+      cda_assignedEntity.assignedPerson as cda_assignedPerson then {
+        // assignedEntity.assignedPerson.name
+        cda_assignedPerson.name -> fhir_practitioner.name;
+      };
+      // assignedEntity.representedOrganization
+      cda_assignedEntity.representedOrganization as cda_representedOrganization ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+        fhir_organization.id = uuid() as fhir_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+        fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+        fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+        fhir_practitionerRole_organization.type = 'Organization' then
+        CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
+  } "CdaAssignedEntityToFhirPractitionerRole";
 }
