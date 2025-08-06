@@ -44,8 +44,17 @@ group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target
     }
 
 group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_of_past_illness_section: Section, source fhir_section_2, target fhir_bundle: Bundle) {
- cda_history_of_past_illness_section.entry as cda_section_entry then {
-  cda_section_entry -> 
+
+  // cda_section_of_past_illness_section -> 
+  //  fhir_section_2.id as fhir_section_2_id,
+  //  cda_history_of_past_illness_section.id as cda_section_id then  II(cda_section_id,fhir_section_2_id);
+  cda_history_of_past_illness_section.title -> fhir_section_2.title;
+  cda_history_of_past_illness_section.code -> fhir_section_2.code.coding;
+  //cda_history_of_past_illness_section.text as cda_text -> fhir_section_2.text = (cda_text.xmlText)
+  
+
+  cda_history_of_past_illness_section.entry as cda_section_entry then {
+  
      cda_section_entry.act as cda_act then {
 
       cda_act -> fhir_bundle.entry as fhir_bundle_entry_4,
@@ -53,17 +62,37 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_
       fhir_condition.id = uuid() as fhir_condition_id,
       fhir_bundle_entry_4.fullUrl = append('urn:uuid:', fhir_condition_id),
       fhir_section_2.entry = create('Reference') as fhir_section_entry_reference,
-      fhir_section_entry_reference.reference = append('urn:uuid:', fhir_condition_id);
-      fhir_section_entry_reference.type = 'Condition' then CdaActToFhirCondition(cda_act, fhir_condition, fhir_bundle);
+      fhir_section_entry_reference.reference = append('urn:uuid:', fhir_condition_id),
+      fhir_section_entry_reference.type = 'Condition' then CdaImprelevanteErkankungenProblemEntry(cda_act, fhir_condition, fhir_bundle);
      };
    };
 }
  
-group CdaActToFhirCondition(source cda_act: Act, target fhir_condition: Condition, target fhir_bundle: Bundle){
 
-  cda_act.id -> fhir_condition.identifier; 
-  cda_act.code -> fhir_condition.category;
-  cda_act.value -> fhir_condition.code;
+group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_condition: Condition,target fhir_bundle: Bundle){
+
+// 1…1 M	observation.id -> 0..* Condition.identifier
+cda_act.id -> fhir_condition.identifier; 
+// 1…1 M 	observation.code -> 0..1 code (Identification of the condition, Fixer Wert - SCT Problem) 
+cda_act.code -> fhir_condition.code; 
+// 1…1 F	observation.code.codeSystemName
+// 1…1 F	observation.code.code 
+// 1…1 F	observation.code.codeSystem
+// 1…1 M	observation.text(Narrative Text Reference - 1.2.40.0.34.6.0.11.9.1 )
+// 1…1 M	observation.statusCode.code
+// 1…1 M	observation.effectiveTime
+// 0…1	observation.effectiveTime.low
+// 0…1	observation.effectiveTime.low[@nullFlavor='UNK']
+// 0…1 	observation.effectiveTime.high
+// 1…1 M	observation.value 
+// 1…1 R	observation.value.code
+// 1…1 R	obseravtion.value.codeSystem
+// 1…1 M	observation.value.originalText
+// 0…1 C	observation.participant( Participant Body -Verifier  - 1.2.40.0.34.6.0.11.9.44) 
+// 0…1 C	observation.participant (Participant Body - Authorized Editor - 1.2.40.0.34.6.0.11.9.46 )
+// 0…1 C	observation.participant (Participant Body - Data Enterer - 1.2.40.0.34.6.0.11.9.47) 
+// 0…1 	obervation.entryRelationship( Comment Entry - Single Author- 1.2.40.0.34.6.0.11.3.17 ) 
+
 }
 
 group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, source fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
