@@ -3,18 +3,19 @@ map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-bundle" =
 // Source 
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias Material as source
-// Target 
 
+// Target 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
 //uses "https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle" alias Bundle as target 
-
 //uses "https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-composition" alias Composition as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Immunization" alias Immunization as target
+
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
 
 group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle){
-/*cda -> 
+
+  /*cda -> 
     fhir_bundle.id = uuid(),
     fhir_bundle.type = 'document',
     fhir_bundle.meta as fhir_bundle_meta,
@@ -40,7 +41,8 @@ group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target
     cda_structuredBody.component as cda_component then {
         cda_component.section as cda_section where code.where(code='11369-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section then CdaHistoryOfImmunizationSectionToFhirCompositionSection(cda_section, fhir_section, fhir_bundle);
         cda_component.section as cda_history_of_past_illness_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_2 then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_history_of_past_illness_section, fhir_section_2, fhir_bundle);
-    };
+    
+      };
     }
 
 group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_of_past_illness_section: Section, source fhir_section_2, target fhir_bundle: Bundle) {
@@ -51,10 +53,9 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_
   cda_history_of_past_illness_section.title -> fhir_section_2.title;
   cda_history_of_past_illness_section.code -> fhir_section_2.code.coding;
   //cda_history_of_past_illness_section.text as cda_text -> fhir_section_2.text = (cda_text.xmlText)
-  
-
   cda_history_of_past_illness_section.entry as cda_section_entry then {
-  
+
+     // ClinicalDocument/component/structuredBody/component/section/entry/act 
      cda_section_entry.act as cda_act then {
 
       cda_act -> fhir_bundle.entry as fhir_bundle_entry_4,
@@ -71,13 +72,17 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_
 
 group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_condition: Condition,target fhir_bundle: Bundle){
 
-// 1…1 M	observation.id -> 0..* Condition.identifier
-cda_act.id -> fhir_condition.identifier; 
+  cda_act.entryRelationship as cda_entryRelationship,
+  cda_entryRelationship.observation as cda_observation then {
+
+  cda_observation.id -> fhir_condition.identifier; 
+  cda_observation.code -> fhir_condition.code;
+  }; 
+
+  // 1…1 M	observation.id -> 0..* Condition.identifier
 // 1…1 M 	observation.code -> 0..1 code (Identification of the Problem.) !Fixer Wert - Problem (finding) 55607006
-cda_act.code -> fhir_condition.code; 
 // 1…1 M	observation.text(Narrative Text Reference - 1.2.40.0.34.6.0.11.9.1 ) ToDo
 // 1…1 M	observation.statusCode.code !Fixer Wert "Completed"
-
 // 1…1 M	observation.effectiveTime
 // 0…1	observation.effectiveTime.low
 // 0…1	observation.effectiveTime.low[@nullFlavor='UNK']
@@ -90,12 +95,12 @@ cda_act.code -> fhir_condition.code;
 // 0…1 C	observation.participant (Participant Body - Authorized Editor - 1.2.40.0.34.6.0.11.9.46 )
 // 0…1 C	observation.participant (Participant Body - Data Enterer - 1.2.40.0.34.6.0.11.9.47) 
 // 0…1 	obervation.entryRelationship( Comment Entry - Single Author- 1.2.40.0.34.6.0.11.3.17 ) 
-
 }
 
 group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, source fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
 
   cda_section.entry as cda_section_entry then {
+
     // 1...* //component/structuredBody/component/section/entry/substanceAdministration - 1.2.40.0.34.6.0.11.3.1 Immunization Entry or  1.2.40.0.34.6.0.11.3.28 Immunization Entry Impfung nicht angegeben
     cda_section_entry.substanceAdministration as cda_substanceAdministration then {    
 
@@ -117,6 +122,7 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
           // fhir_immunization_encounter.reference = append('urn:uuid:', fhir_encounter_id),
           // fhir_immunization_encounter.type = 'Encounter',
            cda_substanceAdministration.performer as cda_performer where $this.exists() then {
+            
             cda_performer -> fhir_bundle.entry as fhir_bundle_entry03,
             fhir_bundle_entry03.resource = create('PractitionerRole') as fhir_practitionerRole,
             fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
@@ -147,30 +153,32 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
             fhir_protocolApplied.series = cast(code, 'string') as fhir_immunization_series,
             fhir_immunization_series.extension as fhir_series_extension,
             fhir_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
-            // 1…1 	//criterion/code AtApsImmunization.protocolApplied.series.Coding
+            // 1…1 	//criterion/code -> AtApsImmunization.protocolApplied.series.Coding
             fhir_series_extension.value = create('Coding') as extension_coding then {
+
             cda_criterion_code.code as code -> extension_coding.code = cast(code, 'string');
             cda_criterion_code.codeSystem as system -> extension_coding.system = translate(system, '#OIDtoURI', 'code');
             cda_criterion_code.displayName as display -> extension_coding.display = cast(display, 'string');
-            // Hier .displayName --> CDA @displayName st	1 … 1	R
-            cda_criterion.value as cda_criterion_value, cda_criterion_value.displayName as value_code -> 
+            // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString
+            cda_criterion.value as cda_criterion_value, cda_criterion_value.code as value_code -> 
             fhir_protocolApplied.doseNumberString = cast (value_code, 'string') as fhir_immunization_doseNumberString,
             fhir_immunization_doseNumberString.extension as fhir_doseNumber_extension,
             fhir_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
+            // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString.Coding
             fhir_doseNumber_extension.value = create('Coding') as extension_coding then CECoding(cda_criterion_value,extension_coding);
+
             };
           }; 
         };
       };        
-};}
+};
+}
 
 group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization,  target fhir_bundle: Bundle) {
     
   /*
       ToDo: 
       - 1...1 M 	//substanceAdministration/text
-
-
     */
     //1..1 M 	//substanceAdministration/id --> AtApsImmunization.identifier 
     cda_substanceAdministration.id -> fhir_immunization.identifier;
@@ -207,6 +215,7 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
       cda_manufacturedMaterial.code where ($this.nullFlavor.exists().not()) then {
 
         cda_manufacturedMaterial.code as cda_manufacturedMaterial_code ->
+        // 1...1 R 	//manufacturedProduct/manufacturedMaterial/code -> AtApsImmunization.vaccineCode.coding
         fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then CECodeableConcept(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode);
 
         // "0...1" //manufacturedProduct/manufacturedMaterial/lotNumberText -> AtApsImmunization.lotNumber
@@ -228,68 +237,68 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
     };
   }
 
-
 group CdaManufacturedMaterialToFhirImmunizationMedication(source cda_manufacturedProduct : ManufacturedProduct, target fhir_immunization : Immunization, target fhir_bundle : Bundle) {
   
-  // //manufacturedProduct/manufacturedMaterial
-  // cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+  /*//manufacturedProduct/manufacturedMaterial
+  cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
    
-  // cda_manufacturedMaterial.pharmIngredient as cda_ingredient
-  //     where $this.exists() ->
-  //       fhir_bundle.entry as fhir_bundle_entry_1,
-  //       fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
-  //       fhir_medication.id = uuid() as fhir_medication_id,
-  //       fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
+  cda_manufacturedMaterial.pharmIngredient as cda_ingredient
+      where $this.exists() ->
+        fhir_bundle.entry as fhir_bundle_entry_1,
+        fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
+        fhir_medication.id = uuid() as fhir_medication_id,
+        fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
 
-  //       fhir_immunization.extension as fhir_administeredProduct_extension,
-  //       fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
-  //       fhir_administeredProduct_extension.extension as fhir_reference_extension,
-  //       fhir_reference_extension.url = 'reference',
-  //       fhir_reference_extension.value = create('Reference') as fhir_reference_value,
-  //       fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
-  //       fhir_reference_value.type = 'Medication' then {
-  //         cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
+        fhir_immunization.extension as fhir_administeredProduct_extension,
+        fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
+        fhir_administeredProduct_extension.extension as fhir_reference_extension,
+        fhir_reference_extension.url = 'reference',
+        fhir_reference_extension.value = create('Reference') as fhir_reference_value,
+        fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
+        fhir_reference_value.type = 'Medication' then {
+          cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
 
-  //           // Noch nicht funktionsbereit. 
-  //           //substanceAdministration//manufacturedProduct/id
-  //           cda_manufacturedProduct.id -> fhir_medication.identifier; 
-  //           // fhir_medication.ingredient as fhir_medication_ingredient,
-  //           // fhir_medication_ingredient.item as fhir_medication_ingredient_item,
-  //           // fhir_medication_ingredient_item.itemCodeableConcept as fhir_medication_ingredient_item_codeableConcept;
-               // //manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:code -> Medication.ingredient.item.itemCodeableConcept.coding
-  //           // //cda_ingredient_ingredient.code -> fhir_medication_ingredient_item_codeableConcept.code;
-               // 0…1	//manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:name ->  Medication.ingredient.item.itemCodeableConcept.text
-  //           //cda_ingredient_ingredient.name -> fhir_medication_ingredient_item_codeableConcept.text; 
+            // Noch nicht funktionsbereit. 
+            //substanceAdministration//manufacturedProduct/id
+            cda_manufacturedProduct.id -> fhir_medication.identifier; 
+            // fhir_medication.ingredient as fhir_medication_ingredient,
+            // fhir_medication_ingredient.item as fhir_medication_ingredient_item,
+            // fhir_medication_ingredient_item.itemCodeableConcept as fhir_medication_ingredient_item_codeableConcept;
+               //manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:code -> Medication.ingredient.item.itemCodeableConcept.coding
+            // //cda_ingredient_ingredient.code -> fhir_medication_ingredient_item_codeableConcept.code;
+               0…1	//manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:name ->  Medication.ingredient.item.itemCodeableConcept.text
+            //cda_ingredient_ingredient.name -> fhir_medication_ingredient_item_codeableConcept.text; 
 
-  //         };
+          };
           
-  //     };
-  // };
+      };
+  }; */ 
 
 }
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
+  
   // section.templateId
   // TODO necessary?
   // section.id
   // TODO extension?
-
   // section.code
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
   cda_section.code -> fhir_section.code;
-  
   // section.title
   cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "test";
   // section.text
   cda_section.text as cda_section_text ->
     fhir_section.text as fhir_section_text,
     fhir_section_text.status = 'generated' then {
+
       // section.text where no section.languageCode exists
       cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "asdf";
-
       // section.text with section.languageCode
       cda_section_text where cda_section.languageCode.exists() then {
+
         cda_section.languageCode as cda_languageCode then {
+
           cda_languageCode.code as cda_languageCode_code ->
 
             // as long as TODO below has not been solved
@@ -302,6 +311,7 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
         };
       } "CdaSectionTextToFhirSectionTextWithLanguage";
     };
+
   // section.author
   cda_section.author as cda_section_author ->
     // create the PractitionerRole in order to capture the author
@@ -316,8 +326,8 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
 
 }
 
-
 group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+  
   cda_author ->
     // create the Practitioner
     fhir_bundle.entry as fhir_bundle_entry,
@@ -332,13 +342,13 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
       // TODO in CDA no value set is specified for this element, so mapping is not possible as it could be any code
       //      in FHIR (MyHealth@EU Lab) however a required binding for this optional element exits
       // cda_author.functionCode -> fhir_practitionerRole.code;
-
       // ClinicalDocument.author.time
       // TODO extension?
       // ClinicalDocument.author.time
       // TODO nullFlavor? http://hl7.org/fhir/R4/extension-data-absent-reason.html
       // ClinicalDocument.author.assignedAuthor
       cda_author.assignedAuthor as cda_author_assignedAuthor then {
+
         // ClinicalDocument.author.assignedAuthor.id
         cda_author_assignedAuthor.id -> fhir_practitioner.identifier;
         // ClinicalDocument.author.assignedAuthor.code
@@ -346,12 +356,15 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
           fhir_practitioner.qualification as fhir_practitioner_qualification,
           fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
           CECodeableConcept(cda_author_assignedAuthor_code,fhir_practitioner_qualification_code);
+
         // ClinicalDocument.author.assignedAuthor.telecom
         cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
         // ClinicalDocument.author.assignedAuthor.assignedPerson
         cda_author_assignedAuthor.assignedPerson as cda_assignedPerson then {
+
           cda_assignedPerson.name -> fhir_practitioner.name;
         };
+
         // ClinicalDocument.author.assignedAuthor.representedOrganization
         cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
           fhir_bundle.entry as fhir_bundle_entry,
@@ -362,6 +375,7 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
           fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
           fhir_practitionerRole_organization.type = 'Organization' then
           CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
+
       };
     } "CdaAuthorToFhirPractitionerRole";
 }
@@ -369,12 +383,14 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
 group CdaSubstanceAdministrationToPractitionerRole(source cda_substanceAdministration: SubstanceAdministration, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle) {
 
   cda_substanceAdministration.performer as cda_performer then {
-    cda_performer.assignedEntity as cda_assignedEntity then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
-  }
 
+    cda_performer.assignedEntity as cda_assignedEntity then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
+  
+  }
 }
 
 group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : AssignedEntity, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+  
   cda_assignedEntity ->
     // create the Practitioner
     fhir_bundle.entry as fhir_bundle_entry,
@@ -384,23 +400,24 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+
       // assignedEntity.id
       cda_assignedEntity.id -> fhir_practitionerRole.identifier;
-
       // assignedEntity.code - TODO here "external" laboratories (performer) could be identified - best place?
       // TODO in CDA no value set is specified for this element, so mapping is not possible as it could be any code
       //      in FHIR (MyHealth@EU Lab) however a required binding for this optional element exits
       // cda_assignedEntity.code -> fhir_practitionerRole.code;
-
       // assignedEntity.addr
       cda_assignedEntity.addr -> fhir_practitioner.address;
       // assignedEntity.telecom
       cda_assignedEntity.telecom -> fhir_practitioner.telecom;
       // assignedEntity.assignedPerson
       cda_assignedEntity.assignedPerson as cda_assignedPerson then {
+
         // assignedEntity.assignedPerson.name
         cda_assignedPerson.name -> fhir_practitioner.name;
       };
+
       // assignedEntity.representedOrganization
       cda_assignedEntity.representedOrganization as cda_representedOrganization ->
         fhir_bundle.entry as fhir_bundle_entry,
