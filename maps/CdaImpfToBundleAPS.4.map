@@ -47,18 +47,31 @@ cda.id -> fhir_bundle.identifier;
 cda ->
     // create the composition to have it as reference for later transformations
     fhir_bundle.entry as fhir_bundle_entry_1,
-    fhir_bundle_entry_1.resource = create('Composition') as fhir_composition
-     "CDAtoFHIRBundle";
+    fhir_bundle_entry_1.resource = create('Composition') as fhir_composition,
+    fhir_composition.id = uuid() as fhir_composition_uuid,
+    fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_uuid),
+    // create the patient to have it as reference for later transformations
+    fhir_bundle.entry as fhir_bundle_entry_2,
+    fhir_bundle_entry_2.resource = create('Patient') as fhir_patient,
+    fhir_patient.id = uuid() as fhir_patient_uuid,
+    fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_patient_uuid),
+
+    // create relation from Composition to Patient
+    fhir_composition.subject = create('Reference') as fhir_composition_subject_reference,
+    fhir_composition_subject_reference.reference = append('urn:uuid:', fhir_patient_uuid),
+    fhir_composition_subject_reference.type = 'Patient';
+
+
 
 cda.component as cda_component then {
     cda_component.structuredBody as cda_structuredBody
-    then(CdaBodyToFhirComposition(cda_structuredBody, fhir_composition,  fhir_bundle));  
+    then(CdaBodyToFhirComposition(cda_structuredBody, fhir_composition, fhir_patient,  fhir_bundle));  
   };
 }
 
-group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target fhir_composition: Composition,  target fhir_bundle: Bundle) {
+group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
     cda_structuredBody.component as cda_component then {
-        cda_component.section as cda_section where code.where(code='11369-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section then CdaHistoryOfImmunizationSectionToFhirCompositionSection(cda_section, fhir_section, fhir_bundle);
+        cda_component.section as cda_section where code.where(code='11369-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section then CdaHistoryOfImmunizationSectionToFhirCompositionSection(cda_section, fhir_section, fhir_patient, fhir_bundle);
         cda_component.section as cda_history_of_past_illness_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_2 then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_history_of_past_illness_section, fhir_section_2, fhir_bundle);
     
       };
@@ -90,6 +103,20 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_
  
 
 group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_condition: Condition,target fhir_bundle: Bundle){
+
+
+
+  // section.author
+  cda_act.author as cda_act_author ->
+    // create the PractitionerRole in order to capture the author
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    cda_act.author = create('Reference') as fhir_act_author_reference,
+    fhir_act_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_act_author_reference.type = 'PractitionerRole' then
+    CdaAuthorToFhirPractitionerRole(cda_act_author, fhir_practitionerRole, fhir_bundle); //hinzufügen der PractitionerRole
 
   // ClinicalDocument/component/structuredBody/component/section/entry/act/entryRelationship
   cda_act.entryRelationship as cda_entryRelationship,
@@ -130,7 +157,7 @@ group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_co
 // 0…1 	obervation.entryRelationship( Comment Entry - Single Author- 1.2.40.0.34.6.0.11.3.17 ) 
 
 
-group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, source fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, source fhir_section, source fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
 
   cda_section.entry as cda_section_entry then {
 
