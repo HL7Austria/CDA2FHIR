@@ -105,6 +105,7 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_
 group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_condition: Condition,target fhir_bundle: Bundle){
 
 
+<<<<<<< HEAD
   // ToDo CDA Author not mapped correctly 
   // // section.author
   // cda_act.author as cda_act_author ->
@@ -122,6 +123,25 @@ group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_co
   // cda_act.entryRelationship as cda_entryRelationship,
   // // ClinicalDocument/component/structuredBody/component/section/entry/act/entryRelationship/observation
   // cda_entryRelationship.observation as cda_observation then {
+=======
+  /*
+  // section.author
+  cda_act.author as cda_act_author ->
+    // create the PractitionerRole in order to capture the author
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    cda_act.author = create('Reference') as fhir_act_author_reference,
+    fhir_act_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_act_author_reference.type = 'PractitionerRole' then
+    CdaAuthorToFhirPractitionerRole(cda_act_author, fhir_practitionerRole, fhir_bundle); //hinzufügen der PractitionerRole
+
+  // ClinicalDocument/component/structuredBody/component/section/entry/act/entryRelationship
+  cda_act.entryRelationship as cda_entryRelationship,
+  // ClinicalDocument/component/structuredBody/component/section/entry/act/entryRelationship/observation
+  cda_entryRelationship.observation as cda_observation then {
+>>>>>>> d74978e57239e6af4157b09be0ae9fcfa3337110
   
   // // 1…1 M	//observation/id ->   AtApsCondition.identifier
   // cda_observation.id -> fhir_condition.identifier;
@@ -144,7 +164,13 @@ group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_co
   //     // 1…1 M	//observation/value -> AtApsCondition.code
   // cda_observation.value -> fhir_condition.code;
 
+<<<<<<< HEAD
   // };
+=======
+  };  
+
+  */
+>>>>>>> d74978e57239e6af4157b09be0ae9fcfa3337110
   }
 
 // 1…1 M	observation.value 
@@ -515,7 +541,8 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
             cda_scoping_entity.desc -> fhir_organization.name;
           };
       };
-    };
+    }; 
+    
 }
 group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
   
