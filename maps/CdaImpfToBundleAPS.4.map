@@ -105,7 +105,7 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_
 group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_condition: Condition,target fhir_bundle: Bundle){
 
 
-
+  /*
   // section.author
   cda_act.author as cda_act_author ->
     // create the PractitionerRole in order to capture the author
@@ -144,7 +144,9 @@ group CdaImprelevanteErkankungenProblemEntry(source cda_act: Act, target fhir_co
       // 1…1 M	//observation/value -> AtApsCondition.code
   cda_observation.value -> fhir_condition.code
 
-  };
+  };  
+
+  */
   }
 
 // 1…1 M	observation.value 
@@ -512,7 +514,8 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
             cda_scoping_entity.desc -> fhir_organization.name;
           };
       };
-    };
+    }; 
+    
 }
 group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
   
