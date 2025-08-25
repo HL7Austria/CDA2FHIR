@@ -23,6 +23,15 @@ conceptmap "cda-code-2-fhir-category" {
   s:"11369-6" == t:"11369-6"
 }
 
+conceptmap "ELGAAdministrativeGenderFHIRGender" {
+  prefix s = "https://termgit.elga.gv.at/ValueSet-elga-administrativegender"
+  prefix t = "http://hl7.org/fhir/ValueSet/administrative-gender"
+
+  s:"F" == t: "female"
+  s:"M" == t:"male"
+  s:"UN" == t: "other"
+}
+
 // Source 
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias Material as source
@@ -113,12 +122,154 @@ group  CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_comp
       "CdaVersionNumberToFhirVersionNumber";
   cda.recordTarget as cda_recordTarget then {
     // ClinicalDocument.recordTarget.patientRole
-    cda_recordTarget.patientRole as cda_patientRole then CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle) "CdaPatientRoleToFhirPatient";
+    cda_recordTarget.patientRole as cda_patientRole then CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle);
   };
-  
 
+  // ClinicalDocument.author (as person)
+  cda.author as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
+    // create the PractitionerRole in order to capture the author.functionCode
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_composition.author = create('Reference') as fhir_composition_author_reference,
+    fhir_composition_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_composition_author_reference.type = 'PractitionerRole' then
+    CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
+
+  // ClinicalDocument.author (as device)
+  cda.author as cda_author where $this.assignedAuthor.assignedAuthoringDevice.exists() ->
+    // create the Device
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Device') as fhir_device,
+    fhir_device.id = uuid() as fhir_device_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
+    fhir_composition.author = create('Reference') as fhir_composition_author_reference,
+    fhir_composition_author_reference.reference = append('urn:uuid:', fhir_device_id),
+    fhir_composition_author_reference.type = 'Device' then
+    CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle);
+
+    // ClinicalDocument.custodian
+  cda.custodian as cda_custodian then {
+    // ClinicalDocument.custodian.assignedCustodian
+    cda_custodian.assignedCustodian as cda_assignedCustodian then {
+      // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization
+      cda_assignedCustodian.representedCustodianOrganization as cda_representedCustodianOrganization ->
+        // create the Organization
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_custodian_organization,
+        fhir_custodian_organization.id = uuid() as fhir_custodian_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_custodian_organization_id),
+        fhir_composition.custodian = create('Reference') as fhir_composition_custodian_reference,
+        fhir_composition_custodian_reference.reference = append('urn:uuid:', fhir_custodian_organization_id),
+        fhir_composition_custodian_reference.type = 'Organization' then {
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.id
+          cda_representedCustodianOrganization.id -> fhir_custodian_organization.identifier;
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.name
+          cda_representedCustodianOrganization.name -> fhir_custodian_organization.name;
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.telecom
+          cda_representedCustodianOrganization.telecom -> fhir_custodian_organization.telecom;
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.addr
+          // cda_representedCustodianOrganization.addr as cda_custodian_addr ->
+          //   fhir_custodian_organization.address = create('Address') as fhir_custodian_address then
+          //   CdaAdressCompilationToFhirAustrianAddress(cda_custodian_addr, fhir_custodian_address)
+          //   "CdaCustodianAddressToFhirCustodianAustrianAddress";
+          cda_representedCustodianOrganization.addr -> fhir_custodian_organization.address;
+        };
+    };
+  };
+
+  // ClinicalDocument.documentationOf
+  cda.documentationOf as cda_documentationOf then {
+    // ClinicalDocument.documentationOf.serviceEvent
+    cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent ->
+      fhir_composition.event as fhir_composition_event then {
+
+      // ClinicalDocument.documentationOf.serviceEvent.id
+      // TODO Extension has to be specified in AT Lab IG
+      cda_documentationOf_serviceEvent.id as serviceEvent_id then {
+        serviceEvent_id.root as serviceEvent_id_root ->
+        fhir_composition_event.extension as fhir_composition_event_extension,
+        fhir_composition_event_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-eventId',
+        fhir_composition_event_extension.value = create('oid') as fhir_composition_event_extension_oid,
+        fhir_composition_event_extension_oid.value = append('urn:oid:', serviceEvent_id_root)
+        "CdaServiceEventIdToFhirEventIdExtension";
+      } "CdaServiceEventIdToFhirEventId";
+
+      // ClinicalDocument.documentationOf.serviceEvent.code
+      cda_documentationOf_serviceEvent.code -> fhir_composition_event.code;
+      // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
+      cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
+      // ClinicalDocument.documentationOf.serviceEvent.performer
+      // TODO based on analysis of sample reports currently not required
+    };
+  };
+
+   // ClinicalDocument.relatedDocument
+  cda.relatedDocument as cda_relatedDocument then {
+    // ClinicalDocument.relatedDocument.parentDocument
+    cda_relatedDocument.parentDocument as cda_parentDocument ->
+      fhir_composition.relatesTo as fhir_composition_relatesTo then {
+        // ClinicalDocument.relatedDocument.typeCode
+        // in Laboratory this is constrained to RPLC -> replaces
+        cda_relatedDocument.typeCode -> fhir_composition_relatesTo.code = 'replaces' "CdaParentDocumentTypeCodeToFhirRelatesToCode";
+        //  ClinicalDocument.relatedDocument.parentDocument.id
+        cda_parentDocument.id as cda_parentDocument_id ->
+          fhir_composition_relatesTo.target = create('Identifier') as fhir_target_identifier
+          then II(cda_parentDocument_id, fhir_target_identifier);
+      };
+  };
 }
 
+group CdaAuthorToFhirDevice(source cda_author : Author, target fhir_device : Device, target fhir_bundle : Bundle){
+    // author.functionCode
+    // TODO correct?
+    cda_author.functionCode -> fhir_device.type;
+    // author.time
+    // TODO extension?
+    // author.time
+    // TODO nullFlavor?
+    // author.assignedAuthor
+    cda_author.assignedAuthor as cda_author_assignedAuthor then {
+      // author.assignedAuthor.id
+      cda_author_assignedAuthor.id where ($this.nullFlavor.exists().not()) -> fhir_device.identifier;
+      cda_author_assignedAuthor.id as cda_author_assignedAuthor_id where ($this.nullFlavor.exists()) then {
+        cda_author_assignedAuthor_id.nullFlavor ->
+          fhir_device.identifier as fhir_device_identifier,
+          fhir_device_identifier.extension as fhir_device_identifier_extension then CdaNullFlavorToFhirNullFlavor(cda_author_assignedAuthor_id, fhir_device_identifier_extension)
+          "CdaAssignedAuthorIdNullFlavorToFhirDataAbsentReason";
+      } "CdaAssignedAuthorIdNullFlavor";
+
+      // author.assignedAuthor.code
+      // skipped because no value in ValueSet ELGA_AuthorSpeciality suits a device
+      // author.assignedAuthor.telecom
+      cda_author_assignedAuthor.telecom -> fhir_device.contact;
+      // author.assignedAuthor.assignedAuthoringDevice
+      cda_author_assignedAuthor.assignedAuthoringDevice as cda_assignedAuthoringDevice then {
+        // author.assignedAuthor.assignedAuthoringDevice.manufacturerModelName
+        cda_assignedAuthoringDevice.manufacturerModelName as cda_manufacturerModelName ->
+          fhir_device.deviceName as fhir_device_deviceName,
+          fhir_device_deviceName.name = (cda_manufacturerModelName.xmlText),
+          fhir_device_deviceName.type = 'model-name';
+        // author.assignedAuthor.assignedAuthoringDevice.softwareName
+        // TODO not clear if this is the right place to store that information
+        cda_assignedAuthoringDevice.softwareName as cda_softwareName ->
+          fhir_device.deviceName as fhir_device_deviceName,
+          fhir_device_deviceName.name = (cda_softwareName.xmlText),
+          fhir_device_deviceName.type = 'other';
+      };
+      // author.assignedAuthor.representedOrganization
+      cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+        fhir_organization.id = uuid() as fhir_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+        fhir_device.owner = create('Reference') as fhir_device_owner,
+        fhir_device_owner.reference = append('urn:uuid:', fhir_organization_id),
+        fhir_device_owner.type = 'Organization' then
+        CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
+    };
+}
 group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target fhir_patient : Patient, target fhir_bundle : Bundle) {
 
 cda_patientRole ->
