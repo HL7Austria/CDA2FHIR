@@ -91,13 +91,14 @@ group  CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_comp
   cda -> fhir_composition.meta as fhir_composition_meta,
     fhir_composition_meta.profile = 'https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-composition.html'
     "FhirCompositionProfile";
-
+  // 1…1 M	/ClinicalDocument/code	-> 1..1	AtApsComposition.category
   cda.code as cda_code then {
     cda_code.code as code_code ->
     fhir_composition.category as fhir_composition_category,
     fhir_composition_category.coding = translate(code_code, '#cda-code-2-fhir-category' , 'Coding') "code";
   };
   
+  //1…1 M	/ClinicalDocument/code/translation	->	1..1	AtApsComposition.type
   cda.code as cda_code then {
     cda_code.translation -> fhir_composition.type;
     cda_code where cda_code.translation.exists().not() ->
@@ -108,12 +109,17 @@ group  CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_comp
       coding_coding.display = 'History of Immunizations';
   };
 
-
+  // 1…1 M	/ClinicalDocument/title='Immunisierungsstatus - Zusammenfassung' ->	1..1 	AtApsComposition.title
   cda.title as cda_title -> fhir_composition.title;
+  // 1…1 M 	/ClinicalDocument/effectiveTime	-> 1..1	AtApsComposition.date
   cda.effectiveTime -> fhir_composition.date;
+  //1…1 M 	/ClinicalDocument/confidentialityCode	->	0..1	AtApsComposition.confidentiality
   cda.confidentialityCode -> fhir_composition.confidentiality;
+  // 1…1 M	/ClinicalDocument/languageCode 	->	0..1 	AtApsComposition.language
   cda.languageCode -> fhir_composition.language;
+  // 1…1 M	/ClinicalDocument/setId	-> 0..1	AtApsComposition.identifier
   cda.setId -> fhir_composition.identifier;
+  // 1…1 M 	/ClinicalDocument/versionNumber	-> 1..1	AtApsComposition.extension.composition-clinicaldocument-versionNumber
   cda.versionNumber as cda_versionNumber then {
     cda_versionNumber.value as cda_versionNumber_value ->
       fhir_composition.extension as fhir_composition_extenstion,
@@ -163,57 +169,39 @@ group  CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_comp
         fhir_composition.custodian = create('Reference') as fhir_composition_custodian_reference,
         fhir_composition_custodian_reference.reference = append('urn:uuid:', fhir_custodian_organization_id),
         fhir_composition_custodian_reference.type = 'Organization' then {
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.id
+          // 1…* M ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization/id	->	0..*	AtApsOrganization.identifier
           cda_representedCustodianOrganization.id -> fhir_custodian_organization.identifier;
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.name
+          // 1…1 M representedCustodianOrganization/name	->	0..1	AtApsOrganization.name
           cda_representedCustodianOrganization.name -> fhir_custodian_organization.name;
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.telecom
+          // 0…* 	//representedCustodianOrganization/telecom	->	0..*	AtApsOrganization.telecom
           cda_representedCustodianOrganization.telecom -> fhir_custodian_organization.telecom;
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.addr
-          // cda_representedCustodianOrganization.addr as cda_custodian_addr ->
-          //   fhir_custodian_organization.address = create('Address') as fhir_custodian_address then
-          //   CdaAdressCompilationToFhirAustrianAddress(cda_custodian_addr, fhir_custodian_address)
-          //   "CdaCustodianAddressToFhirCustodianAustrianAddress";
+          // 1…1 M	//representedCustodianOrganization/addr (Address Compilation -  1.2.40.0.34.6.0.11.9.25)	->	0..*	AtApsOrganization.address (HL7 ATCoreAddress)
           cda_representedCustodianOrganization.addr -> fhir_custodian_organization.address;
         };
     };
   };
 
-  // ClinicalDocument.documentationOf
+  // 1...1 M ClinicalDocument.documentationOf -> 0..*	AtApsComposition.event
   cda.documentationOf as cda_documentationOf then {
     // ClinicalDocument.documentationOf.serviceEvent
     cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent ->
       fhir_composition.event as fhir_composition_event then {
-
-      // ClinicalDocument.documentationOf.serviceEvent.id
-      // TODO Extension has to be specified in AT Lab IG
-      cda_documentationOf_serviceEvent.id as serviceEvent_id then {
-        serviceEvent_id.root as serviceEvent_id_root ->
-        fhir_composition_event.extension as fhir_composition_event_extension,
-        fhir_composition_event_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-eventId',
-        fhir_composition_event_extension.value = create('oid') as fhir_composition_event_extension_oid,
-        fhir_composition_event_extension_oid.value = append('urn:oid:', serviceEvent_id_root)
-        "CdaServiceEventIdToFhirEventIdExtension";
-      } "CdaServiceEventIdToFhirEventId";
-
-      // ClinicalDocument.documentationOf.serviceEvent.code
+      // 1…1 M	//documentationOf/serviceEvent/code	->	0..*	AtApsComposition.event.code
       cda_documentationOf_serviceEvent.code -> fhir_composition_event.code;
-      // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
+      // 1…1 M	//serviceEvent/effectiveTime	->	0..1	AtApsComposition.event.period
       cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
-      // ClinicalDocument.documentationOf.serviceEvent.performer
-      // TODO based on analysis of sample reports currently not required
     };
   };
 
-   // ClinicalDocument.relatedDocument
+   // 0...1 ClinicalDocument.relatedDocument -> 0..*	AtApsComposition.relatesTo
   cda.relatedDocument as cda_relatedDocument then {
     // ClinicalDocument.relatedDocument.parentDocument
     cda_relatedDocument.parentDocument as cda_parentDocument ->
       fhir_composition.relatesTo as fhir_composition_relatesTo then {
-        // ClinicalDocument.relatedDocument.typeCode
-        // in Laboratory this is constrained to RPLC -> replaces
+        // ClinicalDocument.relatedDocument.typeCode -> 1..1	AtApsComposition.relatesTo.code
+        // todo -> RPLC or APND?
         cda_relatedDocument.typeCode -> fhir_composition_relatesTo.code = 'replaces' "CdaParentDocumentTypeCodeToFhirRelatesToCode";
-        //  ClinicalDocument.relatedDocument.parentDocument.id
+        // 1...1 M ClinicalDocument.relatedDocument.parentDocument.id -> 1..1	AtApsComposition.relatesTo.target.identifier
         cda_parentDocument.id as cda_parentDocument_id ->
           fhir_composition_relatesTo.target = create('Identifier') as fhir_target_identifier
           then II(cda_parentDocument_id, fhir_target_identifier);
@@ -448,17 +436,17 @@ group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target
     cda_structuredBody.component as cda_component then {
         //ToDo
         // Übergabeparams - section source or target?
-        // Section 1: Impfungen - kodiert - 1.2.40.0.34.6.0.11.2.1
+        // 0...1 Section 1: Impfungen - kodiert - 1.2.40.0.34.6.0.11.2.1
         cda_component.section as cda_impfungen_kodiert_section where code.where(code='11369-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_1 then CdaHistoryOfImmunizationSectionToFhirCompositionSection(cda_impfungen_kodiert_section, fhir_section_1, fhir_patient, fhir_bundle);
-        // Section 2: Spezielle Impfindikation - kodiert - 1.2.40.0.34.6.0.11.2.4
+        // 0...1 Section 2: Spezielle Impfindikation - kodiert - 1.2.40.0.34.6.0.11.2.4
         cda_component.section as cda_indikationsgruppen_section where code.where(code='11450-4' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_2 then CdaIndikationsgruppenSectionToFhirCompositionSection(cda_indikationsgruppen_section, fhir_section_2, fhir_bundle);
-        // Section 3: Impfrelevante Erkrankungen - 1.2.40.0.34.6.0.11.2.5
+        // 0...1 Section 3: Impfrelevante Erkrankungen - 1.2.40.0.34.6.0.11.2.5
         cda_component.section as cda_impfrelevante_erkrankungen_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_3 then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_impfrelevante_erkrankungen_section, fhir_section_3, fhir_bundle);
-        // Section 4: Laboruntersuchungen - Antikörper-Bestimmung - 1.2.40.0.34.6.0.11.2.7
+        // 0...1 Section 4: Laboruntersuchungen - Antikörper-Bestimmung - 1.2.40.0.34.6.0.11.2.7
         cda_component.section as cda_antikoerper_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_4 then CdaAntikoerperSectionToFhirCompositionSection(cda_antikoerper_section, fhir_section_4, fhir_bundle);
-        // Section 5: Impfempfehlungen - 1.2.40.0.34.6.0.11.2.2
+        // 0...1 Section 5: Impfempfehlungen - 1.2.40.0.34.6.0.11.2.2
         cda_component.section as cda_impfempfehlung_section where code.where(code='18776-5' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_5 then CdaImpfempfehlungSectionToFhirCompositionSection(cda_impfempfehlung_section, fhir_section_5, fhir_bundle);
-        // Section 6: Beilagen - 1.2.40.0.34.6.0.11.2.71
+        // 0...1 Section 6: Beilagen - 1.2.40.0.34.6.0.11.2.71
         cda_component.section as cda_beilagen_section where code.where(code='BEIL' and codeSystem='1.2.40.0.34.5.40') -> fhir_composition.section as fhir_section_6 then CdaBeilagenSectionToFhirCompositionSection(cda_beilagen_section, fhir_section_6, fhir_bundle);
     };
     }
