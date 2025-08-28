@@ -847,12 +847,11 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
             fhir_immunization_performer.actor = create('Reference') as fhir_immunization_performer_actor,
             fhir_immunization_performer_actor.reference = append('urn:uuid:', fhir_practitioner_id),
             fhir_immunization_performer_actor.type = 'PractitionerRole',
-            fhir_immunization_performer.extension as performerFunctionExtension,
-            performerFunctionExtension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction',
-            performerFunctionExtension.value = create('CodeableConcept') as performerFunctionCodeableConcept,
+            // 0…1 	participant/typeCode[@typeCode='ENT'] --> AtApsImmunization.performer.function
+            fhir_immunization_performer.function = create('CodeableConcept') as performerFunctionCodeableConcept,
             performerFunctionCodeableConcept.coding as performerFunctionCodeableConcept_coding,
             performerFunctionCodeableConcept_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
-            performerFunctionCodeableConcept_coding.code = 'ENT',   // AUT - author (originator)
+            performerFunctionCodeableConcept_coding.code = 'ENT',  // ENT = Data enterer
             performerFunctionCodeableConcept_coding.display = 'data entry person' then CdaParticipantToFhirPractitionerRole(cda_participant_dataenterer, fhir_practitionerRole, fhir_bundle);
           };
 
@@ -1040,9 +1039,8 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
 
           // 0…1	participant/participantRole/playingEntity.name -> 0..*	AtApsPractitioner.name
           cda_playingEntity.name -> fhir_practitioner.name;
-        }
-        // cda_participant_role.playingEntity as cda_playingEntity,
-        // cda_playingEntity.name as cda_playingEntity_name -> fhir_practitioner.name;
+        };
+        
         // 0…1	participant/participantRole/scopingEntity -> AtApsOrganization 
         cda_participant_role.scopingEntity as cda_scoping_entity ->
           fhir_bundle.entry as fhir_org_entry,
