@@ -434,8 +434,7 @@ cda_patientRole ->
 
 group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
     cda_structuredBody.component as cda_component then {
-        //ToDo
-        // Übergabeparams - section source or target?
+     
         // 0...1 Section 1: Impfungen - kodiert - 1.2.40.0.34.6.0.11.2.1
         cda_component.section as cda_impfungen_kodiert_section where code.where(code='11369-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_1 then CdaHistoryOfImmunizationSectionToFhirCompositionSection(cda_impfungen_kodiert_section, fhir_section_1, fhir_patient, fhir_bundle);
         // 0...1 Section 2: Spezielle Impfindikation - kodiert - 1.2.40.0.34.6.0.11.2.4
@@ -451,11 +450,17 @@ group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target
     };
     }
 
-group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, source fhir_section, source fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
- 
+group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+// ToDo
+/*
+- Check if Patient needs to be passed on
+- Reference Patient in Immunization
+- Handle 1.2.40.0.34.6.0.11.3.28 Immunization Entry Impfung nicht angegeben
+  - Rewrite section - if Immunization Entry nicht angegeben - APS - Section Empty Reason - Value Set list-Empty-Reason unavailable
+*/
   cda_section.entry as cda_section_entry then {
 
-    // 1...* //component/structuredBody/component/section/entry/substanceAdministration - 1.2.40.0.34.6.0.11.3.1 Immunization Entry or  1.2.40.0.34.6.0.11.3.28 Immunization Entry Impfung nicht angegeben
+    // 1...* //component/structuredBody/component/section/entry/substanceAdministration - 1.2.40.0.34.6.0.11.3.1 Immunization Entry 
     cda_section_entry.substanceAdministration as cda_substanceAdministration then {    
 
           // create Immunization
@@ -470,7 +475,7 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
 };
 }
 
-group CdaIndikationsgruppenSectionToFhirCompositionSection(source cda_indikationsgruppen_section: Section, source fhir_section_2, target fhir_bundle: Bundle) {
+group CdaIndikationsgruppenSectionToFhirCompositionSection(source cda_indikationsgruppen_section: Section, target fhir_section_2, target fhir_bundle: Bundle) {
   cda_indikationsgruppen_section.title -> fhir_section_2.title;
   cda_indikationsgruppen_section.code -> fhir_section_2.code.coding;
   // cda_indikationsgruppen_section.entry as cda_section_entry then {
@@ -478,7 +483,7 @@ group CdaIndikationsgruppenSectionToFhirCompositionSection(source cda_indikation
   // };
 }
 
-group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_of_past_illness_section: Section, source fhir_section_2, target fhir_bundle: Bundle) {
+group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_history_of_past_illness_section: Section, target fhir_section_2, target fhir_bundle: Bundle) {
 
   // cda_section_of_past_illness_section -> 
   //  fhir_section_2.id as fhir_section_2_id,
@@ -508,7 +513,7 @@ group CdaAntikoerperSectionToFhirCompositionSection(source cda_antikoerper_secti
   cda_antikoerper_section.entry as cda_section_entry then CdaAntikoerperBestimmungDataProcessingEntryToFhir(cda_section_entry, fhir_section_4, fhir_bundle);
 }
 
-group CdaImpfempfehlungSectionToFhirCompositionSection(source cda_impfempfehlung_section: Section, source fhir_section_3, target fhir_bundle: Bundle) {
+group CdaImpfempfehlungSectionToFhirCompositionSection(source cda_impfempfehlung_section: Section, target fhir_section_3, target fhir_bundle: Bundle) {
 // Trial - Mapping Offen !! 
   cda_impfempfehlung_section.title -> fhir_section_3.title;
   cda_impfempfehlung_section.code -> fhir_section_3.code.coding;
@@ -701,14 +706,15 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
     // 0...1 	//substanceAdministration/routeCode --> AtApsImmunization.route
     cda_substanceAdministration.routeCode as cda_routeCode where ($this.nullFlavor.exists().not()) -> fhir_immunization.route;
     // 0...1 	//substanceAdministration/doseQuantity --> AtApsImmunization.doseQuantity
-    // NullFlavor at cda_doseQuantity 
-    cda_substanceAdministration.doseQuantity -> fhir_immunization.doseQuantity;
+    cda_substanceAdministration.doseQuantity where ($this.nullFlavor.exists().not()) -> fhir_immunization.doseQuantity;
+
     // //substanceAdministration/consumable
-    cda_substanceAdministration.consumable as cda_consumable,
-    //substanceAdministration/consumable/manufacturedProduct
-    cda_consumable.manufacturedProduct as cda_manufacturedProduct then {
-        // Gruppe die manuFacturedProduct zu FHIR Immunization Mapped. 
-      cda_manufacturedProduct then CdaManufacturedMaterialToFhirImmunizationMedication(cda_manufacturedProduct, fhir_immunization, fhir_bundle);
+    cda_substanceAdministration.consumable as cda_consumable then {
+      //substanceAdministration/consumable/manufacturedProduct
+      cda_consumable.manufacturedProduct as cda_manufacturedProduct then {
+        // Gruppe die manuFacturedProduct zu FHIR Immunization Mapped.
+        cda_manufacturedProduct then CdaManufacturedMaterialToFhirImmunizationMedication(cda_manufacturedProduct, fhir_immunization, fhir_bundle);
+      };
     };
 
     cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
