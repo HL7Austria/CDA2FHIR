@@ -447,7 +447,7 @@ group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target
         cda_component.section as cda_impfempfehlung_section where code.where(code='18776-5' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_5 then CdaImpfempfehlungSectionToFhirCompositionSection(cda_impfempfehlung_section, fhir_section_5, fhir_bundle);
         // 0...1 Section 6: Beilagen - 1.2.40.0.34.6.0.11.2.71
         cda_component.section as cda_beilagen_section where code.where(code='BEIL' and codeSystem='1.2.40.0.34.5.40') -> fhir_composition.section as fhir_section_6 then CdaBeilagenSectionToFhirCompositionSection(cda_beilagen_section, fhir_section_6, fhir_bundle);
-    };
+      };
     }
 
 group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
@@ -455,13 +455,22 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
 /*
 - Check if Patient needs to be passed on
 - Reference Patient in Immunization
-- Handle 1.2.40.0.34.6.0.11.3.28 Immunization Entry Impfung nicht angegeben
-  - Rewrite section - if Immunization Entry nicht angegeben - APS - Section Empty Reason - Value Set list-Empty-Reason unavailable
 */
+  cda_section.entry as cda_section_entry then {
+    cda_section_entry.substanceAdministration as cda_substanceAdministration where $this.templateId.where(root='1.2.40.0.34.6.0.11.3.28') then {
+
+      cda_substanceAdministration -> fhir_section.emptyReason = create('CodeableConcept') as fhir_section_emptyReason,
+        fhir_section_emptyReason.coding = create('Coding') as fhir_section_emptyReason_coding,
+        fhir_section_emptyReason_coding.system = 'http://terminology.hl7.org/CodeSystem/list-empty-reason',
+        fhir_section_emptyReason_coding.code = 'unavailable',
+        fhir_section_emptyReason_coding.display = 'Information unavailable';
+      };
+  };
+  
   cda_section.entry as cda_section_entry then {
 
     // 1...* //component/structuredBody/component/section/entry/substanceAdministration - 1.2.40.0.34.6.0.11.3.1 Immunization Entry 
-    cda_section_entry.substanceAdministration as cda_substanceAdministration then {    
+    cda_section_entry.substanceAdministration as cda_substanceAdministration where $this.templateId.where(root='1.2.40.0.34.6.0.11.3.1') then {
 
           // create Immunization
           cda_substanceAdministration -> fhir_bundle.entry as fhir_bundle_entry,
@@ -475,9 +484,7 @@ group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section
 };
 }
 
-group CdaIndikationsgruppenSectionToFhirCompositionSection(source cda_indikationsgruppen_section: Section, target fhir_section_2, target fhir_bundle: Bundle) {
-  cda_indikationsgruppen_section.title -> fhir_section_2.title;
-  cda_indikationsgruppen_section.code -> fhir_section_2.code.coding;
+group CdaIndikationsgruppenSectionToFhirCompositionSection(source cda_indikationsgruppen_section: Section, target fhir_section_2, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
   // cda_indikationsgruppen_section.entry as cda_section_entry then {
     
   // };
@@ -514,7 +521,7 @@ group CdaAntikoerperSectionToFhirCompositionSection(source cda_antikoerper_secti
 }
 
 group CdaImpfempfehlungSectionToFhirCompositionSection(source cda_impfempfehlung_section: Section, target fhir_section_3, target fhir_bundle: Bundle) {
-// Trial - Mapping Offen !! 
+// Example Mapping - not done yet! 
   cda_impfempfehlung_section.title -> fhir_section_3.title;
   cda_impfempfehlung_section.code -> fhir_section_3.code.coding;
    cda_impfempfehlung_section.entry as cda_section_entry then{
@@ -539,7 +546,7 @@ group CdaBeilagenSectionToFhirCompositionSection(source cda_beilagen_section: Se
 }
 
 group CdaAntikoerperBestimmungDataProcessingEntryToFhir(source cda_section_entry: Section, source fhir_section_4: Section, target fhir_bundle: Bundle) {
-
+  // entry( Antikörperbestimmung Data Processing Entry - 1.2.40.0.34.6.0.11.3.15) 
 }
  
 
@@ -746,6 +753,8 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
             cda_manufacturedMaterial_code.nullFlavor ->
             fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
             fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension);
+
+            cda_manufacturedMaterial_code.translation -> fhir_immunization.vaccineCode.coding; 
             
             // "0...1" //manufacturedProduct/manufacturedMaterial/lotNumberText -> AtApsImmunization.lotNumber
             cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
@@ -917,7 +926,7 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
           */
         };
       }; 
-    };
+    }; 
 
     // ToDO Add entryRelationship(Immunization Billability Entry - 1.2.40.0.34.6.0.11.3.5) 
 
@@ -947,40 +956,40 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
 
 group CdaManufacturedMaterialToFhirImmunizationMedication(source cda_manufacturedProduct : ManufacturedProduct, target fhir_immunization : Immunization, target fhir_bundle : Bundle) {
   
-  /*//manufacturedProduct/manufacturedMaterial
-  cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+  // //manufacturedProduct/manufacturedMaterial
+  // cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
    
-  cda_manufacturedMaterial.pharmIngredient as cda_ingredient
-      where $this.exists() ->
-        fhir_bundle.entry as fhir_bundle_entry_1,
-        fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
-        fhir_medication.id = uuid() as fhir_medication_id,
-        fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
+  // cda_manufacturedMaterial.pharmIngredient as cda_ingredient
+  //     where $this.exists() ->
+  //       fhir_bundle.entry as fhir_bundle_entry_1,
+  //       fhir_bundle_entry_1.resource = create('Medication') as fhir_medication,
+  //       fhir_medication.id = uuid() as fhir_medication_id,
+  //       fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_medication_id),
 
-        fhir_immunization.extension as fhir_administeredProduct_extension,
-        fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
-        fhir_administeredProduct_extension.extension as fhir_reference_extension,
-        fhir_reference_extension.url = 'reference',
-        fhir_reference_extension.value = create('Reference') as fhir_reference_value,
-        fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
-        fhir_reference_value.type = 'Medication' then {
-          cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
+  //       fhir_immunization.extension as fhir_administeredProduct_extension,
+  //       fhir_administeredProduct_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
+  //       fhir_administeredProduct_extension.extension as fhir_reference_extension,
+  //       fhir_reference_extension.url = 'reference',
+  //       fhir_reference_extension.value = create('Reference') as fhir_reference_value,
+  //       fhir_reference_value.reference = append('urn:uuid:', fhir_medication_id),
+  //       fhir_reference_value.type = 'Medication' then {
+  //         cda_ingredient.pharmIngredient as cda_ingredient_ingredient then {
 
-            // Noch nicht funktionsbereit. 
-            //substanceAdministration//manufacturedProduct/id
-            cda_manufacturedProduct.id -> fhir_medication.identifier; 
-            // fhir_medication.ingredient as fhir_medication_ingredient,
-            // fhir_medication_ingredient.item as fhir_medication_ingredient_item,
-            // fhir_medication_ingredient_item.itemCodeableConcept as fhir_medication_ingredient_item_codeableConcept;
-               //manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:code -> Medication.ingredient.item.itemCodeableConcept.coding
-            // //cda_ingredient_ingredient.code -> fhir_medication_ingredient_item_codeableConcept.code;
-               0…1	//manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:name ->  Medication.ingredient.item.itemCodeableConcept.text
-            //cda_ingredient_ingredient.name -> fhir_medication_ingredient_item_codeableConcept.text; 
+  //           // Noch nicht funktionsbereit. 
+  //           //substanceAdministration//manufacturedProduct/id
+  //           cda_manufacturedProduct.id -> fhir_medication.identifier; 
+  //           // fhir_medication.ingredient as fhir_medication_ingredient,
+  //           // fhir_medication_ingredient.item as fhir_medication_ingredient_item,
+  //           //  fhir_medication_ingredient_item.itemCodeableConcept as fhir_medication_ingredient_item_codeableConcept;
+  //              //manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:code -> Medication.ingredient.item.itemCodeableConcept.coding
+  //           // //cda_ingredient_ingredient.code -> fhir_medication_ingredient_item_codeableConcept.code;
+  //              0…1	//manufacturedMaterial/pharm:ingredient/pharm:ingredient/pharm:name ->  Medication.ingredient.item.itemCodeableConcept.text
+  //           //cda_ingredient_ingredient.name -> fhir_medication_ingredient_item_codeableConcept.text; 
 
-          };
+  //         };
           
-      };
-  }; */ 
+  //     };
+  // };    
 
 }
 
