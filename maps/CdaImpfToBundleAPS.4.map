@@ -312,11 +312,6 @@ cda_patientRole ->
       "FhirPatientIdentifierTypeCodingNI";
   } "CdaPatientIdToFhirPatientIdentifier";
 
-  // patientRole.addr using ADAustrianAddress
-  // cda_patientRole.addr as cda_patientRole_addr ->
-  //   fhir_patient.address = create('Address') as fhir_patient_address then
-  //   CdaAdressCompilationToFhirAustrianAddress(cda_patientRole_addr, fhir_patient_address)
-  //   "CdaPatientAddressToFhirPatientAustrianAddress";
   cda_patientRole.addr -> fhir_patient.address;
 
   // patientRole.telecom
@@ -451,11 +446,7 @@ group CdaBodyToFhirComposition(source cda_structuredBody: StructuredBody, target
     }
 
 group CdaHistoryOfImmunizationSectionToFhirCompositionSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
-// ToDo
-/*
-- Check if Patient needs to be passed on
-- Reference Patient in Immunization
-*/
+
   cda_section.entry as cda_section_entry then {
     cda_section_entry.substanceAdministration as cda_substanceAdministration where $this.templateId.where(root='1.2.40.0.34.6.0.11.3.28') then {
 
@@ -735,17 +726,7 @@ group CdaSubstanceAdministrationToFhirImmunization(source cda_substanceAdministr
             fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
             fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension); 
           }; 
-          /*
-          ToDo:
-          -refactor code 
-            - where this null flavor oth or exists not 
-              - if exists not -> cda -> fhirvaccineCode
-              - if oth -> cda null flavor -> fhir vaccine code null flavor
-              - rest stays the same
-          - Zulassungsnummer - add mapping for:
-            - Wird das Attribut code/@nullFlavor= "OTH" angeführt, MUSS in /code/translation die Zulassungsnummer strukturiert sein.
-              - Map to fhir immunization.vaccineCode.coding.code = Zulassungsnummer
-          */
+
           // NF OTH handling 
           cda_manufacturedMaterial.code where ($this.nullFlavor = 'OTH') then {
             // 1...1 R 	//manufacturedProduct/manufacturedMaterial/code -> AtApsImmunization.vaccineCode.coding
@@ -1143,7 +1124,7 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
 
       };
     };
-}
+}  
 
 group CdaSubstanceAdministrationToPractitionerRole(source cda_substanceAdministration: SubstanceAdministration, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle) {
   /*
