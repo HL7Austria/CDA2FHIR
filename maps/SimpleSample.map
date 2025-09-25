@@ -1,0 +1,16 @@
+map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/simple-sample" = "PractitionerToPatient"
+
+uses "http://hl7.org/fhir/StructureDefinition/Practitioner" alias Practitioner as source
+uses "http://hl7.org/fhir/StructureDefinition/Patient" alias Patient as target
+
+group PractitionerToPatient(source practitioner: Practitioner, target patient: Patient) {
+  practitioner.id as id -> patient.id = id;
+
+  practitioner.identifier as identifier -> patient.identifier = identifier;
+
+  practitioner.name as name -> patient.name = name;
+
+  practitioner.telecom as telecom -> patient.telecom = telecom;
+
+  practitioner.birthDate as birthDate -> patient.birthDate = birthDate;
+}

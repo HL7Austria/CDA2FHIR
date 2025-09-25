@@ -6,7 +6,7 @@
 # current matchbox
 # @host = http://localhost:8080/matchboxv3/fhir
 # matchbox 2.3.0
-@host = http://localhost:8081/matchbox/fhir
+@host = http://localhost:8082/matchbox/fhir
 
 ### Capability Statement
 GET {{host}}/metadata HTTP/1.1
@@ -18,7 +18,7 @@ Accept: application/fhir+xml;fhirVersion=4.0.1
 Content-Type: application/fhir+xml;fhirVersion=4.0.1
 
 ### StructureDefinition
-GET {{host}}/StructureDefinition/ED
+GET {{host}}/StructureDefinition/Account
 Accept: application/fhir+xml
 Content-Type: application/fhir+xml
 
@@ -39,14 +39,14 @@ POST {{host}}/StructureMap HTTP/1.1
 Accept: application/fhir+xml;fhirVersion=4.0.1
 Content-Type: text/fhir-mapping
 
-< ./maps/CdaToFhirTypes.map
+< ./maps/CdaToFhirTypes.4.map
 
 ### 1.b. POST CdaToBundle.map
 POST {{host}}/StructureMap HTTP/1.1
 Accept: application/fhir+xml;fhirVersion=4.0.1
 Content-Type: text/fhir-mapping
 
-< ./maps/CdaToBundle.map
+< ./maps/CdaToBundle.4.map
 
 ### 1.c. POST AtBundleToEuBundle.map
 POST {{host}}/StructureMap HTTP/1.1
@@ -59,7 +59,7 @@ Content-Type: text/fhir-mapping
 
 ### 2.a. POST Lab_Allgemeiner_Laborbefund.xml (CdaToBundle)
 POST {{host}}/StructureMap/$transform?source=http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-bundle
-Accept: application/fhir+json;fhirVersion=4.0.1
+Accept: application/fhir+xml;fhirVersion=4.0.1
 Content-Type: application/fhir+xml;fhirVersion=4.0.1
 
 < ./input/Lab_Allgemeiner_Laborbefund.xml
