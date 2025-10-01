@@ -311,7 +311,7 @@ cda_patientRole ->
       type_coding.display = 'National unique individual identifier'
       "FhirPatientIdentifierTypeCodingNI";
   } "CdaPatientIdToFhirPatientIdentifier";
-
+  // 0…2 	//patientRole/addr ( Address Compilation - 1.2.40.0.34.6.0.11.9.25) ->	0..*	AtApsPatient.address (HL7 ATCoreAddress)
   cda_patientRole.addr -> fhir_patient.address;
 
   // patientRole.telecom
@@ -352,8 +352,7 @@ cda_patientRole ->
       religion_extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-religion',
       religion_extension.value = create('CodeableConcept') as religion_extension_codeableConcept then CECodeableConcept(cda_patient_religiousAffiliationCode, religion_extension_codeableConcept)
       "CdaPatientReligiousAffiliationCodeToFhirPatientReligionExtension";
-    // patient.raceCode NP
-    // patient.ethnicGroupCode NP
+    
     // patient.guardian
     cda_patient.guardian as cda_patient_guardian -> fhir_patient.contact as fhir_patient_contact then {
       // TODO code for fhir_patient_contact.relationship
