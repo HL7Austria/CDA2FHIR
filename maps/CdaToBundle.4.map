@@ -374,6 +374,20 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.25']] or 1.2.40.0.34.11.1.1.5
   // TODO
 
+  cda.participant as cda_relatedPerson where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.25') ->
+  fhir_bundle.entry as fhir_bundle_entry, 
+  fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+  fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id, 
+  fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id), 
+  fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+  fhir_patient.id as fhir_patient_id,
+  fhir_relatedPerson_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
+  fhir_relatedPerson_patient_reference.type = 'Patient' then {
+    cda_relatedPerson.associatedEntity as cda_associatedEntity then CdaAssociatedEntityToFhirRelatedPerson(cda_associatedEntity, fhir_relatedPerson, fhir_bundle); 
+  } "CdaAngehoerigeToFhirRelatedPerson";
+
+
+
   // Participant Versicherung
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']]
   // TODO extension required
@@ -1761,6 +1775,17 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
         CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
   } "CdaAssignedEntityToFhirPractitionerRole";
 }
+// Source: https://elga.art-decor.org/at-lab-html-20250710T084433/tmp-1.2.40.0.34.6.0.11.1.25-2021-08-03T111727.html
+// Target: http://hl7.org/fhir/R4/relatedperson.html 
+group CdaAssociatedEntityToFhirRelatedPerson(source cda_associatedEntity: AssociatedEntity, target fhir_relatedPerson: RelatedPerson, target fhir_bundle: Bundle){
+cda_associatedEntity.code -> fhir_relatedPerson.relationship;
+cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_relatedPerson.address;
+cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_relatedPerson.telecom;
+cda_associatedEntity.associatedPerson as cda_associatedPerson then {
+  cda_associatedPerson.name -> fhir_relatedPerson.name;
+};
+// Fhir RelatedPerson has no organization. Extension could be used if needed.
+};
 
 // Source: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.9.22/2021-05-26T13:50:41
 // Target: http://hl7.org/fhir/practitionerrole.html
