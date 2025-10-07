@@ -378,6 +378,65 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']]
   // TODO extension required
 
+  cda.participant as cda_participant where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.26') ->
+    // covarage.status = active OR dataAbsentreason 
+    // Create Coverage
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Coverage') as fhir_coverage,
+    fhir_coverage.id = uuid() as fhir_coverage_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_coverage_id),
+    fhir_patient.id as fhir_patient_id,
+    fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
+    fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_coverage_beneficiary_reference.type = 'Patient' then {
+
+      cda_participant.time -> fhir_coverage.period;
+
+      cda_participant.associatedEntity as cda_associatedEntity then {
+        
+        // SELF: Versicherter ist der Patient
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' -> 
+          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
+          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
+          fhir_coverage_policyHolder_reference.type = 'Patient';
+
+        // FAMDEP: Familienversichert
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'FAMDEP' ->
+
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+          fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
+
+          fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+          fhir_relatedPerson_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
+          fhir_relatedPerson_patient_reference.type = 'Patient',
+
+          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
+          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
+          fhir_coverage_policyHolder_reference.type = 'RelatedPerson' then {
+
+            cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_relatedPerson.address;
+
+            cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_relatedPerson.telecom;
+
+            cda_associatedEntity.associatedPerson as cda_associatedPerson then {
+              cda_associatedPerson.name -> fhir_relatedPerson.name;
+            };
+          };
+
+        cda_associatedEntity.scopingOrganization as cda_scopingOrganization -> 
+
+          fhir_bundle.entry as fhir_bundle_entry_organization,
+          fhir_bundle_entry_organization.resource = create('Organization') as fhir_organization,
+          fhir_organization.id = uuid() as fhir_organization_id,
+          fhir_bundle_entry_organization.fullUrl = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage.payer = create('Reference') as fhir_coverage_payer_reference,
+          fhir_coverage_payer_reference.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage_payer_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+      };
+    };
+
   // Participant Betreuungsorganisation
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']]
   // TODO based on analysis of sample reports currently not required
