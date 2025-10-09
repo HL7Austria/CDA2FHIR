@@ -426,17 +426,15 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           };
 
         cda_associatedEntity.scopingOrganization as cda_scopingOrganization -> 
-
-          fhir_bundle.entry as fhir_bundle_entry_organization,
-          fhir_bundle_entry_organization.resource = create('Organization') as fhir_organization,
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Organization') as fhir_organization,
           fhir_organization.id = uuid() as fhir_organization_id,
-          fhir_bundle_entry_organization.fullUrl = append('urn:uuid:', fhir_organization_id),
-          fhir_coverage.payer = create('Reference') as fhir_coverage_payer_reference,
-          fhir_coverage_payer_reference.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_coverage_payer_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage.payor = create('Reference') as fhir_coverage_payor_reference,
+          fhir_coverage_payor_reference.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage_payor_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
       };
     };
-
   // Participant Betreuungsorganisation
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']]
   // TODO based on analysis of sample reports currently not required
