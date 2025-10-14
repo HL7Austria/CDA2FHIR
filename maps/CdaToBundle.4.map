@@ -379,13 +379,20 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // TODO extension required
 
   cda.participant as cda_participant where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.26') ->
-    // covarage.status = active OR dataAbsentreason 
+    
     // Create Coverage
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('Coverage') as fhir_coverage,
     fhir_coverage.id = uuid() as fhir_coverage_id,
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_coverage_id),
     fhir_patient.id as fhir_patient_id,
+    //ToDO: Decide how to handle Covarage.status -> covarage.status = active OR dataAbsentreason 
+    fhir_coverage.status as fhir_coverage_status,
+    fhir_coverage_status.dataAbsentReason as fhir_coverage_status_dataAbsentReason,
+    fhir_coverage_status_dataAbsentReason.coding as fhir_coverage_status_dataAbsentReason_coding,
+    fhir_coverage_status_dataAbsentReason_coding.code = 'unknown',
+    fhir_coverage_status_dataAbsentReason_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+
     fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
     fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_coverage_beneficiary_reference.type = 'Patient' then {
@@ -415,7 +422,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
           fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
           fhir_coverage_policyHolder_reference.type = 'RelatedPerson' then {
-
+            cda_associatedEntity.id -> fhir_relatedPerson.identifier;
             cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_relatedPerson.address;
 
             cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_relatedPerson.telecom;
