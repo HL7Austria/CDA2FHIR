@@ -388,11 +388,12 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     fhir_patient.id as fhir_patient_id,
     //ToDO: Decide how to handle Covarage.status -> covarage.status = active OR dataAbsentreason 
     fhir_coverage.status as fhir_coverage_status,
-    fhir_coverage_status.dataAbsentReason as fhir_coverage_status_dataAbsentReason,
-    fhir_coverage_status_dataAbsentReason.coding as fhir_coverage_status_dataAbsentReason_coding,
-    fhir_coverage_status_dataAbsentReason_coding.code = 'unknown',
-    fhir_coverage_status_dataAbsentReason_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-
+    fhir_coverage_status.extension as fhir_coverage_status_extension,
+    fhir_coverage_status_extension.url = 'http://hl7.org/fhir/StructureDefinition/coverage-status-reason',
+    fhir_coverage_status_extension.value = create('CodeableConcept') as fhir_coverage_status_extension_value,
+    fhir_coverage_status_extension_value.coding as fhir_coverage_status_extension_value_coding,
+    fhir_coverage_status_extension_value_coding.code = 'unknown',
+    fhir_coverage_status_extension_value_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
     fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
     fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_coverage_beneficiary_reference.type = 'Patient' then {
