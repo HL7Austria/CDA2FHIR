@@ -388,15 +388,35 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']]
   // TODO extension required
 
-  // Participant Betreuungsorganisation
-  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']]
-  // TODO based on analysis of sample reports currently not required
+  // Participant Betreuungsorganisation ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']] and Participant Weitere Behandler ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.28']]
+cda.participant as cda_participant,
+cda_participant.templateId as cda_templateId where ($this.root= '1.2.40.0.34.6.0.11.1.29' or $this.root= '1.2.40.0.34.6.0.11.1.28') -> 
+  fhir_bundle.entry as fhir_bundle_entry,
+  fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
+  fhir_careTeam.id = uuid() as fhir_careTeam_id,
+  fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_careTeam_id),
+  fhir_patient.id as fhir_patient_id,
+  fhir_careTeam.subject = create('Reference') as fhir_careTeam_subject_reference,
+  fhir_careTeam_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+  fhir_careTeam_subject_reference.type = 'Patient',
+  fhir_careTeam.participant as fhir_careTeam_participant then {
 
-  // Participant Weitere Behandler
-  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.28']]
-
-
-  // ToDo: Map Participant Weitere Behandler to CareTeam
+    cda.participant as cda_participant where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.29') ->
+    
+    cda_participant.associatedEntity as cda_associatedEntity,
+      fhir_bundle.entry as fhir_bundle_entry_orga,
+      fhir_bundle_entry_orga.resource = create('Organization') as fhir_organization,
+      fhir_organization.id = uuid() as fhir_organization_id,
+      fhir_bundle_entry_orga.fullUrl = append('urn:uuid:', fhir_organization_id) then {
+        cda_associatedEntity.scopingOrganization as cda_scopingOrganization -> 
+          fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_participant_member_reference,
+          fhir_careTeam_participant_member_reference.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_careTeam_participant_member_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+      };
+    // ToDO: Add Weitere Behandler. Rewrite code below to map Weitere Behandler to CareTeam.participant. 
+    //cda.participant as cda_weitereBehandler where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.28') ->
+ };
+  
   //  cda.participant as cda_participant where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.28') ->
   //  cda_participant.associatedEntity as cda_associatedEntity,
   //   fhir_patient.contact as fhir_patient_contact then {
