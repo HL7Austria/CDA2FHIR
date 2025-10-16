@@ -391,10 +391,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // Participant Betreuungsorganisation ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']] and Participant Weitere Behandler ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.28']]
 
   // ToDo Fix FHIRPath statement --> right now cda_participant creates for loop which is executed twice leading to the creation of two identical CareTeams
-  cda.participant as cda_participant where ((templateId.root = '1.2.40.0.34.6.0.11.1.29') or (templateId.root = '1.2.40.0.34.6.0.11.1.28')) ->
-  // cda.participant.where(templateId.where(root = '1.2.40.0.34.6.0.11.1.29' or root = '1.2.40.0.34.6.0.11.1.28')) ->
-  // cda_participant.templateId where ($this.root= '1.2.40.0.34.6.0.11.1.29' or $this.root= '1.2.40.0.34.6.0.11.1.28') ->
-  // cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.29' or root='1.2.40.0.34.6.0.11.1.28') -> 
+  cda where (cda.descendants().where(root='1.2.40.0.34.6.0.11.1.29').count() = 1 or cda.descendants().where(root='1.2.40.0.34.6.0.11.1.28').count() > 1) -> 
   fhir_bundle.entry as fhir_bundle_entry,
   fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
   fhir_careTeam.id = uuid() as fhir_careTeam_id,
@@ -425,7 +422,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
         cda_participant_practitioner.associatedEntity as cda_associatedEntity -> 
         fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_member_reference,
-        fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id)
+        fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.type = 'PractitionerRole' then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle);
       };    
   };
