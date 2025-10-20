@@ -5,7 +5,7 @@ name: Convert FML to Python (MaLaC-HD)
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   convert-and-commit:
