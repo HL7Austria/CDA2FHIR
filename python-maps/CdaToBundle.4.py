@@ -8,7 +8,7 @@ import re
 import io
 import json
 from datetime import datetime
-import dateutil.parser
+from malac.utils import date as dateutil
 from html import escape as html_escape
 import malac.models.cda.at_ext
 import malac.models.fhir.r4
@@ -305,7 +305,7 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             if cda_orderingProvider_time:
                 v = cda_orderingProvider_time.value
                 if v:
-                    fhir_serviceRequest.authoredOn = dateTime(value=dateutil.parser.parse(v).isoformat())
+                    fhir_serviceRequest.authoredOn = dateTime(value=dateutil.parse(v).isoformat())
             cda_associatedEntity = cda_orderingProvider.associatedEntity
             if cda_associatedEntity:
                 CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
@@ -513,11 +513,21 @@ def CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle):
                 fhir_gender_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
                 fhir_patient_gender_extension.valueCodeableConcept = fhir_gender_extension_codeableconcept
                 CDCodeableConcept(cda_patient_gender_translation, fhir_gender_extension_codeableconcept)
-        if not fhirpath_utils.get(cda_patient.birthTime,'nullFlavor'):
-            if fhir_patient.birthDate is None:
-                fhir_patient.birthDate = malac.models.fhir.r4.date()
-            fhir_patient_birthDate = fhir_patient.birthDate
-            fhir_patient_birthDate.value = '2025-07-31'
+        if cda_patient.birthTime:
+            fhir_patient.birthDate = malac.models.fhir.r4.date()
+            TSDate(cda_patient.birthTime, fhir_patient.birthDate)
+        cda_patient_birthTime = cda_patient.birthTime
+        if cda_patient_birthTime:
+            if fhirpath.single(fhirpath_utils.compare([v2 for v1 in fhirpath_utils.toString(fhirpath_utils.get(cda_patient,'birthTime','value')) for v2 in fhirpath_utils.strlength(v1)], '>', [10])):
+                if fhir_patient.birthDate is None:
+                    fhir_patient.birthDate = malac.models.fhir.r4.date()
+                fhir_patient_birthDate = fhir_patient.birthDate
+                extension = malac.models.fhir.r4.Extension()
+                fhir_patient_birthDate.extension.append(extension)
+                extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime'
+                fhir_patient_birthTime_dateTime = malac.models.fhir.r4.dateTime()
+                extension.valueDateTime = fhir_patient_birthTime_dateTime
+                TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime)
         cda_patient_birthTime = cda_patient.birthTime
         if cda_patient_birthTime:
             if cda_patient_birthTime.nullFlavor is not None:
@@ -1238,12 +1248,12 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
         fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
         fhir_observation_effective_extenstion_code.value = 'unknown'
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.PQ:
+        if isinstance(cda_observation_value, malac.models.cda.at_ext.PQ):
             fhir_observation_value = malac.models.fhir.r4.Quantity()
             fhir_observation.valueQuantity = fhir_observation_value
             PQQuantity(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_PQ:
+        if isinstance(cda_observation_value, malac.models.cda.at_ext.IVL_PQ):
             if cda_observation_value.value is not None:
                 fhir_observation_value = malac.models.fhir.r4.Quantity()
                 fhir_observation.valueQuantity = fhir_observation_value
@@ -1254,12 +1264,12 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
                 IVLPQRange(cda_observation_value, fhir_observation_value)
     if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
         for cda_observation_value in cda_laboratory_observation.value or []:
-            if type(cda_observation_value) is malac.models.cda.at_ext.CD:
+            if isinstance(cda_observation_value, malac.models.cda.at_ext.CD):
                 fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
                 fhir_observation.valueCodeableConcept = fhir_observation_value
                 CDCodeableConcept(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
+        if isinstance(cda_observation_value, malac.models.cda.at_ext.ST):
             fhir_observation_value = malac.models.fhir.r4.string()
             fhir_observation.valueString = fhir_observation_value
             STstring(cda_observation_value, fhir_observation_value)
@@ -6056,7 +6066,7 @@ def TSInstant(src, tgt):
     Any(src, tgt)
     v = src.value
     if v:
-        tgt.value = dateutil.parser.parse(str(v))
+        tgt.value = dateutil.parse(str(v))
 
 def IVL_TSDateTime(src, tgt):
     TSInstant(src, tgt)
@@ -6065,7 +6075,7 @@ def TSDateTime(src, tgt):
     Any(src, tgt)
     v = src.value
     if v:
-        tgt.value = dateutil.parser.parse(str(v)).isoformat()
+        tgt.value = dateutil.parse(str(v)).isoformat()
 
 def IVXB_TSDateTime(src, tgt):
     TSDateTime(src, tgt)
@@ -6074,7 +6084,7 @@ def TSDate(src, tgt):
     Any(src, tgt)
     v = src.value
     if v:
-        tgt.value = dateutil.parser.parse(str(v)).isoformat()
+        tgt.value = ('' if v is None else str(dateutil.parse(v if isinstance(v, str) else v.value).isoformat()))[:10]
 
 def IVLTSPeriod(src, tgt):
     Any(src, tgt)
