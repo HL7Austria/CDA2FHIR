@@ -364,7 +364,17 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
   // Participant Hausarzt
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.23']]
-  // TODO based on analysis of sample reports currently not required
+  cda.participant as cda_generalPractitioner where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.23') ->
+    // Create a PractitionerRole
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_patient.generalPractitioner = create('Reference') as fhir_patient_generalPractitioner_reference,
+    fhir_patient_generalPractitioner_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_patient_generalPractitioner_reference.type = 'PractitionerRole' then {
+    cda_generalPractitioner.associatedEntity as cda_generalPractitioner_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_generalPractitioner_associatedEntity, fhir_practitionerRole, fhir_bundle);
+    } "CdaGeneralPractitionerToFhirPractitionerRole";
 
   // Participant Auskunftsberechtigte Person (Notfallkontakt)
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.27']]
@@ -687,14 +697,12 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
     } "CdaPatientGenderToFhirPatientGender";
 
     // patient.birthTime (only date)
-    // TODO as long as https://gitlab.com/cdehealth/malac-hd/-/issues/45 has not been resolved birthDate will be mocked
-    cda_patient.birthTime where (nullFlavor.exists().not()) -> fhir_patient.birthDate as fhir_patient_birthDate, fhir_patient_birthDate.value = '2025-07-31' "birthTime";
-    // cda_patient.birthTime -> fhir_patient.birthDate;
-    // // patient.birthTime (with time if available)
-    // cda_patient.birthTime as cda_patient_birthTime where (cda_patient.birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
-    //   fhir_patient_birthDate.extension as extension,
-    //   extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime',
-    //   extension.value = create('dateTime') as fhir_patient_birthTime_dateTime then TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime) "CdaPatientBirthTimeToFhirPatientBirthTimeExtension";
+    cda_patient.birthTime -> fhir_patient.birthDate;
+    // patient.birthTime (with time if available)
+    cda_patient.birthTime as cda_patient_birthTime where (cda_patient.birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
+      fhir_patient_birthDate.extension as extension,
+      extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime',
+      extension.value = create('dateTime') as fhir_patient_birthTime_dateTime then TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime) "CdaPatientBirthTimeToFhirPatientBirthTimeExtension";
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists()) ->
       fhir_patient.birthDate as fhir_patient_birthDate,
       fhir_patient_birthDate.extension as fhir_patient_birthDate_extension then

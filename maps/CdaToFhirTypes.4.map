@@ -586,8 +586,9 @@ group IVXB_TSDateTime(source src : IVXB_TS, target tgt : dateTime) extends TSDat
 
 group TSDate(source src : TS, target tgt : date) extends Any <<types>> {
   // guaranteeing that only date will be transformed
-  // src.value as v -> tgt.value = truncate(v,8) "TSdate";
-  src.value as v -> tgt.value = cast(v, 'string');
+  // see https://gitlab.com/cdehealth/malac-hd/-/issues/45 (resolved)
+  // TODO change if https://gitlab.com/cdehealth/malac-hd/-/issues/85 and https://github.com/hapifhir/org.hl7.fhir.core/issues/1966 have been resolved
+  src.value as v -> tgt.value = truncate(v, 10) "TSdate";
 }
 
 group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any <<types>> {
