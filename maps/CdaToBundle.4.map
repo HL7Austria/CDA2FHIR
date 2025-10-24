@@ -313,7 +313,18 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   };
 
   // ClinicalDocument.informationRecipient
-  // TODO based on analysis of sample reports currently not required
+  cda.informationRecipient as cda_informationRecipient -> 
+    
+  //ToDo: 
+    // fix fhirpath statement so it correctly checks if recipient is the patient 
+    cda_informationRecipient.id as cda_informationRecipient_id where ( cda_informationRecipient_id=fhir_patient.identifier) -> 
+      fhir_composition.extension as fhir_informationRecipient_extension,
+      fhir_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+      fhir_informationRecipient_extension.value = create('Reference') as fhir_informationRecipient_reference,
+      fhir_informationRecipient_reference.reference = append('urn:uuid:', fhir_patient.id),
+      fhir_informationRecipient_reference.type = 'Patient';
+    //ToDo: 
+      // add mapping for other information recipients - general practitioner etc... 
 
   // ClinicalDocument.legalAuthenticator
   cda.legalAuthenticator as cda_legalAuthenticator ->
