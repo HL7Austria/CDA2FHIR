@@ -419,7 +419,10 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
       fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
       fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid',fhir_practitionerRole_id),
       fhir_careTeam.participant as fhir_careTeam_participant then {
-        cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
+
+        // ToDo: 
+          // Mapping target and strategy for ../functionCode and Code -> Problem ELGA_AutherSpecialty very unambiguous -> EU specifies practitionerRole.code (required: eHDSI Healthcare Professional Role) and pracitionerRole.speciality (preferred: PracticeSettingCodeValueSet) 
+          // cda_participant_practitioner.functionCode 
         cda_participant_practitioner.associatedEntity as cda_associatedEntity -> 
         fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_member_reference,
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
