@@ -325,12 +325,101 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             cda_generalPractitioner_associatedEntity = cda_generalPractitioner.associatedEntity
             if cda_generalPractitioner_associatedEntity:
                 CdaAssociatedEntityToFhirPractitionerRole(cda_generalPractitioner_associatedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_participant in cda.participant or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_participant,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.1.26' or v1.root == '1.2.40.0.34.11.1.1.6')]):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_coverage = malac.models.fhir.r4.Coverage()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Coverage=fhir_coverage)
+            fhir_coverage_id = string(value=str(uuid.uuid4()))
+            fhir_coverage.id = fhir_coverage_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_coverage_id.value))
+            if fhir_patient.id is None:
+                fhir_patient.id = malac.models.fhir.r4.string()
+            fhir_patient_id = fhir_patient.id
+            if fhir_coverage.status is None:
+                fhir_coverage.status = malac.models.fhir.r4.FinancialResourceStatusCodes()
+            fhir_coverage_status = fhir_coverage.status
+            fhir_coverage_status_extension = malac.models.fhir.r4.Extension()
+            fhir_coverage_status.extension.append(fhir_coverage_status_extension)
+            fhir_coverage_status_extension.url = 'http://terminology.hl7.org/CodeSystem/data-absent-reason'
+            fhir_coverage_status_extension_value = malac.models.fhir.r4.code()
+            fhir_coverage_status_extension.valueCode = fhir_coverage_status_extension_value
+            fhir_coverage_status_extension_value.value = 'unknown'
+            fhir_coverage_beneficiary_reference = malac.models.fhir.r4.Reference()
+            fhir_coverage.beneficiary = fhir_coverage_beneficiary_reference
+            fhir_coverage_beneficiary_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+            fhir_coverage_beneficiary_reference.type_ = uri(value='Patient')
+            if cda_participant.time:
+                fhir_coverage.period = malac.models.fhir.r4.Period()
+                IVLTSPeriod(cda_participant.time, fhir_coverage.period)
+            cda_associatedEntity = cda_participant.associatedEntity
+            if cda_associatedEntity:
+                for id__ in cda_associatedEntity.id or []:
+                    if id__.nullFlavor is None:
+                        fhir_coverage.identifier.append(malac.models.fhir.r4.Identifier())
+                        II(id__, fhir_coverage.identifier[-1])
+                cda_associatedEntity_code = cda_associatedEntity.code
+                if cda_associatedEntity_code:
+                    if cda_associatedEntity_code.code == 'SELF':
+                        fhir_coverage_policyHolder_reference = malac.models.fhir.r4.Reference()
+                        fhir_coverage.policyHolder = fhir_coverage_policyHolder_reference
+                        fhir_coverage_policyHolder_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+                        fhir_coverage_policyHolder_reference.type_ = uri(value='Patient')
+                cda_associatedEntity_code = cda_associatedEntity.code
+                if cda_associatedEntity_code:
+                    if cda_associatedEntity_code.code == 'FAMDEP':
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_relatedPerson = malac.models.fhir.r4.RelatedPerson()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(RelatedPerson=fhir_relatedPerson)
+                        fhir_relatedPerson_id = string(value=str(uuid.uuid4()))
+                        fhir_relatedPerson.id = fhir_relatedPerson_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_relatedPerson_id.value))
+                        fhir_relatedPerson_patient_reference = malac.models.fhir.r4.Reference()
+                        fhir_relatedPerson.patient = fhir_relatedPerson_patient_reference
+                        fhir_relatedPerson_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+                        fhir_relatedPerson_patient_reference.type_ = uri(value='Patient')
+                        fhir_coverage_policyHolder_reference = malac.models.fhir.r4.Reference()
+                        fhir_coverage.policyHolder = fhir_coverage_policyHolder_reference
+                        fhir_coverage_policyHolder_reference.reference = string(value=('urn:uuid:' + fhir_relatedPerson_id.value))
+                        fhir_coverage_policyHolder_reference.type_ = uri(value='RelatedPerson')
+                        for id___ in cda_associatedEntity.id or []:
+                            fhir_relatedPerson.identifier.append(malac.models.fhir.r4.Identifier())
+                            II(id___, fhir_relatedPerson.identifier[-1])
+                        for addr in cda_associatedEntity.addr or []:
+                            if addr.nullFlavor is None:
+                                fhir_relatedPerson.address.append(malac.models.fhir.r4.Address())
+                                CdaAdressCompilationToFhirAustrianAddress(addr, fhir_relatedPerson.address[-1])
+                        for telecom_ in cda_associatedEntity.telecom or []:
+                            if telecom_.nullFlavor is None:
+                                fhir_relatedPerson.telecom.append(malac.models.fhir.r4.ContactPoint())
+                                TELContactPoint(telecom_, fhir_relatedPerson.telecom[-1])
+                        cda_associatedPerson = cda_associatedEntity.associatedPerson
+                        if cda_associatedPerson:
+                            for name in cda_associatedPerson.name or []:
+                                fhir_relatedPerson.name.append(malac.models.fhir.r4.HumanName())
+                                CdaPersonNameCompilationToFhirHumanName(name, fhir_relatedPerson.name[-1])
+                cda_scopingOrganization = cda_associatedEntity.scopingOrganization
+                if cda_scopingOrganization:
+                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                    fhir_bundle.entry.append(fhir_bundle_entry)
+                    fhir_organization = malac.models.fhir.r4.Organization()
+                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Organization=fhir_organization)
+                    fhir_organization_id = string(value=str(uuid.uuid4()))
+                    fhir_organization.id = fhir_organization_id
+                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_organization_id.value))
+                    fhir_coverage_payor_reference = malac.models.fhir.r4.Reference()
+                    fhir_coverage.payor.append(fhir_coverage_payor_reference)
+                    fhir_coverage_payor_reference.reference = string(value=('urn:uuid:' + fhir_organization_id.value))
+                    fhir_coverage_payor_reference.type_ = uri(value='Organization')
+                    CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization)
     for cda_inFulFillmentOf in cda.inFulfillmentOf or []:
         cda_inFulFillmentOf_order = cda_inFulFillmentOf.order
         if cda_inFulFillmentOf_order:
-            for id__ in cda_inFulFillmentOf_order.id or []:
+            for id____ in cda_inFulFillmentOf_order.id or []:
                 fhir_serviceRequest.identifier.append(malac.models.fhir.r4.Identifier())
-                II(id__, fhir_serviceRequest.identifier[-1])
+                II(id____, fhir_serviceRequest.identifier[-1])
             fhir_serviceRequest.status = string(value='completed')
             fhir_serviceRequest.intent = string(value='order')
     for cda_documentationOf in cda.documentationOf or []:
