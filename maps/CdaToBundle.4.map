@@ -1759,7 +1759,7 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
       // assignedEntity.code - TODO here "external" laboratories (performer) could be identified - best place?
       // TODO in CDA no value set is specified for this element, so mapping is not possible as it could be any code
       //      in FHIR (MyHealth@EU Lab) however a required binding for this optional element exits
-      // cda_assignedEntity.code -> fhir_practitionerRole.code;
+      cda_assignedEntity.code -> fhir_practitionerRole.specialty;
 
       // assignedEntity.addr
       cda_assignedEntity.addr where (nullFlavor.exists().not()) -> fhir_practitioner.address;
