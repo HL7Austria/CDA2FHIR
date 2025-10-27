@@ -852,10 +852,7 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
 group TELContactPoint(source src : TEL, target tgt : ContactPoint) extends Any <<types>> {
   // telecom.use
   // https://termgit.elga.gv.at/ValueSet-elga-telecomaddressuse.html -> http://hl7.org/fhir/R4/valueset-contact-point-use.html
-  src.use as u where (src.use.startsWith('H') or (src.use = 'EC')) -> tgt.use = translate(u,'#ELGATelecomAddressUseFHIRContactPointUse','code') "usehome";
-  src.use as u where ((src.use = 'WP') or (src.use = 'AS')) -> tgt.use = translate(u,'#ELGATelecomAddressUseFHIRContactPointUse','code') "usework";
-  src.use as u where ((src.use = 'MC') or (src.use = 'PG')) -> tgt.use = translate(u,'#ELGATelecomAddressUseFHIRContactPointUse','code') "usemobile";
-  src.use as u where ((src.use = 'TMP')) -> tgt.use = translate(u,'#ELGATelecomAddressUseFHIRContactPointUse','code') "usetemp";
+  src.use as u -> tgt.use = translate(u,'#ELGATelecomAddressUseFHIRContactPointUse','code') "use";
 
   // telecom.value
   // https://termgit.elga.gv.at/ValueSet-elga-urlscheme.html -> http://hl7.org/fhir/R4/valueset-contact-point-system.html
