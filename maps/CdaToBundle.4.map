@@ -408,7 +408,8 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
       cda_participant.time -> fhir_coverage.period;
 
       cda_participant.associatedEntity as cda_associatedEntity then {
-        
+
+        cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
         // SELF: Versicherter ist der Patient
         cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' -> 
           fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
