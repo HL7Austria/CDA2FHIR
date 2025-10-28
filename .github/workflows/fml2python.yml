@@ -28,9 +28,15 @@ jobs:
 
       - name: Install MaLaC-HD
         run: |
+          git clone https://gitlab.com/cdehealth/malac/models.git
+          pip install -e models/fhir
+          pip install -e models/cda
+          git clone https://gitlab.com/cdehealth/malac/utils.git
+          pip install -e utils
+          git clone https://gitlab.com/cdehealth/malac/transformer.git
+          pip install -e transformer/fhir
           git clone -b cda2fhir_myhealtheu https://gitlab.com/cdehealth/malac-hd.git
-          cd malac-hd
-          pip install -e .
+          pip install malac-hd
 
       - name: Run MaLaC-HD
         run: |
