@@ -56,5 +56,8 @@ jobs:
           python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
           python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
 
-      - name: Download
-        uses: actions/download-artifact@v5
+      - name: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: my-artifact
+          path: . # or path/to/artifact
