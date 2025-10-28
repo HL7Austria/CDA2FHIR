@@ -1,0 +1,64 @@
+# Workflow to convert the given FML to Python using MaLaC-HD
+
+name: Convert FML to Python (MaLaC-HD)
+
+on:
+  pull_request:
+    branches: [ dev ]
+
+jobs:
+  convert-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install MaLaC-HD
+        run: |
+          git clone https://gitlab.com/cdehealth/malac/models.git
+          pip install -e models/fhir
+          pip install -e models/cda
+          git clone https://gitlab.com/cdehealth/malac/utils.git
+          pip install -e utils
+          git clone https://gitlab.com/cdehealth/malac/transformer.git
+          pip install -e transformer/fhir
+          git clone -b cda2fhir_myhealtheu https://gitlab.com/cdehealth/malac-hd.git
+          pip install malac-hd
+
+      - name: Run MaLaC-HD
+        run: |
+          malac-hd -m maps/CdaToBundle.4.map -co python-maps/CdaToBundle.4.py
+
+      - name: Download FHIR validator
+        uses: Legion2/download-release-action@v2.1.0
+        with:
+          repository: hapifhir/org.hl7.fhir.core
+          tag: 'latest'
+          path: .
+          file: validator_cli.jar
+
+      - name: Download eHDSI Laboratory IG
+        run: |
+          wget https://fhir.ehdsi.eu/laboratory/package.tgz
+
+      - name: Convert test file to FHIR XML and JSON
+        run: |
+          python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
+          python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
+
+      - name: Validate
+        run: |
+          java -jar validator_cli.jar fhir.xml -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log
+          java -jar validator_cli.jar fhir.json -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log
+          ./check_validation_results.sh || exit_code=$?
+          exit $exit_code
