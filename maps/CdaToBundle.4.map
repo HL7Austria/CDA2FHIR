@@ -402,9 +402,71 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // TODO
 
   // Participant Versicherung
-  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']]
-  // TODO extension required
+  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']] or [@root='1.2.40.0.34.11.1.1.6']
 
+  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') ->
+
+    // Create Coverage
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Coverage') as fhir_coverage,
+    fhir_coverage.id = uuid() as fhir_coverage_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_coverage_id),
+    fhir_patient.id as fhir_patient_id,
+    // Based on https://chat.fhir.org/#narrow/channel/179166-implementers/topic/Data-absent-reason.20on.201.2E.2E1.20element.20with.20Required.20binding.3F
+    // Coverage.status HAS TO BE SET to a value from the corresponding value set (its a mandatory field with a required binding)
+    // As such, 'active' will be chosen as it has to be assumed that if insurance information is part of the CDA that the corresponding insurance is active at
+    // the time of the creation of the CDA.
+    fhir_coverage.status = 'active',
+    fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
+    fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_coverage_beneficiary_reference.type = 'Patient' then {
+
+      cda_participant.time -> fhir_coverage.period;
+
+      cda_participant.associatedEntity as cda_associatedEntity then {
+
+        cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
+        // SELF: Versicherter ist der Patient
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' ->
+          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
+          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
+          fhir_coverage_policyHolder_reference.type = 'Patient';
+
+        // FAMDEP: Familienversichert
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'FAMDEP' ->
+
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+          fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
+
+          fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+          fhir_relatedPerson_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
+          fhir_relatedPerson_patient_reference.type = 'Patient',
+
+          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
+          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
+          fhir_coverage_policyHolder_reference.type = 'RelatedPerson' then {
+            cda_associatedEntity.id -> fhir_relatedPerson.identifier;
+            cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_relatedPerson.address;
+
+            cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_relatedPerson.telecom;
+
+            cda_associatedEntity.associatedPerson as cda_associatedPerson then {
+              cda_associatedPerson.name -> fhir_relatedPerson.name;
+            };
+          };
+
+        cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+          fhir_organization.id = uuid() as fhir_organization_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage.payor = create('Reference') as fhir_coverage_payor_reference,
+          fhir_coverage_payor_reference.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage_payor_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+      };
+    };
   // Participant Betreuungsorganisation
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']]
   // TODO based on analysis of sample reports currently not required
@@ -568,7 +630,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
   } "CdaLocalPatientIdToFhirPatientIdentifier";
 
   // patientRole.id[>1]
-  cda_patientRole.id not_first as cda_patientRole_id where (nullFlavor.exists().not()) -> fhir_patient.identifier = create('Identifier') as fhir_patient_identifier then {
+  cda_patientRole.id not_first as cda_patientRole_id where (nullFlavor.exists().not() and cda_patientRole_id.root != '1.2.40.0.10.2.1.1.149') -> fhir_patient.identifier = create('Identifier') as fhir_patient_identifier then {
     // patientRole.id
     cda_patientRole_id then II(cda_patientRole_id, fhir_patient_identifier) "CdaIdToFhirIdentifier";
 
@@ -586,19 +648,19 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
       type_coding.display = 'Social Security Number'
       "FhirPatientIdentifierTypeCodingSS";
 
-    // setting identifier.type.coding according to profile for National unique individual identifier
-    // TODO check if allowed in case of MyHealth@EU
-    cda_patientRole_id where (cda_patientRole_id.root = '1.2.40.0.10.2.1.1.149') ->
-      // according to profile no or this fixed value is required
-      fhir_patient_identifier.assigner as assigner,
-      assigner.display = 'Bundesministerium für Inneres',
+    // // setting identifier.type.coding according to profile for National unique individual identifier
+    // // TODO check if allowed in case of MyHealth@EU
+    // cda_patientRole_id where (cda_patientRole_id.root = '1.2.40.0.10.2.1.1.149') ->
+    //   // according to profile no or this fixed value is required
+    //   fhir_patient_identifier.assigner as assigner,
+    //   assigner.display = 'Bundesministerium für Inneres',
 
-      fhir_patient_identifier.type as identifier_type,
-      identifier_type.coding as type_coding,
-      type_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0203',
-      type_coding.code = 'NI',
-      type_coding.display = 'National unique individual identifier'
-      "FhirPatientIdentifierTypeCodingNI";
+    //   fhir_patient_identifier.type as identifier_type,
+    //   identifier_type.coding as type_coding,
+    //   type_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0203',
+    //   type_coding.code = 'NI',
+    //   type_coding.display = 'National unique individual identifier'
+    //   "FhirPatientIdentifierTypeCodingNI";
   } "CdaPatientIdToFhirPatientIdentifier";
 
   // patientRole.addr using ADAustrianAddress
@@ -1243,7 +1305,18 @@ group CdaSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, targe
             // procedure.participant.participantRole.id
             cda_participantRole.id -> fhir_specimen.identifier;
             // procedure.participant.participantRole.playingEntity.code
+            // TODO mapping on CTS required from
+            //   https://termgit.elga.gv.at/ValueSet/elga-probenmaterial to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
+            //   https://termgit.elga.gv.at/ValueSet/elga-specimentype to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
             cda_playingEntity.code -> fhir_specimen.type;
+            // TODO: remove before production
+            // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+            // ONLY FOR TESTING
+            cda_playingEntity.code -> fhir_specimen.type as fhir_specimen_type,
+              fhir_specimen_type.coding as fhir_specimen_type_coding,
+              fhir_specimen_type_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+              fhir_specimen_type_coding.code = 'OTH'
+              "CdaSpecimentTypeToFhirSpecimenType";
           };
         };
       };
