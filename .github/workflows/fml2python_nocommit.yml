@@ -76,6 +76,7 @@ jobs:
 
       - name: Validate
         run: |
+          chmod 744 check_validation_results.sh
           ls -al
           ./check_validation_results.sh || exit_code=$?
           exit $exit_code
