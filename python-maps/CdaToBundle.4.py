@@ -533,7 +533,7 @@ def CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle):
         type_coding.code = string(value='PI')
         type_coding.display = string(value='Patient internal identifier')
     for cda_patientRole_id in cda_patientRole.id[1:]:
-        if cda_patientRole_id.nullFlavor is None:
+        if cda_patientRole_id.nullFlavor is None and cda_patientRole_id.root != '1.2.40.0.10.2.1.1.149':
             fhir_patient_identifier = malac.models.fhir.r4.Identifier()
             fhir_patient.identifier.append(fhir_patient_identifier)
             II(cda_patientRole_id, fhir_patient_identifier)
@@ -550,19 +550,6 @@ def CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle):
                 type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
                 type_coding.code = string(value='SS')
                 type_coding.display = string(value='Social Security Number')
-            if cda_patientRole_id.root == '1.2.40.0.10.2.1.1.149':
-                if fhir_patient_identifier.assigner is None:
-                    fhir_patient_identifier.assigner = malac.models.fhir.r4.Reference()
-                assigner = fhir_patient_identifier.assigner
-                assigner.display = string(value='Bundesministerium für Inneres')
-                if fhir_patient_identifier.type_ is None:
-                    fhir_patient_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
-                identifier_type = fhir_patient_identifier.type_
-                type_coding = malac.models.fhir.r4.Coding()
-                identifier_type.coding.append(type_coding)
-                type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
-                type_coding.code = string(value='NI')
-                type_coding.display = string(value='National unique individual identifier')
     for addr in cda_patientRole.addr or []:
         fhir_patient.address.append(malac.models.fhir.r4.Address())
         CdaAdressCompilationToFhirAustrianAddress(addr, fhir_patient.address[-1])
