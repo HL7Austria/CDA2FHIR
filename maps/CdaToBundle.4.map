@@ -386,21 +386,20 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
   // Participant Versicherung
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']] or [@root='1.2.40.0.34.11.1.1.6']
-  
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') -> 
-    
+
+  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') ->
+
     // Create Coverage
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('Coverage') as fhir_coverage,
     fhir_coverage.id = uuid() as fhir_coverage_id,
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_coverage_id),
     fhir_patient.id as fhir_patient_id,
-    //ToDO: Decide how to handle Covarage.status -> covarage.status = active OR dataAbsentreason 
-    fhir_coverage.status as fhir_coverage_status,
-    fhir_coverage_status.extension as fhir_coverage_status_extension,
-    fhir_coverage_status_extension.url = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-    fhir_coverage_status_extension.value = create('code') as fhir_coverage_status_extension_value,
-    fhir_coverage_status_extension_value.value = 'unknown',
+    // Based on https://chat.fhir.org/#narrow/channel/179166-implementers/topic/Data-absent-reason.20on.201.2E.2E1.20element.20with.20Required.20binding.3F
+    // Coverage.status HAS TO BE SET to a value from the corresponding value set (its a mandatory field with a required binding)
+    // As such, 'active' will be chosen as it has to be assumed that if insurance information is part of the CDA that the corresponding insurance is active at
+    // the time of the creation of the CDA.
+    fhir_coverage.status = 'active',
     fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
     fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_coverage_beneficiary_reference.type = 'Patient' then {
@@ -411,7 +410,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
         cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
         // SELF: Versicherter ist der Patient
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' -> 
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' ->
           fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
           fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
           fhir_coverage_policyHolder_reference.type = 'Patient';
@@ -441,7 +440,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             };
           };
 
-        cda_associatedEntity.scopingOrganization as cda_scopingOrganization -> 
+        cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
           fhir_bundle.entry as fhir_bundle_entry,
           fhir_bundle_entry.resource = create('Organization') as fhir_organization,
           fhir_organization.id = uuid() as fhir_organization_id,
