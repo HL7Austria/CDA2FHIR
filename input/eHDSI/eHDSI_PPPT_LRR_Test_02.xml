@@ -80,6 +80,8 @@
             <id root="1.2.40.0.34.99.4613.3.2" extension="58232" assigningAuthorityName="Amadeus Spital"/>
             <!-- Sozialversicherungsnummer des Patienten -->
             <id root="1.2.40.0.10.1.4.3.1" extension="6932281524" assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <!-- bPK -->
+            <id root="1.2.40.0.10.2.1.1.149" extension="/7dV7XrWsFuaFbGGZ3G3mMowHnI=" assigningAuthorityName="Österreichische Stammzahlenregisterbehörde"/>
             <!-- Adresse des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
             <addr use="HP">
                 <streetName>Harleshaeuserstr.</streetName>
