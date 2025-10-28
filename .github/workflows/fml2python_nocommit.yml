@@ -33,7 +33,7 @@ jobs:
           git clone https://gitlab.com/cdehealth/malac/transformer.git
           pip install -e transformer/fhir
           git clone -b cda2fhir_myhealtheu https://gitlab.com/cdehealth/malac-hd.git
-          pip install malac-hd
+          pip install -e malac-hd
 
       - name: Run MaLaC-HD
         run: |
@@ -56,8 +56,20 @@ jobs:
           python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
           python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
 
+      - name: Validate
+        run: |
+          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors"
+          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors"
+
       - name: upload
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
-          path: . # or path/to/artifact
+          path: |
+            fhir.xml
+            fhir.json
+            validation.xml.log
+            validation.json.log
+            validation.xml.html
+            validation.json.html
+            python-maps/CdaToBundle.4.py
