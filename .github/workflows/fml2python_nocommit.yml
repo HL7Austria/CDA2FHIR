@@ -73,3 +73,9 @@ jobs:
             validation.xml.html
             validation.json.html
             python-maps/CdaToBundle.4.py
+
+      - name: Validate
+        run: |
+          ./check_validation_results.sh || exit_code=$?
+          exit $exit_code
+
