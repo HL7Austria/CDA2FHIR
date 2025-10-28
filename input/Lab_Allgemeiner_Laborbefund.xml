@@ -49,7 +49,7 @@
     <!-- Dokumententyp (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund -> Laborbefund) -->
     <code code="11502-2" displayName="Laboratory report" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC">
         <!-- Dokumentenklasse (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund -> Laborbefund) -->
-        <translation code="12222-2" displayName="Laboratory report" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+        <translation code="11502-2" displayName="Laboratory report" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
     </code>
     <!-- Titel des Dokuments (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund) -->
     <title>Allgemeiner Laborbefund</title>
