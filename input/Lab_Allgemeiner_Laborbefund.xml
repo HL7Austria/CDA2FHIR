@@ -361,7 +361,7 @@
                 <telecom value="fax:0512.1234567.11"/>
                 <telecom value="mailto:office@ordination-sekundaer.at"/>
                 <telecom value="http://www.ordination-sekundaer.at"/>
-                <telecom value="me:12345678792"/>
+                <!-- <telecom value="me:12345678792"/> -->
                 <!-- Adresse der Organisation des beabsichtigten sekundären Empfängers -->
                 <addr>
                     <streetName>Sekundärstraße</streetName>
@@ -581,7 +581,7 @@
                 <telecom value="tel:0512.1234567"/>
                 <telecom value="fax:0512.1234567.11"/>
                 <telecom value="http://www.praxis-mustermann.at"/>
-                <telecom value="me:1234567899"/>
+                <!-- <telecom value="me:1234567899"/> -->
                 <!-- Adresse der Organisation des Hausarztes -->
                 <addr>
                     <streetName>Sekundärstraße</streetName>
