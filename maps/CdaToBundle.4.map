@@ -1288,7 +1288,18 @@ group CdaSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, targe
             // procedure.participant.participantRole.id
             cda_participantRole.id -> fhir_specimen.identifier;
             // procedure.participant.participantRole.playingEntity.code
+            // TODO mapping on CTS required from
+            //   https://termgit.elga.gv.at/ValueSet/elga-probenmaterial to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
+            //   https://termgit.elga.gv.at/ValueSet/elga-specimentype to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
             cda_playingEntity.code -> fhir_specimen.type;
+            // TODO: remove before production
+            // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+            // ONLY FOR TESTING
+            cda_playingEntity.code -> fhir_specimen.type as fhir_specimen_type,
+              fhir_specimen_type.coding as fhir_specimen_type_coding,
+              fhir_specimen_type_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+              fhir_specimen_type_coding.code = 'OTH'
+              "CdaSpecimentTypeToFhirSpecimenType";
           };
         };
       };
