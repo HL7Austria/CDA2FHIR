@@ -1,13 +1,13 @@
 # Workflow to convert the given FML to Python using MaLaC-HD
 
-name: Convert FML to Python (MaLaC-HD)
+name: Convert and validate test file
 
 on:
   pull_request:
     branches: [ enable-pr-validation ]
 
 jobs:
-  convert-and-commit:
+  convert-and-validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -58,8 +58,8 @@ jobs:
 
       - name: Validate
         run: |
-          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors"
-          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors"
+          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors in FHIR XML"
+          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors in FHIR JSON"
 
       - name: upload
         uses: actions/upload-artifact@v4
