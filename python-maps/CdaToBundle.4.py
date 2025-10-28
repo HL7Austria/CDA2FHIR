@@ -6453,20 +6453,7 @@ def TELContactPoint(src, tgt):
     Any(src, tgt)
     u = src.use
     if u:
-        if (src.use or '').startswith('H') or src.use == 'EC':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
-    u = src.use
-    if u:
-        if src.use == 'WP' or src.use == 'AS':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
-    u = src.use
-    if u:
-        if src.use == 'MC' or src.use == 'PG':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
-    u = src.use
-    if u:
-        if src.use == 'TMP':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
+        tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
     v = src.value
     if v:
         if (src.value or '').startswith('fax:'):
@@ -6475,18 +6462,63 @@ def TELContactPoint(src, tgt):
     v = src.value
     if v:
         if (src.value or '').startswith('file:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[5],[])))
-            tgt.system = string(value='other')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='file')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('ftp:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[4],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='ftp')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('http:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[7],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='http')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
+    v = src.value
+    if v:
+        if (src.value or '').startswith('https:'):
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='https')
+            coding.system = uri(value='https://termgit.elga.gv.at/CodeSystem/elga-urlschemeergaenzung')
     v = src.value
     if v:
         if (src.value or '').startswith('mailto:'):
@@ -6495,18 +6527,48 @@ def TELContactPoint(src, tgt):
     v = src.value
     if v:
         if (src.value or '').startswith('mllp:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[5],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='other')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='mllp')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('modem:'):
             tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[6],[])))
-            tgt.system = string(value='other')
+            tgt_system = string(value='other')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='modem')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('nfs:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[4],[])))
-            tgt.system = string(value='other')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='nfs')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('tel:'):
@@ -6515,8 +6577,33 @@ def TELContactPoint(src, tgt):
     v = src.value
     if v:
         if (src.value or '').startswith('telnet:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[7],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='telnet')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
+    v = src.value
+    if v:
+        if (src.value or '').startswith('me:'):
+            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[3],[])))
+            tgt_system = string(value='other')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='me')
+            coding.system = uri(value='https://termgit.elga.gv.at/CodeSystem/elga-urlschemeergaenzung')
     for useablePeriod in src.useablePeriod or []:
         tgt.period = malac.models.fhir.r4.Period()
         transform_default(useablePeriod, tgt.period)
