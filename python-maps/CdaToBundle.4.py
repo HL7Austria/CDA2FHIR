@@ -8,7 +8,7 @@ import re
 import io
 import json
 from datetime import datetime
-import dateutil.parser
+from malac.utils import date as dateutil
 from html import escape as html_escape
 import malac.models.cda.at_ext
 import malac.models.fhir.r4
@@ -305,16 +305,121 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             if cda_orderingProvider_time:
                 v = cda_orderingProvider_time.value
                 if v:
-                    fhir_serviceRequest.authoredOn = dateTime(value=dateutil.parser.parse(v).isoformat())
+                    fhir_serviceRequest.authoredOn = dateTime(value=dateutil.parse(v).isoformat())
             cda_associatedEntity = cda_orderingProvider.associatedEntity
             if cda_associatedEntity:
                 CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_generalPractitioner in cda.participant or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_generalPractitioner,'templateId') if v1.root == '1.2.40.0.34.6.0.11.1.23']):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_patient_generalPractitioner_reference = malac.models.fhir.r4.Reference()
+            fhir_patient.generalPractitioner.append(fhir_patient_generalPractitioner_reference)
+            fhir_patient_generalPractitioner_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_patient_generalPractitioner_reference.type_ = uri(value='PractitionerRole')
+            cda_generalPractitioner_associatedEntity = cda_generalPractitioner.associatedEntity
+            if cda_generalPractitioner_associatedEntity:
+                CdaAssociatedEntityToFhirPractitionerRole(cda_generalPractitioner_associatedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_participant in cda.participant or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_participant,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.1.26' or v1.root == '1.2.40.0.34.11.1.1.6')]):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_coverage = malac.models.fhir.r4.Coverage()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Coverage=fhir_coverage)
+            fhir_coverage_id = string(value=str(uuid.uuid4()))
+            fhir_coverage.id = fhir_coverage_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_coverage_id.value))
+            if fhir_patient.id is None:
+                fhir_patient.id = malac.models.fhir.r4.string()
+            fhir_patient_id = fhir_patient.id
+            if fhir_coverage.status is None:
+                fhir_coverage.status = malac.models.fhir.r4.FinancialResourceStatusCodes()
+            fhir_coverage_status = fhir_coverage.status
+            fhir_coverage_status_extension = malac.models.fhir.r4.Extension()
+            fhir_coverage_status.extension.append(fhir_coverage_status_extension)
+            fhir_coverage_status_extension.url = 'http://terminology.hl7.org/CodeSystem/data-absent-reason'
+            fhir_coverage_status_extension_value = malac.models.fhir.r4.code()
+            fhir_coverage_status_extension.valueCode = fhir_coverage_status_extension_value
+            fhir_coverage_status_extension_value.value = 'unknown'
+            fhir_coverage_beneficiary_reference = malac.models.fhir.r4.Reference()
+            fhir_coverage.beneficiary = fhir_coverage_beneficiary_reference
+            fhir_coverage_beneficiary_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+            fhir_coverage_beneficiary_reference.type_ = uri(value='Patient')
+            if cda_participant.time:
+                fhir_coverage.period = malac.models.fhir.r4.Period()
+                IVLTSPeriod(cda_participant.time, fhir_coverage.period)
+            cda_associatedEntity = cda_participant.associatedEntity
+            if cda_associatedEntity:
+                for id__ in cda_associatedEntity.id or []:
+                    if id__.nullFlavor is None:
+                        fhir_coverage.identifier.append(malac.models.fhir.r4.Identifier())
+                        II(id__, fhir_coverage.identifier[-1])
+                cda_associatedEntity_code = cda_associatedEntity.code
+                if cda_associatedEntity_code:
+                    if cda_associatedEntity_code.code == 'SELF':
+                        fhir_coverage_policyHolder_reference = malac.models.fhir.r4.Reference()
+                        fhir_coverage.policyHolder = fhir_coverage_policyHolder_reference
+                        fhir_coverage_policyHolder_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+                        fhir_coverage_policyHolder_reference.type_ = uri(value='Patient')
+                cda_associatedEntity_code = cda_associatedEntity.code
+                if cda_associatedEntity_code:
+                    if cda_associatedEntity_code.code == 'FAMDEP':
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_relatedPerson = malac.models.fhir.r4.RelatedPerson()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(RelatedPerson=fhir_relatedPerson)
+                        fhir_relatedPerson_id = string(value=str(uuid.uuid4()))
+                        fhir_relatedPerson.id = fhir_relatedPerson_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_relatedPerson_id.value))
+                        fhir_relatedPerson_patient_reference = malac.models.fhir.r4.Reference()
+                        fhir_relatedPerson.patient = fhir_relatedPerson_patient_reference
+                        fhir_relatedPerson_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+                        fhir_relatedPerson_patient_reference.type_ = uri(value='Patient')
+                        fhir_coverage_policyHolder_reference = malac.models.fhir.r4.Reference()
+                        fhir_coverage.policyHolder = fhir_coverage_policyHolder_reference
+                        fhir_coverage_policyHolder_reference.reference = string(value=('urn:uuid:' + fhir_relatedPerson_id.value))
+                        fhir_coverage_policyHolder_reference.type_ = uri(value='RelatedPerson')
+                        for id___ in cda_associatedEntity.id or []:
+                            fhir_relatedPerson.identifier.append(malac.models.fhir.r4.Identifier())
+                            II(id___, fhir_relatedPerson.identifier[-1])
+                        for addr in cda_associatedEntity.addr or []:
+                            if addr.nullFlavor is None:
+                                fhir_relatedPerson.address.append(malac.models.fhir.r4.Address())
+                                CdaAdressCompilationToFhirAustrianAddress(addr, fhir_relatedPerson.address[-1])
+                        for telecom_ in cda_associatedEntity.telecom or []:
+                            if telecom_.nullFlavor is None:
+                                fhir_relatedPerson.telecom.append(malac.models.fhir.r4.ContactPoint())
+                                TELContactPoint(telecom_, fhir_relatedPerson.telecom[-1])
+                        cda_associatedPerson = cda_associatedEntity.associatedPerson
+                        if cda_associatedPerson:
+                            for name in cda_associatedPerson.name or []:
+                                fhir_relatedPerson.name.append(malac.models.fhir.r4.HumanName())
+                                CdaPersonNameCompilationToFhirHumanName(name, fhir_relatedPerson.name[-1])
+                cda_scopingOrganization = cda_associatedEntity.scopingOrganization
+                if cda_scopingOrganization:
+                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                    fhir_bundle.entry.append(fhir_bundle_entry)
+                    fhir_organization = malac.models.fhir.r4.Organization()
+                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Organization=fhir_organization)
+                    fhir_organization_id = string(value=str(uuid.uuid4()))
+                    fhir_organization.id = fhir_organization_id
+                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_organization_id.value))
+                    fhir_coverage_payor_reference = malac.models.fhir.r4.Reference()
+                    fhir_coverage.payor.append(fhir_coverage_payor_reference)
+                    fhir_coverage_payor_reference.reference = string(value=('urn:uuid:' + fhir_organization_id.value))
+                    fhir_coverage_payor_reference.type_ = uri(value='Organization')
+                    CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization)
     for cda_inFulFillmentOf in cda.inFulfillmentOf or []:
         cda_inFulFillmentOf_order = cda_inFulFillmentOf.order
         if cda_inFulFillmentOf_order:
-            for id__ in cda_inFulFillmentOf_order.id or []:
+            for id____ in cda_inFulFillmentOf_order.id or []:
                 fhir_serviceRequest.identifier.append(malac.models.fhir.r4.Identifier())
-                II(id__, fhir_serviceRequest.identifier[-1])
+                II(id____, fhir_serviceRequest.identifier[-1])
             fhir_serviceRequest.status = string(value='completed')
             fhir_serviceRequest.intent = string(value='order')
     for cda_documentationOf in cda.documentationOf or []:
@@ -428,7 +533,7 @@ def CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle):
         type_coding.code = string(value='PI')
         type_coding.display = string(value='Patient internal identifier')
     for cda_patientRole_id in cda_patientRole.id[1:]:
-        if cda_patientRole_id.nullFlavor is None:
+        if cda_patientRole_id.nullFlavor is None and cda_patientRole_id.root != '1.2.40.0.10.2.1.1.149':
             fhir_patient_identifier = malac.models.fhir.r4.Identifier()
             fhir_patient.identifier.append(fhir_patient_identifier)
             II(cda_patientRole_id, fhir_patient_identifier)
@@ -445,19 +550,6 @@ def CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle):
                 type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
                 type_coding.code = string(value='SS')
                 type_coding.display = string(value='Social Security Number')
-            if cda_patientRole_id.root == '1.2.40.0.10.2.1.1.149':
-                if fhir_patient_identifier.assigner is None:
-                    fhir_patient_identifier.assigner = malac.models.fhir.r4.Reference()
-                assigner = fhir_patient_identifier.assigner
-                assigner.display = string(value='Bundesministerium für Inneres')
-                if fhir_patient_identifier.type_ is None:
-                    fhir_patient_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
-                identifier_type = fhir_patient_identifier.type_
-                type_coding = malac.models.fhir.r4.Coding()
-                identifier_type.coding.append(type_coding)
-                type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
-                type_coding.code = string(value='NI')
-                type_coding.display = string(value='National unique individual identifier')
     for addr in cda_patientRole.addr or []:
         fhir_patient.address.append(malac.models.fhir.r4.Address())
         CdaAdressCompilationToFhirAustrianAddress(addr, fhir_patient.address[-1])
@@ -497,11 +589,21 @@ def CdaPatientRoleToFhirPatient(cda_patientRole, fhir_patient, fhir_bundle):
                 fhir_gender_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
                 fhir_patient_gender_extension.valueCodeableConcept = fhir_gender_extension_codeableconcept
                 CDCodeableConcept(cda_patient_gender_translation, fhir_gender_extension_codeableconcept)
-        if not fhirpath_utils.get(cda_patient.birthTime,'nullFlavor'):
-            if fhir_patient.birthDate is None:
-                fhir_patient.birthDate = malac.models.fhir.r4.date()
-            fhir_patient_birthDate = fhir_patient.birthDate
-            fhir_patient_birthDate.value = '2025-07-31'
+        if cda_patient.birthTime:
+            fhir_patient.birthDate = malac.models.fhir.r4.date()
+            TSDate(cda_patient.birthTime, fhir_patient.birthDate)
+        cda_patient_birthTime = cda_patient.birthTime
+        if cda_patient_birthTime:
+            if fhirpath.single(fhirpath_utils.compare([v2 for v1 in fhirpath_utils.toString(fhirpath_utils.get(cda_patient,'birthTime','value')) for v2 in fhirpath_utils.strlength(v1)], '>', [10])):
+                if fhir_patient.birthDate is None:
+                    fhir_patient.birthDate = malac.models.fhir.r4.date()
+                fhir_patient_birthDate = fhir_patient.birthDate
+                extension = malac.models.fhir.r4.Extension()
+                fhir_patient_birthDate.extension.append(extension)
+                extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime'
+                fhir_patient_birthTime_dateTime = malac.models.fhir.r4.dateTime()
+                extension.valueDateTime = fhir_patient_birthTime_dateTime
+                TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime)
         cda_patient_birthTime = cda_patient.birthTime
         if cda_patient_birthTime:
             if cda_patient_birthTime.nullFlavor is not None:
@@ -1222,12 +1324,12 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
         fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
         fhir_observation_effective_extenstion_code.value = 'unknown'
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.PQ:
+        if isinstance(cda_observation_value, malac.models.cda.at_ext.PQ):
             fhir_observation_value = malac.models.fhir.r4.Quantity()
             fhir_observation.valueQuantity = fhir_observation_value
             PQQuantity(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_PQ:
+        if isinstance(cda_observation_value, malac.models.cda.at_ext.IVL_PQ):
             if cda_observation_value.value is not None:
                 fhir_observation_value = malac.models.fhir.r4.Quantity()
                 fhir_observation.valueQuantity = fhir_observation_value
@@ -1238,12 +1340,12 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
                 IVLPQRange(cda_observation_value, fhir_observation_value)
     if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
         for cda_observation_value in cda_laboratory_observation.value or []:
-            if type(cda_observation_value) is malac.models.cda.at_ext.CD:
+            if isinstance(cda_observation_value, malac.models.cda.at_ext.CD):
                 fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
                 fhir_observation.valueCodeableConcept = fhir_observation_value
                 CDCodeableConcept(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
+        if isinstance(cda_observation_value, malac.models.cda.at_ext.ST):
             fhir_observation_value = malac.models.fhir.r4.string()
             fhir_observation.valueString = fhir_observation_value
             STstring(cda_observation_value, fhir_observation_value)
@@ -6040,7 +6142,7 @@ def TSInstant(src, tgt):
     Any(src, tgt)
     v = src.value
     if v:
-        tgt.value = dateutil.parser.parse(str(v))
+        tgt.value = dateutil.parse(str(v))
 
 def IVL_TSDateTime(src, tgt):
     TSInstant(src, tgt)
@@ -6049,7 +6151,7 @@ def TSDateTime(src, tgt):
     Any(src, tgt)
     v = src.value
     if v:
-        tgt.value = dateutil.parser.parse(str(v)).isoformat()
+        tgt.value = dateutil.parse(str(v)).isoformat()
 
 def IVXB_TSDateTime(src, tgt):
     TSDateTime(src, tgt)
@@ -6058,7 +6160,7 @@ def TSDate(src, tgt):
     Any(src, tgt)
     v = src.value
     if v:
-        tgt.value = dateutil.parser.parse(str(v)).isoformat()
+        tgt.value = ('' if v is None else str(dateutil.parse(v if isinstance(v, str) else v.value).isoformat()))[:10]
 
 def IVLTSPeriod(src, tgt):
     Any(src, tgt)
@@ -6338,20 +6440,7 @@ def TELContactPoint(src, tgt):
     Any(src, tgt)
     u = src.use
     if u:
-        if (src.use or '').startswith('H') or src.use == 'EC':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
-    u = src.use
-    if u:
-        if src.use == 'WP' or src.use == 'AS':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
-    u = src.use
-    if u:
-        if src.use == 'MC' or src.use == 'PG':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
-    u = src.use
-    if u:
-        if src.use == 'TMP':
-            tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
+        tgt.use = string(value=translate_single('ELGATelecomAddressUseFHIRContactPointUse', (u if isinstance(u, str) else u.value), 'code'))
     v = src.value
     if v:
         if (src.value or '').startswith('fax:'):
@@ -6360,18 +6449,63 @@ def TELContactPoint(src, tgt):
     v = src.value
     if v:
         if (src.value or '').startswith('file:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[5],[])))
-            tgt.system = string(value='other')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='file')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('ftp:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[4],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='ftp')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('http:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[7],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='http')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
+    v = src.value
+    if v:
+        if (src.value or '').startswith('https:'):
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='https')
+            coding.system = uri(value='https://termgit.elga.gv.at/CodeSystem/elga-urlschemeergaenzung')
     v = src.value
     if v:
         if (src.value or '').startswith('mailto:'):
@@ -6380,18 +6514,48 @@ def TELContactPoint(src, tgt):
     v = src.value
     if v:
         if (src.value or '').startswith('mllp:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[5],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='other')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='mllp')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('modem:'):
             tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[6],[])))
-            tgt.system = string(value='other')
+            tgt_system = string(value='other')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='modem')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('nfs:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[4],[])))
-            tgt.system = string(value='other')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='nfs')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
     v = src.value
     if v:
         if (src.value or '').startswith('tel:'):
@@ -6400,8 +6564,33 @@ def TELContactPoint(src, tgt):
     v = src.value
     if v:
         if (src.value or '').startswith('telnet:'):
-            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[7],[])))
-            tgt.system = string(value='url')
+            tgt.value = string(value=str(v))
+            tgt_system = string(value='url')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='telnet')
+            coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-URLScheme')
+    v = src.value
+    if v:
+        if (src.value or '').startswith('me:'):
+            tgt.value = string(value=fhirpath.single(fhirpath_utils.substring(v,[3],[])))
+            tgt_system = string(value='other')
+            tgt.system = tgt_system
+            tgt_system_extension = malac.models.fhir.r4.Extension()
+            tgt_system.extension.append(tgt_system_extension)
+            tgt_system_extension.url = 'http://hl7.org/fhir/StructureDefinition/alternate-codes'
+            tgt_system_extension_codeableconcept = malac.models.fhir.r4.CodeableConcept()
+            tgt_system_extension.valueCodeableConcept = tgt_system_extension_codeableconcept
+            coding = malac.models.fhir.r4.Coding()
+            tgt_system_extension_codeableconcept.coding.append(coding)
+            coding.code = string(value='me')
+            coding.system = uri(value='https://termgit.elga.gv.at/CodeSystem/elga-urlschemeergaenzung')
     for useablePeriod in src.useablePeriod or []:
         tgt.period = malac.models.fhir.r4.Period()
         transform_default(useablePeriod, tgt.period)
