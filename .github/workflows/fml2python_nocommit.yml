@@ -58,8 +58,8 @@ jobs:
 
       - name: Validate
         run: |
-          java -jar validator_cli.jar fhir.xml -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any
-          java -jar validator_cli.jar fhir.json -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any
+          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any
+          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any
 
       - name: Download
         uses: actions/download-artifact@v5
