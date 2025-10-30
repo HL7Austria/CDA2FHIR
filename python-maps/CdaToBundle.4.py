@@ -1,18 +1,17 @@
 
 import sys
 import argparse
-import time
+import time as sys_time
 import uuid
-import builtins
 import re
 import io
 import json
-from datetime import datetime
+from datetime import datetime, time as datetime_time
 from malac.utils import date as dateutil
 from html import escape as html_escape
 import malac.models.cda.at_ext
 import malac.models.fhir.r4
-from malac.models.fhir.r4 import string, base64Binary, markdown, code, dateTime, uri, boolean, decimal
+from malac.models.fhir.r4 import string, base64Binary, markdown, code, date, time, dateTime, uri, boolean, decimal, integer
 from malac.models.fhir import utils
 from malac.utils import fhirpath
 
@@ -32,7 +31,7 @@ def init_argparse() -> argparse.ArgumentParser:
     return parser
 
 def transform(source_path, target_path):
-    start = time.time()
+    start = sys_time.time()
     print('+++++++ Transformation from '+source_path+' to '+target_path+' started +++++++')
 
     if source_path.endswith('.xml'):
@@ -50,7 +49,7 @@ def transform(source_path, target_path):
         else:
             raise BaseException('Unknown target file ending')
 
-    print('altogether in '+str(round(time.time()-start,3))+' seconds.')
+    print('altogether in '+str(round(sys_time.time()-start,3))+' seconds.')
     print('+++++++ Transformation from '+source_path+' to '+target_path+' ended  +++++++')
 
 def CdaToFhirBundle(cda, fhir_bundle):
@@ -337,15 +336,7 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             if fhir_patient.id is None:
                 fhir_patient.id = malac.models.fhir.r4.string()
             fhir_patient_id = fhir_patient.id
-            if fhir_coverage.status is None:
-                fhir_coverage.status = malac.models.fhir.r4.FinancialResourceStatusCodes()
-            fhir_coverage_status = fhir_coverage.status
-            fhir_coverage_status_extension = malac.models.fhir.r4.Extension()
-            fhir_coverage_status.extension.append(fhir_coverage_status_extension)
-            fhir_coverage_status_extension.url = 'http://terminology.hl7.org/CodeSystem/data-absent-reason'
-            fhir_coverage_status_extension_value = malac.models.fhir.r4.code()
-            fhir_coverage_status_extension.valueCode = fhir_coverage_status_extension_value
-            fhir_coverage_status_extension_value.value = 'unknown'
+            fhir_coverage.status = string(value='active')
             fhir_coverage_beneficiary_reference = malac.models.fhir.r4.Reference()
             fhir_coverage.beneficiary = fhir_coverage_beneficiary_reference
             fhir_coverage_beneficiary_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
@@ -1035,6 +1026,13 @@ def CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patie
                 if cda_playingEntity.code:
                     fhir_specimen.type_ = malac.models.fhir.r4.CodeableConcept()
                     transform_default(cda_playingEntity.code, fhir_specimen.type_)
+                if fhir_specimen.type_ is None:
+                    fhir_specimen.type_ = malac.models.fhir.r4.CodeableConcept()
+                fhir_specimen_type = fhir_specimen.type_
+                fhir_specimen_type_coding = malac.models.fhir.r4.Coding()
+                fhir_specimen_type.coding.append(fhir_specimen_type_coding)
+                fhir_specimen_type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                fhir_specimen_type_coding.code = string(value='OTH')
     for cda_entryRelationship in cda_procedure.entryRelationship or []:
         cda_act = cda_entryRelationship.act
         if cda_act:
@@ -1324,12 +1322,12 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
         fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
         fhir_observation_effective_extenstion_code.value = 'unknown'
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if isinstance(cda_observation_value, malac.models.cda.at_ext.PQ):
+        if type(cda_observation_value) is malac.models.cda.at_ext.PQ:
             fhir_observation_value = malac.models.fhir.r4.Quantity()
             fhir_observation.valueQuantity = fhir_observation_value
             PQQuantity(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if isinstance(cda_observation_value, malac.models.cda.at_ext.IVL_PQ):
+        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_PQ:
             if cda_observation_value.value is not None:
                 fhir_observation_value = malac.models.fhir.r4.Quantity()
                 fhir_observation.valueQuantity = fhir_observation_value
@@ -1340,12 +1338,12 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
                 IVLPQRange(cda_observation_value, fhir_observation_value)
     if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
         for cda_observation_value in cda_laboratory_observation.value or []:
-            if isinstance(cda_observation_value, malac.models.cda.at_ext.CD):
+            if type(cda_observation_value) is malac.models.cda.at_ext.CD:
                 fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
                 fhir_observation.valueCodeableConcept = fhir_observation_value
                 CDCodeableConcept(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if isinstance(cda_observation_value, malac.models.cda.at_ext.ST):
+        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
             fhir_observation_value = malac.models.fhir.r4.string()
             fhir_observation.valueString = fhir_observation_value
             STstring(cda_observation_value, fhir_observation_value)
@@ -1568,7 +1566,7 @@ def CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
 #   0..1 source (conceptMap url)
 # TODO implement reverse
 def translate(url=None, conceptMapVersion=None, code=None, system=None, version=None, source=None, coding=None, codeableConcept=None, target=None, targetsystem=None, reverse=None, silent=False)              -> dict [bool, str, list[dict[str, dict[str, str, str, str, bool], str]]]:
-    start = time.time()
+    start = sys_time.time()
     
     # start validation and recall of translate in simple from
     if codeableConcept:
@@ -1679,7 +1677,7 @@ def translate(url=None, conceptMapVersion=None, code=None, system=None, version=
                 url = one_match["source"]
 
     if not silent:
-        print('Translation in '+str(round(time.time()-start,3))+' seconds for code "'+(code or "NONE")+'" with ConceptMap "'+url+'"')
+        print('Translation in '+str(round(sys_time.time()-start,3))+' seconds for code "'+(code or "NONE")+'" with ConceptMap "'+url+'"')
     return {"result": result, "message": message, "match": match}
 
 conceptMap_as_7dimension_dict = {}
