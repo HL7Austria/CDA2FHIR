@@ -452,10 +452,9 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
   // Participant Betreuungsorganisation
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']]
-  // TODO based on analysis of sample reports currently not required
+
 
   // Participant Betreuungsorganisation ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']] and Participant Weitere Behandler ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.28']]
-  // ToDo Fix FHIRPath statement --> right now cda_participant creates for loop which is executed twice leading to the creation of two identical CareTeams
   cda where (cda.descendants().where(root='1.2.40.0.34.6.0.11.1.29').count() = 1 or cda.descendants().where(root='1.2.40.0.34.6.0.11.1.28').count() > 1) ->
   fhir_bundle.entry as fhir_bundle_entry,
   fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
@@ -485,13 +484,18 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
       fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid',fhir_practitionerRole_id),
       fhir_careTeam.participant as fhir_careTeam_participant then {
 
-        // ToDo:
-          // Mapping target and strategy for ../functionCode and Code -> Problem ELGA_AutherSpecialty very unambiguous -> EU specifies practitionerRole.code (required: eHDSI Healthcare Professional Role) and pracitionerRole.speciality (preferred: PracticeSettingCodeValueSet)
-          // cda_participant_practitioner.functionCode
         cda_participant_practitioner.associatedEntity as cda_associatedEntity ->
         fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_member_reference,
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
-        fhir_careTeam_member_reference.type = 'PractitionerRole' then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle);
+        fhir_careTeam_member_reference.type = 'PractitionerRole',
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+        fhir_organization.id = uuid() as fhir_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+        fhir_careTeam_participant.onBehalfOf = create('Reference') as fhir_careTeam_participant_oBehalfOf,
+        fhir_careTeam_participant_oBehalfOf.reference = append('urn:uuid:', fhir_organization_id),
+        fhir_careTeam_participant_oBehalfOf.type = 'Organization' then CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(cda_associatedEntity, fhir_organization, fhir_practitionerRole, fhir_bundle);
+
       };
   };
 };
@@ -1915,6 +1919,36 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
         fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
         fhir_practitionerRole_organization.type = 'Organization' then
         CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+  } "CdaAssociatedEntityToFhirPractitionerRole";
+}
+
+group CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(source cda_associatedEntity : AssociatedEntity, target fhir_organization : Organization, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+  cda_associatedEntity ->
+    // create the Practitioner
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+    fhir_practitioner.id = uuid() as fhir_practitioner_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+    fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+      // associatedEntity.id
+      cda_associatedEntity.id -> fhir_practitioner.identifier;
+      // associatedEntity.addr
+      cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_practitioner.address;
+      // associatedEntity.telecom
+      cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_practitioner.telecom;
+      // associatedEntity.associatedPerson
+      cda_associatedEntity.associatedPerson as cda_associatedPerson then {
+        // associatedEntity.associatedPerson.name
+        cda_associatedPerson.name -> fhir_practitioner.name;
+      };
+      cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
+      fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+      fhir_organization.id as fhir_organization_id,
+      fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+      fhir_practitionerRole_organization.type = 'Organization' then
+      CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
   } "CdaAssociatedEntityToFhirPractitionerRole";
 }
 
