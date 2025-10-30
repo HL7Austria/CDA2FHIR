@@ -473,6 +473,12 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
       fhir_bundle_entry_orga.fullUrl = append('urn:uuid:', fhir_organization_id),
       fhir_careTeam.participant as fhir_careTeam_participant then {
         cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
+          // role
+          fhir_careTeam_participant.role = create('CodeableConcept') as fhir_careTeam_participant_role,
+          fhir_careTeam_participant_role.coding = create('Coding') as fhir_careTeam_participant_role_coding,
+          fhir_careTeam_participant_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+          fhir_careTeam_participant_role_coding.code = 'CAREGIVER',
+          // member
           fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_participant_member_reference,
           fhir_careTeam_participant_member_reference.reference = append('urn:uuid:', fhir_organization_id),
           fhir_careTeam_participant_member_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
@@ -483,11 +489,17 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
       fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
       fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid',fhir_practitionerRole_id),
       fhir_careTeam.participant as fhir_careTeam_participant then {
-
+        // role
         cda_participant_practitioner.associatedEntity as cda_associatedEntity ->
+        fhir_careTeam_participant.role = create('CodeableConcept') as fhir_careTeam_participant_role,
+        fhir_careTeam_participant_role.coding = create('Coding') as fhir_careTeam_participant_role_coding,
+        fhir_careTeam_participant_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+        fhir_careTeam_participant_role_coding.code = 'PROV',
+        // member
         fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_member_reference,
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.type = 'PractitionerRole',
+        // onBehalfOf
         fhir_bundle.entry as fhir_bundle_entry,
         fhir_bundle_entry.resource = create('Organization') as fhir_organization,
         fhir_organization.id = uuid() as fhir_organization_id,
