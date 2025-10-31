@@ -340,7 +340,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
   cda.authenticator as cda_resultValidator -> 
     fhir_composition.attester as fhir_composition_attester then {
-      cda_resultValidator.time -> fhir_composition_attester.time;
+      cda_resultValidator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
       cda_resultValidator.signatureCode -> fhir_composition_attester.mode = 'professional';
       cda_resultValidator.assignedEntity as cda_assignedEntity -> 
         fhir_bundle.entry as fhir_bundle_entry,
