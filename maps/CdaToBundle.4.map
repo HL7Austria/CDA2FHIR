@@ -363,8 +363,8 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // TODO extension required
 
   // Participant Hausarzt
-  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.23']]
-  cda.participant as cda_generalPractitioner where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.23') ->
+  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.23']] 
+  cda.participant as cda_generalPractitioner where templateId.where(root='1.2.40.0.34.6.0.11.1.23' or root='1.2.40.0.34.11.1.1.3') ->
     // Create a PractitionerRole
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
