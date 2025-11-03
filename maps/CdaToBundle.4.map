@@ -337,7 +337,6 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   };
 
   // ClinicalDocument.authenticator [hl7:templateId[@root='1.2.40.0.34.6.0.11.1.49'] or [hl7:templateId[@root='1.3.6.1.4.1.19376.1.3.3.1.5']]
-
   cda.authenticator as cda_resultValidator -> 
     fhir_composition.attester as fhir_composition_attester then {
       cda_resultValidator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
