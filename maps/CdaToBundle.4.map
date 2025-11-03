@@ -391,7 +391,11 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         cda_associatedEntity.code as cda_associatedEntity_code where (code='GUARD') ->
 
           fhir_patient_contact.extension as fhir_patient_contact_extension_role,
-          fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          // as stated in https://chat.fhir.org/#narrow/channel/179166-implementers/topic/R6.20backport.20extensions/with/548111424 R6 backport extensions are currently not supported
+          // use the following placeholder in the meantime
+          // TODO change once R6 has been published
+          fhir_patient_contact_extension_role.url = 'http://hl7.at/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
           fhir_patient_contact_extension_role.extension as fhir_role_inner_extension,
           fhir_role_inner_extension.url = 'value',
           
