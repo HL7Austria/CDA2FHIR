@@ -407,8 +407,79 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     } "CdaGeneralPractitionerToFhirPractitionerRole";
 
   // Participant Auskunftsberechtigte Person (Notfallkontakt)
-  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.27']]
-  // TODO based on analysis of sample reports currently not required
+  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.27']] or [@root='1.2.40.0.34.11.1.1.4']
+  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.27' or root='1.2.40.0.34.11.1.1.4') ->
+  cda_participant.associatedEntity as cda_associatedEntity,
+  fhir_patient.contact as fhir_patient_contact then {
+    cda_participant.time -> fhir_patient_contact.period;
+
+    cda_associatedEntity.code as cda_associatedEntity_code where (code='GUARD') ->
+
+          fhir_patient_contact.extension as fhir_patient_contact_extension_role,
+          // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          // as stated in https://chat.fhir.org/#narrow/channel/179166-implementers/topic/R6.20backport.20extensions/with/548111424 R6 backport extensions are currently not supported
+          // use the following placeholder in the meantime
+          // TODO change once R6 has been published
+          fhir_patient_contact_extension_role.url = 'http://hl7.at/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept then {
+            cda_associatedEntity_code -> 
+              role_codeable_concept.coding = create('Coding') as role_coding,
+              role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+              role_coding.code = 'GUARD'; //Guardian
+            cda_associatedEntity_code -> 
+              role_codeable_concept.coding = create('Coding') as role_coding,
+              role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+              role_coding.code = 'ECON'; //Emergency contact          
+      };
+
+     cda_associatedEntity.code as cda_associatedEntity_code where (code='SPON') -> 
+          
+          fhir_patient_contact.extension as fhir_patient_contact_extension_role,
+          // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          // as stated in https://chat.fhir.org/#narrow/channel/179166-implementers/topic/R6.20backport.20extensions/with/548111424 R6 backport extensions are currently not supported
+          // use the following placeholder in the meantime
+          // TODO change once R6 has been published
+          fhir_patient_contact_extension_role.url = 'http://hl7.at/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept then {
+            cda_associatedEntity_code -> 
+              role_codeable_concept.coding = create('Coding') as role_coding,
+              role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+              role_coding.code = 'SPON'; 
+            cda_associatedEntity_code -> 
+              role_codeable_concept.coding = create('Coding') as role_coding,
+              role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+              role_coding.code = 'ECON'; //Emergency contact
+      };
+    cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
+          cda_associatedEntity_code -> fhir_patient_contact.relationship;
+          cda_associatedEntity_code ->
+          fhir_patient_contact.extension as fhir_patient_contact_extension_role,
+          // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          // as stated in https://chat.fhir.org/#narrow/channel/179166-implementers/topic/R6.20backport.20extensions/with/548111424 R6 backport extensions are currently not supported
+          // use the following placeholder in the meantime
+          // TODO change once R6 has been published
+          fhir_patient_contact_extension_role.url = 'http://hl7.at/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
+          fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept,
+          role_codeable_concept.coding = create('Coding') as role_coding,
+          role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+          role_coding.code = 'ECON'; //Emergency contact
+          
+      };
+      cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_patient_contact.address;
+      cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_patient_contact.telecom;
+      cda_associatedEntity.associatedPerson as cda_associatedPerson then {
+        cda_associatedPerson.name -> fhir_patient_contact.name;
+      };
+
+    cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+      fhir_organization.id = uuid() as fhir_organization_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+      fhir_patient_contact.organization = create('Reference') as fhir_patient_contact_organization,
+      fhir_patient_contact_organization.reference = append('urn:uuid:', fhir_organization_id),
+      fhir_patient_contact_organization.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+  };
 
   // Participant Angehoerige
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.25']] or 1.2.40.0.34.11.1.1.5
