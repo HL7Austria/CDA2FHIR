@@ -547,7 +547,46 @@
     <!-- Nicht angewandt in diesem Demo-Dokument -->
 
     <!-- Angehörige (siehe Allgemeiner Implementierungsleitfaden) -->
-    <!-- Nicht angewandt in diesem Demo-Dokument -->
+    <participant typeCode="IND">
+        <templateId root="1.2.40.0.34.6.0.11.1.25"/>
+        <associatedEntity classCode="PRS">
+            <!-- Code SELF (Patient ist selbst der Versicherungsnehmer) -->
+            <code code="FTH" codeSystem="2.16.840.1.113883.5.111" codeSystemName="HL7:RoleCode"/>
+            <addr>
+                <streetName>Wiedner Hauptstraße</streetName>
+                <houseNumber>84-86</houseNumber>
+                <postalCode>1051</postalCode>
+                <city>Wien</city>
+                <state>Wien</state>
+                <country>AUT</country>
+            </addr>
+            <telecom value="tel:01.54654.0"/>
+            <telecom value="fax:01.54654.385"/>
+            <associatedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr.</prefix>
+                    <given>Herbert</given>
+                    <family>Mustermann</family>
+                </name>
+            </associatedPerson>
+            <!-- Versicherungsgesellschaft -->
+            <scopingOrganization>
+                <id root="1.2.40.0.10.1.4.3.1" extension="1111241249" assigningAuthorityName="Österreichische Sozialversicherung"/>
+                <name>Sozialversicherung der gew. Wirtschaft</name>
+                <telecom value="tel:01.54654.0"/>
+                <telecom value="fax:01.54654.385"/>
+                <telecom value="http://esv-sva.sozvers.at"/>
+                <addr>
+                    <streetName>Wiedner Hauptstraße</streetName>
+                    <houseNumber>84-86</houseNumber>
+                    <postalCode>1051</postalCode>
+                    <city>Wien</city>
+                    <state>Wien</state>
+                    <country>AUT</country>
+                </addr>
+            </scopingOrganization>
+        </associatedEntity>
+    </participant>
 
     <!-- Versicherter/Versicherung (siehe Allgemeiner Implementierungsleitfaden) -->
     <participant typeCode="HLD">
