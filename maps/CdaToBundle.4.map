@@ -420,8 +420,8 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           fhir_role_inner_extension.value = create('CodeableConcept') as role_codeable_concept then {
             cda_associatedEntity_code -> 
               role_codeable_concept.coding = create('Coding') as role_coding,
-              role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'DEPEN'; //Guardian
+              role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleCode',
+              role_coding.code = 'SPON';
             cda_associatedEntity_code -> 
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
