@@ -336,8 +336,20 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         then CdaAssignedEntityToFhirPractitionerRole(cda_legalAuthenticator_assignedEntity, fhir_practitionerRole, fhir_bundle);
   };
 
-  // ClinicalDocument.authenticator
-  // TODO based on analysis of sample reports currently not required
+  // ClinicalDocument.authenticator [hl7:templateId[@root='1.2.40.0.34.6.0.11.1.49'] or [hl7:templateId[@root='1.3.6.1.4.1.19376.1.3.3.1.5']]
+  cda.authenticator as cda_resultValidator -> 
+    fhir_composition.attester as fhir_composition_attester then {
+      cda_resultValidator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
+      cda_resultValidator.signatureCode -> fhir_composition_attester.mode = 'professional';
+      cda_resultValidator.assignedEntity as cda_assignedEntity -> 
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id, 
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_composition_attester.party = create('Reference') as fhir_composition_attester_reference,
+        fhir_composition_attester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_composition_attester_reference.type = 'PractitionerRole' then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
+    };
 
   // Participant Auftraggeber / Ordering Provider
   // ClinicalDocument.participant[@typeCode='REF']
@@ -1816,10 +1828,9 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
       // assignedEntity.id
       cda_assignedEntity.id where (nullFlavor.exists().not()) -> fhir_practitioner.identifier;
 
-      // assignedEntity.code - TODO here "external" laboratories (performer) could be identified - best place?
-      // TODO in CDA no value set is specified for this element, so mapping is not possible as it could be any code
-      //      in FHIR (MyHealth@EU Lab) however a required binding for this optional element exits
-      // cda_assignedEntity.code -> fhir_practitionerRole.code;
+      // assignedEntity.code
+      // here also "external" laboratories (performer) are identified
+      cda_assignedEntity.code where (nullFlavor.exists().not()) -> fhir_practitionerRole.specialty;
 
       // assignedEntity.addr
       cda_assignedEntity.addr where (nullFlavor.exists().not()) -> fhir_practitioner.address;
