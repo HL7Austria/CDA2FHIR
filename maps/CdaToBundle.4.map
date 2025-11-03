@@ -510,7 +510,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
       };
   };
-};
+
 
   // ClinicalDocument.inFulfillmentOf
   cda.inFulfillmentOf as cda_inFulFillmentOf then {
