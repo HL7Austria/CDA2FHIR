@@ -378,20 +378,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             performer_function_coding.code = 'CALLBCK' then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle);
           cda_participant.functionCode -> fhir_practitionerRole.specialty;  
     };
-    
-  // ClinicalDocument.inFulfillmentOf
-  cda.inFulfillmentOf as cda_inFulFillmentOf then {
-    // ClinicalDocument.inFulfillmentOf.order
-    cda_inFulFillmentOf.order as cda_inFulFillmentOf_order then {
-      // ClinicalDocument.inFulfillmentOf.order.id
-      cda_inFulFillmentOf_order.id -> fhir_serviceRequest.identifier;
-      // fhir_serviceRequest.status
-      // TODO if a laboratory report is a preliminary report the status of the servicerequest should be "active"
-      cda -> fhir_serviceRequest.status = 'completed' "FhirServiceRequestStatus";
-      // fhir_serviceRequest.intent
-      cda -> fhir_serviceRequest.intent = 'order' "FhirServiceRequestIntent";
-    };
-  };
+
 
   // Participant Hausarzt
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.23']]
