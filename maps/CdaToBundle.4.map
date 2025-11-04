@@ -1956,11 +1956,6 @@ group CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(source c
         fhir_practitioner.qualification as fhir_practitioner_qualification,
         fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
         CECodeableConcept(cda_participant_practitioner_functionCode, fhir_practitioner_qualification_code);
-      // associatedEntity.code
-      cda_associatedEntity.code as cda_associatedEntity_code ->
-        fhir_practitioner.qualification as fhir_practitioner_qualification,
-        fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
-        CECodeableConcept(cda_associatedEntity_code,fhir_practitioner_qualification_code);
       // associatedEntity.addr
       cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_practitioner.address;
       // associatedEntity.telecom
