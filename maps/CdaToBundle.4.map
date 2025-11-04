@@ -1090,27 +1090,22 @@ group CdaEncompassingEncounterToFhirEncounter(source cda_encompassingEncounter :
   // encompassingEncounter.location
   cda_encompassingEncounter.location as cda_location then {
     // encompassingEncounter.location.healthCareFacility
-    cda_location.healthCareFacility as cda_healthCareFacility ->
-      fhir_encounter.location as fhir_encounter_location,
-      // create the Location
-      fhir_bundle.entry as fhir_bundle_entry,
-      fhir_bundle_entry.resource = create('Location') as fhir_location,
-      fhir_location.id = uuid() as fhir_location_id,
-      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_location_id),
-      fhir_encounter_location.location = create('Reference') as fhir_location_reference,
-      fhir_location_reference.reference = append('urn:uuid:', fhir_location_id),
-      fhir_location_reference.type = 'Location' then {
+    cda_location.healthCareFacility as cda_healthCareFacility then {
         // encompassingEncounter.location.healthCareFacility.code
-        cda_healthCareFacility.code -> fhir_location.type;
+        cda_healthCareFacility.code as cda_healthCareFacility_code ->
+          fhir_encounter.location as fhir_encounter_location then {
+            cda_healthCareFacility_code -> fhir_encounter_location.physicalType;
+          } "CdaHealthCareFacilityCodeToFhirEncounterPhysicalType";
+
         // encompassingEncounter.location.healthCareFacility.serviceProviderOrganization
         cda_healthCareFacility.serviceProviderOrganization as cda_serviceProviderOrganization ->
           fhir_bundle.entry as fhir_bundle_entry,
           fhir_bundle_entry.resource = create('Organization') as fhir_organization,
           fhir_organization.id = uuid() as fhir_organization_id,
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
-          fhir_location.managingOrganization	 = create('Reference') as fhir_location_managingOrganization,
-          fhir_location_managingOrganization.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_location_managingOrganization.type = 'Organization' then
+          fhir_encounter.serviceProvider = create('Reference') as fhir_encounter_serviceProvider,
+          fhir_encounter_serviceProvider.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_encounter_serviceProvider.type = 'Organization' then
           CdaOrganizationCompilationToFhirOrganization(cda_serviceProviderOrganization, fhir_organization);
       };
   };
