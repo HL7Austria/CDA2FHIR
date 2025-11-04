@@ -982,9 +982,7 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
 
       // ClinicalDocument.author.functionCode
-      // TODO in CDA no value set is specified for this element, so mapping is not possible as it could be any code
-      //      in FHIR (MyHealth@EU Lab) however a required binding for this optional element exits
-      // cda_author.functionCode -> fhir_practitionerRole.code;
+      cda_author.functionCode -> fhir_practitionerRole.specialty;
 
       // ClinicalDocument.author.time
       // TODO extension?
