@@ -65,6 +65,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObs
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Procedure" alias Procedure as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Organizer" alias Organizer as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
@@ -510,7 +511,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
         fhir_careTeam_participant.onBehalfOf = create('Reference') as fhir_careTeam_participant_oBehalfOf,
         fhir_careTeam_participant_oBehalfOf.reference = append('urn:uuid:', fhir_organization_id),
-        fhir_careTeam_participant_oBehalfOf.type = 'Organization' then CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(cda_associatedEntity, fhir_organization, fhir_practitionerRole, fhir_bundle);
+        fhir_careTeam_participant_oBehalfOf.type = 'Organization' then CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(cda_participant_practitioner, cda_associatedEntity, fhir_organization, fhir_practitionerRole, fhir_bundle);
 
       };
   };
@@ -1938,7 +1939,7 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
   } "CdaAssociatedEntityToFhirPractitionerRole";
 }
 
-group CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(source cda_associatedEntity : AssociatedEntity, target fhir_organization : Organization, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+group CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(source cda_participant_practitioner: Participant, source cda_associatedEntity : AssociatedEntity, target fhir_organization : Organization, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
   cda_associatedEntity ->
     // create the Practitioner
     fhir_bundle.entry as fhir_bundle_entry,
@@ -1950,11 +1951,11 @@ group CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(source c
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
       // associatedEntity.id
       cda_associatedEntity.id -> fhir_practitioner.identifier;
-      // associatedEntity.code
-      cda_associatedEntity.code as cda_associatedEntity_code ->
+      // participant.functionCode
+      cda_participant_practitioner.functionCode as cda_participant_practitioner_functionCode ->
         fhir_practitioner.qualification as fhir_practitioner_qualification,
         fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
-        CECodeableConcept(cda_associatedEntity_code,fhir_practitioner_qualification_code);
+        CECodeableConcept(cda_participant_practitioner_functionCode, fhir_practitioner_qualification_code);
       // associatedEntity.addr
       cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_practitioner.address;
       // associatedEntity.telecom
