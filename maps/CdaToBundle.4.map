@@ -858,7 +858,6 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
       cda_patient_gender where (nullFlavor = 'UNK') -> fhir_patient.gender = 'unknown' "CdaPatientUnkGenderCodeToFhirPatientUnknownGenderCode";
 
       // patient.administrativeGenderCode.translation
-      // TODO clarify if OK to be transformed like this
       cda_patient_gender.translation as cda_patient_gender_translation ->
         fhir_patient.gender as fhir_patient_gender,
         fhir_patient_gender.extension as fhir_patient_gender_extension,
