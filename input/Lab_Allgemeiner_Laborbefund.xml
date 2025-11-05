@@ -658,10 +658,66 @@
     </participant>
 
     <!-- Betreuungsorganisation (siehe Allgemeiner Implementierungsleitfaden) -->
-    <!-- Nicht angewandt in diesem Demo-Dokument -->
+    <participant typeCode="IND">
+        <templateId root="1.2.40.0.34.6.0.11.1.29"/>
+        <associatedEntity classCode="CAREGIVER">
+            <scopingOrganization>
+                <id root="1.2.40.0.999.1.2.3" extension="1345134523"/>
+                <name>Betreuungsorganisation GmbH</name>
+                <telecom value="tel:01.1234.0"/>
+                <telecom value="fax:01.1234.5678"/>
+                <telecom value="http://betreuungsorganisation.at"/>
+                <addr>
+                    <streetName>Betreuungsstraße</streetName>
+                    <houseNumber>84-86</houseNumber>
+                    <postalCode>1051</postalCode>
+                    <city>Wien</city>
+                    <state>Wien</state>
+                    <country>AUT</country>
+                </addr>
+            </scopingOrganization>
+        </associatedEntity>
+    </participant>
 
     <!-- Weitere Behandler (siehe Allgemeiner Implementierungsleitfaden) -->
-    <!-- Nicht angewandt in diesem Demo-Dokument -->
+    <participant typeCode="CON">
+        <templateId root="1.2.40.0.34.6.0.11.1.28"/>
+        <functionCode code="160" codeSystem="1.2.40.0.34.5.2" displayName="Turnusärztin/Turnusarzt"/>
+        <associatedEntity classCode="PROV">
+            <addr>
+                <streetName>Weitere Behandlerstraße</streetName>
+                <houseNumber>84-86</houseNumber>
+                <postalCode>1051</postalCode>
+                <city>Wien</city>
+                <state>Wien</state>
+                <country>AUT</country>
+            </addr>
+            <telecom value="tel:01.1234.0"/>
+            <telecom value="fax:01.1234.5678"/>
+            <associatedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr.</prefix>
+                    <given>Weiterer</given>
+                    <family>Behandler</family>
+                </name>
+            </associatedPerson>
+            <scopingOrganization>
+                <id root="1.2.40.0.999.1.2.3" extension="1345134523"/>
+                <name>Weitere Behandler GmbH</name>
+                <telecom value="tel:01.1234.0"/>
+                <telecom value="fax:01.1234.5678"/>
+                <telecom value="http://betreuungsorganisation.at"/>
+                <addr>
+                    <streetName>Weitere Behandlerstraße</streetName>
+                    <houseNumber>84-86</houseNumber>
+                    <postalCode>1051</postalCode>
+                    <city>Wien</city>
+                    <state>Wien</state>
+                    <country>AUT</country>
+                </addr>
+            </scopingOrganization>
+        </associatedEntity>
+    </participant>
 
     <!-- Order / Zuweisung und Auftragsmanagement -->
     <inFulfillmentOf typeCode="FLFS">
