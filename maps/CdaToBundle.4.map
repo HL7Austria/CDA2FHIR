@@ -353,7 +353,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
   // Participant Auftraggeber / Ordering Provider
   // ClinicalDocument.participant[@typeCode='REF']
-  cda.participant as cda_orderingProvider where $this.typeCode='REF' ->
+  cda.participant as cda_orderingProvider where ($this.typeCode='REF' and nullFlavor.exists().not()) ->
     // Create a PractitionerRole
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
@@ -363,7 +363,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     fhir_serviceRequest_requester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
     fhir_serviceRequest_requester_reference.type = 'PractitionerRole' then {
       // ClinicalDocument.participant[@typeCode='REF'].time
-      cda_orderingProvider.time as cda_orderingProvider_time then {
+      cda_orderingProvider.time as cda_orderingProvider_time where (nullFlavor.exists().not()) then {
         cda_orderingProvider_time.value as v -> fhir_serviceRequest.authoredOn = cast(v, 'string');
       };
       // ClinicalDocument.participant[@typeCode='REF'].associatedEntity
