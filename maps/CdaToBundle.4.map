@@ -1095,6 +1095,7 @@ group CdaEncompassingEncounterToFhirEncounter(source cda_encompassingEncounter :
       fhir_bundle_entry.resource = create('Organization') as fhir_organization,
       fhir_organization.id = uuid() as fhir_organization_id,
       fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id) then {
+        
         cda_healthCareFacility.code -> fhir_organization.type;
         // encompassingEncounter.location.healthCareFacility.serviceProviderOrganization
         cda_healthCareFacility.serviceProviderOrganization as cda_serviceProviderOrganization ->
