@@ -280,9 +280,26 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     fhir_composition_author_reference.type = 'Device' then
     CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle);
 
-  // ClinicalDocument.dataEnterer
-  // TODO based on analysis of sample reports currently not required
-
+  // ClinicalDocument.dataEnterer[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.22'] or [@root='1.2.40.0.34.11.20003']]
+  cda.dataEnterer as cda_dataEnterer then {
+      // ClinicalDocument.dataEnterer.time is missing in FHIR DiagnosticPerformer - no mapping target found yet
+      cda_dataEnterer.assignedEntity as cda_assignedEntity ->
+        // Create a PractitionerRole
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_diagnosticReport.performer = create('Reference') as fhir_diagnosticReport_performer,
+        fhir_diagnosticReport_performer.reference = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_diagnosticReport_performer.type = 'PractitionerRole',
+        fhir_diagnosticReport_performer.extension as performer_function_extension,
+        performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction',
+        performer_function_extension.value = create('CodeableConcept') as performer_function_codeableConcept,
+        performer_function_codeableConcept.coding = create('Coding') as performer_function_coding,
+        performer_function_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
+        performer_function_coding.code = 'ENT' then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
+    };
+    
   // ClinicalDocument.custodian
   cda.custodian as cda_custodian then {
     // ClinicalDocument.custodian.assignedCustodian
