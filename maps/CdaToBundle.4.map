@@ -828,7 +828,17 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
   cda_patientRole.addr -> fhir_patient.address;
 
   // patientRole.telecom
-  cda_patientRole.telecom -> fhir_patient.telecom;
+  // cda_patientRole.telecom -> fhir_patient.telecom;
+  cda_patientRole.telecom as cda_patientRole_telecom where (useablePeriod.count() >= 1) then {
+    cda_patientRole_telecom.useablePeriod as telecom_useablePeriod ->
+      fhir_patient.telecom as fhir_telecom,
+      fhir_telecom.period as fhir_telecom_period then
+        // IVLTSPeriod(telecom_useablePeriod, fhir_telecom_period),
+        TELContactPoint(cda_patientRole_telecom, fhir_telecom) {
+          telecom_useablePeriod -> fhir_telecom_period;
+        }
+        "asdf";
+  } "test";
 
   // patientRole.patient
   cda_patientRole.patient as cda_patient then {
