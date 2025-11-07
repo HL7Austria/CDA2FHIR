@@ -944,12 +944,14 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
     } "CdaPatientGenderToFhirPatientGender";
 
     // patient.birthTime (only date)
-    cda_patient.birthTime -> fhir_patient.birthDate;
-    // patient.birthTime (with time if available)
-    cda_patient.birthTime as cda_patient_birthTime where (cda_patient.birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
-      fhir_patient_birthDate.extension as extension,
-      extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime',
-      extension.value = create('dateTime') as fhir_patient_birthTime_dateTime then TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime) "CdaPatientBirthTimeToFhirPatientBirthTimeExtension";
+    cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists().not()) then {
+      cda_patient_birthTime -> fhir_patient.birthDate;
+      // patient.birthTime (with time if available)
+      cda_patient_birthTime where (cda_patient_birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
+        fhir_patient_birthDate.extension as extension,
+        extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime',
+        extension.value = create('dateTime') as fhir_patient_birthTime_dateTime then TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime) "CdaPatientBirthTimeToFhirPatientBirthTimeExtension";
+    };
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists()) ->
       fhir_patient.birthDate as fhir_patient_birthDate,
       fhir_patient_birthDate.extension as fhir_patient_birthDate_extension then
