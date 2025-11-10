@@ -122,6 +122,12 @@
                         </addr>
                     </place>
                 </birthplace>
+                <languageCommunication>
+                    <languageCode code="de"/>
+                    <modeCode code="ESP" codeSystem="2.16.840.1.113883.5.60" displayName="Expressed spoken"/>
+                    <proficiencyLevelCode code="F" codeSystem="2.16.840.1.113883.5.61" displayName="Fair"/>
+                    <preferenceInd value="true"/>
+                </languageCommunication>
             </patient>
         </patientRole>
     </recordTarget>
