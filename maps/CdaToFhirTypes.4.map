@@ -955,7 +955,8 @@ group TELContactPoint(source src : TEL, target tgt : ContactPoint) extends Any <
     "valueme";
 
   // telecom.useablePeriod
-  src.useablePeriod -> tgt.period;
+  // TODO deactivated until https://github.com/HL7Austria/CDA2FHIR/pull/62 is resolved
+  // src.useablePeriod -> tgt.period;
 }
 
 group PQQuantity(source src : PQ, target tgt : Quantity) extends Any <<types>> {
