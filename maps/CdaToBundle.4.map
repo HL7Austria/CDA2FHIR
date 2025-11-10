@@ -229,9 +229,12 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
 
   // TODO ClinicalDocument.hl7at:terminologyDate
   // cda.terminologyDate ->
-  // TODO ClinicalDocument.hl7at:formatCode
-  // cda.formatCode ->
-  // TODO ClinicalDocument.hl7at:practiceSettingCode
+  // ClinicalDocument.hl7at:formatCode
+  cda.formatCode as cda_formatCode -> 
+  fhir_composition.extension as fhir_composition_formatCode_extension,
+  fhir_composition_formatCode_extension.url = 'http://hl7.at/fhir/StructureDefinition/at-composition-formatCode',
+  fhir_composition_formatCode_extension.value = create('CodeableConcept') as fhir_composition_formatCode_codeableConcept then CDCodeableConcept(cda_formatCode, fhir_composition_formatCode_codeableConcept);
+  // ClinicalDocument.hl7at:practiceSettingCode
   // cda.practiceSettingCode ->
   // ClinicalDocument.effectiveTime
   cda.effectiveTime -> fhir_composition.date;
