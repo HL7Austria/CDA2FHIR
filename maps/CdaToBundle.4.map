@@ -230,7 +230,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   cda.terminologyDate as cda_terminologyDate -> 
   fhir_composition.extension as fhir_composition_terminologyDate_extension,
   fhir_composition_terminologyDate_extension.url = 'http://hl7.at/fhir/StructureDefinition/at-composition-terminologyDate',
-  fhir_composition_terminologyDate_extension.value = create('dateTime') as fhir_composition_terminologyDate_dateTime then TSDateTime(cda_terminologyDate, fhir_composition_terminologyDate_dateTime);
+  fhir_composition_terminologyDate_extension.value = create('dateTime') as fhir_composition_terminologyDate_dateTime then TSDate(cda_terminologyDate, fhir_composition_terminologyDate_dateTime);
 
   // TODO ClinicalDocument.hl7at:formatCode
   // cda.formatCode ->
