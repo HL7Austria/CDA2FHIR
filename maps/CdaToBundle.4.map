@@ -226,9 +226,12 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     cda_statusCode.code as cda_code -> fhir_composition.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-composition-status' , 'code');
   } "CdaStatusCodeToFhirCompositionStatusMapped";
   cda where cda.sdtcStatusCode.exists().not() -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
+  //ClinicalDocument.hl7at:terminologyDate
+  cda.terminologyDate as cda_terminologyDate -> 
+  fhir_composition.extension as fhir_composition_terminologyDate_extension,
+  fhir_composition_terminologyDate_extension.url = 'http://hl7.at/fhir/StructureDefinition/at-composition-terminologyDate',
+  fhir_composition_terminologyDate_extension.value = create('dateTime') as fhir_composition_terminologyDate_dateTime then TSDateTime(cda_terminologyDate, fhir_composition_terminologyDate_dateTime);
 
-  // TODO ClinicalDocument.hl7at:terminologyDate
-  // cda.terminologyDate ->
   // TODO ClinicalDocument.hl7at:formatCode
   // cda.formatCode ->
   // TODO ClinicalDocument.hl7at:practiceSettingCode
