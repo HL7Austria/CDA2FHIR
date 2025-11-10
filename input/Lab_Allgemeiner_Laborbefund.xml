@@ -105,7 +105,7 @@
                 <!-- Geschlecht des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <administrativeGenderCode code="F" displayName="Female" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
                 <!-- Geburtsdatum des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <birthTime value="19611224"/>
+                <birthTime value="19611224130100+0200"/>
                 <!-- Familienstand des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <maritalStatusCode code="M" displayName="Married" codeSystem="2.16.840.1.113883.5.2" codeSystemName="HL7:MaritalStatus"/>
                 <!-- Religionszugehörigkeit des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
