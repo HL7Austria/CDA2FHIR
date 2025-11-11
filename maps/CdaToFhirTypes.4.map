@@ -737,7 +737,28 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
             "qualifierValue";
         } "CdaNameSuffixQualifierToFhirNameExtension";
       } "CdaNameSuffixToFhirNameGiven";
-  } "CdaNameItem";
+/*
+  // TODO deal with maiden name mapping
+  cda_name_item.family as cda_name_item_family where($this.qualifier = 'BR') then {
+        // create additional HumanName for maiden name
+        create('HumanName') as fhir_humanName_maiden,
+        fhir_humanName_maiden.family = (cda_name_item_family.xmlText),
+        fhir_humanName_maiden.use = 'maiden'
+        
+        "CdaMaidenNameToFhirHumanName";
+      };
+
+
+    cda_name_item.given as cda_name_item_given ->
+      cda_name_item_given where cda_name_item_given.qualifier = 'BR' then {
+        // Optionally also set maiden given names in HumanName
+        create('HumanName') as fhir_humanName_maiden,
+        fhir_humanName_maiden.given = (cda_name_item_given.xmlText),
+        fhir_humanName_maiden.use = 'maiden'
+        "CdaMaidenGivenNameToFhirHumanName";
+      }; 
+  
+    } "CdaNameItem"; */
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
