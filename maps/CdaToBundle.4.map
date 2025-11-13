@@ -1187,8 +1187,8 @@ group CdaEncompassingEncounterToFhirEncounter(source cda_encompassingEncounter :
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
           fhir_encounter.serviceProvider = create('Reference') as fhir_encounter_serviceProvider,
           fhir_encounter_serviceProvider.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_encounter_serviceProvider.type = 'Organization' then
-          CdaOrganizationCompilationToFhirOrganization(cda_serviceProviderOrganization, fhir_organization) {
+          fhir_encounter_serviceProvider.type = 'Organization' then {
+            cda_serviceProviderOrganization then CdaOrganizationCompilationToFhirOrganization(cda_serviceProviderOrganization, fhir_organization) "CdaServiceProviderOrganizationToFhirOrganization";
             cda_healthCareFacility.code -> fhir_organization.type;
           };
         };
