@@ -231,8 +231,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   // cda.terminologyDate ->
   // TODO ClinicalDocument.hl7at:formatCode
   // cda.formatCode ->
-  // TODO ClinicalDocument.hl7at:practiceSettingCode
-  // cda.practiceSettingCode ->
+  // ClinicalDocument.hl7at:practiceSettingCode
   cda.practiceSettingCode as cda_practiceSettingCode -> 
   fhir_composition.extension as fhir_composition_practicesetting_extension,
   fhir_composition_practicesetting_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-practiceSettingCode',
