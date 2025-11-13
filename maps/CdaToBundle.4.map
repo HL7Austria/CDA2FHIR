@@ -661,14 +661,14 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     cda.descendants().where(root='1.2.40.0.34.11.1.1.7').count() = 1 or
     cda.descendants().where(root='1.2.40.0.34.11.1.1.8').count() > 1 or
     cda.descendants().where(root='1.2.40.0.34.6.0.11.1.28').count() > 1) ->
-  fhir_bundle.entry as fhir_bundle_entry,
-  fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
-  fhir_careTeam.id = uuid() as fhir_careTeam_id,
-  fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_careTeam_id),
-  fhir_patient.id as fhir_patient_id,
-  fhir_careTeam.subject = create('Reference') as fhir_careTeam_subject_reference,
-  fhir_careTeam_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
-  fhir_careTeam_subject_reference.type = 'Patient' then {
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
+    fhir_careTeam.id = uuid() as fhir_careTeam_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_careTeam_id),
+    fhir_patient.id as fhir_patient_id,
+    fhir_careTeam.subject = create('Reference') as fhir_careTeam_subject_reference,
+    fhir_careTeam_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_careTeam_subject_reference.type = 'Patient' then {
     //  Betreuungsorganisation - [hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']] or [hl7:templateId [@root='1.2.40.0.34.11.1.1.7']]
     cda.participant as cda_participant where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.29' or root='1.2.40.0.34.11.1.1.7') ->
     cda_participant.associatedEntity as cda_associatedEntity,
@@ -715,7 +715,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         fhir_careTeam_participant_oBehalfOf.type = 'Organization' then CdaAssociatedEntityWithExternalOrganizationToFhirPractitionerRole(cda_participant_practitioner, cda_associatedEntity, fhir_organization, fhir_practitionerRole, fhir_bundle);
 
       };
-  };
+  } "CdaParticipantsToFhirCareTeam";
 
 
   // ClinicalDocument.inFulfillmentOf
@@ -955,7 +955,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 
     // patient.birthTime (only date)
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists().not()) then {
-      cda_patient_birthTime -> fhir_patient.birthDate;
+      cda_patient_birthTime -> fhir_patient.birthDate "CdaBirthTimeToFhirBirthDate";
       // patient.birthTime (with time if available)
       cda_patient_birthTime where (cda_patient_birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
         fhir_patient_birthDate.extension as extension,
