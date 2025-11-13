@@ -226,19 +226,25 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
     cda_statusCode.code as cda_code -> fhir_composition.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-composition-status' , 'code');
   } "CdaStatusCodeToFhirCompositionStatusMapped";
   cda where cda.sdtcStatusCode.exists().not() -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
+  
   //ClinicalDocument.hl7at:terminologyDate
   cda.terminologyDate as cda_terminologyDate -> 
     fhir_composition.extension as fhir_composition_terminologyDate_extension,
     fhir_composition_terminologyDate_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-terminologyDate',
     fhir_composition_terminologyDate_extension.value = create('dateTime') as fhir_composition_terminologyDate_dateTime then TSDate(cda_terminologyDate, fhir_composition_terminologyDate_dateTime);
-  // TODO ClinicalDocument.hl7at:formatCode
-  // cda.formatCode ->
+  
+  // ClinicalDocument.hl7at:formatCode
+  cda.formatCode as cda_formatCode -> 
+    fhir_composition.extension as fhir_composition_formatCode_extension,
+    fhir_composition_formatCode_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-formatCode',
+    fhir_composition_formatCode_extension.value = create('CodeableConcept') as fhir_composition_formatCode_codeableConcept then CDCodeableConcept(cda_formatCode, fhir_composition_formatCode_codeableConcept);
+
   // ClinicalDocument.hl7at:practiceSettingCode
   cda.practiceSettingCode as cda_practiceSettingCode -> 
     fhir_composition.extension as fhir_composition_practicesetting_extension,
     fhir_composition_practicesetting_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-practiceSettingCode',
     fhir_composition_practicesetting_extension.value = create('CodeableConcept') as fhir_composition_practicesetting_codeableConcept then CDCodeableConcept(cda_practiceSettingCode, fhir_composition_practicesetting_codeableConcept);
-  
+ 
   // ClinicalDocument.effectiveTime
   cda.effectiveTime -> fhir_composition.date;
   // ClinicalDocument.confidentialityCode
