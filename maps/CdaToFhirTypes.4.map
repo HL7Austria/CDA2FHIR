@@ -696,19 +696,26 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
         } "CdaNamePrefixQualifierToFhirNameExtension";
       } "CdaNamePrefixToFhirNameGiven";
     
-    // name.given
-    cda_name_item.given as cda_name_item_given ->
-      // name.given
-      fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
-        // name.given.qualifier
-        cda_name_item_given where cda_name_item_given.qualifier.exists() then {
-          cda_name_item_given.qualifier as qualifier ->
-            fhir_humanName_given.extension as extension,
-            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
-            extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
-            "qualifierValue";
-        } then CdaPersonNameCompilationToFhirHumanNames(fhir_humanName, fhir_humanName);
-      }; 
+    // name.given try s cda,t fhir ,t fhir
+    cda_name_item.given as cda_name_item_given where ($this.qualifier = 'BR') then {
+      fhir_humanName.element = create('HumanName') as fhir_humanName_br then CdaToHumanNameV2(cda_name_item, fhir_humanName,fhir_humanName_br);};
+     
+    
+    
+    
+    // // name.given
+    // cda_name_item.given as cda_name_item_given ->
+    //   // name.given
+    //   fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
+    //     // name.given.qualifier
+    //     cda_name_item_given where cda_name_item_given.qualifier.exists() then {
+    //       cda_name_item_given.qualifier as qualifier ->
+    //         fhir_humanName_given.extension as extension,
+    //         extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+    //         extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+    //         "qualifierValue";
+    //     } then CdaPersonNameCompilationToFhirHumanNames(cda_name_item, fhir_humanName);
+    //   }; 
 
     // name.family
     cda_name_item.family as cda_name_item_family ->
@@ -774,15 +781,41 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
     
     //   } "CdaNameItem"; 
 }
-group CdaPersonNameCompilationToFhirHumanNames(source fhir_source : HumanName, target fhir_target : HumanName) {
-  fhir_source.given as fhir_source_given where ($this.extension.value =! 'AC') -> 
-    fhir_target.given = fhir_source_given as fhir_target_given,
-    fhir_target_given.extension as extension,
-    extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
-    extension.value = 'BR';
+// group CdaPersonNameCompilationToFhirHumanNames(source fhir_source : HumanName, target fhir_target : HumanName) {
+//   fhir_source.given as fhir_source_given where ($this.extension.value =! 'AC') -> 
+//     fhir_target.given = fhir_source_given as fhir_target_given,
+//     fhir_target_given.extension as extension,
+//     extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+//     extension.value = 'BR';
     
-}
+// }
+group CdaToHumanNameV2(source cda_name_item : PN, target fhir_humanName_nm: HumanName, target fhir_humanName_br: HumanName){
+  cda_name_item.given as cda_name_item_given where ($this.qualifier != 'BR') ->
+    // name.given
+    fhir_humanName_nm.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
+      // name.given.qualifier
+      cda_name_item_given where cda_name_item_given.qualifier.exists() then {
+        cda_name_item_given.qualifier as qualifier ->
+          fhir_humanName_given.extension as extension,
+          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+          extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+          "qualifierValue";
+      } "CdaNameGivenQualifierToFhirNameExtension";
+    } "CdaNameGivenToFhirNameGiven";
 
+  cda_name_item.given as cda_name_item_given_birth where ($this.qualifier = 'BR') ->
+    // name.given
+    fhir_humanName_br.given = (cda_name_item_given_birth.xmlText) as fhir_humanName_given_birth then {
+      // name.given.qualifier
+    
+      cda_name_item_given_birth.qualifier as qualifier ->
+        fhir_humanName_given_birth.extension as extension,
+        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+        extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+        "qualifierValue";
+      
+    } "CdaNameGivenBirthToFhirNameGiven";
+}
 
 
 // group CdaPersonNameCompilationToFhirHumanNames(source cda_name : PN, target fhir_humanName : HumanName) {
