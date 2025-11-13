@@ -443,11 +443,13 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'GUARD'; //Guardian
+              role_coding.code = 'GUARD'
+              "FhirPatientContactRoleExtensionGuard"; //Guardian
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'ECON'; //Emergency contact
+              role_coding.code = 'ECON'
+              "FhirPatientContactRoleExtensionEcon"; //Emergency contact
       };
 
      cda_associatedEntity.code as cda_associatedEntity_code where (code='SPON') ->
@@ -462,14 +464,16 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'SPON';
+              role_coding.code = 'SPON'
+              "FhirPatientContactRoleExtensionSpon";
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'ECON'; //Emergency contact
+              role_coding.code = 'ECON'
+              "FhirPatientContactRoleExtensionEcon"; //Emergency contact
       };
     cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
-          cda_associatedEntity_code -> fhir_patient_contact.relationship;
+          cda_associatedEntity_code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
           cda_associatedEntity_code ->
           fhir_patient_contact.extension as fhir_patient_contact_extension_role,
           // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
@@ -480,7 +484,8 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept,
           role_codeable_concept.coding = create('Coding') as role_coding,
           role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-          role_coding.code = 'ECON'; //Emergency contact
+          role_coding.code = 'ECON'
+          "FhirPatientContactRoleExtensionEcon"; //Emergency contact
 
       };
       cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_patient_contact.address;
@@ -519,11 +524,13 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'GUARD'; //Guardian
+              role_coding.code = 'GUARD'
+              "FhirPatientContactRoleExtensionGuard"; //Guardian
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'NOK'; //Next of Kin
+              role_coding.code = 'NOK'
+              "FhirPatientContactRoleExtensionNok"; //Next of Kin
           };
 
         cda_associatedEntity.code as cda_associatedEntity_code where (code='SPON') ->
@@ -538,15 +545,17 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleCode',
-              role_coding.code = 'SPON';
+              role_coding.code = 'SPON'
+              "FhirPatientContactRoleExtensionSpon";
             cda_associatedEntity_code ->
               role_codeable_concept.coding = create('Coding') as role_coding,
               role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-              role_coding.code = 'NOK'; //Next of Kin
+              role_coding.code = 'NOK'
+              "FhirPatientContactRoleExtensionNok"; //Next of Kin
           };
 
         cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
-          cda_associatedEntity_code -> fhir_patient_contact.relationship;
+          cda_associatedEntity_code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
           cda_associatedEntity_code ->
           fhir_patient_contact.extension as fhir_patient_contact_extension_role,
           // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
@@ -557,7 +566,8 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept,
           role_codeable_concept.coding = create('Coding') as role_coding,
           role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-          role_coding.code = 'NOK'; //Next of Kin
+          role_coding.code = 'NOK'
+          "FhirPatientContactRoleExtensionNok"; //Next of Kin
 
         };
       cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_patient_contact.address;
