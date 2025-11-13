@@ -1503,6 +1503,11 @@ group CdaSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, targe
     fhir_specimen_request_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
     fhir_specimen_request_reference.type = 'ServiceRequest',
 
+    // create relation from ServiceRequest to Specimen
+    fhir_serviceRequest.specimen = create('Reference') as fhir_serviceRequest_specimen_reference,
+    fhir_serviceRequest_specimen_reference.reference = append('urn:uuid:', fhir_specimen_id),
+    fhir_serviceRequest_specimen_reference.type = 'Specimen',
+    
     fhir_specimen.collection as fhir_specimen_collection then {
       // Abnahmedatum/-zeit bzw. -zeitintervall des Untersuchungsmaterials
       // procedure.effectiveTime with value
