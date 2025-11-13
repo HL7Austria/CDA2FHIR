@@ -909,7 +909,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
   // patientRole.patient
   cda_patientRole.patient as cda_patient then {
     // patient.name
-    cda_patient.name -> fhir_patient.name;
+    cda_patient.name  as cda_patient_name then CdaPatientNameToFhirPatientName(cda_patient_name, fhir_patient);
 
     // patient.administrativeGenderCode
     cda_patient.administrativeGenderCode as cda_patient_gender then {
@@ -1045,6 +1045,21 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
         "CdaPatientLanguageProficiencyToFhirPatientCommunicationProficiencyExtension";
     } "CdaPatientLanguageCommunicationToFhirPatientCommunication";
   } "CdaPatientToFhirPatient";
+}
+
+group CdaPatientNameToFhirPatientName(source cda_patient_name : PN,target fhir_patient : Patient){
+    
+    cda_patient_name as cda_patient_name_br where (( prefix | given | family | suffix).qualifier contains 'BR' ) then {
+      // fhir_patient.name = create('HumanName') as fhir_patient_name_maiden,
+      cda_patient_name -> fhir_patient.name;
+
+    };
+    cda_patient_name as cda_patient_name where ( (prefix | given | family | suffix).qualifier.contains('BR').exists().not() ) then {
+      // cda_patient_name -> fhir_patient.name = create('HumanName') as fhir_patient_name;
+      cda_patient_name -> fhir_patient.name;
+
+    };
+  
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.2&effectiveDate=2021-08-24T08:35:56&language=de-DE
