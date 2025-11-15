@@ -1049,16 +1049,16 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 
 group CdaPatientNameToFhirPatientName(source cda_patient_name : PN,target fhir_patient : Patient){
     
-    cda_patient_name as cda_patient_name_br where (( prefix | given | family | suffix).qualifier contains 'BR' ) then {
+    cda_patient_name as cda_patient_name_br where ((given | family).qualifier contains 'BR' ) then {
       // fhir_patient.name = create('HumanName') as fhir_patient_name_maiden,
       cda_patient_name -> fhir_patient.name;
 
     };
-    cda_patient_name as cda_patient_name where ( (prefix | given | family | suffix).qualifier.contains('BR').exists().not() ) then {
+    /*cda_patient_name as cda_patient_name where ( (prefix | given | family | suffix).qualifier.contains('BR').exists().not() ) then {
       // cda_patient_name -> fhir_patient.name = create('HumanName') as fhir_patient_name;
       cda_patient_name -> fhir_patient.name;
 
-    };
+    };*/
   
 }
 
