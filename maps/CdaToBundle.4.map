@@ -1088,11 +1088,8 @@ cda_patient_name.item as cda_name_item then {
   };
 };
 
-
-  // ToDo: 
-  // loop for each family (where not br or ad) create HumanName tthen cda.name -> fhir_patient.name; 
   cda_patient_name.item as cda_name_item then {
-    cda_name_item.family as cda_name_item_family where (qualifier.contains('BR').exists().not() and qualifier.contains('AD').exists().not() ) then {
+    cda_name_item.family as cda_name_item_family where (qualifier.contains('BR').not() and qualifier.contains('AD').not() ) then {
       cda_name_item_family -> 
         fhir_patient.name = create('HumanName') as fhir_humanName then { 
           // name.use
