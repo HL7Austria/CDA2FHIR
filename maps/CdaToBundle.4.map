@@ -1048,9 +1048,9 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 }
 
 group CdaPatientNameToFhirPatientName(source cda_patient_name : PN,target fhir_patient : Patient){
-    
-    cda_patient_name as cda_patient_name_br where ((given | family).qualifier contains 'BR'  ) then {
-      cda_patient_name_br -> 
+  // Birth 
+  cda_patient_name as cda_patient_name_br where ((given | family).qualifier contains 'BR'  ) then {
+    cda_patient_name_br -> 
       fhir_patient.name = create('HumanName') as fhir_patient_name_br,
       fhir_patient_name_br.use = 'maiden' then {
         cda_patient_name_br.family as cda_name_item_family where(qualifier.contains('BR')) then {
@@ -1061,13 +1061,73 @@ group CdaPatientNameToFhirPatientName(source cda_patient_name : PN,target fhir_p
         };
     };
   };
-    // cda_patient_name as cda_patient_name_ofc where ( (given | family ).qualifier.contains('BR').exists().not() ) then {
-    //   cda_patient_name_ofc -> 
-    //   fhir_patient.name = create('HumanName') as fhir_patient_name, 
-    //   fhir_patient_name.use = 'official' then {
-    //     cda_patient_name_ofc -> fhir_patient_name;
-    //   };
-    // };
+  // Adopted 
+  cda_patient_name as cda_patient_name_ad where ((given | family).qualifier contains 'AD') then {
+    cda_patient_name_ad ->
+      fhir_patient.name = create('HumanName') as fhir_patient_name_ad,
+      fhir_patient_name_ad.use = 'old' then {
+        cda_patient_name_ad.family as cda_name_item_family where(qualifier.contains('AD')) then {
+          cda_name_item_family -> fhir_patient_name_ad.family = (cda_name_item_family.xmlText);
+        };
+        cda_patient_name_ad.given as cda_name_item_given where(qualifier.contains('AD')) then {
+          cda_name_item_given -> fhir_patient_name_ad.given = (cda_name_item_given.xmlText);
+        };
+      };
+  };
+
+    cda_patient_name as cda_patient_name_usual where (qualifier.contains('BR').exists().not() or qualifier.contains('AD').exists().not() ) then {
+      cda_patient_name_usual -> fhir_patient.name = create('HumanName') as fhir_humanName then {
+        // name.use
+        cda_patient_name_usual.use as cda_name_item_use ->
+          fhir_humanName.use = translate(cda_name_item_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
+
+        // name.text
+        cda_patient_name_usual.xmlText as cda_name_item_xmlText ->
+          fhir_humanName.text = (cda_name_item_xmlText);
+
+        // name.prefix
+        cda_patient_name_usual.prefix as cda_name_item_prefix where ( qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then{
+          cda_name_item_prefix -> fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix then {
+            cda_name_item_prefix.qualifier as qualifier ->
+              fhir_humanName_prefix.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+              extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
+            };
+        };
+        
+                
+        // name.given
+        cda_patient_name_usual.given as cda_name_item_given where (qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then {
+          cda_name_item_given -> fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
+            cda_name_item_given.qualifier as qualifier ->
+              fhir_humanName_given.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+              extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
+          };
+        };
+
+        // name.family
+        cda_patient_name_usual.family as cda_name_item_family where (qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then {
+          cda_name_item_family -> fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
+            cda_name_item_family.qualifier as qualifier ->
+              fhir_humanName_family.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+              extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
+          };
+        };
+
+        // name.suffix
+        cda_patient_name_usual.suffix as cda_name_item_suffix where (qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then {
+          cda_name_item_suffix -> fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
+            cda_name_item_suffix.qualifier as qualifier ->
+              fhir_humanName_suffix.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+              extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
+          };
+        };
+      };
+ 
+  };
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.2&effectiveDate=2021-08-24T08:35:56&language=de-DE
