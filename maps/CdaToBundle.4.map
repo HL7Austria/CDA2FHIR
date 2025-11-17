@@ -1117,8 +1117,8 @@ cda_patient_name.item as cda_name_item then {
                 extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
             };
           };
-
           
+          //name.family
             cda_name_item_family -> fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
               cda_name_item_family.qualifier as qualifier ->
                 fhir_humanName_family.extension as extension,
@@ -1126,7 +1126,6 @@ cda_patient_name.item as cda_name_item then {
                 extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
             };
           
-
           // name.suffix
           cda_name_item.suffix as cda_name_item_suffix where (qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then {
             cda_name_item_suffix -> fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
