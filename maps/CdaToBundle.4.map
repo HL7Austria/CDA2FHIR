@@ -1049,17 +1049,25 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 
 group CdaPatientNameToFhirPatientName(source cda_patient_name : PN,target fhir_patient : Patient){
     
-    cda_patient_name as cda_patient_name_br where ((given | family).qualifier contains 'BR' ) then {
-      // fhir_patient.name = create('HumanName') as fhir_patient_name_maiden,
-      cda_patient_name -> fhir_patient.name;
-
+    cda_patient_name as cda_patient_name_br where ((given | family).qualifier contains 'BR'  ) then {
+      cda_patient_name_br -> 
+      fhir_patient.name = create('HumanName') as fhir_patient_name_br,
+      fhir_patient_name_br.use = 'maiden' then {
+        cda_patient_name_br.family as cda_name_item_family where(qualifier.contains('BR')) then {
+          cda_name_item_family -> fhir_patient_name_br.family = (cda_name_item_family.xmlText);
+        };
+      cda_patient_name_br.given as cda_name_item_given where (qualifier.contains('BR')) then {
+          cda_name_item_given -> fhir_patient_name_br.given = (cda_name_item_given.xmlText);
+        };
     };
-    /*cda_patient_name as cda_patient_name where ( (prefix | given | family | suffix).qualifier.contains('BR').exists().not() ) then {
-      // cda_patient_name -> fhir_patient.name = create('HumanName') as fhir_patient_name;
-      cda_patient_name -> fhir_patient.name;
-
-    };*/
-  
+  };
+    // cda_patient_name as cda_patient_name_ofc where ( (given | family ).qualifier.contains('BR').exists().not() ) then {
+    //   cda_patient_name_ofc -> 
+    //   fhir_patient.name = create('HumanName') as fhir_patient_name, 
+    //   fhir_patient_name.use = 'official' then {
+    //     cda_patient_name_ofc -> fhir_patient_name;
+    //   };
+    // };
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.2&effectiveDate=2021-08-24T08:35:56&language=de-DE
