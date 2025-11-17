@@ -1048,56 +1048,55 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 }
 
 group CdaPatientNameToFhirPatientName(source cda_patient_name : PN, target fhir_patient : Patient){
-
+  
+  // For each family element, a HumanName is created.
+  // For family elements with qualifier="BR" or "AD", only the given elements are included.
   cda_patient_name.item as cda_name_item then {
     cda_name_item.family as cda_name_item_family where (qualifier.contains('BR')) then {
       cda_name_item_family -> 
         fhir_patient.name = create('HumanName') as fhir_patient_name_br,
         fhir_patient_name_br.use = 'maiden' then {
-
           cda_name_item.given as cda_name_item_given then {
             cda_name_item_given -> fhir_patient_name_br.given = (cda_name_item_given.xmlText) as fhir_patient_name_br_given;
             cda_name_item_given.qualifier as qualifier ->
-            fhir_patient_name_br_given.extension as extension,
-            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
-            extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
+              fhir_patient_name_br_given.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+              extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
           };
-
           cda_name_item_family -> fhir_patient_name_br.family = (cda_name_item_family.xmlText);  
         };
     };
   };
 
+// For each family element, a HumanName is created.
+// For family elements with qualifier="BR" or "AD", only the given elements are included.
 cda_patient_name.item as cda_name_item then {
   cda_name_item.family as cda_name_item_family where (qualifier.contains('AD')) then {
     cda_name_item_family ->
       fhir_patient.name = create('HumanName') as fhir_patient_name_ad,
-      fhir_patient_name_ad.use = 'old' then {
-    
+      fhir_patient_name_ad.use = 'old' then {   
         cda_name_item.given as cda_name_item_given then {
-          cda_name_item_given -> 
-            fhir_patient_name_ad.given = (cda_name_item_given.xmlText) as fhir_patient_name_ad_given;
+          cda_name_item_given -> fhir_patient_name_ad.given = (cda_name_item_given.xmlText) as fhir_patient_name_ad_given;
           cda_name_item_given.qualifier as qualifier ->
             fhir_patient_name_ad_given.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
             extension.value = translate(qualifier,'#ELGAEntityNamePartQualifierFHIRNamePartQualifier','code' );
         };
-
         cda_name_item_family -> fhir_patient_name_ad.family = (cda_name_item_family.xmlText);
       };
   };
 };
-
+  // For all other family elements, all elements are included.
   cda_patient_name.item as cda_name_item then {
     cda_name_item.family as cda_name_item_family where (qualifier.contains('BR').not() and qualifier.contains('AD').not() ) then {
       cda_name_item_family -> 
         fhir_patient.name = create('HumanName') as fhir_humanName then { 
+
           // name.use
           cda_name_item.use as cda_name_item_use -> fhir_humanName.use = translate(cda_name_item_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
 
           // name.text
-          cda_name_item.xmlText as cda_name_item_xmlText ->
-            fhir_humanName.text = (cda_name_item_xmlText);
+          cda_name_item.xmlText as cda_name_item_xmlText -> fhir_humanName.text = (cda_name_item_xmlText);
 
           // name.prefix
           cda_name_item.prefix as cda_name_item_prefix where ( qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then{
@@ -1108,8 +1107,7 @@ cda_patient_name.item as cda_name_item then {
                 extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code');
               };
           };
-          
-                  
+            
           // name.given
           cda_name_item.given as cda_name_item_given where (qualifier.where($this = 'BR').exists().not() and qualifier.where($this = 'AD').exists().not()) then {
             cda_name_item_given -> fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
