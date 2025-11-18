@@ -235,7 +235,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
   
   // ClinicalDocument.hl7at:formatCode: will not be mapped. (see AG ELGA CDA2FHIR 2025-11-17)
   // ClinicalDocument.hl7at:practiceSettingCode
-  cda.practiceSettingCode as cda_practiceSettingCode -> fhir_composition.category = create('CodeableConcept') as fhir_composition_category then CDCodeableConcept(cda_practiceSettingCode, fhir_composition_category);
+  cda.practiceSettingCode -> fhir_composition.category;
  
   // ClinicalDocument.effectiveTime
   cda.effectiveTime -> fhir_composition.date;
