@@ -1088,7 +1088,7 @@ cda_patient_name.item as cda_name_item then {
 };
   // For all other family elements, all elements are included.
   cda_patient_name.item as cda_name_item then {
-    cda_name_item.family as cda_name_item_family where (qualifier.contains('BR').not() and qualifier.contains('AD').not() ) then {
+    cda_name_item.family as cda_name_item_family where (qualifier != 'BR' and qualifier != 'AD') then {
       cda_name_item_family -> 
         fhir_patient.name = create('HumanName') as fhir_humanName then { 
 
