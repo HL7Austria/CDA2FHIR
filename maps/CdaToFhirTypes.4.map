@@ -697,6 +697,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       } "CdaNamePrefixToFhirNameGiven";
 
     // name.given
+    //ToDo add DataAbsent Reason for given
     cda_name_item.given as cda_name_item_given ->
       // name.given
       fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
@@ -711,6 +712,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       } "CdaNameGivenToFhirNameGiven";
 
     // name.family
+    //ToDo add DataAbsent Reason for family 
     cda_name_item.family as cda_name_item_family ->
       // name.family
       fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
