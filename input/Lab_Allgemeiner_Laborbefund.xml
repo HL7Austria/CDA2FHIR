@@ -105,11 +105,53 @@
                 <!-- Geschlecht des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <administrativeGenderCode code="F" displayName="Female" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
                 <!-- Geburtsdatum des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <birthTime value="19611224"/>
+                <birthTime value="19611224130100+0200"/>
                 <!-- Familienstand des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <maritalStatusCode code="M" displayName="Married" codeSystem="2.16.840.1.113883.5.2" codeSystemName="HL7:MaritalStatus"/>
                 <!-- Religionszugehörigkeit des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <religiousAffiliationCode code="101" codeSystem="2.16.840.1.113883.2.16.1.4.1" codeSystemName="HL7.AT:ReligionAustria" displayName="Römisch-Katholisch"/>
+                <guardian>
+                    <addr>
+                        <streetAddressLine>Guardianstraße 1</streetAddressLine>
+                        <postalCode>8011</postalCode>
+                        <city>Graz</city>
+                        <state>Steiermark</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom value="tel:+43.1234.5678"/>
+                    <guardianPerson>
+                        <name>Guardian Person 1</name>
+                    </guardianPerson>
+                </guardian>
+                <guardian>
+                    <addr>
+                        <streetAddressLine>Guardianstraße 2</streetAddressLine>
+                        <postalCode>8011</postalCode>
+                        <city>Graz</city>
+                        <state>Steiermark</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom value="tel:+43.1234.5678"/>
+                    <guardianPerson>
+                        <name>
+                            <given>Peter</given>
+                            <family>Guardian 2</family>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+                <guardian>
+                    <addr>
+                        <streetAddressLine>Guardianstraße 3</streetAddressLine>
+                        <postalCode>8011</postalCode>
+                        <city>Graz</city>
+                        <state>Steiermark</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom value="tel:+43.1234.5678"/>
+                    <guardianOrganization>
+                        <name>Guardian 3 Organization</name>
+                    </guardianOrganization>
+                </guardian>
                 <!-- Geburtsort des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <birthplace>
                     <place>
@@ -122,6 +164,12 @@
                         </addr>
                     </place>
                 </birthplace>
+                <languageCommunication>
+                    <languageCode code="de"/>
+                    <modeCode code="ESP" codeSystem="2.16.840.1.113883.5.60" displayName="Expressed spoken"/>
+                    <proficiencyLevelCode code="F" codeSystem="2.16.840.1.113883.5.61" displayName="Fair"/>
+                    <preferenceInd value="true"/>
+                </languageCommunication>
             </patient>
         </patientRole>
     </recordTarget>
