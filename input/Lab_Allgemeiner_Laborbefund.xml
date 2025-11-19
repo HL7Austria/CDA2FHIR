@@ -110,6 +110,48 @@
                 <maritalStatusCode code="M" displayName="Married" codeSystem="2.16.840.1.113883.5.2" codeSystemName="HL7:MaritalStatus"/>
                 <!-- Religionszugehörigkeit des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <religiousAffiliationCode code="101" codeSystem="2.16.840.1.113883.2.16.1.4.1" codeSystemName="HL7.AT:ReligionAustria" displayName="Römisch-Katholisch"/>
+                <guardian>
+                    <addr>
+                        <streetAddressLine>Guardianstraße 1</streetAddressLine>
+                        <postalCode>8011</postalCode>
+                        <city>Graz</city>
+                        <state>Steiermark</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom value="tel:+43.1234.5678"/>
+                    <guardianPerson>
+                        <name>Guardian Person 1</name>
+                    </guardianPerson>
+                </guardian>
+                <guardian>
+                    <addr>
+                        <streetAddressLine>Guardianstraße 2</streetAddressLine>
+                        <postalCode>8011</postalCode>
+                        <city>Graz</city>
+                        <state>Steiermark</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom value="tel:+43.1234.5678"/>
+                    <guardianPerson>
+                        <name>
+                            <given>Peter</given>
+                            <family>Guardian 2</family>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+                <guardian>
+                    <addr>
+                        <streetAddressLine>Guardianstraße 3</streetAddressLine>
+                        <postalCode>8011</postalCode>
+                        <city>Graz</city>
+                        <state>Steiermark</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom value="tel:+43.1234.5678"/>
+                    <guardianOrganization>
+                        <name>Guardian 3 Organization</name>
+                    </guardianOrganization>
+                </guardian>
                 <!-- Geburtsort des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <birthplace>
                     <place>
