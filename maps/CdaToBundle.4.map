@@ -925,7 +925,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
   // patientRole.patient
   cda_patientRole.patient as cda_patient then {
     // patient.name
-    cda_patient.name  as cda_patient_name then CdaPatientNameToFHIRPatientNameNew(cda_patient_name, fhir_patient);
+    cda_patient.name  as cda_patient_name then CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient);
 
     // patient.administrativeGenderCode
     cda_patient.administrativeGenderCode as cda_patient_gender then {
