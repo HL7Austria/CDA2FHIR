@@ -710,7 +710,16 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
             "qualifierValue";
         } "CdaNameGivenQualifierToFhirNameExtension";
       } "CdaNameGivenToFhirNameGiven";
-
+    
+    cda_name_item.given as cda_name_item_given where ($this.exists().not()) {
+      cda_name_item ->
+        fhir_humanName.given as fhir_humanName_given,
+        fhir_humanName_given.extension as fhir_given_extension,
+        fhir_given_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+        fhir_given_extension.value = create('code') as fhir_given_extension_code,
+        fhir_given_extension_code.value = 'unknown'
+        "CdaPatientNameGivenExistsNotToHumanNameGivenExtension";
+    };
     // name.family
     //ToDo add DataAbsent Reason for family 
     cda_name_item.family as cda_name_item_family ->
@@ -725,6 +734,15 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
             "qualifierValue";
         } "CdaNameFamilyQualifierToFhirNameExtension";
       } "CdaNameFamilyToFhirNameGiven";
+    cda_name_item.family as cda_name_item_family where ($this.exists().not()){
+      cda_name_item -> 
+        fhir_humanName.family as fhir_humanName_family,
+        fhir_humanName_family.extension as fhir_family_extension,
+        fhir_family_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+        fhir_family_extension.value = create('code') as fhir_family_extension_code,
+        fhir_family_extension_code.value = 'unknown'
+        "CdaPatientNameFamilyExistsNotToHumanNameFamilyExtension";
+    };
 
     // name.suffix
     cda_name_item.suffix as cda_name_item_suffix ->
