@@ -346,7 +346,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
               cda_informationRecipient_inner.name -> fhir_practitioner.name;
             };
           };
-          cda_informationRecipient.typeCode as cda_typeCode-> fhir_practitionerRole.code;
+          // cda_informationRecipient.typeCode as cda_typeCode-> fhir_practitionerRole.code;
 
         // Organization
         cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
