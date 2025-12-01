@@ -1981,8 +1981,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 	// cdaObs.value: INT as obsValueCDA -> observation.value = create('integer') as value then INT(obsValueCDA,value) "observationValueINT";
 	// // Interval of Integers
 	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
-	// // Boolean
-	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
 	// // Coded Value
 	// cdaObs.value: CV as obsValueCDA -> observation.value = create('CodeableConcept') as value then CVCodeableConcept(obsValueCDA,value) "observationValueCV";
 	// // Time Stamp
