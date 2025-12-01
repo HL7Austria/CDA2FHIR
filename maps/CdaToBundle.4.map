@@ -1966,6 +1966,9 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+  
+  // observation.value(xsi:type="RTO_PQ_PQ")
+  cda_laboratory_observation.value: RTO_PQ_PQ as cda_observation_value -> fhir_observation.value = create('Ratio') as fhir_observation_value then RTOPQPQRatio(cda_observation_value,fhir_observation_value) "CdaObservationValueToFhirObservationValueRTOPQPQRatio";
 
   // TODO other datatypes
   // // Concept Descriptor
@@ -1989,9 +1992,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
 	// // Ratio of quantities
 	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
-	// // Ratio of physical quantities
-	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
-
+	
   // observation.interpretationCode
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
   // cda_laboratory_observation.interpretationCode -> fhir_observation.interpretation;
