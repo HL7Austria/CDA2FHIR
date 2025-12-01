@@ -1967,6 +1967,9 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
 
+
+  // observation.value(xsi:type="INT")
+	cda_laboratory_observation.value: INT as cda_observation_value -> fhir_observation.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value) "observationValueINT";
   // TODO other datatypes
   // // Concept Descriptor
 	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
@@ -1975,8 +1978,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
 	// // Physical Quantity - not standard conformant, but required for example report
 	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
-	// // Integer
-	// cdaObs.value: INT as obsValueCDA -> observation.value = create('integer') as value then INT(obsValueCDA,value) "observationValueINT";
 	// // Interval of Integers
 	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
 	// // Boolean
