@@ -709,9 +709,9 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
             "qualifierValue";
         } "CdaNameGivenQualifierToFhirNameExtension";
       } "CdaNameGivenToFhirNameGiven";
-    
-    cda_name_item.given where ($this.exists().not()) then {
-      cda_name_item ->
+    // ToDo: 'string' object is not iterable -> fix fml for data absent ext.  
+    cda_name_item.given where (cda_name_item.given.exists().not()) then {
+      cda_name_item.given -> 
         fhir_humanName.given as fhir_humanName_given,
         fhir_humanName_given.extension as fhir_given_extension,
         fhir_given_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
