@@ -1966,7 +1966,8 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-
+  
+  // observation.value(xsi:type="IVL_INT")
   cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
     cda_observation_value where(cda_observation_value.value.exists()) -> fhir_observation.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value)"observationValueINT";
     cda_observation_value where(cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVL_INT(cda_observation_value,fhir_observation_value)"observationValueIVLINT";
