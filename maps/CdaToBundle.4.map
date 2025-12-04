@@ -52,6 +52,17 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
+conceptmap "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"{
+  prefix s = "https://termgit.elga.gv.at/ValueSet-elga-observationinterpretation.html"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory"
+
+  s: "260415000	" == t: "260415000"  // Not detected
+  s: "260373001"  == t: "260373001"  // Detected
+  s: "260413007"  == t: "260413007"  // None
+  s: "89292003"   == t: "89292003"   // Rare 
+}
+
+
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias Author as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedAuthor" alias AssignedAuthor as source
