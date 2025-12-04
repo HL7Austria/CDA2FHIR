@@ -1969,7 +1969,9 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   
   // observation.value(xsi:type="IVL_INT")
   cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
-    cda_observation_value where(cda_observation_value.value.exists()) -> fhir_observation.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value)"observationValueINT";
+    // not allowed in value[x] Slicing. 
+    //cda_observation_value where(cda_observation_value.value.exists()) -> fhir_observation.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value)"observationValueINT";
+    
     cda_observation_value where(cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVL_INT(cda_observation_value,fhir_observation_value)"observationValueIVLINT";
   };
 
