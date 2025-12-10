@@ -1675,7 +1675,8 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
             };
           };
       };
-      //Note: does not get executed at the moment
+      // ToDo
+      // Reference FHIR Section and create Observation instead of Media
       cda_act.entryRelationship as cda_entryRelationship where $this.observationMedia.templateId.where(root='1.2.40.0.34.6.0.11.3.19') then {
         cda_entryRelationship.observationMedia as cda_observationMedia -> 
               
@@ -2226,7 +2227,7 @@ group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, ta
 }
 
 group CdaObservationMediaToFhirMedia(source cda_observationMedia: ObservationMedia,  target fhir_media: Media, target fhir_bundle: Bundle) {
-  
+  // Replace with Observation and Observation.extension.attachment
   // cda_section.text
   // TODO check why some text duplication occurs here "DokumentDokument" or "ErstellungsdatumErstellungsdatum"
   // TODO deal with StrucText_Doc to string
