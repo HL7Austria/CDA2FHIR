@@ -58,7 +58,6 @@ jobs:
           mkdir output
           mkdir validation
           for filename in input/*.xml; do
-                  ./MyProgram.exe "$filename" "Logs/$(basename "$filename" .xml)_Log$i.txt"
               basename=$(basename "$filename" .xml)
               coverage run --source=python-maps --data-file=coverage/.coverage.xml.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.xml
               coverage run --source=python-maps --data-file=coverage/.coverage.json.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.json
