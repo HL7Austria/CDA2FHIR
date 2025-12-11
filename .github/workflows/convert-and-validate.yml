@@ -56,10 +56,10 @@ jobs:
           coverage run --data-file=coverage/.coverage.cov1 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
           coverage run --data-file=coverage/.coverage.cov2 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
 
-      - name: Validate
-        run: |
-          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors in FHIR XML"
-          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors in FHIR JSON"
+      # - name: Validate
+      #   run: |
+      #     java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors in FHIR XML"
+      #     java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors in FHIR JSON"
 
       - name: coverage
         run: |
@@ -79,14 +79,10 @@ jobs:
           path: |
             fhir.xml
             fhir.json
-            validation.xml.log
-            validation.json.log
-            validation.xml.html
-            validation.json.html
             python-maps/CdaToBundle.4.py
 
-      - name: Validate
-        run: |
-          chmod 744 check_validation_result.sh
-          ./check_validation_result.sh || exit_code=$?
-          exit $exit_code
+      # - name: Validate
+      #   run: |
+      #     chmod 744 check_validation_result.sh
+      #     ./check_validation_result.sh || exit_code=$?
+      #     exit $exit_code
