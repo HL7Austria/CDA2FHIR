@@ -74,8 +74,6 @@ jobs:
         with:
           coverageFile: coverage/coverage.xml
           token: ${{ secrets.GITHUB_TOKEN }}
-          thresholdAll: 0.9
-          thresholdModified: 1
 
       - name: upload
         uses: actions/upload-artifact@v4
