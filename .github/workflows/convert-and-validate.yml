@@ -55,8 +55,8 @@ jobs:
       - name: Convert test file to FHIR XML and JSON
         run: |
           mkdir coverage
-          coverage run --data-file=coverage/.coverage.cov1 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
-          coverage run --data-file=coverage/.coverage.cov2 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
+          coverage run --source=python-maps --data-file=coverage/.coverage.cov1 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
+          coverage run --source=python-maps --data-file=coverage/.coverage.cov2 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
 
       - name: Validate
         run: |
