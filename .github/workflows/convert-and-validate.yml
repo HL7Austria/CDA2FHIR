@@ -67,7 +67,7 @@ jobs:
 
       - name: coverage
         run: |
-          coverage combine --data-file=coverage/.coverage coverage/
+          coverage combine --keep --data-file=coverage/.coverage coverage/
           coverage xml --data-file=coverage/.coverage -o coverage/coverage.xml
           coverage html --data-file=coverage/.coverage
 
@@ -82,6 +82,7 @@ jobs:
         with:
           name: my-artifact
           path: |
+            coverage/
             output/
             validation/
             python-maps/CdaToBundle.4.py
