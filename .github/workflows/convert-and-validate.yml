@@ -52,16 +52,19 @@ jobs:
         run: |
           wget https://fhir.ehdsi.eu/laboratory/package.tgz
 
-      - name: Convert test file to FHIR XML and JSON
+      - name: Convert & validate test file to FHIR XML and JSON
         run: |
           mkdir coverage
-          coverage run --source=python-maps --data-file=coverage/.coverage.cov1 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
-          coverage run --source=python-maps --data-file=coverage/.coverage.cov2 --branch python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
-
-      - name: Validate
-        run: |
-          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors in FHIR XML"
-          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors in FHIR JSON"
+          mkdir output
+          mkdir validation
+          for filename in input/*.xml; do
+                  ./MyProgram.exe "$filename" "Logs/$(basename "$filename" .xml)_Log$i.txt"
+              basename=$(basename "$filename" .xml)
+              coverage run --source=python-maps --data-file=coverage/.coverage.xml.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.xml
+              coverage run --source=python-maps --data-file=coverage/.coverage.json.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.json
+              java -jar validator_cli.jar output/$basename.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.xml.log || echo "validation errors in FHIR XML"
+              java -jar validator_cli.jar output/$basename.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.json.log || echo "validation errors in FHIR JSON"
+          done
 
       - name: coverage
         run: |
@@ -80,12 +83,8 @@ jobs:
         with:
           name: my-artifact
           path: |
-            fhir.xml
-            fhir.json
-            validation.xml.log
-            validation.json.log
-            validation.xml.html
-            validation.json.html
+            output/
+            validation/
             python-maps/CdaToBundle.4.py
             htmlcov/
 
