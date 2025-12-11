@@ -65,9 +65,13 @@ jobs:
 
       - name: coverage
         run: |
+          ls -al coverage/
           coverage combine --keep --data-file=coverage/.coverage coverage/
+          ls -al coverage/
           coverage xml --data-file=coverage/.coverage -o coverage/coverage.xml
+          ls -al coverage/
           coverage html --data-file=coverage/.coverage
+          ls -al coverage/
 
       - name: display coverage
         uses: orgoro/coverage@v3.2
