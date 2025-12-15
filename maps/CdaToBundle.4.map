@@ -401,11 +401,11 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
             fhir_patient.id as fhir_patient_id,
             fhir_relatedPerson_patient_reference.reference = append('urn:uuid:',fhir_patient_id),
-            fhir_relatedPerson_patient_reference.type ='Patient';
+            fhir_relatedPerson_patient_reference.type ='Patient' "ReferenceToPatient";
           cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
             cda_informationRecipient_inner.name -> fhir_relatedPerson.name;
           };
-        };
+        } "CdaIntendedRecipientToFhirRelatedPerson";
     };
   };
 
@@ -1072,7 +1072,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
           fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept,
           role_codeable_concept.coding = create('Coding') as role_coding,
           role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-          role_coding.code = 'GUARD'; 
+          role_coding.code = 'GUARD' "CdaGuardianToFhirGuardian"; 
 
       // patient.guardian.addr
       // cda_patient_guardian.addr as cda_patient_guardian_addr -> fhir_patient_contact.address = create('Address') as fhir_contact_address then CdaAdressCompilationToFhirAustrianAddress(cda_patient_guardian_addr, fhir_contact_address) "CdaGuardianAddressToFhirContactAddress";
