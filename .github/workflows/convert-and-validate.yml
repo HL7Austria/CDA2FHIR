@@ -61,6 +61,8 @@ jobs:
               basename=$(basename "$filename" .xml)
               coverage run --source=python-maps --data-file=coverage/.coverage.xml.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.xml
               coverage run --source=python-maps --data-file=coverage/.coverage.json.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.json
+              java -jar validator_cli.jar output/$basename.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.xml.log || echo "validation errors in FHIR XML"
+              java -jar validator_cli.jar output/$basename.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.json.log || echo "validation errors in FHIR JSON"
           done
 
       - name: coverage
@@ -87,8 +89,8 @@ jobs:
             python-maps/CdaToBundle.4.py
             htmlcov/
 
-      # - name: Validate
-      #   run: |
-      #     chmod 744 check_validation_result.sh
-      #     ./check_validation_result.sh || exit_code=$?
-      #     exit $exit_code
+      - name: Validate
+        run: |
+          chmod 744 check_validation_result.sh
+          ./check_validation_result.sh || exit_code=$?
+          exit $exit_code
