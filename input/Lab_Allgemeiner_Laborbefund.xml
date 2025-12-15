@@ -10984,9 +10984,46 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="PQ" unit="kU/L" value="5.18"/>
+                                            <value 
+                                                xsi:type="CD"
+                                                code="255599008"
+                                                codeSystem="1.2.40.0.34.10.186"
+                                                displayName="Not detected"/>
                                             <interpretationCode code="RAST3" codeSystemName="RAST-Klassen" codeSystem="1.2.40.0.34.5.104" displayName="3.50  17.49  kU/l (high level of allergen specific IgE)"/>
                                             <!-- Referenzbereich -->
+                                            <entryRelationship typeCode="REFR" contextConductionInd="true">
+                                                <observation classCode="OBS" moodCode="EVN">
+                                                    <!-- Laboratory Observation templates -->
+                                                    <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                                    
+                                                    <!-- Same code as current observation (MANDATORY) -->
+                                                    <code
+                                                        code="6020-2"
+                                                        codeSystem="2.16.840.1.113883.6.1"
+                                                        codeSystemName="LOINC"
+                                                        displayName="Alternaria alternata IgE Ab [Units/volume] in Serum"/>
+                                                    
+                                                    <!-- Required -->
+                                                    <statusCode code="completed"/>
+                                                    
+                                                    <!-- Earlier time -->
+                                                    <effectiveTime value="20201201101500+0100"/>
+                                                    
+                                                    <!-- Same ST string value -->
+                                                    <value xsi:type="ST">
+                                                        PreviousResult
+                                                    </value>
+                                                    
+                                                    <!-- Interpretation present because referenceRange may exist -->
+                                                    <interpretationCode
+                                                        code="RAST3"
+                                                        codeSystem="1.2.40.0.34.5.104"
+                                                        codeSystemName="RAST-Klassen"
+                                                        displayName="3.50 – 17.49 kU/l (high level of allergen specific IgE)"/>
+                                                </observation>
+                                            </entryRelationship>
+                                            
                                             <referenceRange typeCode="REFV">
                                                 <observationRange classCode="OBS" moodCode="EVN.CRT">
                                                     <text>
@@ -10999,6 +11036,10 @@
                                                     <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                                 </observationRange>
                                             </referenceRange>
+                                            
+                                            
+                                            
+                                            
                                         </observation>
                                     </component>
                                 </organizer>
