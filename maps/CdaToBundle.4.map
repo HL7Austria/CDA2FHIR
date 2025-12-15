@@ -367,18 +367,18 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
             cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
               cda_informationRecipient_inner.name -> fhir_practitioner.name;
             };
-          };
 
-        // Organization
-        cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
-          fhir_bundle.entry as fhir_bundle_entry_org,
-          fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
-          fhir_organization.id = uuid() as fhir_organization_id,
-          fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
+            // Organization
+            cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
+              fhir_bundle.entry as fhir_bundle_entry_org,
+              fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
+              fhir_organization.id = uuid() as fhir_organization_id,
+              fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
 
-          fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
-          fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
+              fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+              fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+              fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
+          } "CdaIntendedRecipientToFhirPractitionerRole";
     };
 
     cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists().not()) then {
