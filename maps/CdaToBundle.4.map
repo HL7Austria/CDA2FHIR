@@ -549,7 +549,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
                   "FhirPatientContactRoleExtensionEcon"; //Emergency contact
           };
         cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
-              cda_associatedEntity_code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
+              cda_associatedEntity.code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
               cda_associatedEntity_code ->
               fhir_patient_contact.extension as fhir_patient_contact_extension_role,
               // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
@@ -631,7 +631,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           };
 
         cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
-          cda_associatedEntity_code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
+          cda_associatedEntity.code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
           cda_associatedEntity_code ->
           fhir_patient_contact.extension as fhir_patient_contact_extension_role,
           // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
@@ -1032,7 +1032,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 
     // patient.birthTime (only date)
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists().not()) then {
-      cda_patient_birthTime -> fhir_patient.birthDate "CdaBirthTimeToFhirBirthDate";
+      cda_patient.birthTime -> fhir_patient.birthDate "CdaBirthTimeToFhirBirthDate";
       // patient.birthTime (with time if available)
       cda_patient_birthTime where (cda_patient_birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
         fhir_patient_birthDate.extension as extension,
