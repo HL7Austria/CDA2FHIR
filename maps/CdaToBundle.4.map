@@ -1957,14 +1957,13 @@ group CdaObservationToFhirObservation(source cda_observation : CDAObservation, t
 
 }
 
-group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaLaboratoryObservationToFhirObservationSpecialized {
   cda_laboratory_observation ->
     fhir_observation.meta as fhir_observation_meta,
     fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
     "FhirObservationProfile";
 
-  // observation.id
-  cda_laboratory_observation.id -> fhir_observation.identifier;
+  
 
   // fhir_observation.category
   cda_laboratory_observation -> fhir_observation.category as fhir_category,
@@ -1994,20 +1993,8 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // observation.text
   // TODO
   // observation.statusCode
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96').not() then {
-    cda_laboratory_observation.statusCode as observation_statusCode then {
-      observation_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
-    } "CdaStatusCodeToFhirObservationStatusMapped";
-  } "CdaStatusCodeToFhirObservationStatus";
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') ->
-    fhir_observation.status = 'preliminary',
-    fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
-    fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding,
-    fhir_observation_dataAbsentReason_coding.code = 'temp-unknown',
-    fhir_observation_dataAbsentReason_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason'
-     "CdaIncompleteObservationToFhirObservationStatus";
+  // observation.statusCode
+  cda_laboratory_observation.statusCode.code as cda_code -> fhir_observation.status = 'final';
 
   // observation.effectiveTime
   cda_laboratory_observation.effectiveTime as cda_effectiveTime -> fhir_observation.effective = create('dateTime') as fhir_observation_effective then TSDateTime(cda_effectiveTime, fhir_observation_effective) "CdaEffectiveTimeToFhirObservationEffective";
@@ -2030,11 +2017,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
-  // observation.value(xsi:type="CD")
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96').not() then {
-    cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
-  } "CdaObservationValueToFhirObservationValueCD";
+  
 
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
@@ -2077,6 +2060,60 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
     "CdaObservationInterpretationCodeToFhirObservationInterpretation";
 
+  
+
+  // observation.participant
+  // TODO
+
+  // observation.entryRelationship (Comment Entry)
+  // TODO
+
+  // observation.entryRelationship (Frühere Ergebnisse)
+   cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.observation.exists()) then {
+    
+    cda_entryRelationship.observation as cda_observation_previous ->  
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Observation') as fhir_observation_previous,
+      fhir_observation_previous.id = uuid() as fhir_observation_previous_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_previous_id),
+
+      fhir_observation.extension as fhir_observation_extension,
+      fhir_observation_extension.url = 'http://hl7.org/fhir/StructureDefinition/observation-sequelTo',
+      fhir_observation_extension.value = create('Reference') as fhir_observation_extension_reference,
+      fhir_observation_extension_reference.reference = append('urn:uuid:',fhir_observation_previous_id),
+      fhir_observation_extension_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda,cda_observation_previous,fhir_observation_previous,fhir_practitionerRole,fhir_patient,fhir_bundle);
+   };
+
+  
+}
+
+group CdaLaboratoryObservationToFhirObservationSpecialized(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle){
+  // observation.id
+  cda_laboratory_observation.id -> fhir_observation.identifier;
+
+  cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96').not() then {
+    cda_laboratory_observation.statusCode as observation_statusCode then {
+      observation_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
+    } "CdaStatusCodeToFhirObservationStatusMapped";
+  } "CdaStatusCodeToFhirObservationStatus";
+  
+  cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') ->
+    fhir_observation.status = 'preliminary',
+    fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
+    fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding,
+    fhir_observation_dataAbsentReason_coding.code = 'temp-unknown',
+    fhir_observation_dataAbsentReason_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason'
+     "CdaIncompleteObservationToFhirObservationStatus";
+
+  // observation.value(xsi:type="CD")
+  cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96').not() then {
+    cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
+  } "CdaObservationValueToFhirObservationValueCD";
+
+
   // observation.performer if existent in observation
   cda_laboratory_observation.performer as cda_laboratory_observation_performer
     where cda_laboratory_observation.performer.exists()
@@ -2097,28 +2134,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     "CdaObservationPerformerExistsNotRole";
 
   } "CdaObservationPerformerExistsNot";
-
-  // observation.participant
-  // TODO
-
-  // observation.entryRelationship (Comment Entry)
-  // TODO
-
-  // observation.entryRelationship (Frühere Ergebnisse)
-   cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.observation.exists()) then {
-    
-    cda_entryRelationship.observation as cda_observation ->  
-      fhir_bundle.entry as fhir_bundle_entry,
-      fhir_bundle_entry.resource = create('Observation') as fhir_observation_previous,
-      fhir_observation_previous.id = uuid() as fhir_observation_previous_id,
-      fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_previous_id),
-
-      fhir_observation.extension as fhir_observation_extension,
-      fhir_observation_extension.url = 'http://hl7.org/fhir/StructureDefinition/observation-sequelTo',
-      fhir_observation_extension.value = create('Reference') as fhir_observation_extension_reference,
-      fhir_observation_extension_reference.reference = append('urn:uuid:',fhir_observation_previous_id),
-      fhir_observation_extension_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda,cda_observation,fhir_observation_previous,fhir_practitionerRole,fhir_patient,fhir_bundle);
-   };
 
   // observation.referenceRange
   cda_laboratory_observation.referenceRange as cda_observation_referenceRange then {
