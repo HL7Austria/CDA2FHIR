@@ -2105,7 +2105,20 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO
 
   // observation.entryRelationship (Frühere Ergebnisse)
-  // TODO
+   cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.observation.exists()) then {
+    
+    cda_entryRelationship.observation as cda_observation ->  
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Observation') as fhir_observation_previous,
+      fhir_observation_previous.id = uuid() as fhir_observation_previous_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_previous_id),
+
+      fhir_observation.extension as fhir_observation_extension,
+      fhir_observation_extension.url = 'http://hl7.org/fhir/StructureDefinition/observation-sequelTo',
+      fhir_observation_extension.value = create('Reference') as fhir_observation_extension_reference,
+      fhir_observation_extension_reference.reference = append('urn:uuid:',fhir_observation_previous_id),
+      fhir_observation_extension_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda,cda_observation,fhir_observation_previous,fhir_practitionerRole,fhir_patient,fhir_bundle);
+   };
 
   // observation.referenceRange
   cda_laboratory_observation.referenceRange as cda_observation_referenceRange then {
