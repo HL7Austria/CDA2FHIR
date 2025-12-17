@@ -1957,7 +1957,7 @@ group CdaObservationToFhirObservation(source cda_observation : CDAObservation, t
 
 }
 
-group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaLaboratoryObservationToFhirObservationSpecialized {
+group CdaGeneralLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle){
   cda_laboratory_observation ->
     fhir_observation.meta as fhir_observation_meta,
     fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
@@ -2081,13 +2081,13 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       fhir_observation_extension.url = 'http://hl7.org/fhir/StructureDefinition/observation-sequelTo',
       fhir_observation_extension.value = create('Reference') as fhir_observation_extension_reference,
       fhir_observation_extension_reference.reference = append('urn:uuid:',fhir_observation_previous_id),
-      fhir_observation_extension_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda,cda_observation_previous,fhir_observation_previous,fhir_practitionerRole,fhir_patient,fhir_bundle);
+      fhir_observation_extension_reference.type = 'Observation' then CdaGeneralLaboratoryObservationToFhirObservation(cda,cda_observation_previous,fhir_observation_previous,fhir_practitionerRole,fhir_patient,fhir_bundle);
    };
 
   
 }
 
-group CdaLaboratoryObservationToFhirObservationSpecialized(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle){
+group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_practitionerRole: PractitionerRole, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaGeneralLaboratoryObservationToFhirObservation{
   // observation.id
   cda_laboratory_observation.id -> fhir_observation.identifier;
 

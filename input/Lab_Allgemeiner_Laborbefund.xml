@@ -10987,7 +10987,7 @@
                                             <value 
                                                 xsi:type="CD"
                                                 code="255599008"
-                                                codeSystem="1.2.40.0.34.10.186"
+                                                codeSystem="2.16.840.1.113883.6.96"
                                                 displayName="Not detected"/>
                                             <interpretationCode code="RAST3" codeSystemName="RAST-Klassen" codeSystem="1.2.40.0.34.5.104" displayName="3.50  17.49  kU/l (high level of allergen specific IgE)"/>
                                             <!-- Referenzbereich -->
