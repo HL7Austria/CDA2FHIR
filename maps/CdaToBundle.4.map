@@ -2060,8 +2060,6 @@ group CdaGeneralLaboratoryObservationToFhirObservation(source cda: ClinicalDocum
     fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
     "CdaObservationInterpretationCodeToFhirObservationInterpretation";
 
-  
-
   // observation.participant
   // TODO
 
@@ -2076,6 +2074,14 @@ group CdaGeneralLaboratoryObservationToFhirObservation(source cda: ClinicalDocum
       fhir_bundle_entry.resource = create('Observation') as fhir_observation_previous,
       fhir_observation_previous.id = uuid() as fhir_observation_previous_id,
       fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_previous_id),
+
+      // performer - data absent reason = unknown 
+
+      fhir_observation_previous.performer as fhir_observation_previous_performer,
+      fhir_observation_previous_performer.extension as fhir_performer_extension,
+      fhir_performer_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+      fhir_performer_extension.valueCode = 'unknown',
+
 
       fhir_observation.extension as fhir_observation_extension,
       fhir_observation_extension.url = 'http://hl7.org/fhir/StructureDefinition/observation-sequelTo',
