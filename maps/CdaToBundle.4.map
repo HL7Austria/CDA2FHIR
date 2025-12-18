@@ -333,9 +333,81 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         };
     };
   };
-
+  
   // ClinicalDocument.informationRecipient
-  // TODO based on analysis of sample reports currently not required
+  cda.informationRecipient as cda_informationRecipient then {
+
+    // -> PractitionerRole
+    cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists()) then {
+
+        // PractitionerRole creation
+        cda_intendedRecipient ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+
+          // Composition extension
+          fhir_composition.extension as fhir_composition_informationRecipient_extension,
+          fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+          fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
+          fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_composition_informationRecipient_extension_reference.type = 'PractitionerRole',
+          
+          // Practitioner creation
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+          fhir_practitioner.id = uuid() as fhir_practitioner_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+
+          fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner,
+          fhir_practitionerRole_practitioner.reference = append('urn:uuid:', fhir_practitioner_id),
+          fhir_practitionerRole_practitioner.type = 'Practitioner' then {
+            cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
+            cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
+              cda_informationRecipient_inner.name -> fhir_practitioner.name;
+            };
+
+            // Organization
+            cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
+              fhir_bundle.entry as fhir_bundle_entry_org,
+              fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
+              fhir_organization.id = uuid() as fhir_organization_id,
+              fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
+
+              fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+              fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+              fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
+          } "CdaIntendedRecipientToFhirPractitionerRole";
+    };
+
+    cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists().not()) then {
+    
+      cda_intendedRecipient ->
+        // Create RelatedPerson   
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+        fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
+        
+        // Create Composition.extension
+        fhir_composition.extension as fhir_composition_informationRecipient_extension,
+        fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+        fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
+        fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
+        fhir_composition_informationRecipient_extension_reference.type = 'RelatedPerson' then {
+          cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_relatedPerson.identifier;
+          cda_intendedRecipient -> 
+            fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+            fhir_patient.id as fhir_patient_id,
+            fhir_relatedPerson_patient_reference.reference = append('urn:uuid:',fhir_patient_id),
+            fhir_relatedPerson_patient_reference.type ='Patient' "ReferenceToPatient";
+          cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
+            cda_informationRecipient_inner.name -> fhir_relatedPerson.name;
+          };
+        } "CdaIntendedRecipientToFhirRelatedPerson";
+    };
+  };
 
   // ClinicalDocument.legalAuthenticator
   cda.legalAuthenticator as cda_legalAuthenticator ->
@@ -477,7 +549,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
                   "FhirPatientContactRoleExtensionEcon"; //Emergency contact
           };
         cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
-              cda_associatedEntity_code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
+              cda_associatedEntity.code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
               cda_associatedEntity_code ->
               fhir_patient_contact.extension as fhir_patient_contact_extension_role,
               // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
@@ -559,7 +631,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
           };
 
         cda_associatedEntity.code as cda_associatedEntity_code where (code !='GUARD' and code !='SPON') then {
-          cda_associatedEntity_code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
+          cda_associatedEntity.code -> fhir_patient_contact.relationship "CdaAssociatedEntityCodeToFhirPatientContactRelationship";
           cda_associatedEntity_code ->
           fhir_patient_contact.extension as fhir_patient_contact_extension_role,
           // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
@@ -960,7 +1032,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 
     // patient.birthTime (only date)
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists().not()) then {
-      cda_patient_birthTime -> fhir_patient.birthDate "CdaBirthTimeToFhirBirthDate";
+      cda_patient.birthTime -> fhir_patient.birthDate "CdaBirthTimeToFhirBirthDate";
       // patient.birthTime (with time if available)
       cda_patient_birthTime where (cda_patient_birthTime.value.toString().length() > 10) -> fhir_patient.birthDate as fhir_patient_birthDate,
         fhir_patient_birthDate.extension as extension,
@@ -1000,7 +1072,7 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
           fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept,
           role_codeable_concept.coding = create('Coding') as role_coding,
           role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-          role_coding.code = 'GUARD'; 
+          role_coding.code = 'GUARD' "CdaGuardianToFhirGuardian"; 
 
       // patient.guardian.addr
       // cda_patient_guardian.addr as cda_patient_guardian_addr -> fhir_patient_contact.address = create('Address') as fhir_contact_address then CdaAdressCompilationToFhirAustrianAddress(cda_patient_guardian_addr, fhir_contact_address) "CdaGuardianAddressToFhirContactAddress";
@@ -2046,9 +2118,9 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
         // observation.referenceRange.observationRange.value
         cda_referenceRange_observationRange.value as cda_observationRange_value then {
           // observation.referenceRange.observationRange.value.low
-          cda_observationRange_value.low -> fhir_observation_referenceRange.low;
+          cda_observationRange_value.low where (nullFlavor.exists().not()) -> fhir_observation_referenceRange.low;
           // observation.referenceRange.observationRange.value.high
-          cda_observationRange_value.high -> fhir_observation_referenceRange.high;
+          cda_observationRange_value.high where (nullFlavor.exists().not()) -> fhir_observation_referenceRange.high;
         };
         // observation.referenceRange.observationRange.interpretationCode (always 'N')
         cda_referenceRange_observationRange.interpretationCode ->

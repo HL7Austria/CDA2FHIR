@@ -340,7 +340,7 @@
     <informationRecipient typeCode="TRC">
         <intendedRecipient>
             <!-- Identifikation des beabsichtigten sekundären Empfängers aus dem GDA-Index (siehe Allgemeiner Implementierungsleitfaden) -->
-            <id nullFlavor="UNK"/>
+            <id root="1.2.40.0.34.99.5678" extension="1234" assigningAuthorityName="GDA Index"/>
             <!-- Personendaten des beabsichtigten sekundären Empfängers (siehe Allgemeiner Implementierungsleitfaden) -->
             <informationRecipient>
                 <name>
@@ -349,27 +349,6 @@
                     <family>Empfänger Sekundär</family>
                 </name>
             </informationRecipient>
-            <!-- Organisation, der der beabsichtigte primäre Empfänger angehört (siehe Allgemeiner Implementierungsleitfaden) -->
-            <receivedOrganization>
-                <!-- Identifikation der Organisation des beabsichtigten sekundären Empfängers aus dem GDA-Index -->
-                <id root="1.2.40.0.34.99.5678" assigningAuthorityName="GDA Index"/>
-                <!-- Name der Organisation des beabsichtigten sekundären Empfängers -->
-                <name>Ordination Dr. Sekundär</name>
-                <!-- Kontaktdaten der Organisation des beabsichtigten sekundären Empfängers -->
-                <telecom value="tel:0512.1234567"/>
-                <telecom value="fax:0512.1234567.11"/>
-                <telecom value="mailto:office@ordination-sekundaer.at"/>
-                <telecom value="http://www.ordination-sekundaer.at"/>
-                <telecom value="me:12345678792"/>
-                <!-- Adresse der Organisation des beabsichtigten sekundären Empfängers -->
-                <addr>
-                    <streetName>Sekundärstraße</streetName>
-                    <houseNumber>22</houseNumber>
-                    <postalCode>6020</postalCode>
-                    <city>Innsbruck</city>
-                    <country>AUT</country>
-                </addr>
-            </receivedOrganization>
         </intendedRecipient>
     </informationRecipient>
 
