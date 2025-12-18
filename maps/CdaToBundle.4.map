@@ -2102,7 +2102,21 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO
 
   // observation.entryRelationship (Comment Entry)
-  // TODO
+  cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.act.exists()) then {
+    cda_entryRelationship.act as cda_act -> 
+      fhir_observation.note as fhir_observation_note then {
+        // toDo add mapping for cda_act.text -> fhir_observation_note.text 
+
+        cda_act.author as cda_author -> 
+          fhir_bundle.entry as fhir_bundle_entry, 
+          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_practitionerRole_id),
+          fhir_observation_note.authorReference = create('Reference') as fhir_observation_note_authorReference,
+          fhir_observation_note_authorReference.reference = append('urn:uuid:',fhir_practitionerRole_id),
+          fhir_observation_note_authorReference.type = 'PractitionerRole' then CdaAuthorToFhirPractitionerRole(cda_author,fhir_practitionerRole,fhir_bundle);
+      }; 
+  };
 
   // observation.entryRelationship (Frühere Ergebnisse)
   // TODO
