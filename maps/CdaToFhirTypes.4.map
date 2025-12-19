@@ -747,35 +747,6 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
   cda_patient_name.item as cda_name_item then {
     cda_patient_name.family as cda_name_item_family -> 
       fhir_patient.name = create('HumanName') as fhir_humanName then {
-
-        cda_patient_name where (given.exists().not()) then {
-            cda_patient_name ->
-              fhir_humanName.given as fhir_humanName_given,
-              fhir_humanName_given.extension as fhir_given_extension,
-              fhir_given_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
-              fhir_given_extension.value = create('code') as fhir_given_extension_code,
-              fhir_given_extension_code.value = 'unknown'
-              "CdaPatientNameGivenExistsNotToHumanNameGivenExtension";
-          } "CdaNameNoGivenItem";
-
-        // name.given
-        cda_patient_name where (given.exists()) then {
-          cda_patient_name.item as cda_name_item then {
-            cda_name_item.given as cda_name_item_given ->
-              // name.given
-              fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
-                // name.given.qualifier
-                cda_name_item_given where cda_name_item_given.qualifier.exists() then {
-                  cda_name_item_given.qualifier as qualifier ->
-                    fhir_humanName_given.extension as extension,
-                    extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
-                    extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
-                    "qualifierValue";
-                } "CdaNameGivenQualifierToFhirNameExtension";
-              } "CdaNameGivenToFhirNameGiven";
-            } "CdaNameItem";
-          } "CdaNameGivenItem";
-
         // all other items
         cda_patient_name.item as cda_name_item then {
           // name.use
@@ -797,6 +768,20 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
                   "qualifierValue";
               } "CdaNamePrefixQualifierToFhirNameExtension";
             } "CdaNamePrefixToFhirNameGiven";
+
+          // name.given
+          cda_name_item.given as cda_name_item_given ->
+            // name.given
+            fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
+              // name.given.qualifier
+              cda_name_item_given where cda_name_item_given.qualifier.exists() then {
+                cda_name_item_given.qualifier as qualifier ->
+                  fhir_humanName_given.extension as extension,
+                  extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+                  extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+                  "qualifierValue";
+              } "CdaNameGivenQualifierToFhirNameExtension";
+            } "CdaNameGivenToFhirNameGiven";
 
           // name.family
           cda_name_item_family ->
@@ -828,10 +813,6 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
         } "CdaNameItem";
       };
   }; 
-
-  cda_patient_name where (family.exists().not()) then {
-    cda_patient_name -> fhir_patient.name;
-  };
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
