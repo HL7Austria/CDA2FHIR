@@ -2113,7 +2113,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_entryRelationship.act as cda_act -> 
       fhir_observation.note as fhir_observation_note then {
       
-        cda_act.text.reference as cda_reference -> fhir_observation_note.text = cda_reference.value.xmlText;
+        cda_act.text.reference as cda_reference -> fhir_observation_note.text = cda_reference.value;
           
         cda_act.author as cda_author -> 
           fhir_bundle.entry as fhir_bundle_entry, 
