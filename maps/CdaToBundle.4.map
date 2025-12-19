@@ -2102,11 +2102,19 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO
 
   // observation.entryRelationship (Comment Entry)
+  // ToDo consider mapping: 
+  // cda_act.id
+  // cda_act.code
+  // cda_act.statusCode
+  // cda_act.performer
+  // cda_act.informant
+  // cda_act.participant 
   cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.act.exists()) then {
     cda_entryRelationship.act as cda_act -> 
       fhir_observation.note as fhir_observation_note then {
-        // toDo add mapping for cda_act.text -> fhir_observation_note.text 
-
+      
+        cda_act.text.reference as cda_reference -> fhir_observation_note.text = cda_reference.value.xmlText;
+          
         cda_act.author as cda_author -> 
           fhir_bundle.entry as fhir_bundle_entry, 
           fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
