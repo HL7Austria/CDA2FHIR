@@ -880,7 +880,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
 // Target: http://hl7.org/fhir/organization.html
 group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaOrganization, target fhir_organization : Organization) {
-  cda_organization.id -> fhir_organization.identifier;
+  cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
   cda_organization.name -> fhir_organization.name;
   cda_organization.telecom -> fhir_organization.telecom;
   // cda_organization.addr as cda_organization_addr ->
