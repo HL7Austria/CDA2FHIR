@@ -745,7 +745,6 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
   cda_patient_name.item as cda_name_item then {
     cda_patient_name.family as cda_name_item_family -> 
       fhir_patient.name = create('HumanName') as fhir_humanName then {
-        // all other items
         cda_patient_name.item as cda_name_item then {
           // name.use
           cda_name_item.use as cda_name_item_use -> fhir_humanName.use = translate(cda_name_item_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
