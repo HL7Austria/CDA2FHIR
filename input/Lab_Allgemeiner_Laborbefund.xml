@@ -6960,6 +6960,52 @@
                                     <!-- Code der Befundgruppe -->
                                     <code code="04150" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Einzelfaktoranalysen"/>
                                     <statusCode code="completed"/>
+                                    <performer typeCode="PRF">
+                                                <!-- templateId für Performer - Laboratory -->
+                                                <templateId root="1.2.40.0.34.6.0.11.9.24"/>
+                                                <!-- templateId für IHE PalM TF3 Rev.10, 6.3.2.20 Laboratory Performer -->
+                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
+                                                <time value="20210601130100+0200"/>
+                                                <assignedEntity>
+                                                    <!-- Identifikation des Performers der Analyse -->
+                                                    <id root="1.2.40.0.34.99.111.0.2" extension="55146"/>
+                                                    <!-- Code für externes Labor -->
+                                                    <code code="E" codeSystem="2.16.840.1.113883.2.16.1.4.9" codeSystemName="HL7.at.Laborkennzeichnung" displayName="EXTERN"/>
+                                                    <!-- Adresse des Performers der Analyse -->
+                                                    <addr>
+                                                        <streetAddressLine>Laborplatz 1</streetAddressLine>
+                                                        <city>Wien</city>
+                                                        <postalCode>1210</postalCode>
+                                                        <country>AUT</country>
+                                                    </addr>
+                                                    <!-- Kontaktdaten des Performers -->
+                                                    <telecom use="WP" value="tel:+43.1.12345678"/>
+                                                    <!-- Personendaten des Performers -->
+                                                    <assignedPerson>
+                                                        <name>
+                                                            <prefix qualifier="AC">Dr.</prefix>
+                                                            <given>Larissa</given>
+                                                            <family>Laborleiter</family>
+                                                        </name>
+                                                    </assignedPerson>
+                                                    <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
+                                                    <representedOrganization>
+                                                        <!-- ID der Organisation aus dem GDA Index -->
+                                                        <id root="1.2.40.0.34.99.111" assigningAuthorityName="GDA Index"/>
+                                                        <!-- Name der Organisation -->
+                                                        <name>Zentrallabor</name>
+                                                        <!-- Kontaktdaten der Organisation -->
+                                                        <telecom use="WP" value="tel:+43.1.12345678"/>
+                                                        <!-- Adresse der Organisation -->
+                                                        <addr>
+                                                            <streetAddressLine>Laborpatz 1</streetAddressLine>
+                                                            <city>Wien</city>
+                                                            <postalCode>1210</postalCode>
+                                                            <country>AUT</country>
+                                                        </addr>
+                                                    </representedOrganization>
+                                                </assignedEntity>
+                                            </performer>
                                     <!-- Laboratory Observation Entry -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
