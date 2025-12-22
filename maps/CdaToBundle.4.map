@@ -1757,6 +1757,24 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
   cda_section.entry as cda_section_entry then {
     // section.entry.act
     cda_section_entry.act as cda_act then {
+      cda_act where (performer.exists()) -> 
+        // PractitionerRole representing the document level performer 
+        fhir_bundle.entry as fhir_bundle_entry_3,
+        fhir_bundle_entry_3.resource = create('PractitionerRole') as fhir_actLevelPerformer,
+        fhir_actLevelPerformer.id = uuid() as fhir_actLevelPerformer_id,
+        fhir_bundle_entry_3.fullUrl = append('urn:uuid:', fhir_actLevelPerformer_id) then {
+          cda_act.performer as cda_act_performer then {
+              // performer.assignedEntity
+              cda_act_performer.assignedEntity as cda_performer_assignedEntity
+                  then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_actLevelPerformer, fhir_bundle);
+
+              // TODO der Gedanke war hier dann eine Gruppe aufzurufen, in der alle entryRelationships abgehandelt werden
+              // aber nachdem der Act mehrere Performer haben könnte, geht das mit einem fhir_actLevelPerformer nicht. Und für jeden Performer das aufzurufen ist sinnlos.
+              // Es muss also umgebaut werden, und auf Observation-Ebene der richtige Performer selektiert und noch einmal erstellt werden.
+
+          };
+      } "test";
+
       // section.entry.act.entryRelationship (Specimen Collection)
       cda_act.entryRelationship as cda_entryRelationship where $this.procedure.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.2') then {
         // section.entry.act.entryRelationship.procedure
@@ -1848,7 +1866,7 @@ group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument,
     cda where cda.documentationOf[0].serviceEvent.performer.exists().not() then {
         // ClinicalDocument.author (as person)
         cda.author first as cda_author where $this.assignedAuthor.assignedPerson.exists() then {
-          cda_author.time -> fhir_observation.issued
+          cda_author.time -> fhir_observation.issued;
         } "CdaAuthorToObservationPerformer";
     } "CdaAuthorPerformerExists";
     cda ->
