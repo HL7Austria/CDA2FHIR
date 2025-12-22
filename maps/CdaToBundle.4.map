@@ -2099,10 +2099,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   } "CdaObservationPerformerExistsNot";
 
   // observation.participant
-  // TODO
-  // check if cda_participant.participantRole.id should be mapped to fhir_practitioner.identifier AND fhir_observation.performer.id. 
-  // participant.time missing! 
-  
   cda_laboratory_observation.participant as cda_participant ->
     // create Observation.performer.PractitionerRole
     fhir_bundle.entry as fhir_bundle_entry,
