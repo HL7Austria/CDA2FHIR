@@ -780,7 +780,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         fhir_bundle.entry as fhir_bundle_entry_practitioner,
         fhir_bundle_entry_practitioner.resource = create('PractitionerRole') as fhir_practitionerRole,
         fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-        fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid',fhir_practitionerRole_id),
+        fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.type = 'PractitionerRole',
         // onBehalfOf
