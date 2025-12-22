@@ -3093,7 +3093,12 @@
                                                 <participantRole>
                                                     <!-- Identifikation des Laboratory Results Validators des Dokuments -->
                                                     <id root="1.2.40.0.34.99.4613.3.3" extension="7777" assigningAuthorityName="Amadeus Spital"/>
-                                                    <addr nullFlavor="UNK"/>
+                                                    <addr>
+                                                        <streetAddressLine>Laborplatz 1</streetAddressLine>
+                                                        <city>Wien</city>
+                                                        <postalCode>1210</postalCode>
+                                                        <country>AUT</country>
+                                                    </addr>
                                                     <telecom use="WP" value="tel:+43.1.3453446.7777"/>
                                                     <playingEntity>
                                                         <name>
