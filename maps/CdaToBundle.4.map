@@ -784,7 +784,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.type = 'PractitionerRole' then {
           cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
-          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle)
+          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle);
         };
       };
   } "CdaParticipantsToFhirCareTeam";
