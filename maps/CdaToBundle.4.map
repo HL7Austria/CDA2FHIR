@@ -1969,18 +1969,21 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
           fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
           CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
       }
-      "CdaIncompleteObservationToFhirObservationStatus";
+      "CdaInsufficientSampleObservationToFhirObservationStatus";
 
   // observation.value.codoe = 255599008 -   Incomplete (qualifier value)
   cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') ->
-      fhir_observation.status = 'preliminary',
-      fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
-      fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding,
-      fhir_observation_dataAbsentReason_coding.code = 'temp-unknown',
-      fhir_observation_dataAbsentReason_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason'
-      "CdaIncompleteObservationToFhirObservationStatus";
-
+    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') then {
+      cda_laboratory_observation.value as cda_laboratory_observation_value ->  
+        fhir_observation.status = 'preliminary',
+        fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
+        fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
+        fhir_observation_dataAbsentReason_coding_1.code = 'temp-unknown',
+        fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
+          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
+    }"CdaIncompleteObservationToFhirObservationStatus";
+      
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
 
