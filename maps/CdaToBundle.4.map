@@ -1149,8 +1149,13 @@ group CdaPatientRoleToFhirPatient(source cda_patientRole : PatientRole, target f
 
 
 
-group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author, target fhir_practitioner: Practitioner, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+group CdaAuthorToFhirPractitioner(source cda_author : Author, target fhir_practitioner: Practitioner, target fhir_bundle : Bundle){
   cda_author -> 
+    fhir_bundle.entry as fhir_bundle_entry, 
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_practitionerRole_id),
+
     fhir_practitioner.id as fhir_practitioner_id,
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
@@ -2165,13 +2170,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
           fhir_observation_note.authorReference = create('Reference') as fhir_observation_note_authorReference,
           fhir_observation_note_authorReference.reference = append('urn:uuid:', fhir_practitioner_id),
-          fhir_observation_note_authorReference.type = 'Practitioner',
-
-          fhir_bundle.entry as fhir_bundle_entry, 
-          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_practitionerRole_id) then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author, fhir_practitioner, fhir_practitionerRole, fhir_bundle);
-
+          fhir_observation_note_authorReference.type = 'Practitioner' then CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle);
       }; 
   };
 
