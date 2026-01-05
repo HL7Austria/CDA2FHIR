@@ -105,7 +105,10 @@
                 <!-- Geschlecht des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <administrativeGenderCode code="F" displayName="Female" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
                 <!-- Geburtsdatum des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <birthTime value="19611224130100+0200"/>
+                <birthTime value="19611224165534+0200"/>
+                <!-- <birthTime value="19611224"/> -->
+                <sdtc:deceasedInd value="true"/>
+                <!-- <sdtc:deceasedTime value="19611224165534+0200"/> -->
                 <!-- Familienstand des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <maritalStatusCode code="M" displayName="Married" codeSystem="2.16.840.1.113883.5.2" codeSystemName="HL7:MaritalStatus"/>
                 <!-- Religionszugehörigkeit des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
@@ -214,6 +217,7 @@
                     <city>Wien</city>
                     <state>Wien</state>
                     <country>AUT</country>
+                    <additionalLocator>Tür 23</additionalLocator>
                 </addr>
             </representedOrganization>
         </assignedAuthor>
@@ -791,7 +795,7 @@
                     <assignedPerson>
                         <name>
                             <prefix qualifier="AC">Dr.</prefix>
-                            <family>Humpel</family>
+                            <family>Humpel - documentationOfPerformer</family>
                             <given>Florian</given>
                         </name>
                     </assignedPerson>
@@ -7031,7 +7035,7 @@
                                                         <name>
                                                             <prefix qualifier="AC">Dr.</prefix>
                                                             <given>Larissa</given>
-                                                            <family>ORGANIZER-LEVEL PERFORMER</family>
+                                                            <family>ORGANIZER-LEVEL-PERFORMER</family>
                                                         </name>
                                                     </assignedPerson>
                                                     <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
@@ -7094,7 +7098,7 @@
                                                         <name>
                                                             <prefix qualifier="AC">Dr.</prefix>
                                                             <given>Larissa</given>
-                                                            <family>Laborleiter</family>
+                                                            <family>OBSERVATION-LEVEL-PERFORMER-1</family>
                                                         </name>
                                                     </assignedPerson>
                                                     <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
@@ -7152,7 +7156,7 @@
                                                 <templateId root="1.2.40.0.34.6.0.11.9.24"/>
                                                 <!-- templateId für IHE PalM TF3 Rev.10, 6.3.2.20 Laboratory Performer -->
                                                 <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
-                                                <time value="20210601130100+0200"/>
+                                                <time value="20250601130100+0200"/>
                                                 <assignedEntity>
                                                     <!-- Identifikation des Performers der Analyse -->
                                                     <id root="1.2.40.0.34.99.111.0.2" extension="55146"/>
@@ -7172,7 +7176,7 @@
                                                         <name>
                                                             <prefix qualifier="AC">Dr.</prefix>
                                                             <given>Larissa</given>
-                                                            <family>Laborleiter</family>
+                                                            <family>OBSERVATION-LEVEL-PERFORMER-2</family>
                                                         </name>
                                                     </assignedPerson>
                                                     <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
