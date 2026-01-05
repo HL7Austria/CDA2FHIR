@@ -1367,31 +1367,6 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
   } "CdaSectionsToFhirSectionsWithNoneOrMultipleSpecimen";
 }
 
-group CdaToFhirDocumentLevelPerformer(source cda: ClinicalDocument, target fhir_bundle: Bundle) {
-    // performer has been specified in documentationOf[1]serviceEvent.performer
-    cda where cda.documentationOf[0].serviceEvent.performer.exists() then {
-        // ClinicalDocument.documentationOf
-        cda.documentationOf first as cda_documentationOf then {
-            // ClinicalDocument.documentationOf.serviceEvent
-            cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent then {
-                cda_documentationOf_serviceEvent.performer as cda_documentationOf_serviceEvent_performer then {
-                    // observation.performer.assignedEntity
-                    cda_documentationOf_serviceEvent_performer.assignedEntity as cda_performer_assignedEntity
-                        then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_bundle);
-                };
-            };
-        };
-    } "CdaDocumentationOfServiceEventPerformerExists";
-    // no performer has been specified in documentationOf[1]serviceEvent.performer. As a result the ClinicalDocument.authors will be taken as performer
-    cda where cda.documentationOf[0].serviceEvent.performer.exists().not() then {
-        // ClinicalDocument.author (as person)
-        cda.author first as cda_author where $this.assignedAuthor.assignedPerson.exists() then
-            // create the PractitionerRole in order to capture the author.functionCode
-            CdaAuthorToFhirPractitionerRole(cda_author, fhir_bundle)
-            "CdaAuthorToObservationPerformer";
-    } "CdaDocumentationOfServiceEventPerformerExistsNot";
-}
-
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
   // section.templateId
   // TODO necessary?
