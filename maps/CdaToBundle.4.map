@@ -1796,8 +1796,8 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
             cda_laboratory_battery_organizer.performer as cda_laboratory_battery_organizer_performer
                 where cda_laboratory_battery_organizer.performer.exists()
                 then CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
-                "CdaActPerformerToFhirObservationPerformer";
-            cda_entryRelationship.organizer where (performer.exists().not()) then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle) "test";
+                "CdaOrganizerPerformerToFhirObservationPerformer";
+            cda_entryRelationship.organizer where (performer.exists().not()) then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle) "CdaNoOrganizerPerformerToFhirObservationPerformer";
 
             cda_laboratory_battery_organizer then
               CdaOrganizerToFhirObservation(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_documentLevelPerformer)
@@ -1813,8 +1813,16 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                 fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_laboratory_observation_id),
                 fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
                 fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_laboratory_observation_id),
-                fhir_battery_observation_hasMember_reference.type = 'Observation'
-                then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_documentLevelPerformer, fhir_patient, fhir_bundle);
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+                  // cda_laboratory_observation.performer exists
+                  cda_laboratory_observation.performer as cda_laboratory_observation_performer
+                      where cda_laboratory_observation.performer.exists()
+                      then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
+                      "CdaObservationPerformerToFhirObservationPerformer";
+                  cda_component.observation where (performer.exists().not()) then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_laboratory_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_documentLevelPerformer, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                };
             };
           };
       };
@@ -1862,6 +1870,17 @@ group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument,
         } "CdaAuthorToObservationPerformer";
     } "CdaAuthorPerformerExists";
   } "CdaActNoPerformer";
+}
+
+group CdaPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocument, source cda_act: Act, source cda_laboratory_organizer: Organizer, target fhir_observation: Observation, target fhir_bundle: Bundle) {
+  // cda_laboratory_organizer.performer exists
+  cda_laboratory_organizer.performer as cda_laboratory_organizer_performer
+      where cda_laboratory_organizer.performer.exists()
+      then CdaPerformerToFhirObservationPerformer(cda_laboratory_organizer_performer, fhir_observation, fhir_bundle)
+      "CdaOrganizerPerformerToFhirObservationPerformer";
+
+  // the following lines execute only if cda_laboratory_organizer.performer does not exist
+  cda_laboratory_organizer where cda_laboratory_organizer.performer.exists().not() then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle) "CdaOrganizerNoPerformer";
 }
 
 group CdaBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Section, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_patient: Patient) {
@@ -2142,27 +2161,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
     fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
     "CdaObservationInterpretationCodeToFhirObservationInterpretation";
-
-  // observation.performer if existent in observation
-  cda_laboratory_observation.performer as cda_laboratory_observation_performer
-    where cda_laboratory_observation.performer.exists()
-    then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
-    "CdaObservationPerformerToFhirObservationPerformer";
-  // observation.performer if not existent in observation
-  cda_laboratory_observation where cda_laboratory_observation.performer.exists().not() then {
-    // ClinicalDocument.legalAuthenticator
-    cda.legalAuthenticator as cda_legalAuthenticator then {
-        // legalAuthenticator.time
-        cda_legalAuthenticator.time where (nullFlavor.exists().not()) -> fhir_observation.issued;
-    } "CdaDocumentationOfServiceEventPerformerExists";
-    cda ->
-        fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
-        fhir_documentLevelPerformer.id as fhir_documentLevelPerformer_id,
-        fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_documentLevelPerformer_id),
-        fhir_observation_performer_reference.type = 'PractitionerRole'
-    "CdaObservationPerformerExistsNotRole";
-
-  } "CdaObservationPerformerExistsNot";
 
   // observation.participant
   // TODO
