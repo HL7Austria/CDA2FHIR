@@ -743,8 +743,22 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
 group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_patient : Patient){
   // For each cda_name_item_family create HumanName (With all CDA Elements)
   cda_patient_name.item as cda_name_item then {
-    cda_patient_name.family as cda_name_item_family -> 
+    cda_name_item.family as cda_name_item_family -> 
       fhir_patient.name = create('HumanName') as fhir_humanName then {
+        // name.family
+        cda_name_item_family ->
+          // name.family
+          fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
+            // name.family.qualifier
+            cda_name_item_family where cda_name_item_family.qualifier.exists() then {
+              cda_name_item_family.qualifier as qualifier ->
+                fhir_humanName_family.extension as extension,
+                extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+                extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+                "qualifierValue";
+            } "CdaNameFamilyQualifierToFhirNameExtension";
+          } "CdaNameFamilyToFhirNameGiven";
+
         cda_patient_name.item as cda_name_item then {
           // name.use
           cda_name_item.use as cda_name_item_use -> fhir_humanName.use = translate(cda_name_item_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
@@ -779,20 +793,6 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
                   "qualifierValue";
               } "CdaNameGivenQualifierToFhirNameExtension";
             } "CdaNameGivenToFhirNameGiven";
-
-          // name.family
-          cda_name_item_family ->
-            // name.family
-            fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
-              // name.family.qualifier
-              cda_name_item_family where cda_name_item_family.qualifier.exists() then {
-                cda_name_item_family.qualifier as qualifier ->
-                  fhir_humanName_family.extension as extension,
-                  extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
-                  extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
-                  "qualifierValue";
-              } "CdaNameFamilyQualifierToFhirNameExtension";
-            } "CdaNameFamilyToFhirNameGiven";
 
           // name.suffix
           cda_name_item.suffix as cda_name_item_suffix ->
