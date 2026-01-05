@@ -1822,14 +1822,14 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
   };
 }
 
-group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument, source cda_act: Act, target fhir_documentLevelPerformer: PractitionerRole, target fhir_observation: Observation, target fhir_bundle: Bundle) {
+group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument, source cda_act: Act, target fhir_observation: Observation, target fhir_bundle: Bundle) {
   // cda_act.performer exists
   cda_act.performer as cda_act_performer
       where cda_act.performer.exists()
       then CdaPerformerToFhirObservationPerformer(cda_act_performer, fhir_observation, fhir_bundle)
       "CdaActPerformerToFhirObservationPerformer";
 
-  // TODO following lines only if cda_act.performer does not exist
+  // the following lines execute only if cda_act.performer does not exist
   cda_act where cda_act.performer.exists().not() then {
     // TODO check for author in case documentationOf.serviceEvent.performer does not exist
     cda where cda.documentationOf[0].serviceEvent.performer.exists() then {
@@ -1837,26 +1837,30 @@ group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument,
         cda.documentationOf first as cda_documentationOf then {
             // ClinicalDocument.documentationOf.serviceEvent
             cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent then {
-                cda_documentationOf_serviceEvent.performer as cda_documentationOf_serviceEvent_performer then {
-                    // observation.performer.time
-                    cda_documentationOf_serviceEvent_performer.time -> fhir_observation.issued;
-                };
+                cda_documentationOf_serviceEvent.performer as cda_documentationOf_serviceEvent_performer 
+                then CdaPerformerToFhirObservationPerformer(cda_documentationOf_serviceEvent_performer, fhir_observation, fhir_bundle)
+                "CdaDocumentationOfPerformerToFhirObservationPerformer";
             };
         };
     } "CdaDocumentationOfServiceEventPerformerExists";
     // no performer has been specified in documentationOf[1]serviceEvent.performer. As a result the ClinicalDocument.authors will be taken as performer
     cda where cda.documentationOf[0].serviceEvent.performer.exists().not() then {
         // ClinicalDocument.author (as person)
-        cda.author first as cda_author where $this.assignedAuthor.assignedPerson.exists() then {
-          cda_author.time -> fhir_observation.issued;
+        cda.author first as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
+          fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_observation_performer_reference.type = 'PractitionerRole'
+          then {
+            cda_author.time -> fhir_observation.issued;
+
+            // create the PractitionerRole in order to capture the author.functionCode
+            CdaAuthorToFhirPractitionerRole(cda_author, fhir_documentLevelPerformer, fhir_bundle);
         } "CdaAuthorToObservationPerformer";
     } "CdaAuthorPerformerExists";
-    cda ->
-        fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
-        fhir_documentLevelPerformer.id as fhir_documentLevelPerformer_id,
-        fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_documentLevelPerformer_id),
-        fhir_observation_performer_reference.type = 'PractitionerRole'
-    "CdaBatteryOrganizerPerformerExistsNotRole";
   } "CdaActNoPerformer";
 }
 
