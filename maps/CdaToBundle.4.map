@@ -1723,14 +1723,21 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
         cda_entryRelationship.organizer as cda_laboratory_battery_organizer ->
           // create Observation
           fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Observation') as fhir_observation,
-          fhir_observation.id = uuid() as fhir_observation_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+          fhir_bundle_entry.resource = create('Observation') as fhir_battery_observation,
+          fhir_battery_observation.id = uuid() as fhir_battery_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
-          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
           fhir_section_entry_reference.type = 'Observation' then {
+            // cda_laboratory_battery_organizer.performer exists
+            cda_laboratory_battery_organizer.performer as cda_laboratory_battery_organizer_performer
+                where cda_laboratory_battery_organizer.performer.exists()
+                then CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
+                "CdaOrganizerPerformerToFhirObservationPerformer";
+            cda_entryRelationship.organizer where (performer.exists().not()) then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle) "CdaNoOrganizerPerformerToFhirObservationPerformer";
+
             cda_laboratory_battery_organizer then
-              CdaOrganizerToFhirObservationWithSpecimen(cda, cda_laboratory_battery_organizer, fhir_observation, fhir_patient, fhir_documentLevelPerformer, fhir_specimen)
+              CdaOrganizerToFhirObservationWithSpecimen(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_documentLevelPerformer, fhir_specimen)
               "CdaOrganizerToFhirObservationWithSpecimen";
 
             // organizer.component (Laboratory Observation)
@@ -1741,10 +1748,18 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
                 fhir_bundle_entry.resource = create('Observation') as fhir_laboratory_observation,
                 fhir_laboratory_observation.id = uuid() as fhir_laboratory_observation_id,
                 fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_laboratory_observation_id),
-                fhir_observation.hasMember = create('Reference') as fhir_observation_hasMember_reference,
-                fhir_observation_hasMember_reference.reference = append('urn:uuid:', fhir_laboratory_observation_id),
-                fhir_observation_hasMember_reference.type = 'Observation'
-                then CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_documentLevelPerformer, fhir_patient, fhir_bundle, fhir_specimen);
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_laboratory_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+                  // cda_laboratory_observation.performer exists
+                  cda_laboratory_observation.performer as cda_laboratory_observation_performer
+                      where cda_laboratory_observation.performer.exists()
+                      then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
+                      "CdaObservationPerformerToFhirObservationPerformer";
+                  cda_component.observation where (performer.exists().not()) then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_laboratory_observation then CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_documentLevelPerformer, fhir_patient, fhir_bundle, fhir_specimen) "CdaObservationToFhirObservation";
+                };
             };
           };
       };
