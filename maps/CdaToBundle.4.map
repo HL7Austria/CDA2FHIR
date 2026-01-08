@@ -2258,7 +2258,7 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
 
 group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, target fhir_observation: Observation, target fhir_bundle: Bundle) {
   // observation.performer.time - it is assumed that only @value occurs and no interval
-  cda_performer.time  -> fhir_observation.issued;
+  cda_performer.time where (nullFlavor.exists().not()) -> fhir_observation.issued;
   // observation.performer.assignedEntity
   cda_performer.assignedEntity as cda_performer_assignedEntity ->
     // Create a PractitionerRole
