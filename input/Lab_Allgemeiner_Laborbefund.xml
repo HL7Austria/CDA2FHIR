@@ -10604,6 +10604,23 @@
                                             <value xsi:type="CD" code="255599008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Incomplete (qualifier value)"/>
                                         </observation>
                                     </component>
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-4-7" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2668-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Noradrenal.Urinexkr."/>
+                                            <text>
+                                                <reference value="#OBS-4-6"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime nullFlavor="UNK"/>
+                                            <!-- Analyse nicht ausgeführt, weil "Insufficient Sample" -->
+                                            <value xsi:type="CD" code="281268007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Insufficient sample (finding)"/>
+                                        </observation>
+                                    </component>
                                 </organizer>
                             </entryRelationship>
 
