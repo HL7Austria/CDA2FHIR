@@ -1768,8 +1768,9 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
       };
 
       // section.entry.act.entryRelationship (Laboratory Observation)
-      //  or root='1.2.40.0.34.6.0.11.3.27' FHIRPath where() with boolean or fails when multiple matching templateIds exist (Single value expected, multiple found) 
-      // MaLaC-HD issue created. Using only ...3.1.6 should be sufficiant tho. 
+      // root or root FHIRPath where() with root or root fails when multiple matching templateIds exist (Single value expected, multiple found) 
+      // MaLaC-HD issue created: https://gitlab.com/cdehealth/malac-hd/-/issues?show=eyJpaWQiOiIxMTEiLCJmdWxsX3BhdGgiOiJjZGVoZWFsdGgvbWFsYWMtaGQiLCJpZCI6MTc5ODM5OTI2fQ%3D%3D
+      // Using only one of the two templateIds in this case should be sufficiant tho. 
       cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
         cda_entryRelationship.observation as cda_laboratory_observation ->
           // create Observation
