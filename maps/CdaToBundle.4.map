@@ -2039,6 +2039,17 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
+  // observation.value(xsi:type="INT")
+  cda_laboratory_observation.value: INT as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = create('string') as fhir_observation_value,
+      fhir_observation_value.value = cast(cda_observation_value_attribute, 'string'),
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value) 
+      "CdaValueToFhirValueINT";
+  } "CdaValueINTToFhirObservationValue";
+
   // observation.value(xsi:type="CD")
   cda_laboratory_observation
     where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -2075,9 +2086,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
 
-
-  // observation.value(xsi:type="INT")
-	cda_laboratory_observation.value: INT as cda_observation_value -> fhir_observation.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value) "observationValueINT";
   // TODO other datatypes
   // // Concept Descriptor
 	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
