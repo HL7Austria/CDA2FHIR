@@ -1704,18 +1704,18 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
         cda_entryRelationship.procedure as cda_procedure then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle);
       };
 
-      // // section.entry.act.entryRelationship (Laboratory Observation)
-      // cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
-      //   cda_entryRelationship.observation as cda_laboratory_observation ->
-      //     // create Observation
-      //     fhir_bundle.entry as fhir_bundle_entry,
-      //     fhir_bundle_entry.resource = create('Observation') as fhir_observation,
-      //     fhir_observation.id = uuid() as fhir_observation_id,
-      //     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
-      //     fhir_section.entry = create('Reference') as fhir_section_entry_reference,
-      //     fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-      //     fhir_section_entry_reference.type = 'Observation';// then CdaLaboratoryObservationToFhirObservation(cda_laboratory_observation, fhir_section_section);
-      // };
+      // section.entry.act.entryRelationship (Laboratory Observation)
+       cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
+         cda_entryRelationship.observation as cda_laboratory_observation ->
+           // create Observation
+           fhir_bundle.entry as fhir_bundle_entry,
+           fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+           fhir_observation.id = uuid() as fhir_observation_id,
+           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
+           fhir_section_entry_reference.type = 'Observation'  then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_practitionerRole, fhir_patient,fhir_bundle);
+       };
 
       // section.entry.act.entryRelationship (Laboratory Battery Organizer)
       cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.4') then {
