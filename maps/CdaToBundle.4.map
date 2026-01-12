@@ -1683,7 +1683,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
            fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
            fhir_section.entry = create('Reference') as fhir_section_entry_reference,
            fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-           fhir_section_entry_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_practitionerRole, fhir_patient,fhir_bundle);
+           fhir_section_entry_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient,fhir_bundle);
        };
 
       // section.entry.act.entryRelationship (Laboratory Battery Organizer)
@@ -1764,7 +1764,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_practitionerRole, fhir_patient,fhir_bundle);
+          fhir_section_entry_reference.type = 'Observation' then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient,fhir_bundle);
       };
 
       // section.entry.act.entryRelationship (Laboratory Battery Organizer)
