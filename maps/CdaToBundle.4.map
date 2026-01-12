@@ -1830,7 +1830,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
     };
   };
 }
-
+ 
 group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument, source cda_act: Act, target fhir_observation: Observation, target fhir_bundle: Bundle) {
   // cda_act.performer exists
   cda_act.performer as cda_act_performer
