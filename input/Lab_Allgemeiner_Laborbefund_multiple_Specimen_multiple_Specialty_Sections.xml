@@ -2988,7 +2988,7 @@
                                             <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
                                             <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
                                             <id extension="OBS-1-2" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="26515-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten"/>
+                                            <code code="1234" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten"/>
                                             <text>
                                                 <reference value="#OBS-1-2"/>
                                             </text>
@@ -3003,7 +3003,7 @@
                                                         <reference value="#OBSREF-1-2"/>
                                                     </text>
                                                     <value xsi:type="IVL_PQ">
-                                                        <low value="150" unit="10*9/L"/>
+                                                        <low value="120126" unit="10*9/L"/>
                                                         <high value="360" unit="10*9/L"/>
                                                     </value>
                                                     <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
@@ -5036,7 +5036,7 @@
                                                     <reference value="#OBSREF-1-2"/>
                                                 </text>
                                                 <value xsi:type="IVL_PQ">
-                                                    <low value="10" unit="10*9/L"/>
+                                                    <low value="98765" unit="10*9/L"/>
                                                     <high value="20" unit="10*9/L"/>
                                                 </value>
                                                 <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
