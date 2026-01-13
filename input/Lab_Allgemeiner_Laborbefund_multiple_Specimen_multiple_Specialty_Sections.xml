@@ -3003,7 +3003,7 @@
                                                         <reference value="#OBSREF-1-2"/>
                                                     </text>
                                                     <value xsi:type="IVL_PQ">
-                                                        <low value="120126" unit="10*9/L"/>
+                                                        <low value="120" unit="10*9/L"/>
                                                         <high value="360" unit="10*9/L"/>
                                                     </value>
                                                     <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>

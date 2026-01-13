@@ -2654,6 +2654,7 @@
 
                             <!-- Befundgruppe "Blutbild" -->
                             <entryRelationship typeCode="COMP">
+                                <!-- performer created -->
                                 <organizer classCode="BATTERY" moodCode="EVN">
                                     <!-- templateId für Laboratory Battery Organizer -->
                                     <templateId root="1.2.40.0.34.6.0.11.3.26"/>
@@ -2663,6 +2664,7 @@
                                     <code code="03010" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Blutbild"/>
                                     <statusCode code="completed"/>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2695,6 +2697,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2726,6 +2729,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2757,6 +2761,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2788,6 +2793,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2837,6 +2843,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2868,6 +2875,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2899,6 +2907,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2930,6 +2939,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -2981,6 +2991,7 @@
                             </entryRelationship>
                             <!-- Befundgruppe "Knochenmark Morphologie" -->
                             <entryRelationship typeCode="COMP">
+                                <!-- performer created -->
                                 <organizer classCode="BATTERY" moodCode="EVN">
                                     <!-- templateId für Laboratory Battery Organizer -->
                                     <templateId root="1.2.40.0.34.6.0.11.3.26"/>
@@ -2990,6 +3001,7 @@
                                     <code code="03020" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Knochenmark Morphologie"/>
                                     <statusCode code="completed"/>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -3021,6 +3033,7 @@
                                         </observation>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
@@ -4669,6 +4682,7 @@
                                         </observationMedia>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
+                                    <!-- No performer created -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
                                             <!-- templateId für Laboratory Observation Entry -->
