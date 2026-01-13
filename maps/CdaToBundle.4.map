@@ -1728,7 +1728,8 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
                       where cda_laboratory_observation.performer.exists()
                       then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
                       "CdaObservationPerformerToFhirObservationPerformer";
-                      cda_laboratory_observation then CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_specimen) "CdaObservationToFhirObservation";
+                  cda_component.observation where (performer.exists().not()) then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+                  cda_laboratory_observation then CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_specimen) "CdaObservationToFhirObservation";
                 };
             };
           };
