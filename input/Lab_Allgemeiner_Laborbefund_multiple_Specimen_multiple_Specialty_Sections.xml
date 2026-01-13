@@ -3087,7 +3087,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value unit="%" value="49.7" xsi:type="PQ"/>
+                                            <value value="true" xsi:type="BL"/>
                                             <interpretationCode code="H" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="High"/>
                                             <!-- Validierende Person (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund) -->
                                             <participant typeCode="AUTHEN">

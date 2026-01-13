@@ -778,7 +778,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.type = 'PractitionerRole' then {
           cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
-          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle);
+          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle) "Test";
         };
       };
   } "CdaParticipantsToFhirCareTeam";
@@ -1849,7 +1849,7 @@ group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument,
             cda_author.time -> fhir_observation.issued;
 
             // create the PractitionerRole in order to capture the author.functionCode
-            CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
+            cda_author then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle) "Test";
         } "CdaAuthorToObservationPerformer";
     } "CdaAuthorPerformerExists";
   } "CdaActNoPerformer";
@@ -2068,6 +2068,20 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
+  // observation.value(xsi:type="BL")
+  // TODO as long as https://gitlab.com/cdehealth/malac-hd/-/issues/113 has not been resolved this mapping cannot be completed
+  cda_laboratory_observation.value: BL as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value
+      // 
+      // TODO: activate the following code as soon as https://gitlab.com/cdehealth/malac-hd/-/issues/112 has been resolved
+      // ,
+      // fhir_observation_value.extension as fhir_observation_value_extension,
+      // fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      // fhir_observation_value_extension.value = create('boolean') as fhir_observation_value_extension_value then BL(cda_observation_value, fhir_observation_value_extension_value) 
+      "CdaValueToFhirValueBL";
+  } "CdaValueBLToFhirObservationValue";
+
   // observation.value(xsi:type="CD")
   cda_laboratory_observation
     where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -2103,9 +2117,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-
-  //observation.value(@xsi:type='BL')
-  cda_laboratory_observation.value: BL as cda_observation_value -> fhir_observation.value = create('boolean') as fhir_observation_value then BL(cda_observation_value,fhir_observation_value) "observationValueBool";
+  
   // TODO other datatypes
   // // Concept Descriptor
 	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
