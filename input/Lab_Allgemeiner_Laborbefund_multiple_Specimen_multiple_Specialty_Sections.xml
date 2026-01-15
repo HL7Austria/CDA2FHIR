@@ -11102,7 +11102,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="PQ" unit="kU/L" value="5.18"/>
+                                            <value xsi:type="INT" value="5"/>
                                             <interpretationCode code="RAST3" codeSystemName="RAST-Klassen" codeSystem="1.2.40.0.34.5.104" displayName="3.50  17.49  kU/l (high level of allergen specific IgE)"/>
                                             <participant
                                                 xmlns="urn:hl7-org:v3"
