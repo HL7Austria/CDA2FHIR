@@ -1757,6 +1757,36 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_specimen_id) then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle);
       };
 
+      cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templatedId.where(root='1.3.6.1.4.1.19376.1.3.1.1') then {
+        cda_entryRelationship.organizer as cda_notification_organizer -> 
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Observation') as fhir_battery_observation,
+          fhir_battery_observation.id = uuid() as fhir_battery_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then {
+
+            // Add performer to battery_observation
+            cda_entryRelationship.organizer then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
+
+            // ToDo check if we can reuse the existing CdaOrganizerToFhirObservation mapping here
+              // fhir_observation.category = laboratory ? 
+              // cda_organizer.code ? 
+              // cda_organizer.effectiveTime ? 
+            cda_notification_organizer then
+                CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
+                "CdaOrganizerToFhirObservation";
+            
+            // Add Mapping for: 
+
+            // "organizer.component.observation(1.3.6.1.4.1.19376.1.3.1.1.1 Notifiable Condition)"
+            // organizer.component.observation(1.2.40.0.34.6.0.11.3.170 Case Identificationn) 
+
+              
+          };
+      };
+
       // section.entry.act.entryRelationship (Laboratory Observation)
       // root or root FHIRPath where() with root or root fails when multiple matching templateIds exist (Single value expected, multiple found) 
       // MaLaC-HD issue created: https://gitlab.com/cdehealth/malac-hd/-/issues/111
