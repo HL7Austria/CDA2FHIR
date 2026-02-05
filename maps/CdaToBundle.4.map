@@ -1811,13 +1811,51 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                 fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
                 fhir_battery_observation_hasMember_reference.type = 'Observation' then {
 
-                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, fhir_battery_observation, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+                 // Exception has occurred: AttributeError 'Reference' object has no attribute 'time'
+                 //cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, fhir_battery_observation, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
 
                   cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
                 };
             };
 
            // organizer.component.observation(1.2.40.0.34.6.0.11.3.170 Case Identificationn) 
+           cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.170') then {
+              // ToDo check if we can reuse the existing CdaLaboratoryObservationToFhirObservation mapping here
+                // static transforms 
+                // cda_observation -> observation.meta = http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu
+                // cda_observation -> observation.category = laboratory 
+                // cda_observation -> observation.code.coding = OTH - v3-Nullflavor
+                // cda_observation -> observation.subject 
+               
+                
+                // @RunTime 
+                // cda_observation.id -> fhir_observation.identifier Y
+                // cda_observation.id = NI - v3 Nullflavor -> ? X 
+                // cda_observation.id Fall-Identifikatoren außerhalb der EMS Domäne (z.B.: lokale IDs). Y 
+
+                // cda_observation.code = code = "416341003"; displayName = Case Management Started Y 
+                // cda_observation.text = ToDo  X
+                // cda_observation.statusCode = completed -> fhir_observation.status = final Y
+                // cda_observation.effectiveTime ->  fhir_observation.effective Y  
+                // cda_observation.value -> fhir_observation.value Y
+
+              cda_component.observation as cda_observation ->
+                fhir_bundle.entry as fhir_bundle_entry,
+                fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+                fhir_observation.id = uuid() as fhir_observation_id,
+                fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+
+                 // Exception has occurred: AttributeError 'Reference' object has no attribute 'time'
+                 //cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, fhir_battery_observation, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                };
+            };
+
+
           };
       };
 

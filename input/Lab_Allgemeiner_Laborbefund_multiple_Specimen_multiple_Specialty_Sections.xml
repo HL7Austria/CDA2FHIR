@@ -2995,8 +2995,9 @@
                                             <!-- EMS Fall-ID -->
                                             <id root="1.2.40.0.34.3.1.1" extension="Beispiel-EMS-Fall-ID"/>
                                             <!-- weitere lokale ID -->
-                                            <id root="1.2.3.999" extension="--example only--"/>
-                                            
+                                            <id root="1.2.3.999" extension="--example only 1 --"/>
+                                            <id root="1.2.3.999" extension="--example only 2 --"/>
+                                            <id root="1.2.3.999" extension="--example only 3 --"/>
                                             <code code="416341003"
                                                 codeSystem="2.16.840.1.113883.6.96"
                                                 codeSystemName="SNOMED CT"
