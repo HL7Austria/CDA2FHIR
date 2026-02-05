@@ -2939,6 +2939,83 @@
                         <act classCode="ACT" moodCode="EVN">
                             <code code="300" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Hämatologie"/>
                             <statusCode code="completed"/>
+                            <entryRelationship typeCode="COMP">
+                                <!-- Notification Organizer -->
+                                <organizer classCode="CLUSTER" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.165"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.1"/>
+                                    
+                                    <statusCode code="completed"/>
+                                    
+                                    <!-- ============================== -->
+                                    <!-- Notifiable Condition           -->
+                                    <!-- ============================== -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="COND" moodCode="EVN">
+                                            <templateId root="1.2.40.0.34.6.0.11.3.166"/>
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.1.1"/>
+                                            
+                                            <id root="2.16.840.1.113883.2.16.1.99.3.1" extension="ERR-1-1"/>
+                                            
+                                            <code code="170516003"
+                                                codeSystem="2.16.840.1.113883.6.96"
+                                                codeSystemName="SNOMED CT"
+                                                displayName="Notification of Disease">
+                                                <qualifier>
+                                                    <name code="246087005"
+                                                        codeSystem="2.16.840.1.113883.6.96"
+                                                        codeSystemName="SNOMED CT"
+                                                        displayName="Source of Specimen"/>
+                                                    <value code="116154003"
+                                                        codeSystem="2.16.840.1.113883.6.96"
+                                                        codeSystemName="SNOMED CT"
+                                                        displayName="Patient"/>
+                                                </qualifier>
+                                            </code>
+                                            
+                                            <statusCode code="completed"/>
+                                            
+                                            <value xsi:type="CE"
+                                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                                code="SP015"
+                                                codeSystem="1.2.40.0.34.5.45"
+                                                codeSystemName="ELGA_SignificantPathogens"
+                                                displayName="Escherichia coli, sonstige darmpathogene Stämme"/>
+                                        </observation>
+                                    </component>
+                                    
+                                    <!-- ============================== -->
+                                    <!-- Case Identification            -->
+                                    <!-- ============================== -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="CASE" moodCode="EVN">
+                                            <templateId root="1.2.40.0.34.6.0.11.3.170"/>
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.1.2"/>
+                                            
+                                            <!-- EMS Fall-ID -->
+                                            <id root="1.2.40.0.34.3.1.1" extension="Beispiel-EMS-Fall-ID"/>
+                                            <!-- weitere lokale ID -->
+                                            <id root="1.2.3.999" extension="--example only--"/>
+                                            
+                                            <code code="416341003"
+                                                codeSystem="2.16.840.1.113883.6.96"
+                                                codeSystemName="SNOMED CT"
+                                                displayName="Case Management Started"/>
+                                            
+                                            <statusCode code="completed"/>
+                                            
+                                            <effectiveTime value="20200725145409+0100"/>
+                                            
+                                            <value xsi:type="CD"
+                                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                                code="A00"
+                                                codeSystem="1.2.40.0.34.5.171"
+                                                displayName="Cholera"/>
+                                        </observation>
+                                    </component>
+                                    
+                                </organizer>
+                            </entryRelationship>
                             <!-- Befundgruppe "Blutbild" -->
                             <entryRelationship typeCode="COMP">
                                 <organizer classCode="BATTERY" moodCode="EVN">
