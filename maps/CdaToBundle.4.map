@@ -1811,8 +1811,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                 fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
                 fhir_battery_observation_hasMember_reference.type = 'Observation' then {
 
-                 // Exception has occurred: AttributeError 'Reference' object has no attribute 'time'
-                 //cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, fhir_battery_observation, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
 
                   cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
                 };
@@ -1848,8 +1847,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                 fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
                 fhir_battery_observation_hasMember_reference.type = 'Observation' then {
 
-                 // Exception has occurred: AttributeError 'Reference' object has no attribute 'time'
-                 //cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, fhir_battery_observation, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
 
                   cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
                 };
