@@ -1356,8 +1356,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
 
 
     // all uncoded sections will be transformed into so called annotation sections
-    cda_component.section as cda_section where (code.where(code='BRIEFT' and codeSystem='1.2.40.0.34.5.40') or // Brieftext
-                                               (code.where(code='46239-0' and codeSystem='2.16.840.1.113883.6.1') and (templateId.where(root='1.2.40.0.34.6.0.11.2.114') or templateId.where(root='1.2.40.0.34.11.4.2.4'))) // Überweisungsgrund - uncodiert
+    cda_component.section as cda_section where (code.where(code='BRIEFT' and codeSystem='1.2.40.0.34.5.40') // Brieftext
                                                or (code.where(code='10164-2' and codeSystem='2.16.840.1.113883.6.1') and templateId.where(root='1.2.40.0.34.6.0.11.2.111')) // Anamnese - Labor und Mikrobiologie - uncodiert
                                                or (code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.112')) // Angeforderte Untersuchungen - uncodiert
                                                or (code.where(code='20' and codeSystem='1.2.40.0.34.5.11')) //Befundbewertung
@@ -1595,7 +1594,7 @@ group CdaSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, targe
     fhir_diagnosticReport_specimen_reference.reference = append('urn:uuid:', fhir_specimen_id),
     fhir_diagnosticReport_specimen_reference.type = 'Specimen',
 
-    // create relation speciment to ServiceRequest
+    // create relation specimen to ServiceRequest
     fhir_specimen.request = create('Reference') as fhir_specimen_request_reference,
     fhir_serviceRequest.id as fhir_serviceRequest_id,
     fhir_specimen_request_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
