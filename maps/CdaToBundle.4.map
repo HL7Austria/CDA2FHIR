@@ -9870,6 +9870,24 @@ group CdaObservationToFhirObservation(source cda_observation : CDAObservation, t
 
 }
 
+group LaboratoryObservationCodeCheck(source cda_laboratory_observation : CDAObservation, source mapping_result_coding: Coding, target fhir_observation: Observation) {
+  // if mapping result is 'OTH' the code from within the CDA has no resemblance in eHDSILabCode
+  // as a result the code from the CDA will be accompanied with 'OTH' in order to fulfil the MyHealth@EU IG's requirements
+  mapping_result_coding where ($this.code = 'OTH') then {
+    cda_laboratory_observation.code as cda_code -> 
+      fhir_observation.code as fhir_observation_code,
+      fhir_observation_code.coding as fhir_observation_code_coding,
+      fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+      fhir_observation_code_coding.code = 'OTH' then 
+        CDCodeableConcept(cda_code, fhir_observation_code);
+  } "CdaLaboratoryObservationCodeToFhirObservationOTHandCode";
+  // if mapping result is NOT 'OTH' the code from within the CDA has a resemblance in eHDSILabCode
+  // as a result it will simply be passed through and used as code for the FHIR laboratory observation
+  mapping_result_coding where ($this.code != 'OTH') then {
+    cda_laboratory_observation.code -> fhir_observation.code;
+  } "CdaLaboratoryObservationCodeToFhirObservationCode";
+}
+
 group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) {
   cda_laboratory_observation ->
     fhir_observation.meta as fhir_observation_meta,
@@ -9893,11 +9911,11 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     "FhirObservationSubject";
 
   // observation/code[not(@nullFlavor)]
-  // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborparameter bzw. /elga-antibiogramm to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions
-  cda_laboratory_observation.code as cda_code where ($this.nullFlavor.exists().not()) -> fhir_observation.code as fhir_observation_code then {
-    cda_code.code as cda_code_code -> fhir_observation_code.coding = translate(cda_code_code, '#elga-laborparameter-to-eHDSILabCodeWithExceptions' , 'Coding');
-    cda_laboratory_observation.code as cda_code then CDCodeableConcept(cda_code, fhir_observation_code);
-  };
+  cda_laboratory_observation.code as cda_code where ($this.nullFlavor.exists().not()) then {
+    // based on concept map try to map code from within the CDA to a code according to eHDSILabCodeWithExceptions
+    cda_code.code as cda_code_code -> translate(cda_code_code, '#elga-laborparameter-to-eHDSILabCodeWithExceptions' , 'Coding') as mapping_result_coding then 
+      LaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation);
+  } "CdaLaboratoryObservationCodeToFhirObservationCodeNoNullFlavor";
   // observation/code[@nullFlavor='OTH'] 
   // only check for nullFlavor in general as CDA IG only permits 'OTH'
   cda_laboratory_observation.code as cda_code where ($this.nullFlavor.exists()) ->
@@ -9908,15 +9926,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     then {
       cda_code.translation as cda_code_translation then CDCodeableConcept(cda_code_translation, fhir_observation_code);
     };
-  
-  // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-  // ONLY FOR TESTING
-  // cda_laboratory_observation.code where ($this.codeSystem != '2.16.840.1.113883.6.1' or $this.nullFlavor.exists()) -> fhir_observation.code as fhir_observation_code,
-  //   fhir_observation_code.coding as fhir_observation_code_coding,
-  //   fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-  //   fhir_observation_code_coding.code = 'OTH'
-  //   "CdaObservationCodeToFhirObservationCodeNullFlavor";
 
   // observation.text
   // TODO
