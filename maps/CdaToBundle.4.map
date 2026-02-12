@@ -9006,7 +9006,7 @@ group CdaAuthorToFhirPractitioner(source cda_author : Author, target fhir_practi
     fhir_practitioner.id as fhir_practitioner_id,
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
-    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author,fhir_practitioner,fhir_practitionerRole,fhir_bundle);
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author,fhir_practitioner,fhir_practitionerRole,fhir_bundle) "CdaAuthorToFhirPractitionerAndPractitionerRole";
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.2&effectiveDate=2021-08-24T08:35:56&language=de-DE
@@ -9021,7 +9021,7 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
-    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author,fhir_practitioner,fhir_practitionerRole,fhir_bundle);
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author,fhir_practitioner,fhir_practitionerRole,fhir_bundle) "CdaAuthorToFhirPractitionerAndPractitionerRole";
 }
 
 group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author, target fhir_practitioner : Practitioner, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
@@ -9719,7 +9719,7 @@ group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument,
             cda_author.time -> fhir_observation.issued;
 
             // create the PractitionerRole in order to capture the author.functionCode
-            CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
+            cda_author then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle) "CdaAuthorToFhirPractitionerRole";
         } "CdaAuthorToObservationPerformer";
     } "CdaAuthorPerformerExists";
   } "CdaActNoPerformer";
@@ -10087,14 +10087,16 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_entryRelationship.act as cda_act -> 
       fhir_observation.note as fhir_observation_note then {
       
-        cda_act.text.reference as cda_reference -> fhir_observation_note.text = cda_reference.value;
+        cda_act.text as cda_act_text then {
+          cda_act_text.reference as cda_reference -> fhir_observation_note.text = (cda_reference.value);
+        };
         
         cda_act.author as cda_author -> 
           fhir_bundle.entry as fhir_bundle_entry, 
           fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
           fhir_practitioner.id = uuid() as fhir_practitioner_id,
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
-          fhir_observation_note.authorReference = create('Reference') as fhir_observation_note_authorReference,
+          fhir_observation_note.author = create('Reference') as fhir_observation_note_authorReference,
           fhir_observation_note_authorReference.reference = append('urn:uuid:', fhir_practitioner_id),
           fhir_observation_note_authorReference.type = 'Practitioner' then CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle);
       }; 
