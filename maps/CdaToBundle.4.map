@@ -117,11 +117,7 @@ group CdaToFhirBundle(source cda : ClinicalDocument, target fhir_bundle : Bundle
     fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_patient_uuid),
 
     // create the ServiceRequest to have it as reference for later transformations
-    // TODO create ServiceRequest only, if
-    //   inFulfillmentOf exists
-    //   section.angeforderteUntersuchung exists
-    //   section.überweisungsgrund exists
-    //   orderingProvider exists
+    // According to the CDA IG infulfillmentOf shall always be present. As such a ServiceRequest is always necessary.
     fhir_bundle.entry as fhir_bundle_entry_5,
     fhir_bundle_entry_5.resource = create('ServiceRequest') as fhir_serviceRequest,
     fhir_serviceRequest.id = uuid() as fhir_serviceRequest_id,
