@@ -645,10 +645,10 @@ group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> 
 group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends Any <<types>> {
   src.originalText -> tgt.text;
   src where ($this.nullFlavor.exists().not()) ->
-    tgt.coding as coding
+    tgt.coding as coding,
     // in order to be able to capture the primary code in case there are translations
     // 2025-07-28 CDA2FHIR AG decided to not use "userSelected" - in FHIR all codes are equal
-    // coding.userSelected = true
+    coding.userSelected = true
     then CECoding(src, coding) "code";
   src where ($this.nullFlavor.exists()) -> tgt.extension as tgt_extension then CdaNullFlavorToFhirNullFlavor(src, tgt_extension) "nullFlavor";
   src.translation as translation -> tgt.coding as coding then CDCoding(translation, coding);
