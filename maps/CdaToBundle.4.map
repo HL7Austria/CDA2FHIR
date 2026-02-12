@@ -1779,7 +1779,15 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
               // cda_notification_organizer -> observation.subject 
               // cda_notification_organizer -> observation.effectiveDateTime.extension.valueCode = not-applicable
               // observation.issued ???
+
+              // cda_notification_organizer -> observation.code x 
             cda_notification_organizer then CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient) "CdaOrganizerToFhirObservation";
+            // Add observation.code for compliance with fhir r4
+            cda_notification_organizer -> fhir_battery_observation.code as fhir_battery_observation_code,
+              fhir_battery_observation_code.coding as fhir_battery_observation_code_coding,
+              fhir_battery_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+              fhir_battery_observation_code_coding.code = 'OTH'
+              "CdaObservationCodeToFhirObservationCodeNullFlavor";
       
             // organizer.component.observation(1.3.6.1.4.1.19376.1.3.1.1.1 Notifiable Condition)
             cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1') then {
@@ -1804,6 +1812,14 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                  cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
 
                   cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                  // Add observation.effective for compliance with myhealth@eu 
+                  cda_laboratory_observation ->
+                    fhir_observation.effective = create('dateTime') as fhir_observation_effective,
+                    fhir_observation_effective.extension as fhir_observation_effective_extenstion,
+                    fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+                    fhir_observation_effective_extenstion.value = create('code') as fhir_observation_effective_extenstion_code,
+                    fhir_observation_effective_extenstion_code.value = 'unknown'
+                      "CdaEffectiveTimeExistsNotToFhirObservationEffective";
                 };
             };
 
