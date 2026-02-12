@@ -2663,12 +2663,16 @@
                                     <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
                                     <id extension="OBS-6-1" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
                                     <!-- <code code="V00432-7" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Blutgruppe AB0 Kontr"/> -->
-                                    <!-- <code nullFlavor="OTH">
+                                    <!-- <code code="26515-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten"/> -->
+                                    <code nullFlavor="OTH">
                                         <translation code="V00432-7" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Blutgruppe AB0 Kontr"/>
-                                    </code> -->
-                                    <code code="V00432-7" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Blutgruppe AB0 Kontr">
+                                    </code>
+                                    <!-- <code code="V00432-7" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Blutgruppe AB0 Kontr">
                                             <translation code="16378004" codeSystem="2.16.840.1.113883.6.96" displayName="Platelet (cell structure)"/>
-                                        </code>
+                                        </code> -->
+                                    <!-- <code code="26515-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten">
+                                            <translation code="16378004" codeSystem="2.16.840.1.113883.6.96" displayName="Platelet (cell structure)"/>
+                                        </code> -->
                                     <text>
                                         <reference value="#OBS-6-1"/>
                                     </text>
