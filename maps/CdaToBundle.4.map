@@ -2227,14 +2227,16 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_entryRelationship.act as cda_act -> 
       fhir_observation.note as fhir_observation_note then {
       
-        cda_act.text.reference as cda_reference -> fhir_observation_note.text = cda_reference.value;
+        cda_act.text as cda_act_text then {
+          cda_act_text.reference as cda_reference -> fhir_observation_note.text = (cda_reference.value);
+        };
         
         cda_act.author as cda_author -> 
           fhir_bundle.entry as fhir_bundle_entry, 
           fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
           fhir_practitioner.id = uuid() as fhir_practitioner_id,
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
-          fhir_observation_note.authorReference = create('Reference') as fhir_observation_note_authorReference,
+          fhir_observation_note.author = create('Reference') as fhir_observation_note_authorReference,
           fhir_observation_note_authorReference.reference = append('urn:uuid:', fhir_practitioner_id),
           fhir_observation_note_authorReference.type = 'Practitioner' then CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle);
       }; 
