@@ -9915,7 +9915,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // observation/code[not(@nullFlavor)]
   cda_laboratory_observation.code as cda_code where ($this.nullFlavor.exists().not()) then {
     // based on concept map try to map code from within the CDA to a code according to eHDSILabCodeWithExceptions
-    cda_code.code as cda_code_code -> translate(cda_code_code, '#elga-laborparameter-to-eHDSILabCodeWithExceptions' , 'Coding') as mapping_result_coding then 
+    cda_code.code as cda_code_code -> translate(cda_code_code, '#elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions' , 'Coding') as mapping_result_coding then 
       LaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation);
   } "CdaLaboratoryObservationCodeToFhirObservationCodeNoNullFlavor";
   // observation/code[@nullFlavor='OTH'] 
