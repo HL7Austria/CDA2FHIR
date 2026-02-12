@@ -53,7 +53,7 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
-// Excel: MVC_Map_elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions.xlsx
+// Excel: terminology_mapping/MVC_Map_elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions.xlsx
 //
 // ConceptMap is being used for laboratory observations and captures the following mappings:
 //   https://termgit.elga.gv.at/ValueSet/elga-laborparameter TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions
