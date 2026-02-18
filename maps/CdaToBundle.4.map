@@ -2118,13 +2118,10 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO as long as https://gitlab.com/cdehealth/malac-hd/-/issues/113 has not been resolved this mapping cannot be completed
   cda_laboratory_observation.value: BL as cda_observation_value then {
     cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value
-      // 
-      // TODO: activate the following code as soon as https://gitlab.com/cdehealth/malac-hd/-/issues/112 has been resolved
-      // ,
-      // fhir_observation_value.extension as fhir_observation_value_extension,
-      // fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      // fhir_observation_value_extension.value = create('boolean') as fhir_observation_value_extension_value then BL(cda_observation_value, fhir_observation_value_extension_value) 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('boolean') as fhir_observation_value_extension_value then BL(cda_observation_value, fhir_observation_value_extension_value) 
       "CdaValueToFhirValueBL";
   } "CdaValueBLToFhirObservationValue";
 
