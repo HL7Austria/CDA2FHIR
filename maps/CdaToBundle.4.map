@@ -1735,7 +1735,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
 
           };
       };
-      
+
       // section.entry.act.entryRelationship (Laboratory Observation)
        cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
          cda_entryRelationship.observation as cda_laboratory_observation ->
@@ -2235,6 +2235,8 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
   } "CdaObservationValueToFhirObservationValueCD";
   
+  // observation.value(xsi:type="CE")
+  cda_laboratory_observation.value: CE as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
   // observation.value.codoe = 281268007 - Insufficient sample (finding)
    cda_laboratory_observation
     where cda_laboratory_observation.value.exists(code='281268007' and codeSystem='2.16.840.1.113883.6.96') then {
