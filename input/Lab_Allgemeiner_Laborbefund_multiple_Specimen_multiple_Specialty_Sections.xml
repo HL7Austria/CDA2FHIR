@@ -3141,7 +3141,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="pg" value="29.7" xsi:type="PQ"/>
+                                            <value value="false" xsi:type="BL"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
