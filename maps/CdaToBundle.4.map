@@ -2102,7 +2102,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // observation.value(xsi:type="INT")
-  cda_laboratory_observation.value: INT then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaValueINTToFhirObservationValue";
+  cda_laboratory_observation.value: INT as cda_observation_value then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaValueINTToFhirObservationValue";
 
   // observation.value(xsi:type="CD")
   cda_laboratory_observation
