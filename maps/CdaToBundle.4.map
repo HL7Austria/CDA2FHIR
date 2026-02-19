@@ -2144,6 +2144,12 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
     cda_observation_value where (cda_observation_value.value.exists()) then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaObservationValueIVL_INTToFhirObservationValueInteger";
     
+    // As the mapping of IVL_INT would have to be realized
+    // by using string-data type as target because Range
+    // requires a unit and a system in the Quantities this
+    // was deemed to complex. As a result, the
+    // valueCodeableConcept will be set to "OTH" and
+    // the original value will be captured in an extension.
     cda_observation_value where (cda_observation_value.value.exists().not()) -> 
       fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
       fhir_observation_value.coding as fhir_observation_value_coding,
