@@ -552,9 +552,9 @@ group INT(source src : INT, target tgt : integer) extends Any <<types>> {
   src.value as v -> tgt.value = v "integer";
 }
 
-group IVL_INT(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
-  src.low as source_low -> tgt.low as target_low then IVXB_INT(source_low,target_low) "IVLINTLOW";
-  src.high as source_high -> tgt.high as target_high then IVXB_INT(source_high,target_high) "IVLINTLOW";
+group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
+  src.low as source_low -> tgt.low as target_low then IVXB_INT(source_low, target_low) "IVL_INTLow";
+  src.high as source_high -> tgt.high as target_high then IVXB_INT(source_high, target_high) "IVL_INTHigh";
 }
 
 group IVXB_INT(source src : IVXB_INT, target tgt : Quantity) extends Any <<types>>{
