@@ -778,7 +778,7 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
         fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
         fhir_careTeam_member_reference.type = 'PractitionerRole' then {
           cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
-          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle);
+          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle) "CdaAssociatedEntityToFhirPractitionerRole";
         };
       };
   } "CdaParticipantsToFhirCareTeam";
@@ -1157,6 +1157,21 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
     "CdaPatientExistsNotToFhirPatient";
 }
 
+
+
+group CdaAuthorToFhirPractitioner(source cda_author : Author, target fhir_practitioner: Practitioner, target fhir_bundle : Bundle){
+  cda_author -> 
+    fhir_bundle.entry as fhir_bundle_entry, 
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_practitionerRole_id),
+
+    fhir_practitioner.id as fhir_practitioner_id,
+    fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+    fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author,fhir_practitioner,fhir_practitionerRole,fhir_bundle) "CdaAuthorToFhirPractitionerAndPractitionerRole";
+}
+
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.2&effectiveDate=2021-08-24T08:35:56&language=de-DE
 // Target: http://hl7.org/fhir/practitionerrole.html
 //         http://hl7.org/fhir/practitioner.html
@@ -1169,41 +1184,44 @@ group CdaAuthorToFhirPractitionerRole(source cda_author : Author, target fhir_pr
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
-    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author,fhir_practitioner,fhir_practitionerRole,fhir_bundle) "CdaAuthorToFhirPractitionerAndPractitionerRole";
+}
 
-      // ClinicalDocument.author.functionCode
-      cda_author.functionCode -> fhir_practitionerRole.specialty;
+group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author, target fhir_practitioner : Practitioner, target fhir_practitionerRole : PractitionerRole, target fhir_bundle : Bundle){
+   
+    // ClinicalDocument.author.functionCode
+    cda_author.functionCode -> fhir_practitionerRole.specialty;
 
-      // ClinicalDocument.author.time
-      // TODO extension?
+    // ClinicalDocument.author.time
+    // TODO extension?
 
-      // ClinicalDocument.author.assignedAuthor
-      cda_author.assignedAuthor as cda_author_assignedAuthor then {
-        // ClinicalDocument.author.assignedAuthor.id
-        cda_author_assignedAuthor.id where (nullFlavor.exists().not()) -> fhir_practitioner.identifier;
-        // ClinicalDocument.author.assignedAuthor.code
-        cda_author_assignedAuthor.code as cda_author_assignedAuthor_code ->
-          fhir_practitioner.qualification as fhir_practitioner_qualification,
-          fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
-          CECodeableConcept(cda_author_assignedAuthor_code,fhir_practitioner_qualification_code);
-        // ClinicalDocument.author.assignedAuthor.telecom
-        cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
-        // ClinicalDocument.author.assignedAuthor.assignedPerson
-        cda_author_assignedAuthor.assignedPerson as cda_assignedPerson then {
-          cda_assignedPerson.name -> fhir_practitioner.name;
-        };
-        // ClinicalDocument.author.assignedAuthor.representedOrganization
-        cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
-          fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Organization') as fhir_organization,
-          fhir_organization.id = uuid() as fhir_organization_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
-          fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
-          fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_practitionerRole_organization.type = 'Organization' then
-          CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
+    // ClinicalDocument.author.assignedAuthor
+    cda_author.assignedAuthor as cda_author_assignedAuthor then {
+      // ClinicalDocument.author.assignedAuthor.id
+      cda_author_assignedAuthor.id where (nullFlavor.exists().not()) -> fhir_practitioner.identifier;
+      // ClinicalDocument.author.assignedAuthor.code
+      cda_author_assignedAuthor.code as cda_author_assignedAuthor_code ->
+        fhir_practitioner.qualification as fhir_practitioner_qualification,
+        fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
+        CECodeableConcept(cda_author_assignedAuthor_code,fhir_practitioner_qualification_code);
+      // ClinicalDocument.author.assignedAuthor.telecom
+      cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
+      // ClinicalDocument.author.assignedAuthor.assignedPerson
+      cda_author_assignedAuthor.assignedPerson as cda_assignedPerson then {
+        cda_assignedPerson.name -> fhir_practitioner.name;
       };
-    } "CdaAuthorToFhirPractitionerRole";
+      // ClinicalDocument.author.assignedAuthor.representedOrganization
+      cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+        fhir_organization.id = uuid() as fhir_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+        fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+        fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+        fhir_practitionerRole_organization.type = 'Organization' then
+        CdaOrganizationCompilationToFhirOrganization(cda_representedOrganization, fhir_organization);
+    };
+  
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.2&effectiveDate=2021-08-24T08:35:56&language=de-DE
@@ -1673,18 +1691,25 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
         cda_entryRelationship.procedure as cda_procedure then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle);
       };
 
-      // // section.entry.act.entryRelationship (Laboratory Observation)
-      // cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
-      //   cda_entryRelationship.observation as cda_laboratory_observation ->
-      //     // create Observation
-      //     fhir_bundle.entry as fhir_bundle_entry,
-      //     fhir_bundle_entry.resource = create('Observation') as fhir_observation,
-      //     fhir_observation.id = uuid() as fhir_observation_id,
-      //     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
-      //     fhir_section.entry = create('Reference') as fhir_section_entry_reference,
-      //     fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-      //     fhir_section_entry_reference.type = 'Observation';// then CdaLaboratoryObservationToFhirObservation(cda_laboratory_observation, fhir_section_section);
-      // };
+      // section.entry.act.entryRelationship (Laboratory Observation)
+       cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
+         cda_entryRelationship.observation as cda_laboratory_observation ->
+          // create Observation
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+          fhir_observation.id = uuid() as fhir_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then {
+            // cda_laboratory_observation.performer exists
+            cda_laboratory_observation.performer as cda_laboratory_observation_performer where cda_laboratory_observation.performer.exists() then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle);
+            cda_entryRelationship.observation where (performer.exists().not()) then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
+
+            cda_laboratory_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient,fhir_bundle) "CdaLaboratoryObservationToFhirObservation";
+          };
+       };
+
 
       // section.entry.act.entryRelationship (Laboratory Battery Organizer)
       cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.4') then {
@@ -1725,7 +1750,6 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
                       then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
                       "CdaObservationPerformerToFhirObservationPerformer";
                   cda_component.observation where (performer.exists().not()) then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
-
                   cda_laboratory_observation then CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_specimen) "CdaObservationToFhirObservation";
                 };
             };
@@ -1751,18 +1775,27 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_specimen_id) then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle);
       };
 
-      // // section.entry.act.entryRelationship (Laboratory Observation)
-      // cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
-      //   cda_entryRelationship.observation as cda_laboratory_observation ->
-      //     // create Observation
-      //     fhir_bundle.entry as fhir_bundle_entry,
-      //     fhir_bundle_entry.resource = create('Observation') as fhir_observation,
-      //     fhir_observation.id = uuid() as fhir_observation_id,
-      //     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
-      //     fhir_section.entry = create('Reference') as fhir_section_entry_reference,
-      //     fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-      //     fhir_section_entry_reference.type = 'Observation';// then CdaLaboratoryObservationToFhirObservation(cda_laboratory_observation, fhir_section_section);
-      // };
+      // section.entry.act.entryRelationship (Laboratory Observation)
+      // root or root FHIRPath where() with root or root fails when multiple matching templateIds exist (Single value expected, multiple found) 
+      // MaLaC-HD issue created: https://gitlab.com/cdehealth/malac-hd/-/issues/111
+      // Using only one of the two templateIds in this case should be sufficiant tho. 
+      cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
+        cda_entryRelationship.observation as cda_laboratory_observation ->
+          // create Observation
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+          fhir_observation.id = uuid() as fhir_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then {
+            // cda_laboratory_observation.performer exists
+            cda_laboratory_observation.performer as cda_laboratory_observation_performer where cda_laboratory_observation.performer.exists() then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle);
+            cda_entryRelationship.observation where (performer.exists().not()) then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
+
+            cda_laboratory_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient,fhir_bundle) "CdaLaboratoryObservationToFhirObservation";
+          };
+        };
 
       // section.entry.act.entryRelationship (Laboratory Battery Organizer)
       cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.4') then {
@@ -1812,7 +1845,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
     };
   };
 }
-
+ 
 group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument, source cda_act: Act, target fhir_observation: Observation, target fhir_bundle: Bundle) {
   // cda_act.performer exists
   cda_act.performer as cda_act_performer
@@ -1849,7 +1882,7 @@ group CdaPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument,
             cda_author.time -> fhir_observation.issued;
 
             // create the PractitionerRole in order to capture the author.functionCode
-            CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
+            cda_author then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle) "CdaAuthorToFhirPractitionerRole";
         } "CdaAuthorToObservationPerformer";
     } "CdaAuthorPerformerExists";
   } "CdaActNoPerformer";
@@ -2068,6 +2101,16 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
+  // observation.value(xsi:type="INT")
+  cda_laboratory_observation.value: INT as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
+      "CdaValueToFhirValueINT";
+  } "CdaValueINTToFhirObservationValue";
+
   // observation.value(xsi:type="CD")
   cda_laboratory_observation
     where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -2120,9 +2163,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
 	// // Physical Quantity - not standard conformant, but required for example report
 	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
-	// // Integer
-	// cdaObs.value: INT as obsValueCDA -> observation.value = create('integer') as value then INT(obsValueCDA,value) "observationValueINT";
-
 	// // Boolean
 	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
 	// // Coded Value
@@ -2186,7 +2226,24 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     };
     
   // observation.entryRelationship (Comment Entry)
-  // TODO
+  cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.act.exists()) then {
+    cda_entryRelationship.act as cda_act -> 
+      fhir_observation.note as fhir_observation_note then {
+      
+        cda_act.text as cda_act_text then {
+          cda_act_text.reference as cda_reference -> fhir_observation_note.text = (cda_reference.value);
+        };
+        
+        cda_act.author as cda_author -> 
+          fhir_bundle.entry as fhir_bundle_entry, 
+          fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+          fhir_practitioner.id = uuid() as fhir_practitioner_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+          fhir_observation_note.author = create('Reference') as fhir_observation_note_authorReference,
+          fhir_observation_note_authorReference.reference = append('urn:uuid:', fhir_practitioner_id),
+          fhir_observation_note_authorReference.type = 'Practitioner' then CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle);
+      }; 
+  };
 
   // observation.entryRelationship (Frühere Ergebnisse)
   // TODO
