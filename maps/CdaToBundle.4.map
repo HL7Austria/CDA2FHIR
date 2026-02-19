@@ -2142,11 +2142,19 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   
   // observation.value(xsi:type="IVL_INT")
   cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
-    // not allowed in value[x] Slicing. 
-    //cda_observation_value where(cda_observation_value.value.exists()) -> fhir_observation.value = create('integer') as fhir_observation_value then INT(cda_observation_value,fhir_observation_value)"observationValueINT";
+    cda_observation_value where (cda_observation_value.value.exists()) then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaObservationValueIVL_INTToFhirObservationValueInteger";
     
-    cda_observation_value where(cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVL_INT(cda_observation_value,fhir_observation_value)"observationValueIVLINT";
-  };
+    cda_observation_value where (cda_observation_value.value.exists().not()) then {
+      cda_observation_value.low as cda_observation_value_low where (cda_observation_value.high.exists().not()) ->
+        fhir_observation.value = create('string') as fhir_observation_value,
+        create('string') = cast(cda_observation_value_low, 'string') as test,
+        fhir_observation_value.value = append('>', test.value),
+        fhir_observation_value.extension as fhir_observation_value_extension,
+        fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+        fhir_observation_value_extension.value = create('Range') as fhir_observation_value_extension_value then IVL_INTRange(cda_observation_value, fhir_observation_value) 
+        "CdaObservationValueIVL_INTNoHighToFhirObservationRange";
+    } "CdaObservationValueIVL_INTNoValue";
+  } "CdaObservationValueIVL_INTToFhirObservationValue";
 
   // TODO other datatypes
   // // Concept Descriptor
