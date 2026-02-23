@@ -35,7 +35,7 @@ jobs:
           pip install -e utils
           git clone https://gitlab.com/cdehealth/malac/transformer.git
           pip install -e transformer/fhir
-          git clone -b https://gitlab.com/cdehealth/malac-hd.git
+          git clone https://gitlab.com/cdehealth/malac-hd.git
           pip install -e malac-hd
 
       - name: Run MaLaC-HD
