@@ -1920,6 +1920,27 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                   cda_laboratory_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
                 };
             };
+
+            cda_laboratory_battery_organizer.component as cda_component where $this.obseravtion.templateId.where(root='1.2.40.0.34.6.0.11.3.19') then {
+              cda_component.observationMedia as cda_laboratory_observationMedia ->
+                // create Observation
+                fhir_bundle.entry as fhir_bundle_entry,
+                fhir_bundle_entry.resource = create('Observation') as fhir_laboratory_observation,
+                fhir_laboratory_observation.id = uuid() as fhir_laboratory_observation_id,
+                fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_laboratory_observation_id),
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_laboratory_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+                  // cda_laboratory_observation.performer exists
+                  cda_laboratory_observationMedia.performer as cda_laboratory_observationMedia_performer
+                      where cda_laboratory_observationMedia.performer.exists()
+                      then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_laboratory_observation, fhir_bundle)
+                      "CdaObservationPerformerToFhirObservationPerformer";
+                  cda_component.observationMedia where (performer.exists().not()) then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_laboratory_observationMedia CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation,fhir_bundle);
+                };
+            };
           };
       };
     };
@@ -2017,6 +2038,22 @@ group CdaBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Section,
       };
     }
     "CdaBeilagenToFhirMedia";
+}
+
+group CdaObservationMediaToFhirObservation(source cda_observationMedia : observationMedia, target fhir_observation : Observation, target fhir_bundle : Bundle){
+  cda_observationMedia.id -> fhir_observation.identifier; 
+  
+  cda_observationMedia.value -> 
+    fhir_observation.extension as fhir_observation_value_extension,
+    fhir_observation_value_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Observation.value[x]',
+    fhir_observation_value_extension.value = create('Attachment') as fhir_observation_value_attachment then {
+      cda_observation_media.value as cda_observationMedia_value then{
+        cda_observationMedia_value.mediaType -> fhir_observation_value_attachment.contentType;
+        cda_observationMedia_value -> fhir_media_content.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";
+      }; 
+    }; 
+      
+
 }
 
 // group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Section, source patient : Patient, target tgt, target bundle: Bundle) {
