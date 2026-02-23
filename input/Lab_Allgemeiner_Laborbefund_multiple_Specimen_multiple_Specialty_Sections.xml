@@ -2564,6 +2564,60 @@
                 </section>
             </component>
 
+            <!-- Angeforderte Untersuchung (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund) -->
+            <component>
+                <section>
+                    <!-- templateId für Angeforderte Untersuchungen -->
+                    <templateId root="1.2.40.0.34.6.0.11.2.15"/>
+                    <!-- Code der Section -->
+                    <code code="400999005" codeSystem="2.16.840.1.113883.6.96" displayName="Procedure requested (situation)"/>
+                    <!-- Titel der Section -->
+                    <title>Angeforderte Untersuchungen</title>
+                    <!-- CDA Level 2 -->
+                    <text>Großes Blutbild</text>
+                    <!-- CDA Level 3 -->
+                    <entry typeCode="DRIV">
+                        <procedure classCode="PROC" moodCode="RQO">
+                            <!-- templateId für Angeforderte Untersuchung Entry -->
+                            <templateId root="1.2.40.0.34.6.0.11.3.169"/>
+                            <!-- Interne ID -->
+                            <id root="1.2.40.0.34.99.4613.11.3" extension="4711" assigningAuthorityName="Amadeus Spital"/>
+                            <code nullFlavor="OTH">
+                                <translation code="33882-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Collection date of Specimen"/>
+                            </code>
+                            <!-- Datum der Anforderung -->
+                            <effectiveTime value="20251212"/>
+                        </procedure>
+                    </entry>
+                    <entry typeCode="DRIV">
+                        <procedure classCode="PROC" moodCode="RQO">
+                            <!-- templateId für Angeforderte Untersuchung Entry -->
+                            <templateId root="1.2.40.0.34.6.0.11.3.169"/>
+                            <!-- Interne ID -->
+                            <id root="1.2.40.0.34.99.4613.11.3" extension="4711" assigningAuthorityName="Amadeus Spital"/>
+                            <code nullFlavor="OTH">
+                                <translation code="26464-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukozyten"/>
+                            </code>
+                            <!-- Datum der Anforderung -->
+                            <effectiveTime value="20251212"/>
+                        </procedure>
+                    </entry>
+                    <entry typeCode="DRIV">
+                        <procedure classCode="PROC" moodCode="RQO">
+                            <!-- templateId für Angeforderte Untersuchung Entry -->
+                            <templateId root="1.2.40.0.34.6.0.11.3.169"/>
+                            <!-- Interne ID -->
+                            <id root="1.2.40.0.34.99.4613.11.3" extension="4711" assigningAuthorityName="Amadeus Spital"/>
+                            <code nullFlavor="OTH">
+                                <translation code="26515-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten"/>
+                            </code>
+                            <!-- Datum der Anforderung -->
+                            <effectiveTime value="20251212"/>
+                        </procedure>
+                    </entry>
+                </section>
+            </component>
+
             <!-- Probeninformation (Specimen Section) -->
             <component typeCode="COMP">
                 <section classCode="DOCSECT">
