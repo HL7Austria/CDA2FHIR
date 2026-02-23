@@ -2111,7 +2111,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       "CdaValueToFhirValueINT";
   } "CdaValueINTToFhirObservationValue";
 
-  // Coded Value
+  // observation.value(xsi:type="CV")
   cda_laboratory_observation.value: CV as cda_observation_value ->
     fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
     fhir_observation_value.coding as fhir_observation_value_coding,
