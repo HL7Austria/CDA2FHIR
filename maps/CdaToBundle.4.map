@@ -1913,7 +1913,9 @@ group CdaBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Section,
               // cda_observationMedia@mediaType
               cda_observationMedia_value.mediaType as cda_mediaType -> fhir_media_content.contentType = cda_mediaType;
               // cda_observationMedia.value
-              cda_observationMedia_value -> fhir_media_content.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";
+              cda_observationMedia_value.xmlText -> fhir_media_content.data; 
+
+              // cda_observationMedia_value -> fhir_media_content.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";
           };
         };
       };
