@@ -72,6 +72,9 @@ conceptmap "ELGAEntityNameUseFHIRNameUse" {
 // TODO review mapping
 // TODO add TITLE to name-part-qualifier
 // As soon as 'TITLE' is part of FHIR name-part-qualifier this conceptmap is obsolete.
+//
+// TODO full ConceptMap is required as https://termgit.elga.gv.at/ValueSet-elga-entitynamepartqualifier.html contains concepts from ONE code system
+//                      however, https://hl7.org/fhir/extensions/ValueSet-name-part-qualifier.html (see https://hl7.org/fhir/extensions/StructureDefinition-iso21090-EN-qualifier.html) contains concepts from TWO code systems
 conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2"
