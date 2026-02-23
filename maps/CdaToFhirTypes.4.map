@@ -492,6 +492,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/CS" alias CS as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/code" alias code as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/CE" alias CE as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/CD" alias CD as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CV" alias CV as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias CodeableConcept as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Coding" alias Coding as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ST" alias ST as source
@@ -658,6 +659,10 @@ group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends C
 }
 
 group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept <<types>> {
+}
+
+group CVCodeableConcept(source src: CV, target tgt: CodeableConcept) extends CECodeableConcept <<types>> {
+
 }
 
 // group ENHumanName(source src : EN, target tgt : HumanName) extends Any <<types>> {
