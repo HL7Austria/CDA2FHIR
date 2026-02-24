@@ -53,6 +53,30 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
+// TODO: complete mapping
+// 
+// ConceptMap is being used for the Observation.value-elements of the following templates
+// - CDA Labor- und Mikrobiologiebefund v3
+//   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+//   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+// - CDA Laborbefund v2
+//   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+//
+// in essence the following mappings are covered:
+//  https://termgit.elga.gv.at/ValueSet/elga-significantpathogens TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+//  https://termgit.elga.gv.at/ValueSet/ems-meldepflichtige-krankheiten TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory" {
+  prefix a = "https://termgit.elga.gv.at/CodeSystem/elga-significantpathogens"
+  prefix b = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2017"
+  prefix c = "https://termgit.elga.gv.at/CodeSystem/ems-ergaenzungmeldepflichtigekrankheiten"
+  prefix d = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2020"
+  prefix e = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmsgpk-2025"
+  prefix t = "http://snomed.info/sct"
+
+  a: "SP015" == t: "112283007"
+  b: "A00" == t: "75953000"
+}
+
 // Excel: terminology_mapping/MVC_Map_elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions.xlsx
 //
 // ConceptMap is being used for laboratory observations and captures the following mappings:
@@ -10167,86 +10191,19 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     fhir_observation_effective_extenstion_code.value = 'unknown'
       "CdaEffectiveTimeExistsNotToFhirObservationEffective";
 
-  // observation.value(xsi:type="PQ")
-  cda_laboratory_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
-
-  // observation.value(xsi:type="IVL_PQ")
-  cda_laboratory_observation.value: IVL_PQ as cda_observation_value then {
-    cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
-
-    cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
-  } "CdaObservationValueToFhirObservationValueIVLPQ";
-
-  // observation.value(xsi:type="INT")
-  cda_laboratory_observation.value: INT as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueINT";
-  } "CdaValueINTToFhirObservationValue";
-
-  // observation.value(xsi:type="CD")
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
-    cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
-  } "CdaObservationValueToFhirObservationValueCD";
-  
-  // observation.value(xsi:type="CE")
-  cda_laboratory_observation.value: CE as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
-  // observation.value.codoe = 281268007 - Insufficient sample (finding)
-   cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='281268007' and codeSystem='2.16.840.1.113883.6.96') then {
-        cda_laboratory_observation.value as cda_laboratory_observation_value ->
-          fhir_observation.status = 'cancelled',
-          fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
-          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
-          fhir_observation_dataAbsentReason_coding_1.code = 'not-performed',
-          fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
-          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
-      }
-      "CdaInsufficientSampleObservationToFhirObservationStatus";
-
-  // observation.value.codoe = 255599008 -   Incomplete (qualifier value)
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') then {
-      cda_laboratory_observation.value as cda_laboratory_observation_value ->  
-        fhir_observation.status = 'preliminary',
-        fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
-        fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
-        fhir_observation_dataAbsentReason_coding_1.code = 'temp-unknown',
-        fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
-          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
-    }"CdaIncompleteObservationToFhirObservationStatus";
-      
-  // observation.value(xsi:type="ST")
-  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-
-  // TODO other datatypes
-  // // Concept Descriptor
-	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
-	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
-	// // Interval of Physical Quantities
-	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
-	// // Physical Quantity - not standard conformant, but required for example report
-	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
-	// // Interval of Integers
-	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
-	// // Boolean
-	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
-	// // Coded Value
-	// cdaObs.value: CV as obsValueCDA -> observation.value = create('CodeableConcept') as value then CVCodeableConcept(obsValueCDA,value) "observationValueCV";
-	// // Time Stamp
-	// cdaObs.value: TS as obsValueCDA -> observation.value = create('dateTime') as value then TSDateTime(obsValueCDA,value) "observationValueTS";
-	// // Ratio
-	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
-	// // Ratio of quantities
-	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
-	// // Ratio of physical quantities
-	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
+  // Mapping of result value in case of Laboratory Observation
+  cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then 
+    CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    "CdaLaboratoryObservationValueToFhirObservationValue";
+  // Mapping of result value in case of the following templates:
+  // - CDA Labor- und Mikrobiologiebefund v3
+  //   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+  //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+  // - CDA Laborbefund v2
+  //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1' or root='1.3.6.1.4.1.19376.1.3.1.1.2') then 
+    CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    "CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue";
 
   // observation.interpretationCode
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
@@ -10352,6 +10309,101 @@ group CdaLaboratoryObservationToFhirObservationWithSpecimen(source cda: Clinical
     fhir_observation_specimen_reference.reference = append('urn:uuid:', fhir_specimen_id),
     fhir_observation_specimen_reference.type = 'Specimen'
     "ObservationSpecimenReference";
+}
+
+group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  // observation.value(xsi:type="PQ")
+  cda_laboratory_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
+
+  // observation.value(xsi:type="IVL_PQ")
+  cda_laboratory_observation.value: IVL_PQ as cda_observation_value then {
+    cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
+
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
+  } "CdaObservationValueToFhirObservationValueIVLPQ";
+
+  // observation.value(xsi:type="INT")
+  cda_laboratory_observation.value: INT as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
+      "CdaValueToFhirValueINT";
+  } "CdaValueINTToFhirObservationValue";
+
+  // observation.value(xsi:type="CD")
+  cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
+    cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
+  } "CdaObservationValueToFhirObservationValueCD";
+
+  // observation.value.codoe = 281268007 - Insufficient sample (finding)
+   cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='281268007' and codeSystem='2.16.840.1.113883.6.96') then {
+        cda_laboratory_observation.value as cda_laboratory_observation_value ->
+          fhir_observation.status = 'cancelled',
+          fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
+          fhir_observation_dataAbsentReason_coding_1.code = 'not-performed',
+          fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
+          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
+      }
+      "CdaInsufficientSampleObservationToFhirObservationStatus";
+
+  // observation.value.codoe = 255599008 -   Incomplete (qualifier value)
+  cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') then {
+      cda_laboratory_observation.value as cda_laboratory_observation_value ->  
+        fhir_observation.status = 'preliminary',
+        fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
+        fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
+        fhir_observation_dataAbsentReason_coding_1.code = 'temp-unknown',
+        fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
+          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
+    }"CdaIncompleteObservationToFhirObservationStatus";
+      
+  // observation.value(xsi:type="ST")
+  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+
+  // TODO other datatypes
+  // // Concept Descriptor
+	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
+	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
+	// // Interval of Physical Quantities
+	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
+	// // Physical Quantity - not standard conformant, but required for example report
+	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
+	// // Interval of Integers
+	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
+	// // Boolean
+	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
+	// // Coded Value
+	// cdaObs.value: CV as obsValueCDA -> observation.value = create('CodeableConcept') as value then CVCodeableConcept(obsValueCDA,value) "observationValueCV";
+	// // Time Stamp
+	// cdaObs.value: TS as obsValueCDA -> observation.value = create('dateTime') as value then TSDateTime(obsValueCDA,value) "observationValueTS";
+	// // Ratio
+	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
+	// // Ratio of quantities
+	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
+	// // Ratio of physical quantities
+	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
+}
+
+group CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  // This data type mapping is only used by the following templates
+  // - CDA Labor- und Mikrobiologiebefund v3
+  //   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+  //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+  // - CDA Laborbefund v2
+  //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  cda_laboratory_observation.value as cda_observation_value then {
+    cda_observation_value.code as cda_observation_value_code -> 
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding = translate(cda_observation_value_code, '#elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory', 'Coding');
+  } "CdaObservationValueToFhirObservationValue";
 }
 
 // _________________________ Template Type not specified  ___________________
