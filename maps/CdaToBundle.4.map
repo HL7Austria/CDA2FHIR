@@ -10052,15 +10052,22 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   } "CdaValueINTToFhirObservationValue";
 
   // observation.value(xsi:type="BL")
-  // TODO as long as https://gitlab.com/cdehealth/malac-hd/-/issues/113 has not been resolved this mapping cannot be completed
-  cda_laboratory_observation.value: BL as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('boolean') as fhir_observation_value_extension_value then BL(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueBL";
-  } "CdaValueBLToFhirObservationValue";
+  cda_laboratory_observation.value: BL as cda_observation_value ->
+    fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    fhir_observation_value.coding as fhir_observation_value_coding then {
+      cda_observation_value.value as cda_observation_value_attribute where ($this = true) -> 
+        fhir_observation_value.text = cast(cda_observation_value_attribute, 'string'),
+        fhir_observation_value_coding.system = 'http://snomed.info/sct',
+        fhir_observation_value_coding.code = '373066001',
+        fhir_observation_value_coding.display = 'Yes'
+        "CdaValueBLToFhirObservationValueTrue";
+      cda_observation_value.value as cda_observation_value_attribute where ($this = false) -> 
+        fhir_observation_value.text = cast(cda_observation_value_attribute, 'string'),
+        fhir_observation_value_coding.system = 'http://snomed.info/sct',
+        fhir_observation_value_coding.code = '373067005',
+        fhir_observation_value_coding.display = 'No'
+        "CdaValueBLToFhirObservationValueFalse";
+  } "CdaValueBLTrueToFhirObservationValue";
 
   // observation.value(xsi:type="CD")
   cda_laboratory_observation
