@@ -62,6 +62,7 @@ conceptmap "elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions" {
   prefix s = "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
   prefix u = "http://loinc.org"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix v = "http://snomed.info/sct"
 
   s: "100" == t: "OTH"
   s: "01850" == t: "OTH"
@@ -7887,6 +7888,8 @@ conceptmap "elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions" {
   u: "93851-4" == u: "93851-4"
   u: "94274-8" == u: "94274-8"
   u: "96372-8" == u: "96372-8"
+  v: "170516003" == t: "OTH"
+  v: "416341003" == t: "OTH"
 }
 
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
