@@ -9181,7 +9181,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
     // TODO
 
     // Überweisungsgrund - uncodiert
-    cda_component.section as cda_section where ((code.where(code='46239-0' and codeSystem='2.16.840.1.113883.6.1') and (templateId.where(root='1.2.40.0.34.6.0.11.2.114') or templateId.where(root='1.2.40.0.34.11.4.2.4'))) ->
+    cda_component.section as cda_section where (code.where(code='46239-0' and codeSystem='2.16.840.1.113883.6.1') and (templateId.where(root='1.2.40.0.34.6.0.11.2.114') or templateId.where(root='1.2.40.0.34.11.4.2.4'))) ->
       cda_section.text as cda_section_text,
       fhir_serviceRequest.reasonCode as fhir_serviceRequest_reasonCode,
       fhir_serviceRequest_reasonCode.coding as fhir_serviceRequest_reasonCode_coding,
@@ -9190,7 +9190,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
       fhir_serviceRequest_reasonCode.text = (cda_section_text);
 
     // Angeforderte Untersuchungen - codiert
-    cda_component.section as cda_section where ((code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.15')) ->
+    cda_component.section as cda_section where (code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.15')) ->
       cda_section.text as cda_section_text,
       fhir_serviceRequest.code as fhir_serviceRequest_code,
       fhir_serviceRequest_code.text = (cda_section_text) then {
@@ -9235,7 +9235,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
       };
 
     // Angeforderte Untersuchungen - uncodiert
-    cda_component.section as cda_section where ((code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.112')) ->
+    cda_component.section as cda_section where (code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.112')) ->
       cda_section.text as cda_section_text,
       fhir_serviceRequest.code as fhir_serviceRequest_code,
       fhir_serviceRequest_code.coding as fhir_serviceRequest_code_coding,
