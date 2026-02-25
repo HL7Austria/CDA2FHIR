@@ -9320,13 +9320,13 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
     "CdaSectionCodeToFhirCompositionSectionCode";
 
   // section.title
-  cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "test";
+  cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "CdaSectionTitleToFhirSectionTitle";
   // section.text
   cda_section.text as cda_section_text ->
     fhir_section.text as fhir_section_text,
     fhir_section_text.status = 'generated' then {
       // section.text where no section.languageCode exists
-      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "asdf";
+      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
 
       // section.text with section.languageCode
       cda_section_text where cda_section.languageCode.exists() then {
@@ -9334,7 +9334,7 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
           cda_languageCode.code as cda_languageCode_code ->
 
             // as long as TODO below has not been solved
-            fhir_section_text.div = cda_section_text "asdf";
+            fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionTextWithLang";
             // TODO fix output:
             //   Currently, the output will look like <div xml:lang="XX"><div xmlns="http://www.w3.org/1999/xhtml">section.text</div></div>
             //   However, the div-tag with the xml:lang should be within the div-tag with the xmlns.
@@ -10071,7 +10071,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
         // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
         cda_observation_value where (code='260415000' or code='260373001' or code='260413007' or code='89292003') -> 
           fhir_observation.value = create('CodeableConcept') as fhir_observation_value then
-          CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+          CDCodeableConcept(cda_observation_value, fhir_observation_value) "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryKnownSNOMED";
 
         // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
         // which are mappable to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
@@ -10080,20 +10080,20 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
           fhir_observation_value.coding as fhir_observation_value_coding,
           fhir_observation_value_coding.system = 'http://snomed.info/sct',
           fhir_observation_value_coding.code = '260348001' 
-          "test";
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap1";
         cda_observation_value where (code='260354000') -> 
           fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
           fhir_observation_value.coding as fhir_observation_value_coding,
           fhir_observation_value_coding.system = 'http://snomed.info/sct',
           fhir_observation_value_coding.code = '260349009' 
-          "test";
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap2";
         cda_observation_value where (code='260396001') -> 
           fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
           fhir_observation_value.coding as fhir_observation_value_coding,
           fhir_observation_value_coding.system = 'http://snomed.info/sct',
           fhir_observation_value_coding.code = '260350009' 
-          "test";
-      } "asdf";
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap3";
+      } "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratory";
 
       // deal with all other codes
       cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -10103,7 +10103,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
           fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
           fhir_observation_value_coding.code = 'OTH' then
           CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
-      } "adsf";
+      } "CdaObservationValueCDToFhirObservationValueCodeableConceptOTH";
 
       // cda_observation_value.code as cda_code_code -> 
       //   fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
@@ -10112,7 +10112,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       //   // cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value
       //   // then CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
     };
-  } "CdaObservationValueToFhirObservationValueCD";
+  } "CdaObservationValueCDToFhirObservationValueCodeableConcept";
   
   // observation.value.codoe = 281268007 - Insufficient sample (finding)
    cda_laboratory_observation
