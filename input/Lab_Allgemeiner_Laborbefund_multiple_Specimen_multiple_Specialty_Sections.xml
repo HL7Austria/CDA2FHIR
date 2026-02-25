@@ -3110,7 +3110,10 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value unit="g/dL" value="16.0" xsi:type="PQ"/>
+                                            <value xsi:type="IVL_INT">
+                                                <low value="10"/>
+                                                <high value="20"/>
+                                            </value>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -6966,7 +6969,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="PQ" value="1.1" unit="1"/>
+                                            <value xsi:type="IVL_INT" value="5"/>
                                             <interpretationCode code="L" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Low"/>
                                             <!-- Kommentar zur Analyse -->
                                             <entryRelationship typeCode="COMP">

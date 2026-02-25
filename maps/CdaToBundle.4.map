@@ -10042,14 +10042,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // observation.value(xsi:type="INT")
-  cda_laboratory_observation.value: INT as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueINT";
-  } "CdaValueINTToFhirObservationValue";
+  cda_laboratory_observation.value: INT as cda_observation_value then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaValueINTToFhirObservationValue";
 
   // observation.value(xsi:type="TS")
   cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
@@ -10097,6 +10090,27 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       
   // observation.value(xsi:type="ST")
   cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+  
+  // observation.value(xsi:type="IVL_INT")
+  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
+    cda_observation_value where (cda_observation_value.value.exists()) then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaObservationValueIVL_INTToFhirObservationValueInteger";
+    
+    // As the mapping of IVL_INT would have to be realized
+    // by using string-data type as target because Range
+    // requires a unit and a system in the Quantities this
+    // was deemed to complex. As a result, the
+    // valueCodeableConcept will be set to "OTH" and
+    // the original value will be captured in an extension.
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding as fhir_observation_value_coding,
+      fhir_observation_value_coding.code = 'OTH',
+      fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('Range') as fhir_observation_value_extension_value then IVL_INTRange(cda_observation_value, fhir_observation_value_extension_value) 
+        "CdaObservationValueIVL_INTToFhirObservationRange";
+  } "CdaObservationValueIVL_INTToFhirObservationValue";
 
   // TODO other datatypes
   // // Concept Descriptor
@@ -10106,8 +10120,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
 	// // Physical Quantity - not standard conformant, but required for example report
 	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
-	// // Interval of Integers
-	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
 	// // Boolean
 	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
 	// // Ratio
@@ -10213,6 +10225,17 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
           "CdaInterpretationCodeToFhirInterpretationCode";
       };
   };
+}
+
+group CdaLaboratoryObservationToFhirObservationValueINT(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  cda_laboratory_observation.value as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
+      "CdaValueToFhirValueINT";
+  } "CdaValueINTToFhirObservationValue";
 }
 
 group CdaLaboratoryObservationToFhirObservationWithSpecimen(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_specimen: Specimen) extends CdaLaboratoryObservationToFhirObservation {
