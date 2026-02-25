@@ -53,6 +53,16 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
+conceptmap "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"{
+  prefix s = "https://termgit.elga.gv.at/ValueSet-elga-observationinterpretation.html"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory"
+
+  s: "260415000	" == t: "260415000"  // Not detected
+  s: "260373001"  == t: "260373001"  // Detected
+  s: "260413007"  == t: "260413007"  // None
+  s: "89292003"   == t: "89292003"   // Rare 
+}
+
 // Excel: terminology_mapping/MVC_Map_elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions.xlsx
 //
 // ConceptMap is being used for laboratory observations and captures the following mappings:
@@ -9311,13 +9321,13 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
     "CdaSectionCodeToFhirCompositionSectionCode";
 
   // section.title
-  cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "test";
+  cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "CdaSectionTitleToFhirSectionTitle";
   // section.text
   cda_section.text as cda_section_text ->
     fhir_section.text as fhir_section_text,
     fhir_section_text.status = 'generated' then {
       // section.text where no section.languageCode exists
-      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "asdf";
+      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
 
       // section.text with section.languageCode
       cda_section_text where cda_section.languageCode.exists() then {
@@ -9325,7 +9335,7 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
           cda_languageCode.code as cda_languageCode_code ->
 
             // as long as TODO below has not been solved
-            fhir_section_text.div = cda_section_text "asdf";
+            fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionTextWithLang";
             // TODO fix output:
             //   Currently, the output will look like <div xml:lang="XX"><div xmlns="http://www.w3.org/1999/xhtml">section.text</div></div>
             //   However, the div-tag with the xml:lang should be within the div-tag with the xmlns.
@@ -10057,10 +10067,57 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       "CdaObservationValueCVToFhirObservationValueCodeableConcept";
 
   // observation.value(xsi:type="CD")
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
-    cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
-  } "CdaObservationValueToFhirObservationValueCD";
+  cda_laboratory_observation where cda_laboratory_observation.value.exists((code='255599008' or code='281268007') and codeSystem='2.16.840.1.113883.6.96').not() then {
+    cda_laboratory_observation.value: CD as cda_observation_value then {
+
+      // TODO refactor with proper conceptmap translate if possible
+      cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96') then {
+        // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
+        // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+        cda_observation_value where (code='260415000' or code='260373001' or code='260413007' or code='89292003') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value then
+          CDCodeableConcept(cda_observation_value, fhir_observation_value) "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryKnownSNOMED";
+
+        // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
+        // which are mappable to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+        cda_observation_value where (code='57176003') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '260348001' 
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap1";
+        cda_observation_value where (code='260354000') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '260349009' 
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap2";
+        cda_observation_value where (code='260396001') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '260350009' 
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap3";
+      } "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratory";
+
+      // deal with all other codes
+      cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96').not() then {
+        cda_observation_value -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+          fhir_observation_value_coding.code = 'OTH' then
+          CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+      } "CdaObservationValueCDToFhirObservationValueCodeableConceptOTH";
+
+      // cda_observation_value.code as cda_code_code -> 
+      //   fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      //   fhir_observation_value.coding = translate(cda_code_code, '#elga-nachweisergebnis-to-fhir-eHDSI-presence-absence' , 'Coding') "asdf";
+      //   //  as mapping_result_coding then {
+      //   // cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value
+      //   // then CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+    };
+  } "CdaObservationValueCDToFhirObservationValueCodeableConcept";
   
   // observation.value.codoe = 281268007 - Insufficient sample (finding)
    cda_laboratory_observation
@@ -10114,8 +10171,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   } "CdaObservationValueIVL_INTToFhirObservationValue";
 
   // TODO other datatypes
-  // // Concept Descriptor
-	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
 	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
 	// // Interval of Physical Quantities
 	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
