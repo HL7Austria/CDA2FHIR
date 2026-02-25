@@ -10051,6 +10051,8 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       "CdaValueToFhirValueINT";
   } "CdaValueINTToFhirObservationValue";
 
+  // observation.value(xsi:type="TS")
+  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
   // observation.value(xsi:type="CV")
   cda_laboratory_observation.value: CV as cda_observation_value ->
     fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
@@ -10108,8 +10110,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
 	// // Boolean
 	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
-	// // Time Stamp
-	// cdaObs.value: TS as obsValueCDA -> observation.value = create('dateTime') as value then TSDateTime(obsValueCDA,value) "observationValueTS";
 	// // Ratio
 	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
 	// // Ratio of quantities

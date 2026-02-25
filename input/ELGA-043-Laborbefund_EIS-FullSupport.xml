@@ -3191,7 +3191,7 @@
 											</text>
 											<statusCode code="completed"/>
 											<effectiveTime value="20161201073406+0100"/>
-											<value unit="10*9/L" value="26" xsi:type="PQ"/>
+											<value xsi:type="TS" value="20210601130100+0200"/>
 											<interpretationCode code="H"
 												codeSystemName="HL7:ObservationInterpretation"
 												codeSystem="2.16.840.1.113883.5.83"
