@@ -72,6 +72,9 @@ conceptmap "ELGAEntityNameUseFHIRNameUse" {
 // TODO review mapping
 // TODO add TITLE to name-part-qualifier
 // As soon as 'TITLE' is part of FHIR name-part-qualifier this conceptmap is obsolete.
+//
+// TODO full ConceptMap is required as https://termgit.elga.gv.at/ValueSet-elga-entitynamepartqualifier.html contains concepts from ONE code system
+//                      however, https://hl7.org/fhir/extensions/ValueSet-name-part-qualifier.html (see https://hl7.org/fhir/extensions/StructureDefinition-iso21090-EN-qualifier.html) contains concepts from TWO code systems
 conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2"
@@ -492,6 +495,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/CS" alias CS as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/code" alias code as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/CE" alias CE as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/CD" alias CD as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CV" alias CV as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias CodeableConcept as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Coding" alias Coding as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ST" alias ST as source
@@ -550,6 +554,15 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
 
 group INT(source src : INT, target tgt : integer) extends Any <<types>> {
   src.value as v -> tgt.value = v "integer";
+}
+
+group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
+  src.low as source_low -> tgt.low as target_low then IVXB_INT(source_low, target_low) "IVL_INTLow";
+  src.high as source_high -> tgt.high as target_high then IVXB_INT(source_high, target_high) "IVL_INTHigh";
+}
+
+group IVXB_INT(source src : IVXB_INT, target tgt : Quantity) extends Any <<types>>{
+   src.value as value -> tgt.value = value;
 }
 
 group BL(source src : BL, target tgt: boolean) extends Any <<types>> {
@@ -658,6 +671,10 @@ group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends C
 }
 
 group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept <<types>> {
+}
+
+group CVCodeableConcept(source src: CV, target tgt: CodeableConcept) extends CECodeableConcept <<types>> {
+
 }
 
 // group ENHumanName(source src : EN, target tgt : HumanName) extends Any <<types>> {
