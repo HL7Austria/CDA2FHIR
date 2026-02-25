@@ -3257,7 +3257,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="g/dL" value="32.2" xsi:type="PQ"/>
+                                            <value xsi:type="CV" code="30428-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="MCV"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
