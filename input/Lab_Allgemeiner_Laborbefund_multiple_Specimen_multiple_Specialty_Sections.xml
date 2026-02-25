@@ -3188,7 +3188,10 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value unit="g/dL" value="16.0" xsi:type="PQ"/>
+                                            <value xsi:type="IVL_INT">
+                                                <low value="10"/>
+                                                <high value="20"/>
+                                            </value>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3335,7 +3338,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="g/dL" value="32.2" xsi:type="PQ"/>
+                                            <value xsi:type="CV" code="30428-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="MCV"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3367,7 +3370,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="%" value="7" xsi:type="PQ"/>
+                                            <value xsi:type="CD" code="260354000" codeSystem="2.16.840.1.113883.6.96" displayName="Moderate number (qualifier value)"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -5109,7 +5112,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="%" value="4" xsi:type="PQ"/>
+                                            <value xsi:type="CD" code="11152-6" codeSystem="2.16.840.1.113883.6.1" displayName="Eosinophils/​100 cells in Bone marrow" codeSystemName="LOINC"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -7044,7 +7047,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="PQ" value="1.1" unit="1"/>
+                                            <value xsi:type="IVL_INT" value="5"/>
                                             <interpretationCode code="L" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Low"/>
                                             <!-- Kommentar zur Analyse -->
                                             <entryRelationship typeCode="COMP">
