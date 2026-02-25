@@ -53,6 +53,40 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
+// TODO: complete mapping
+// 
+// ConceptMap is being used for the Observation.value-elements of the following templates
+// - CDA Labor- und Mikrobiologiebefund v3
+//   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+//   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+// - CDA Laborbefund v2
+//   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+//
+// in essence the following mappings are covered:
+//  https://termgit.elga.gv.at/ValueSet/elga-significantpathogens TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+//  https://termgit.elga.gv.at/ValueSet/ems-meldepflichtige-krankheiten TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory" {
+  prefix a = "https://termgit.elga.gv.at/CodeSystem/elga-significantpathogens"
+  prefix b = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2017"
+  prefix c = "https://termgit.elga.gv.at/CodeSystem/ems-ergaenzungmeldepflichtigekrankheiten"
+  prefix d = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2020"
+  prefix e = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmsgpk-2025"
+  prefix t = "http://snomed.info/sct"
+
+  a: "SP015" == t: "112283007"
+  b: "A00" == t: "75953000"
+}
+
+conceptmap "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"{
+  prefix s = "https://termgit.elga.gv.at/ValueSet-elga-observationinterpretation.html"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory"
+
+  s: "260415000	" == t: "260415000"  // Not detected
+  s: "260373001"  == t: "260373001"  // Detected
+  s: "260413007"  == t: "260413007"  // None
+  s: "89292003"   == t: "89292003"   // Rare 
+}
+
 // Excel: terminology_mapping/MVC_Map_elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions.xlsx
 //
 // ConceptMap is being used for laboratory observations and captures the following mappings:
@@ -62,6 +96,7 @@ conceptmap "elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions" {
   prefix s = "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
   prefix u = "http://loinc.org"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix v = "http://snomed.info/sct"
 
   s: "100" == t: "OTH"
   s: "01850" == t: "OTH"
@@ -7887,6 +7922,8 @@ conceptmap "elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions" {
   u: "93851-4" == u: "93851-4"
   u: "94274-8" == u: "94274-8"
   u: "96372-8" == u: "96372-8"
+  v: "170516003" == t: "OTH"
+  v: "416341003" == t: "OTH"
 }
 
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
@@ -9181,7 +9218,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
     // TODO
 
     // Überweisungsgrund - uncodiert
-    cda_component.section as cda_section where ((code.where(code='46239-0' and codeSystem='2.16.840.1.113883.6.1') and (templateId.where(root='1.2.40.0.34.6.0.11.2.114') or templateId.where(root='1.2.40.0.34.11.4.2.4'))) ->
+    cda_component.section as cda_section where (code.where(code='46239-0' and codeSystem='2.16.840.1.113883.6.1') and (templateId.where(root='1.2.40.0.34.6.0.11.2.114') or templateId.where(root='1.2.40.0.34.11.4.2.4'))) ->
       cda_section.text as cda_section_text,
       fhir_serviceRequest.reasonCode as fhir_serviceRequest_reasonCode,
       fhir_serviceRequest_reasonCode.coding as fhir_serviceRequest_reasonCode_coding,
@@ -9190,52 +9227,53 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
       fhir_serviceRequest_reasonCode.text = (cda_section_text);
 
     // Angeforderte Untersuchungen - codiert
-    cda_component.section as cda_section where ((code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.15')) ->
-      cda_section.text as cda_section_text,
-      fhir_serviceRequest.code as fhir_serviceRequest_code,
-      fhir_serviceRequest_code.text = (cda_section_text) then {
-        // section/entry (Angeforderte Untersuchung Entry) - first entry will be transformed to ServiceRequest.code
-        cda_section.entry first as cda_section_entry then {
-          // entry/procedure
-          cda_section_entry.procedure as cda_section_entry_procedure then {
-            // procedure/code -> ServiceRequest.code
-            // In CDA there exists a value set binding to https://art-decor.org/ad/#/at-lab-/terminology/valueset/1.2.40.0.34.6.0.10.70/2021-08-11T15:15:44
-            // However, as this value set does not yet contain any codes it is not possible to create a mapping. As a result, 
-            // any code in the CDA can be directly included into the coding alongside the nullFlavor "OTH".
-            cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists().not()) -> 
-              fhir_serviceRequest_code.coding as fhir_serviceRequest_code_default_coding,
-              fhir_serviceRequest_code_default_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-              fhir_serviceRequest_code_default_coding.code = 'OTH',
-              fhir_serviceRequest_code.coding as fhir_serviceRequest_code_coding
-              then CDCoding(cda_section_entry_procedure_code, fhir_serviceRequest_code_coding);
-
-            cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists()) then {
-              cda_section_entry_procedure_code.translation as code_translation -> 
+    cda_component.section as cda_section where (code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.15')) then {
+      cda_section.text as cda_section_text -> 
+        fhir_serviceRequest.code as fhir_serviceRequest_code,
+        fhir_serviceRequest_code.text = (cda_section_text) then {
+          // section/entry (Angeforderte Untersuchung Entry) - first entry will be transformed to ServiceRequest.code
+          cda_section.entry first as cda_section_entry then {
+            // entry/procedure
+            cda_section_entry.procedure as cda_section_entry_procedure then {
+              // procedure/code -> ServiceRequest.code
+              // In CDA there exists a value set binding to https://art-decor.org/ad/#/at-lab-/terminology/valueset/1.2.40.0.34.6.0.10.70/2021-08-11T15:15:44
+              // However, as this value set does not yet contain any codes it is not possible to create a mapping. As a result, 
+              // any code in the CDA can be directly included into the coding alongside the nullFlavor "OTH".
+              cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists().not()) -> 
                 fhir_serviceRequest_code.coding as fhir_serviceRequest_code_default_coding,
                 fhir_serviceRequest_code_default_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
                 fhir_serviceRequest_code_default_coding.code = 'OTH',
                 fhir_serviceRequest_code.coding as fhir_serviceRequest_code_coding
-                then CDCoding(code_translation, fhir_serviceRequest_code_coding);
+                then CDCoding(cda_section_entry_procedure_code, fhir_serviceRequest_code_coding);
+
+              cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists()) then {
+                cda_section_entry_procedure_code.translation as code_translation -> 
+                  fhir_serviceRequest_code.coding as fhir_serviceRequest_code_default_coding,
+                  fhir_serviceRequest_code_default_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+                  fhir_serviceRequest_code_default_coding.code = 'OTH',
+                  fhir_serviceRequest_code.coding as fhir_serviceRequest_code_coding
+                  then CDCoding(code_translation, fhir_serviceRequest_code_coding);
+              };
             };
           };
-        };
 
-        // section/entry (Angeforderte Untersuchung Entry) - other entries will be transformed to ServiceRequest.orderDetail
-        cda_section.entry not_first as cda_section_entry then {
-          // entry/procedure
-          cda_section_entry.procedure as cda_section_entry_procedure then {
-            // procedure/code -> ServiceRequest.orderDetail
-            cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists().not()) -> fhir_serviceRequest.orderDetail;
+          // section/entry (Angeforderte Untersuchung Entry) - other entries will be transformed to ServiceRequest.orderDetail
+          cda_section.entry not_first as cda_section_entry then {
+            // entry/procedure
+            cda_section_entry.procedure as cda_section_entry_procedure then {
+              // procedure/code -> ServiceRequest.orderDetail
+              cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists().not()) -> fhir_serviceRequest.orderDetail;
 
-            cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists()) then {
-              cda_section_entry_procedure_code.translation as code_translation -> fhir_serviceRequest.orderDetail;
+              cda_section_entry_procedure.code as cda_section_entry_procedure_code where ($this.nullFlavor.exists()) then {
+                cda_section_entry_procedure_code.translation as code_translation -> fhir_serviceRequest.orderDetail;
+              };
             };
           };
         };
       };
 
     // Angeforderte Untersuchungen - uncodiert
-    cda_component.section as cda_section where ((code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.112')) ->
+    cda_component.section as cda_section where (code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.112')) ->
       cda_section.text as cda_section_text,
       fhir_serviceRequest.code as fhir_serviceRequest_code,
       fhir_serviceRequest_code.coding as fhir_serviceRequest_code_coding,
@@ -9310,13 +9348,13 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
     "CdaSectionCodeToFhirCompositionSectionCode";
 
   // section.title
-  cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "test";
+  cda_section.title as cda_section_title -> fhir_section.title = (cda_section_title.xmlText) "CdaSectionTitleToFhirSectionTitle";
   // section.text
   cda_section.text as cda_section_text ->
     fhir_section.text as fhir_section_text,
     fhir_section_text.status = 'generated' then {
       // section.text where no section.languageCode exists
-      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "asdf";
+      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
 
       // section.text with section.languageCode
       cda_section_text where cda_section.languageCode.exists() then {
@@ -9324,7 +9362,7 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
           cda_languageCode.code as cda_languageCode_code ->
 
             // as long as TODO below has not been solved
-            fhir_section_text.div = cda_section_text "asdf";
+            fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionTextWithLang";
             // TODO fix output:
             //   Currently, the output will look like <div xml:lang="XX"><div xmlns="http://www.w3.org/1999/xhtml">section.text</div></div>
             //   However, the div-tag with the xml:lang should be within the div-tag with the xmlns.
@@ -9608,6 +9646,67 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
         cda_entryRelationship.procedure as cda_procedure then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
       };
 
+      // act.entryRelationship (Notification Organizer - 1.3.6.1.4.1.19376.1.3.1.1) 
+      cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1') then {
+        // create battery observation
+        cda_entryRelationship.organizer as cda_notification_organizer -> 
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Observation') as fhir_battery_observation,
+          fhir_battery_observation.id = uuid() as fhir_battery_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then {
+
+            // Add performer to battery_observation       
+            cda_entryRelationship.organizer then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle);
+              
+            cda_notification_organizer then CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient) "CdaOrganizerToFhirObservation";
+            
+            // organizer.component.observation(1.3.6.1.4.1.19376.1.3.1.1.1 Notifiable Condition)
+            cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1') then {
+   
+              // cda_observation.code.qualifier.name/ value not mapped see excel for reasoning 
+              cda_component.observation as cda_observation ->
+                fhir_bundle.entry as fhir_bundle_entry,
+                fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+                fhir_observation.id = uuid() as fhir_observation_id,
+                fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+
+                  cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                };
+            };
+
+           // organizer.component.observation(1.2.40.0.34.6.0.11.3.170 Case Identificationn) 
+           cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.170') then {
+ 
+                // ToDo: Handle unmapped elements -> see excel for notes
+                  // cda_observation.id = NI - v3 Nullflavor
+                  //Add mapping for cda_laboratory_observation.value: CE -> currently not in CdaLaboratoryObservationToFhirObservation --> But Case Identification specifies observation.value with CE 
+              cda_component.observation as cda_observation ->
+                fhir_bundle.entry as fhir_bundle_entry,
+                fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+                fhir_observation.id = uuid() as fhir_observation_id,
+                fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+
+                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                };
+            };
+
+
+          };
+      };
+
       // section.entry.act.entryRelationship (Laboratory Observation)
        cda_act.entryRelationship as cda_entryRelationship where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then {
          cda_entryRelationship.observation as cda_laboratory_observation ->
@@ -9690,6 +9789,67 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.resource = create('Specimen') as fhir_specimen,
           fhir_specimen.id = uuid() as fhir_specimen_id,
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_specimen_id) then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
+      };
+
+      // act.entryRelationship (Notification Organizer - 1.3.6.1.4.1.19376.1.3.1.1) 
+      cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1') then {
+        // create battery observation
+        cda_entryRelationship.organizer as cda_notification_organizer -> 
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Observation') as fhir_battery_observation,
+          fhir_battery_observation.id = uuid() as fhir_battery_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then {
+
+            // Add performer to battery_observation       
+            cda_entryRelationship.organizer then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle);
+
+            cda_notification_organizer then CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient) "CdaOrganizerToFhirObservation";
+      
+            // organizer.component.observation(1.3.6.1.4.1.19376.1.3.1.1.1 Notifiable Condition)
+            cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1') then {
+   
+              // cda_observation.code.qualifier.name/ value not mapped see excel for reasoning 
+              cda_component.observation as cda_observation ->
+                fhir_bundle.entry as fhir_bundle_entry,
+                fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+                fhir_observation.id = uuid() as fhir_observation_id,
+                fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+
+                  cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                };
+            };
+
+           // organizer.component.observation(1.2.40.0.34.6.0.11.3.170 Case Identificationn) 
+           cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.170') then {
+ 
+                // ToDo: Handle unmapped elements -> see excel for notes
+                  // cda_observation.id = NI - v3 Nullflavor
+                  //Add mapping for cda_laboratory_observation.value: CE -> currently not in CdaLaboratoryObservationToFhirObservation --> But Case Identification specifies observation.value with CE 
+              cda_component.observation as cda_observation ->
+                fhir_bundle.entry as fhir_bundle_entry,
+                fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+                fhir_observation.id = uuid() as fhir_observation_id,
+                fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+                fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
+                fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+
+                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+
+                  cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+                };
+            };
+
+
+          };
       };
 
       // section.entry.act.entryRelationship (Laboratory Observation)
@@ -9902,6 +10062,12 @@ group CdaOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_org
     fhir_observation_code_coding.code = 'OTH'
     "CdaObservationCodeToFhirObservationCodeNullFlavor";
 
+  // Add observation.code for compliance with fhir r4 
+  cda_organizer where ($this.code).exists().not() -> fhir_observation.code as fhir_observation_code,
+    fhir_observation_code.coding as fhir_observation_code_coding,
+    fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    fhir_observation_code_coding.code = 'OTH'
+    "CdaObservationCodeToFhirObservationCodeNullFlavor";
 
   // organizer.statusCode
   cda_organizer.statusCode as organizer_statusCode then {
@@ -10023,7 +10189,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // observation.effectiveTime
   cda_laboratory_observation.effectiveTime as cda_effectiveTime -> fhir_observation.effective = create('dateTime') as fhir_observation_effective then TSDateTime(cda_effectiveTime, fhir_observation_effective) "CdaEffectiveTimeToFhirObservationEffective";
   cda_laboratory_observation
-    where cda_laboratory_observation.effectiveTime.where(nullFlavor = 'UNK') ->
+    where cda_laboratory_observation.where(effectiveTime.where(nullFlavor = 'UNK') or effectiveTime.exists().not()) ->
     fhir_observation.effective = create('dateTime') as fhir_observation_effective,
     fhir_observation_effective.extension as fhir_observation_effective_extenstion,
     fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
@@ -10031,86 +10197,20 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     fhir_observation_effective_extenstion_code.value = 'unknown'
       "CdaEffectiveTimeExistsNotToFhirObservationEffective";
 
-  // observation.value(xsi:type="PQ")
-  cda_laboratory_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
+  // Mapping of result value in case of Laboratory Observation
+  cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.6') then 
+    CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    "CdaLaboratoryObservationValueToFhirObservationValue";
+  // Mapping of result value in case of the following templates:
+  // - CDA Labor- und Mikrobiologiebefund v3
+  //   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+  //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+  // - CDA Laborbefund v2
+  //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1' or root='1.3.6.1.4.1.19376.1.3.1.1.2') then 
+    CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    "CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue";
 
-  // observation.value(xsi:type="IVL_PQ")
-  cda_laboratory_observation.value: IVL_PQ as cda_observation_value then {
-    cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
-
-    cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
-  } "CdaObservationValueToFhirObservationValueIVLPQ";
-
-  // observation.value(xsi:type="INT")
-  cda_laboratory_observation.value: INT as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueINT";
-  } "CdaValueINTToFhirObservationValue";
-
-  // observation.value(xsi:type="CD")
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
-    cda_laboratory_observation.value: CD as cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value then CDCodeableConcept(cda_observation_value, fhir_observation_value);
-  } "CdaObservationValueToFhirObservationValueCD";
-  
-  // observation.value.codoe = 281268007 - Insufficient sample (finding)
-   cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='281268007' and codeSystem='2.16.840.1.113883.6.96') then {
-        cda_laboratory_observation.value as cda_laboratory_observation_value ->
-          fhir_observation.status = 'cancelled',
-          fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
-          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
-          fhir_observation_dataAbsentReason_coding_1.code = 'not-performed',
-          fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
-          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
-      }
-      "CdaInsufficientSampleObservationToFhirObservationStatus";
-
-  // observation.value.codoe = 255599008 -   Incomplete (qualifier value)
-  cda_laboratory_observation
-    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') then {
-      cda_laboratory_observation.value as cda_laboratory_observation_value ->  
-        fhir_observation.status = 'preliminary',
-        fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
-        fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
-        fhir_observation_dataAbsentReason_coding_1.code = 'temp-unknown',
-        fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
-          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
-    }"CdaIncompleteObservationToFhirObservationStatus";
-      
-  // observation.value(xsi:type="ST")
-  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-  
-  // observation.value(xsi:type="RTO_PQ_PQ")
-  cda_laboratory_observation.value: RTO_PQ_PQ as cda_observation_value -> fhir_observation.value = create('Ratio') as fhir_observation_value then RTOPQPQRatio(cda_observation_value,fhir_observation_value) "CdaObservationValueToFhirObservationValueRTOPQPQRatio";
-
-  // TODO other datatypes
-  // // Concept Descriptor
-	// cdaObs.value: CD as obsValueCDA -> observation.value = create('CodeableConcept') as value then CDCodeableConcept(obsValueCDA,value) "observationValueCD";
-	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
-	// // Interval of Physical Quantities
-	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
-	// // Physical Quantity - not standard conformant, but required for example report
-	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
-	// // Interval of Integers
-	// cdaObs.value: IVL_INT as obsValueCDA -> observation.value = create('Range') as value then IVLINTRange(obsValueCDA,value) "observationValueIVLINT";
-	// // Boolean
-	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
-	// // Coded Value
-	// cdaObs.value: CV as obsValueCDA -> observation.value = create('CodeableConcept') as value then CVCodeableConcept(obsValueCDA,value) "observationValueCV";
-	// // Time Stamp
-	// cdaObs.value: TS as obsValueCDA -> observation.value = create('dateTime') as value then TSDateTime(obsValueCDA,value) "observationValueTS";
-	// // Ratio
-	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
-	// // Ratio of quantities
-	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
-	
   // observation.interpretationCode
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
   // cda_laboratory_observation.interpretationCode -> fhir_observation.interpretation;
@@ -10215,6 +10315,180 @@ group CdaLaboratoryObservationToFhirObservationWithSpecimen(source cda: Clinical
     fhir_observation_specimen_reference.reference = append('urn:uuid:', fhir_specimen_id),
     fhir_observation_specimen_reference.type = 'Specimen'
     "ObservationSpecimenReference";
+}
+
+group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  // observation.value(xsi:type="PQ")
+  cda_laboratory_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
+
+  // observation.value(xsi:type="IVL_PQ")
+  cda_laboratory_observation.value: IVL_PQ as cda_observation_value then {
+    cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
+
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
+  } "CdaObservationValueToFhirObservationValueIVLPQ";
+
+  // observation.value(xsi:type="INT")
+  cda_laboratory_observation.value: INT as cda_observation_value then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaValueINTToFhirObservationValue";
+
+  // observation.value(xsi:type="TS")
+  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
+  
+  // observation.value(xsi:type="CV")
+  cda_laboratory_observation.value: CV as cda_observation_value ->
+    fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    fhir_observation_value.coding as fhir_observation_value_coding,
+    fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    fhir_observation_value_coding.code = 'OTH' then 
+      CVCodeableConcept(cda_observation_value, fhir_observation_value) 
+      "CdaObservationValueCVToFhirObservationValueCodeableConcept";
+
+  // observation.value(xsi:type="CD")
+  cda_laboratory_observation where cda_laboratory_observation.value.exists((code='255599008' or code='281268007') and codeSystem='2.16.840.1.113883.6.96').not() then {
+    cda_laboratory_observation.value: CD as cda_observation_value then {
+
+      // TODO refactor with proper conceptmap translate if possible
+      cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96') then {
+        // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
+        // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+        cda_observation_value where (code='260415000' or code='260373001' or code='260413007' or code='89292003') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value then
+          CDCodeableConcept(cda_observation_value, fhir_observation_value) "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryKnownSNOMED";
+
+        // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
+        // which are mappable to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+        cda_observation_value where (code='57176003') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '260348001' 
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap1";
+        cda_observation_value where (code='260354000') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '260349009' 
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap2";
+        cda_observation_value where (code='260396001') -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '260350009' 
+          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap3";
+      } "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratory";
+
+      // deal with all other codes
+      cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96').not() then {
+        cda_observation_value -> 
+          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+          fhir_observation_value.coding as fhir_observation_value_coding,
+          fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+          fhir_observation_value_coding.code = 'OTH' then
+          CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+      } "CdaObservationValueCDToFhirObservationValueCodeableConceptOTH";
+
+      // cda_observation_value.code as cda_code_code -> 
+      //   fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      //   fhir_observation_value.coding = translate(cda_code_code, '#elga-nachweisergebnis-to-fhir-eHDSI-presence-absence' , 'Coding') "asdf";
+      //   //  as mapping_result_coding then {
+      //   // cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value
+      //   // then CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+    };
+  } "CdaObservationValueCDToFhirObservationValueCodeableConcept";
+  
+  // observation.value.codoe = 281268007 - Insufficient sample (finding)
+   cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='281268007' and codeSystem='2.16.840.1.113883.6.96') then {
+        cda_laboratory_observation.value as cda_laboratory_observation_value ->
+          fhir_observation.status = 'cancelled',
+          fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
+          fhir_observation_dataAbsentReason_coding_1.code = 'not-performed',
+          fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
+          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
+      }
+      "CdaInsufficientSampleObservationToFhirObservationStatus";
+
+  // observation.value.codoe = 255599008 -   Incomplete (qualifier value)
+  cda_laboratory_observation
+    where cda_laboratory_observation.value.exists(code='255599008' and codeSystem='2.16.840.1.113883.6.96') then {
+      cda_laboratory_observation.value as cda_laboratory_observation_value ->  
+        fhir_observation.status = 'preliminary',
+        fhir_observation.dataAbsentReason as fhir_observation_dataAbsentReason,
+        fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_1,
+        fhir_observation_dataAbsentReason_coding_1.code = 'temp-unknown',
+        fhir_observation_dataAbsentReason_coding_1.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+          fhir_observation_dataAbsentReason.coding as fhir_observation_dataAbsentReason_coding_2 then 
+          CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
+    }"CdaIncompleteObservationToFhirObservationStatus";
+      
+  // observation.value(xsi:type="ST")
+  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+  
+  // observation.value(xsi:type="IVL_INT")
+  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
+    cda_observation_value where (cda_observation_value.value.exists()) then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaObservationValueIVL_INTToFhirObservationValueInteger";
+    
+    // As the mapping of IVL_INT would have to be realized
+    // by using string-data type as target because Range
+    // requires a unit and a system in the Quantities this
+    // was deemed to complex. As a result, the
+    // valueCodeableConcept will be set to "OTH" and
+    // the original value will be captured in an extension.
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding as fhir_observation_value_coding,
+      fhir_observation_value_coding.code = 'OTH',
+      fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('Range') as fhir_observation_value_extension_value then IVL_INTRange(cda_observation_value, fhir_observation_value_extension_value) 
+        "CdaObservationValueIVL_INTToFhirObservationRange";
+  } "CdaObservationValueIVL_INTToFhirObservationValue";
+
+  // observation.value(xsi:type="RTO_PQ_PQ")
+  cda_laboratory_observation.value: RTO_PQ_PQ as cda_observation_value -> fhir_observation.value = create('Ratio') as fhir_observation_value then RTOPQPQRatio(cda_observation_value,fhir_observation_value) "CdaObservationValueToFhirObservationValueRTOPQPQRatio";
+
+  // TODO other datatypes
+	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
+	// // Interval of Physical Quantities
+	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
+	// // Physical Quantity - not standard conformant, but required for example report
+	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
+	// // Boolean
+	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
+	// // Ratio
+	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
+	// // Ratio of quantities
+	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
+	// // Ratio of physical quantities
+	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
+}
+
+group CdaLaboratoryObservationToFhirObservationValueINT(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  cda_laboratory_observation.value as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
+      "CdaValueToFhirValueINT";
+  } "CdaValueINTToFhirObservationValue";
+}
+
+group CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  // This data type mapping is only used by the following templates
+  // - CDA Labor- und Mikrobiologiebefund v3
+  //   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+  //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+  // - CDA Laborbefund v2
+  //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  cda_laboratory_observation.value as cda_observation_value then {
+    cda_observation_value.code as cda_observation_value_code -> 
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding = translate(cda_observation_value_code, '#elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory', 'Coding');
+  } "CdaObservationValueToFhirObservationValue";
 }
 
 // _________________________ Template Type not specified  ___________________
