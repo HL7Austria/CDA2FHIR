@@ -9645,6 +9645,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
         // section.entry.act.entryRelationship.procedure
         cda_entryRelationship.procedure as cda_procedure then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
       };
+
       // act.entryRelationship (Notification Organizer - 1.3.6.1.4.1.19376.1.3.1.1) 
       cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1') then {
         // create battery observation
@@ -9659,16 +9660,13 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
 
             // Add performer to battery_observation       
             cda_entryRelationship.organizer then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle);
-
               
             cda_notification_organizer then CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient) "CdaOrganizerToFhirObservation";
             
-      
             // organizer.component.observation(1.3.6.1.4.1.19376.1.3.1.1.1 Notifiable Condition)
             cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1') then {
    
-  
-                // cda_observation.code.qualifier.name/ value not mapped see excel for reasoning 
+              // cda_observation.code.qualifier.name/ value not mapped see excel for reasoning 
               cda_component.observation as cda_observation ->
                 fhir_bundle.entry as fhir_bundle_entry,
                 fhir_bundle_entry.resource = create('Observation') as fhir_observation,
@@ -9678,7 +9676,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
                 fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
                 fhir_battery_observation_hasMember_reference.type = 'Observation' then {
 
-                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+                  cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
 
                   cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
                 };
@@ -9808,15 +9806,12 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
             // Add performer to battery_observation       
             cda_entryRelationship.organizer then CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle);
 
-              
             cda_notification_organizer then CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient) "CdaOrganizerToFhirObservation";
-            
       
             // organizer.component.observation(1.3.6.1.4.1.19376.1.3.1.1.1 Notifiable Condition)
             cda_notification_organizer.component as cda_component where $this.observation.templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1') then {
    
-  
-                // cda_observation.code.qualifier.name/ value not mapped see excel for reasoning 
+              // cda_observation.code.qualifier.name/ value not mapped see excel for reasoning 
               cda_component.observation as cda_observation ->
                 fhir_bundle.entry as fhir_bundle_entry,
                 fhir_bundle_entry.resource = create('Observation') as fhir_observation,
@@ -9826,7 +9821,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                 fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
                 fhir_battery_observation_hasMember_reference.type = 'Observation' then {
 
-                 cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
+                  cda_component.observation then CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
 
                   cda_observation then CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
                 };
@@ -10314,17 +10309,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   };
 }
 
-group CdaLaboratoryObservationToFhirObservationValueINT(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
-  cda_laboratory_observation.value as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueINT";
-  } "CdaValueINTToFhirObservationValue";
-}
-
 group CdaLaboratoryObservationToFhirObservationWithSpecimen(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_specimen: Specimen) extends CdaLaboratoryObservationToFhirObservation {
   cda_laboratory_observation -> fhir_observation.specimen = create('Reference') as fhir_observation_specimen_reference,
     fhir_specimen.id as fhir_specimen_id,
@@ -10345,14 +10329,7 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // observation.value(xsi:type="INT")
-  cda_laboratory_observation.value: INT as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueINT";
-  } "CdaValueINTToFhirObservationValue";
+  cda_laboratory_observation.value: INT as cda_observation_value then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaValueINTToFhirObservationValue";
 
   // observation.value(xsi:type="TS")
   cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
@@ -10484,6 +10461,17 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
 	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
 	// // Ratio of physical quantities
 	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
+}
+
+group CdaLaboratoryObservationToFhirObservationValueINT(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  cda_laboratory_observation.value as cda_observation_value then {
+    cda_observation_value.value as cda_observation_value_attribute -> 
+      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
+      fhir_observation_value.extension as fhir_observation_value_extension,
+      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
+      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
+      "CdaValueToFhirValueINT";
+  } "CdaValueINTToFhirObservationValue";
 }
 
 group CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
