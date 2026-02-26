@@ -3160,7 +3160,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value unit="10*12/L" value="5.39" xsi:type="PQ"/>
+                                            <value value="5" xsi:type="INT"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
