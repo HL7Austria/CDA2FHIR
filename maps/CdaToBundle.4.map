@@ -10447,8 +10447,20 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
         "CdaObservationValueIVL_INTToFhirObservationRange";
   } "CdaObservationValueIVL_INTToFhirObservationValue";
 
+  // observation.value(xsi:type="RTO")
+  cda_laboratory_observation.value: RTO as cda_observation_value -> 
+    fhir_observation.value = create('Ratio') as fhir_observation_value then RTORatio(cda_observation_value, fhir_observation_value) 
+    "CdaObservationValueRTOToFhirObservationValueRatio";
+
+  // observation.value(xsi:type="RTO_QTY_QTY")
+  cda_laboratory_observation.value: RTO_QTY_QTY as cda_observation_value -> 
+    fhir_observation.value = create('Ratio') as fhir_observation_value then RTORatio(cda_observation_value, fhir_observation_value) 
+    "CdaObservationValueRTO_QTY_QTYToFhirObservationValueRatio";
+
   // observation.value(xsi:type="RTO_PQ_PQ")
-  cda_laboratory_observation.value: RTO_PQ_PQ as cda_observation_value -> fhir_observation.value = create('Ratio') as fhir_observation_value then RTOPQPQRatio(cda_observation_value,fhir_observation_value) "CdaObservationValueToFhirObservationValueRTOPQPQRatio";
+  cda_laboratory_observation.value: RTO_PQ_PQ as cda_observation_value -> 
+    fhir_observation.value = create('Ratio') as fhir_observation_value then RTORatio(cda_observation_value, fhir_observation_value) 
+    "CdaObservationValueRTO_PQ_PQToFhirObservationValueRatio";
 
   // TODO other datatypes
 	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
@@ -10458,12 +10470,6 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
 	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
 	// // Boolean
 	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
-	// // Ratio
-	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
-	// // Ratio of quantities
-	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
-	// // Ratio of physical quantities
-	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
 }
 
 group CdaLaboratoryObservationToFhirObservationValueINT(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
