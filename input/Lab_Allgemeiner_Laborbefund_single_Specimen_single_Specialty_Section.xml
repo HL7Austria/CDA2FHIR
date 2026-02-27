@@ -2934,22 +2934,6 @@
                                             </referenceRange>
                                         </observation>
                                     </component>
-                                    
-                                    <component typeCode="COMP">
-                                        <observationMedia xmlns="urn:hl7-org:v3" classCode="OBS" moodCode="EVN" ID="123456789">
-                                            <!-- Template ID für ObservationMedia -->
-                                            <templateId root="1.2.40.0.34.6.0.11.9.19"/> 
-                                            
-                                            <!-- Eindeutige ID des eingebetteten Objekts -->
-                                            <id root="1.2.40.0.34.6.0.11.9.ABC" extension="MEDIA_ID"/>
-                                            
-                                            <!-- Medientyp des eingebetteten Objekts -->
-                                            <value mediaType="image/png" representation="B64">
-                                                aHR0cHM6Ly93d3cueW91dHViZS5jb20vd2F0Y2g/dj1kUXc0dzlXZ1hjUSZsaXN0PVJEZFF3NHc5V2dYY1Emc3RhcnRfcmFkaW89MQ==
-                                            </value>
-                                            
-                                        </observationMedia>
-                                    </component> 
                                     <!-- Kommentar zur Befundgruppe -->
                                     <component typeCode="COMP">
                                         <act classCode="ACT" moodCode="EVN">
