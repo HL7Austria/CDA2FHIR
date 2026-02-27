@@ -3503,13 +3503,13 @@
                                             </author>
                                             
                                             <!-- Optional: Informant -->
-                                            <informant xmlns="urn:hl7-org:v3" typeCode="INF" contextControlCode="OP">
+                                            <informant typeCode="INF" contextControlCode="OP">
                                                 <assignedEntity classCode="ASSIGNED">
                                                     <!-- Assigned Entity Body als „Patient selbst“ modelliert -->
-                                                    <id root="1.2.40.0.34.6.0.11.9.16" extension="PAT-12345"/>
+                                                    <id root="1.2.40.0.34.6.0.11.9.16" />
                                                     
                                                     <addr use="HP">
-                                                        <streetAddressLine>Patientengasse 3</streetAddressLine>
+                                                        <streetAddressLine>Hauptstraße 3</streetAddressLine>
                                                         <city>Wien</city>
                                                         <postalCode>1030</postalCode>
                                                         <country>AT</country>
@@ -3519,8 +3519,8 @@
                                                     
                                                     <assignedPerson classCode="PSN" determinerCode="INSTANCE">
                                                         <name use="L">
-                                                            <given>Pedddddddddter</given>
-                                                            <family>Patient</family>
+                                                            <given>Igor</given>
+                                                            <family>InfoRecipient</family>
                                                         </name>
                                                     </assignedPerson>
                                                 </assignedEntity>
