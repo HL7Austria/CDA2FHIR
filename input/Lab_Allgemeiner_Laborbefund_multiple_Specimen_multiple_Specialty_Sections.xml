@@ -3402,9 +3402,60 @@
                                             <!-- templateId für Eingebettetes Objekt Entry -->
                                             <templateId root="1.2.40.0.34.6.0.11.3.19"/>
                                             <value mediaType="application/pdf" representation="B64">
-                                                JVBERi0Y=
+                                                JVBERi0Yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa=
                                             </value>
-                                            
+                                            <!-- Optional: Performer (z. B. Labor, Gerät) -->
+                                            <performer xmlns="urn:hl7-org:v3" typeCode="PRF">
+                                                <templateId root="1.2.40.0.34.6.0.11.9.17"/>
+                                                
+                                                <!-- Zeitraum der Tätigkeit (optional) -->
+                                                <time>
+                                                    <low value="20191025100000+0100"/>
+                                                    <high value="20191025120000+0100"/>
+                                                </time>
+                                                
+                                                <assignedEntity classCode="ASSIGNED">
+                                                    <!-- Assigned Entity Body (1.2.40.0.34.6.0.11.9.16) -->
+                                                    <id root="1.2.40.0.34.6.0.11.9.16" extension="PERF-12345"/>
+                                                    
+                                                    <!-- Funktionscode (z. B. Laborarzt) -->
+                                                    <code code="LAB" codeSystem="1.2.40.0.34.5.2" displayName="Laborarzt"/>
+                                                    
+                                                    <!-- Adresse (Address Compilation Minimal) -->
+                                                    <addr use="WP">
+                                                        <streetAddressLine>Laborstraße 1</streetAddressLine>
+                                                        <city>Wien</city>
+                                                        <postalCode>1010</postalCode>
+                                                        <country>AT</country>
+                                                    </addr>
+                                                    
+                                                    <!-- Telekommunikation -->
+                                                    <telecom use="WP" value="tel:+43.1.2345678"/>
+                                                    
+                                                    <!-- Person Name Compilation (G2) -->
+                                                    <assignedPerson classCode="PSN" determinerCode="INSTANCE">
+                                                        <name use="L">
+                                                            <prefix qualifier="AC">Dr.</prefix>
+                                                            <given>Max</given>
+                                                            <family>Musterarzt</family>
+                                                        </name>
+                                                    </assignedPerson>
+                                                    
+                                                    <!-- Organization Compilation with name, addr minimal -->
+                                                    <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                                                        <id root="1.2.40.0.34.6.0.11.9.20" extension="ORG-9999"/>
+                                                        <name>Musterlabor GmbH</name>
+                                                        <addr use="WP">
+                                                            <streetAddressLine>Laborstraße 1</streetAddressLine>
+                                                            <city>Wien</city>
+                                                            <postalCode>1010</postalCode>
+                                                            <country>AT</country>
+                                                        </addr>
+                                                        <telecom use="WP" value="tel:+43.1.2345678"/>
+                                                    </representedOrganization>
+                                                </assignedEntity>
+                                            </performer>
+
                                             <author typeCode="AUT" contextControlCode="OP" xmlns="urn:hl7-org:v3">
                                                 
                                                 <!-- Zeitpunkt der Freigabe -->
@@ -3416,9 +3467,9 @@
                                                     <id root="1.2.40.0.34.99.100" extension="DOC-4711"/>
                                                     
                                                     <!-- Fachrichtung (ELGA_AuthorSpeciality) -->
-                                                    <code code="100"
+                                                    <code code="1000"
                                                           codeSystem="1.2.40.0.34.10.6"
-                                                          displayName="Ärztin/Arzt für Allgemeinmedizin"/>
+                                                          displayName="Ärztin/Arzt"/>
                                                     
                                                     <!-- Address Compilation -->
                                                     <addr>
@@ -3450,6 +3501,75 @@
                                                 </assignedAuthor>
                                                 
                                             </author>
+                                            
+                                            <!-- Optional: Informant -->
+                                            <informant xmlns="urn:hl7-org:v3" typeCode="INF" contextControlCode="OP">
+                                                <assignedEntity classCode="ASSIGNED">
+                                                    <!-- Assigned Entity Body als „Patient selbst“ modelliert -->
+                                                    <id root="1.2.40.0.34.6.0.11.9.16" extension="PAT-12345"/>
+                                                    
+                                                    <addr use="HP">
+                                                        <streetAddressLine>Patientengasse 3</streetAddressLine>
+                                                        <city>Wien</city>
+                                                        <postalCode>1030</postalCode>
+                                                        <country>AT</country>
+                                                    </addr>
+                                                    
+                                                    <telecom use="HP" value="tel:+43.1.1112223"/>
+                                                    
+                                                    <assignedPerson classCode="PSN" determinerCode="INSTANCE">
+                                                        <name use="L">
+                                                            <given>Pedddddddddter</given>
+                                                            <family>Patient</family>
+                                                        </name>
+                                                    </assignedPerson>
+                                                </assignedEntity>
+                                            </informant>
+                                            
+                                            <!-- Optional: Participant -->
+                                            <participant xmlns="urn:hl7-org:v3" typeCode="CSM" contextControlCode="OP">
+                                                <!-- Zeitraum der Beteiligung (optional) -->
+                                                <time>
+                                                    <low value="20191025100000+0100"/>
+                                                    <high value="20191025120000+0100"/>
+                                                </time>
+                                                
+                                                <!-- AwarenessCode (optional, z. B. informiert) -->
+                                                <awarenessCode code="I" codeSystem="2.16.840.1.113883.1.11.10310"
+                                                               displayName="informed"/>
+                                                
+                                                <participantRole classCode="ROL">
+                                                    <id root="1.2.40.0.34.6.0.11.9.13" extension="PART-001"/>
+                                                    
+                                                    <!-- Rolle, z. B. Betreuer / Pflegedienst -->
+                                                    <code code="PCP" codeSystem="2.16.840.1.113883.12.443"
+                                                          displayName="Primary Care Provider"/>
+                                                    
+                                                    <!-- Adresse (optional) -->
+                                                    <addr use="WP">
+                                                        <streetAddressLine>Betreuergasse 7</streetAddressLine>
+                                                        <city>Wien</city>
+                                                        <postalCode>1040</postalCode>
+                                                        <country>AT</country>
+                                                    </addr>
+                                                    
+                                                    <!-- Telekom (optional) -->
+                                                    <telecom use="WP" value="tel:+43.1.2223334"/>
+                                                    
+                                                    <!-- Wahlweise Device oder Entity; hier Person (PlayingEntity) -->
+                                                    <playingEntity>
+                                                        <name>Pflegedienst Musterpflege</name>
+                                                    </playingEntity>
+                                                    
+                                                    <!-- Optional: ScopingEntity (Organisation, die den Participant „scoped“) -->
+                                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                                        <id root="1.2.40.0.34.6.0.11.9.20" extension="SCOPE-001"/>
+                                                        <code code="ORG" codeSystem="2.16.840.1.113883.1.11.16040"
+                                                              displayName="Organization"/>
+                                                        <desc>Organisation, die die Rolle des Teilnehmers definiert</desc>
+                                                    </scopingEntity>
+                                                </participantRole>
+                                            </participant>
                                         </observationMedia>
                                     </component>
                                     <!-- Laboratory Observation Entry -->
