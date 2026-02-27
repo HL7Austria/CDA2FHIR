@@ -568,12 +568,11 @@ group REALQuantity(source src: INT, target tgt: Quantity) extends INTQuantity <<
 }
 
 group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
-  src.low as source_low -> tgt.low as target_low then IVXB_INT(source_low, target_low) "IVL_INTLow";
-  src.high as source_high -> tgt.high as target_high then IVXB_INT(source_high, target_high) "IVL_INTHigh";
+  src.low as source_low -> tgt.low as target_low then IVXB_INTQuantity(source_low, target_low) "IVL_INTLow";
+  src.high as source_high -> tgt.high as target_high then IVXB_INTQuantity(source_high, target_high) "IVL_INTHigh";
 }
 
-group IVXB_INT(source src : IVXB_INT, target tgt : Quantity) extends Any <<types>>{
-   src.value as value -> tgt.value = value;
+group IVXB_INTQuantity(source src : IVXB_INT, target tgt : Quantity) extends INTQuantity <<types>>{
 }
 
 group BL(source src : BL, target tgt: boolean) extends Any <<types>> {
