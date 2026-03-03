@@ -8150,35 +8150,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
       "CdaMissingCodeTranslationToFhirCompositionType";
   };
 
-  // ClinicalDocument.custodian
-  cda.custodian as cda_custodian then {
-    // ClinicalDocument.custodian.assignedCustodian
-    cda_custodian.assignedCustodian as cda_assignedCustodian then {
-      // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization
-      cda_assignedCustodian.representedCustodianOrganization as cda_representedCustodianOrganization ->
-        // create the Organization
-        fhir_bundle.entry as fhir_bundle_entry,
-        fhir_bundle_entry.resource = create('Organization') as fhir_custodian_organization,
-        fhir_custodian_organization.id = uuid() as fhir_custodian_organization_id,
-        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_custodian_organization_id),
-        fhir_composition.custodian = create('Reference') as fhir_composition_custodian_reference,
-        fhir_composition_custodian_reference.reference = append('urn:uuid:', fhir_custodian_organization_id),
-        fhir_composition_custodian_reference.type = 'Organization' then {
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.id
-          cda_representedCustodianOrganization.id -> fhir_custodian_organization.identifier;
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.name
-          cda_representedCustodianOrganization.name -> fhir_custodian_organization.name;
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.telecom
-          cda_representedCustodianOrganization.telecom -> fhir_custodian_organization.telecom;
-          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.addr
-          // cda_representedCustodianOrganization.addr as cda_custodian_addr ->
-          //   fhir_custodian_organization.address = create('Address') as fhir_custodian_address then
-          //   CdaAdressCompilationToFhirAustrianAddress(cda_custodian_addr, fhir_custodian_address)
-          //   "CdaCustodianAddressToFhirCustodianAustrianAddress";
-          cda_representedCustodianOrganization.addr -> fhir_custodian_organization.address;
-        };
-    };
-  };
   
   // ClinicalDocument.informationRecipient
   cda.informationRecipient as cda_informationRecipient then {
@@ -8801,6 +8772,36 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // ClinicalDocument/dataEnterer
   // see document type specific group
+
+  // ClinicalDocument/custodian -> Composition.custodian
+  cda.custodian as cda_custodian then {
+    // ClinicalDocument.custodian.assignedCustodian
+    cda_custodian.assignedCustodian as cda_assignedCustodian then {
+      // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization
+      cda_assignedCustodian.representedCustodianOrganization as cda_representedCustodianOrganization ->
+        // create the Organization
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_custodian_organization,
+        fhir_custodian_organization.id = uuid() as fhir_custodian_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_custodian_organization_id),
+        fhir_composition.custodian = create('Reference') as fhir_composition_custodian_reference,
+        fhir_composition_custodian_reference.reference = append('urn:uuid:', fhir_custodian_organization_id),
+        fhir_composition_custodian_reference.type = 'Organization' then {
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.id
+          cda_representedCustodianOrganization.id -> fhir_custodian_organization.identifier;
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.name
+          cda_representedCustodianOrganization.name -> fhir_custodian_organization.name;
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.telecom
+          cda_representedCustodianOrganization.telecom -> fhir_custodian_organization.telecom;
+          // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.addr
+          // cda_representedCustodianOrganization.addr as cda_custodian_addr ->
+          //   fhir_custodian_organization.address = create('Address') as fhir_custodian_address then
+          //   CdaAdressCompilationToFhirAustrianAddress(cda_custodian_addr, fhir_custodian_address)
+          //   "CdaCustodianAddressToFhirCustodianAustrianAddress";
+          cda_representedCustodianOrganization.addr -> fhir_custodian_organization.address;
+        };
+    };
+  };
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
