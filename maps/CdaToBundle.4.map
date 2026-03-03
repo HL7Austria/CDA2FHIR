@@ -8130,14 +8130,14 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
   //   fhir_composition_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu'
   //   "FhirCompositionProfile";
 
-  // ClinicalDocument/code
+  // ClinicalDocument/code -> Composition.category
   cda.code as cda_code then {
     cda_code.code as code_code ->
     fhir_composition.category as fhir_composition_category,
     fhir_composition_category.coding = translate(code_code, '#cda-lab-clinicaldocument-code-2-fhir-category' , 'Coding') "code";
   };
 
-  // ClinicalDocument/code/translation
+  // ClinicalDocument/code/translation -> Composition.type
   cda.code as cda_code then {
     // for CDA laboratory report translation is fixed to 11502-2 LOINC
     cda_code.translation -> fhir_composition.type;
