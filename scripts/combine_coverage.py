@@ -22,14 +22,14 @@ for config in config_json:
         "coverage", "combine",
         "--keep",
         f"--data-file=coverage/{directory}/.coverage",
-        "coverage/{directory}"
+        f"coverage/{directory}"
     ], check=False)
 
     # coverage xml --data-file=coverage/.coverage -o coverage/coverage.xml
     subprocess.run([
         "coverage", "xml",
         f"--data-file=coverage/{directory}/.coverage",
-        "-o", "coverage/{directory}/coverage.xml"
+        "-o", f"coverage/{directory}/coverage.xml"
     ], check=False)
 
     # coverage html --data-file=coverage/.coverage

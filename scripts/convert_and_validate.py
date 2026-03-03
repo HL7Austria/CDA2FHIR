@@ -58,7 +58,7 @@ for config in config_json:
                 "-html-output", f"{VALIDATION_DIR}/{directory}/{basename}.val.xml.html",
                 "-show-message-ids",
                 "-allow-example-urls", "true",
-                "-advisor-file", "advisor.json",
+                "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
                 "-extension", "any"
             ], stdout=log_file, stderr=subprocess.STDOUT)
 
@@ -76,7 +76,7 @@ for config in config_json:
                 "-html-output", f"{VALIDATION_DIR}/{directory}/{basename}.val.json.html",
                 "-show-message-ids",
                 "-allow-example-urls", "true",
-                "-advisor-file", "advisor.json",
+                "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
                 "-extension", "any"
             ], stdout=log_file, stderr=subprocess.STDOUT)
 
