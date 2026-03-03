@@ -8082,6 +8082,12 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
 // _________________________ Header Level Templates _________________________
 
 group CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  // ClinicalDocument/code
+  // see document type specific group
+
+  // ClinicalDocument/code/translation
+  // see document type specific group
+    
   // ClinicalDocument/title -> Composition.title
   cda.title as cda_title -> fhir_composition.title = (cda_title.xmlText);
 
