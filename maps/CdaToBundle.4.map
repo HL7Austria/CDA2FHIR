@@ -1,15 +1,14 @@
-map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-bundle" = "CdaToBundle"
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir" = "CdaToFhir"
 
 //
 // Mapping CDA2FHIR
 //
 
-conceptmap "cda-clinicaldocument-code-2-fhir-composition-type" {
+conceptmap "cda-lab-clinicaldocument-code-2-fhir-category" {
   prefix s = "http://loinc.org"
-  prefix t = "http://loinc.org"
 
-  s:"11502-2" == t:"26436-6"
-  s:"18725-2" == t:"18725-2"
+  s: "11502-2" == s: "26436-6"
+  s: "18725-2" == s: "18725-2"
 }
 
 conceptmap "cda-sdtc-statuscode-2-fhir-composition-status" {
@@ -7959,70 +7958,92 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 
 // _________________________ Document Level Template  _________________________
 
-group CdaToFhirBundle(source cda : ClinicalDocument, target fhir_bundle : Bundle) {
-  cda ->
+group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) {
+  // ClinicalDocument/id
+  cda.id -> fhir_bundle.identifier "CdaIdToFhirBundleIdentifier";
+
+  cda -> 
+    // Set basic meta data for the FHIR bundle
     fhir_bundle.id = uuid(),
     fhir_bundle.type = 'document',
-    fhir_bundle.meta as fhir_bundle_meta,
-    fhir_bundle_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'
-    "FhirBundleMetadata";
-  // ClinicalDocument.id
-  cda.id -> fhir_bundle.identifier "identifier";
-  // ClinicalDocument.effectiveTime
-  cda.effectiveTime -> fhir_bundle.timestamp;
+    fhir_bundle.timestamp = (now()),
 
-  cda ->
-    // create the composition to have it as reference for later transformations
+    // Create the Composition to have it as reference for later transformations
     fhir_bundle.entry as fhir_bundle_entry_1,
-    fhir_bundle_entry_1.resource = create('Composition') as fhir_composition,
-    fhir_composition.id = uuid() as fhir_composition_uuid,
-    fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_uuid),
-
-    // create the DiagnosticReport to have it as reference for later transformations
-    fhir_bundle.entry as fhir_bundle_entry_4,
-    fhir_bundle_entry_4.resource = create('DiagnosticReport') as fhir_diagnosticReport,
-    fhir_diagnosticReport.id = uuid() as fhir_diagnosticReport_id,
-    fhir_bundle_entry_4.fullUrl = append('urn:uuid:', fhir_diagnosticReport_id),
-
-    // create the patient to have it as reference for later transformations
+    fhir_bundle_entry_1.resource = create('Composition') as fhir_composition, 
+    fhir_composition.id = uuid() as fhir_composition_id,
+    fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_id),
+  
+    // Create the Patient to have it as reference for later transformations
     fhir_bundle.entry as fhir_bundle_entry_2,
     fhir_bundle_entry_2.resource = create('Patient') as fhir_patient,
-    fhir_patient.id = uuid() as fhir_patient_uuid,
-    fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_patient_uuid),
-
-    // create the ServiceRequest to have it as reference for later transformations
-    // According to the CDA IG infulfillmentOf shall always be present. As such a ServiceRequest is always necessary.
-    fhir_bundle.entry as fhir_bundle_entry_5,
-    fhir_bundle_entry_5.resource = create('ServiceRequest') as fhir_serviceRequest,
-    fhir_serviceRequest.id = uuid() as fhir_serviceRequest_id,
-    fhir_bundle_entry_5.fullUrl = append('urn:uuid:', fhir_serviceRequest_id),
-    fhir_serviceRequest.meta as fhir_serviceRequest_meta,
-    fhir_serviceRequest_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu',
-
-    // create relation from Composition to ServiceRequest
-    fhir_composition.extension as fhir_composition_extenstion_01,
-    fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition',
-    fhir_composition_extenstion_01.value = create('Reference') as fhir_diagnosticReport_composition_reference,
-    fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
-    fhir_diagnosticReport_composition_reference.type = 'ServiceRequest',
+    fhir_patient.id = uuid() as fhir_patient_id, 
+    fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_patient_id),
 
     // create relation from Composition to Patient
     fhir_composition.subject = create('Reference') as fhir_composition_subject_reference,
-    fhir_composition_subject_reference.reference = append('urn:uuid:', fhir_patient_uuid),
-    fhir_composition_subject_reference.type = 'Patient',
+    fhir_composition_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_composition_subject_reference.type = 'Patient'; 
+
+    // Check which document type shall be mapped and execute the corresponding group. 
+    cda.code as cda_code then {
+      // CDA Labor- und Mikrobiologiebefund -> FHIR
+      cda_code.code as code_code where ($this = '11502-2' or $this = '18725-2') then CdaLabToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
+      // CDA e-Impfpass -> FHIR
+      // cda_code.code as code_code where ($this = '11369-6') then CdaAteImpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
+      // CDA e-Medikation -> FHIR
+      // TODO
+    } "CdaToFhirBundle";  
+}
+
+group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) {
+  // Set FHIR profile
+  // TODO: for ELGA no profile has been defined yet
+  // cda ->
+  //   fhir_bundle.meta as fhir_bundle_meta,
+  //   fhir_bundle_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'
+  //   "FhirBundleProfile";
+  cda ->
+    // create the DiagnosticReport to have it as reference for later transformations
+    fhir_bundle.entry as fhir_bundle_entry_1,
+    fhir_bundle_entry_1.resource = create('DiagnosticReport') as fhir_diagnosticReport,
+    fhir_diagnosticReport.id = uuid() as fhir_diagnosticReport_id,
+    fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_diagnosticReport_id),
+
+    // create the ServiceRequest to have it as reference for later transformations
+    // According to the CDA IG the element infulfillmentOf shall always be present. As such a ServiceRequest is always necessary.
+    fhir_bundle.entry as fhir_bundle_entry_2,
+    fhir_bundle_entry_2.resource = create('ServiceRequest') as fhir_serviceRequest,
+    fhir_serviceRequest.id = uuid() as fhir_serviceRequest_id,
+    fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_serviceRequest_id),
+    // TODO: for ELGA no profile has been defined yet
+    // fhir_serviceRequest.meta as fhir_serviceRequest_meta,
+    // fhir_serviceRequest_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu',
+
+    // create relation from Composition to ServiceRequest
+    // TODO: for ELGA no extension has been defined yet
+    // fhir_composition.extension as fhir_composition_extenstion_01,
+    // fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition',
+    // fhir_composition_extenstion_01.value = create('Reference') as fhir_diagnosticReport_composition_reference,
+    // fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
+    // fhir_diagnosticReport_composition_reference.type = 'ServiceRequest',
 
     // create relation from Composition to DiagnosticReport
-    fhir_composition.extension as fhir_composition_extenstion_02,
-    fhir_composition_extenstion_02.url = 'http://hl7.eu/fhir/laboratory/StructureDefinition/composition-diagnosticReportReference',
-    fhir_composition_extenstion_02.value = create('Reference') as fhir_composition_diagnosticReport_reference,
-    fhir_composition_diagnosticReport_reference.reference = append('urn:uuid:', fhir_diagnosticReport_id),
-    fhir_composition_diagnosticReport_reference.type = 'DiagnosticReport',
+    // TODO: for ELGA no extension has been defined yet
+    // fhir_composition.extension as fhir_composition_extenstion_02,
+    // fhir_composition_extenstion_02.url = 'http://hl7.eu/fhir/laboratory/StructureDefinition/composition-diagnosticReportReference',
+    // fhir_composition_extenstion_02.value = create('Reference') as fhir_composition_diagnosticReport_reference,
+    // fhir_composition_diagnosticReport_reference.reference = append('urn:uuid:', fhir_diagnosticReport_id),
+    // fhir_composition_diagnosticReport_reference.type = 'DiagnosticReport',
+
+    // retrieve Composition uuid
+    fhir_composition.id as fhir_composition_id,
 
     // create relation from DiagnosticReport to Composition
     fhir_diagnosticReport.extension as fhir_diagnosticReport_extension,
     fhir_diagnosticReport_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-DiagnosticReport.composition',
     fhir_diagnosticReport_extension.value = create('Reference') as fhir_diagnosticReport_composition_reference,
-    fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_composition_uuid),
+    fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_composition_id),
     fhir_diagnosticReport_composition_reference.type = 'Composition',
 
     // create relation from DiagnosticReport to ServiceRequest
@@ -8030,18 +8051,21 @@ group CdaToFhirBundle(source cda : ClinicalDocument, target fhir_bundle : Bundle
     fhir_diagnosticReport_basedOn_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
     fhir_diagnosticReport_basedOn_reference.type = 'ServiceRequest',
 
+    // retrieve Patient uuid
+    fhir_patient.id as fhir_patient_id,
+
     // create relation from DiagnosticReport to Patient
     fhir_diagnosticReport.subject = create('Reference') as fhir_diagnosticReport_subject_reference,
-    fhir_diagnosticReport_subject_reference.reference = append('urn:uuid:', fhir_patient_uuid),
+    fhir_diagnosticReport_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_diagnosticReport_subject_reference.type = 'Patient',
 
     // create relation from ServiceRequest to Patient
     fhir_serviceRequest.subject = create('Reference') as fhir_serviceRequest_subject_reference,
-    fhir_serviceRequest_subject_reference.reference = append('urn:uuid:', fhir_patient_uuid),
+    fhir_serviceRequest_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_serviceRequest_subject_reference.type = 'Patient'
 
     then {
-      cda then CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle) "CdaHeaderToFhirComposition";
+      cda then CdaLabHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle) "CdaHeaderToFhirComposition";
       cda then CdaHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport) "CdaHeaderToFhirDiagnosticReport";
       // ClinicalDocument.component
       cda.component as cda_component then {
@@ -8049,33 +8073,68 @@ group CdaToFhirBundle(source cda : ClinicalDocument, target fhir_bundle : Bundle
         cda_component.structuredBody as cda_structuredBody
           then CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle);
       };
-      // cda.component as component then {
-      //   component.structuredBody as structuredBody then {
-      //     structuredBody.component as component log 'component' then {
-      //       // component.section as srcSection where $this.code.empty() -> composition.section as tgtSection then ClinicalDocumentSection(cda, srcSection, patient, tgtSection, bundle);
-      //     } "component";
-      //   } "body";
-      // } "component";
-    }
-
-    "CdaToFhirBundle";
+    } "CdaLabToFhirBundle";
 }
 
 // _________________________ Header Level Templates _________________________
 
-group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest, target fhir_bundle : Bundle) {
-  cda -> fhir_composition.meta as fhir_composition_meta,
-    fhir_composition_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu'
-    "FhirCompositionProfile";
+group CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  // ClinicalDocument/title
+  cda.title as cda_title -> fhir_composition.title = (cda_title.xmlText);
 
-  // ClinicalDocument.code
+  // ClinicalDocument/sdtc:statusCode
+  cda.sdtcStatusCode as cda_statusCode then {
+    cda_statusCode.code as cda_code -> fhir_composition.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-composition-status' , 'code');
+  } "CdaStatusCodeToFhirCompositionStatusMapped";
+  cda where cda.sdtcStatusCode.exists().not() -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
+
+  //ClinicalDocument/hl7at:terminologyDate
+  cda.terminologyDate as cda_terminologyDate -> 
+    fhir_composition.extension as fhir_composition_terminologyDate_extension,
+    fhir_composition_terminologyDate_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-terminologyDate',
+    fhir_composition_terminologyDate_extension.value = create('dateTime') as fhir_composition_terminologyDate_dateTime then TSDate(cda_terminologyDate, fhir_composition_terminologyDate_dateTime);
+
+  // ClinicalDocument/hl7at:formatCode: will not be mapped. (see AG ELGA CDA2FHIR 2025-11-17)
+
+  // ClinicalDocument/hl7at:practiceSettingCode
+  cda.practiceSettingCode -> fhir_composition.category;
+
+  // ClinicalDocument/effectiveTime
+  cda.effectiveTime -> fhir_composition.date;
+
+  // ClinicalDocument/confidentialityCode
+  cda.confidentialityCode -> fhir_composition.confidentiality;
+
+  // ClinicalDocument/languageCode
+  cda.languageCode -> fhir_composition.language;
+
+  // ClinicalDocument/setId
+  cda.setId -> fhir_composition.identifier;
+
+  // ClinicalDocument/versionNumber
+  cda.versionNumber as cda_versionNumber then {
+    cda_versionNumber.value as cda_versionNumber_value ->
+      fhir_composition.extension as fhir_composition_extenstion,
+      fhir_composition_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber',
+      fhir_composition_extenstion.value = cast(cda_versionNumber_value, 'string')
+      "CdaVersionNumberToFhirVersionNumber";
+  };
+}
+
+group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest, target fhir_bundle : Bundle) extends CdaHeaderToFhirComposition {
+  // TODO: for ELGA no profile has been defined yet
+  // cda -> fhir_composition.meta as fhir_composition_meta,
+  //   fhir_composition_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu'
+  //   "FhirCompositionProfile";
+
+  // ClinicalDocument/code
   cda.code as cda_code then {
     cda_code.code as code_code ->
     fhir_composition.category as fhir_composition_category,
-    fhir_composition_category.coding = translate(code_code, '#cda-clinicaldocument-code-2-fhir-composition-type' , 'Coding') "code";
+    fhir_composition_category.coding = translate(code_code, '#cda-lab-clinicaldocument-code-2-fhir-category' , 'Coding') "code";
   };
 
-  // ClinicalDocument.code.translation
+  // ClinicalDocument/code/translation
   cda.code as cda_code then {
     // for CDA laboratory report translation is fixed to 11502-2 LOINC
     cda_code.translation -> fhir_composition.type;
@@ -8086,41 +8145,6 @@ group CdaHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_comp
       coding_coding.system = 'http://loinc.org',
       coding_coding.code = '11502-2'
       "CdaMissingCodeTranslationToFhirCompositionType";
-  };
-  // ClinicalDocument.title
-  cda.title as cda_title -> fhir_composition.title = (cda_title.xmlText);
-
-  // ClinicalDocument.sdtc:statusCode
-  cda.sdtcStatusCode as cda_statusCode where cda.sdtcStatusCode.exists() then {
-    cda_statusCode.code as cda_code -> fhir_composition.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-composition-status' , 'code');
-  } "CdaStatusCodeToFhirCompositionStatusMapped";
-  cda where cda.sdtcStatusCode.exists().not() -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
-  
-  //ClinicalDocument.hl7at:terminologyDate
-  cda.terminologyDate as cda_terminologyDate -> 
-    fhir_composition.extension as fhir_composition_terminologyDate_extension,
-    fhir_composition_terminologyDate_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-terminologyDate',
-    fhir_composition_terminologyDate_extension.value = create('dateTime') as fhir_composition_terminologyDate_dateTime then TSDate(cda_terminologyDate, fhir_composition_terminologyDate_dateTime);
-  
-  // ClinicalDocument.hl7at:formatCode: will not be mapped. (see AG ELGA CDA2FHIR 2025-11-17)
-  // ClinicalDocument.hl7at:practiceSettingCode
-  cda.practiceSettingCode -> fhir_composition.category;
- 
-  // ClinicalDocument.effectiveTime
-  cda.effectiveTime -> fhir_composition.date;
-  // ClinicalDocument.confidentialityCode
-  cda.confidentialityCode -> fhir_composition.confidentiality; // no code conversion needed
-  // ClinicalDocument.languageCode
-  cda.languageCode -> fhir_composition.language;
-  // ClinicalDocument.setId
-  cda.setId -> fhir_composition.identifier;
-  // ClinicalDocument.versionNumber
-  cda.versionNumber as cda_versionNumber then {
-    cda_versionNumber.value as cda_versionNumber_value ->
-      fhir_composition.extension as fhir_composition_extenstion,
-      fhir_composition_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber',
-      fhir_composition_extenstion.value = cast(cda_versionNumber_value, 'string')
-      "CdaVersionNumberToFhirVersionNumber";
   };
 
   // ClinicalDocument.recordTarget
@@ -8744,7 +8768,7 @@ group CdaHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir
   cda.code as cda_code then {
     cda_code.code as code_code ->
     fhir_diagnosticReport.category as fhir_diagnosticReport_category,
-    fhir_diagnosticReport_category.coding = translate(code_code, '#cda-clinicaldocument-code-2-fhir-composition-type' , 'Coding') "code";
+    fhir_diagnosticReport_category.coding = translate(code_code, '#cda-lab-clinicaldocument-code-2-fhir-category' , 'Coding') "code";
   };
 
   // ClinicalDocument.code.translation
