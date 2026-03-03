@@ -9070,45 +9070,6 @@ group CdaAnnotationSectionToFhirSection(source cda_section: Section, target fhir
 
  
 
-group CdaBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Section, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_patient: Patient) {
-  cda_section ->
-    // create Media resource
-    fhir_bundle.entry as fhir_bundle_entry_01,
-    fhir_bundle_entry_01.resource = create('Media') as fhir_media,
-    fhir_media.id = uuid() as fhir_media_id,
-    fhir_bundle_entry_01.fullUrl = append('urn:uuid:', fhir_media_id),
-    fhir_diagnosticReport.media as fhir_diagnosticReport_media,
-    fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
-    fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:', fhir_media_id),
-    fhir_diagnosticReport_media_link_reference.type = 'Media'
-    then {
-      cda_section.entry as cda_section_entry then {
-        cda_section_entry.observationMedia as cda_observationMedia then {
-          // cda_section.text
-          // TODO check why some text duplication occurs here "DokumentDokument" or "ErstellungsdatumErstellungsdatum"
-          // TODO deal with StrucText_Doc to string
-          // cda_section.text as cda_section_text -> fhir_diagnosticReport_media.comment = cast(cda_section_text, 'string');
-          // cda_observationMedia@ID
-          cda_observationMedia.ID as cda_observationMedia_ID ->
-            fhir_media.identifier as fhir_media_identifier,
-            fhir_media_identifier.value = cda_observationMedia_ID
-            "CdaObservationMediaIDFhirMediaIdentifier";
-          // fhir_media.status
-          cda_observationMedia -> fhir_media.status = 'completed' "FhirMediaStatus";
-          // cda_observationMedia.value
-          cda_observationMedia.value as cda_observationMedia_value ->
-            fhir_media.content as fhir_media_content
-            then {
-              // cda_observationMedia@mediaType
-              cda_observationMedia_value.mediaType as cda_mediaType -> fhir_media_content.contentType = cda_mediaType;
-              // cda_observationMedia.value
-              cda_observationMedia_value -> fhir_media_content.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";
-          };
-        };
-      };
-    }
-    "CdaBeilagenToFhirMedia";
-}
 
 // group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Section, source patient : Patient, target tgt, target bundle: Bundle) {
 //   src.id as id where ($this.root=%cda.id.root)=false -> tgt.extension as ext then ChExtEprSectionId(id, ext) "sectionId";
