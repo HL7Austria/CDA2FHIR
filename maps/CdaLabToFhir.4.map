@@ -130,7 +130,7 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
       cda.component as cda_component then {
         // ClinicalDocument.component.structuredBody
         cda_component.structuredBody as cda_structuredBody
-          then CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle);
+          then CdaLabBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle);
       };
     } "CdaLabToFhirBundle";
 }
