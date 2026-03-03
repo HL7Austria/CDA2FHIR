@@ -8152,20 +8152,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
 
   
 
-  // ClinicalDocument.authenticator [hl7:templateId[@root='1.2.40.0.34.6.0.11.1.49'] or [hl7:templateId[@root='1.3.6.1.4.1.19376.1.3.3.1.5']]
-  cda.authenticator as cda_resultValidator ->
-    fhir_composition.attester as fhir_composition_attester then {
-      cda_resultValidator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
-      cda_resultValidator.signatureCode -> fhir_composition_attester.mode = 'professional';
-      cda_resultValidator.assignedEntity as cda_assignedEntity ->
-        fhir_bundle.entry as fhir_bundle_entry,
-        fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
-        fhir_composition_attester.party = create('Reference') as fhir_composition_attester_reference,
-        fhir_composition_attester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-        fhir_composition_attester_reference.type = 'PractitionerRole' then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
-    };
 
   // Participant Auftraggeber / Ordering Provider
   // ClinicalDocument.participant[@typeCode='REF']
@@ -8731,6 +8717,21 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
         fhir_composition_attester_reference.type = 'PractitionerRole'
         then CdaAssignedEntityToFhirPractitionerRole(cda_legalAuthenticator_assignedEntity, fhir_practitionerRole, fhir_bundle);
   };
+
+  // ClinicalDocument/authenticator -> Composition.attester.where(mode='professional')
+  cda.authenticator as cda_resultValidator ->
+    fhir_composition.attester as fhir_composition_attester then {
+      cda_resultValidator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
+      cda_resultValidator.signatureCode -> fhir_composition_attester.mode = 'professional';
+      cda_resultValidator.assignedEntity as cda_assignedEntity ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_composition_attester.party = create('Reference') as fhir_composition_attester_reference,
+        fhir_composition_attester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_composition_attester_reference.type = 'PractitionerRole' then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
+    };
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
