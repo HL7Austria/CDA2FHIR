@@ -7926,12 +7926,6 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 // _________________________ Document Level Template  _________________________
 
 group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) {
-  // Set FHIR profile
-  // TODO: for ELGA no profile has been defined yet
-  // cda ->
-  //   fhir_bundle.meta as fhir_bundle_meta,
-  //   fhir_bundle_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'
-  //   "FhirBundleProfile";
   cda ->
     // create the DiagnosticReport to have it as reference for later transformations
     fhir_bundle.entry as fhir_bundle_entry_1,
@@ -7945,9 +7939,6 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_bundle_entry_2.resource = create('ServiceRequest') as fhir_serviceRequest,
     fhir_serviceRequest.id = uuid() as fhir_serviceRequest_id,
     fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_serviceRequest_id),
-    // TODO: for ELGA no profile has been defined yet
-    // fhir_serviceRequest.meta as fhir_serviceRequest_meta,
-    // fhir_serviceRequest_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu',
 
     // create relation from Composition to ServiceRequest
     // TODO: for ELGA no extension has been defined yet
@@ -8012,11 +8003,6 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
 // _________________________ Header Level Templates _________________________
 
 group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest, target fhir_bundle : Bundle) extends CdaHeaderToFhirComposition {
-  // TODO: for ELGA no profile has been defined yet
-  // cda -> fhir_composition.meta as fhir_composition_meta,
-  //   fhir_composition_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu'
-  //   "FhirCompositionProfile";
-
   // ClinicalDocument/code -> Composition.category
   cda.code as cda_code then {
     cda_code.code as code_code ->
@@ -8039,11 +8025,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
 }
 
 group CdaLabHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
-  // TODO: for ELGA no profile has been defined yet
-  // cda -> fhir_diagnosticReport.meta as fhir_diagnosticReport_meta,
-  //   fhir_diagnosticReport_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu'
-  //   "FhirDiagnosticReportProfile";
-
   // ClinicalDocument/code
   cda.code as cda_code then {
     cda_code.code as code_code ->
@@ -8759,9 +8740,6 @@ group CdaLabBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Secti
 
 group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, target fhir_specimen: Specimen, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
   cda_procedure ->
-    fhir_specimen.meta as fhir_specimen_meta,
-    fhir_specimen_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Specimen-lab-myhealtheu',
-
     // create relation from specimen to patient
     fhir_specimen.subject = create('Reference') as fhir_specimen_patient_reference,
     fhir_patient.id as fhir_patient_id,
@@ -8889,11 +8867,6 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
 }
 
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
-  cda_organizer ->
-    fhir_observation.meta as fhir_observation_meta,
-    fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
-    "FhirObservationProfile";
-
   // fhir_observation.category
   cda_organizer -> fhir_observation.category as fhir_category,
     fhir_category.coding as fhir_category_coding,
@@ -8967,11 +8940,6 @@ group CdaLabOrganizerToFhirObservationWithSpecimen(source cda: ClinicalDocument,
 }
 
 group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) {
-  cda_laboratory_observation ->
-    fhir_observation.meta as fhir_observation_meta,
-    fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
-    "FhirObservationProfile";
-
   // observation.id
   cda_laboratory_observation.id -> fhir_observation.identifier;
 

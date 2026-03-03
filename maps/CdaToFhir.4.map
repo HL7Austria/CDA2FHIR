@@ -632,11 +632,6 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.3&effectiveDate=2020-11-24T10:03:02&language=de-DE
 // Target: http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-patient
 group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patientRole : PatientRole, target fhir_patient : Patient, target fhir_bundle : Bundle) {
-  cda_patientRole ->
-    fhir_patient.meta as fhir_patient_meta,
-    fhir_patient_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu'
-    "FhirPatientEuLab";
-
   // patientRole.id[1]
   cda_patientRole.id first as cda_patientRole_id -> fhir_patient.identifier = create('Identifier') as fhir_patient_identifier then {
     // patientRole.id
