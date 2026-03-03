@@ -1164,8 +1164,8 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // - CDA Laborbefund v2
   //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
   cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1' or root='1.3.6.1.4.1.19376.1.3.1.1.2') then 
-    CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
-    "CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue";
+    CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    "CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue";
 
   // observation.interpretationCode
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
@@ -1430,6 +1430,20 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
 
   // TODO other datatypes
 	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
+}
+
+group CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
+  // This data type mapping is only used by the following templates
+  // - CDA Labor- und Mikrobiologiebefund v3
+  //   - Notifiable Condition: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.166/2021-02-02T10:46:26
+  //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
+  // - CDA Laborbefund v2
+  //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  cda_laboratory_observation.value as cda_observation_value then {
+    cda_observation_value.code as cda_observation_value_code -> 
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding = translate(cda_observation_value_code, '#elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory', 'Coding');
+  } "CdaObservationValueToFhirObservationValue";
 }
 
 // _________________________ Template Type not specified  ___________________
