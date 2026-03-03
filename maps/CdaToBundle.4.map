@@ -8150,12 +8150,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
       "CdaMissingCodeTranslationToFhirCompositionType";
   };
 
-  // ClinicalDocument.recordTarget
-  cda.recordTarget as cda_recordTarget then {
-    // ClinicalDocument.recordTarget.patientRole
-    cda_recordTarget.patientRole as cda_patientRole then CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle) "CdaPatientRoleToFhirPatient";
-  } "CdaRecordTargetToFhirPatient";
-
   // ClinicalDocument.author (as person)
   cda.author as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
     // create the PractitionerRole in order to capture the author.functionCode
@@ -8819,6 +8813,13 @@ group CdaHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir
 }
 
 group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  // ClinicalDocument/recordTarget -> Patient
+  cda.recordTarget as cda_recordTarget then {
+    // ClinicalDocument/recordTarget/patientRole -> Patient
+    cda_recordTarget.patientRole as cda_patientRole then CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle) "CdaPatientRoleToFhirPatient";
+  } "CdaRecordTargetToFhirPatient";
+
+  
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
