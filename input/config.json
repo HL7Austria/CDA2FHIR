@@ -1,6 +1,6 @@
 [
   {
     "directory": "lab",
-    "ig": "https://fhir.ehdsi.eu/laboratory/package.tgz"
+    "ig": "https://hl7.eu/fhir/laboratory/package.tgz"
   }
 ]
