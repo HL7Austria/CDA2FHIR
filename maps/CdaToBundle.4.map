@@ -8151,26 +8151,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
   };
 
   
-  // ClinicalDocument.legalAuthenticator
-  cda.legalAuthenticator as cda_legalAuthenticator ->
-    fhir_composition.attester as fhir_composition_attester then {
-      // ClinicalDocument.legalAuthenticator.time
-      cda_legalAuthenticator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
-      // ClinicalDocument.legalAuthenticator.signatureCode
-      // in CDA constantly 'S' -> in FHIR 'legal'
-      cda_legalAuthenticator.signatureCode -> fhir_composition_attester.mode = 'legal' "CdaLegalAuthenticatorSignatureCodeToFhirCompositionAttesterMode";
-      // ClinicalDocument.legalAuthenticator.assignedEntity
-      cda_legalAuthenticator.assignedEntity as cda_legalAuthenticator_assignedEntity ->
-        // Create a PractitionerRole
-        fhir_bundle.entry as fhir_bundle_entry01,
-        fhir_bundle_entry01.resource = create('PractitionerRole') as fhir_practitionerRole,
-        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-        fhir_bundle_entry01.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
-        fhir_composition_attester.party = create('Reference') as fhir_composition_attester_reference,
-        fhir_composition_attester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-        fhir_composition_attester_reference.type = 'PractitionerRole'
-        then CdaAssignedEntityToFhirPractitionerRole(cda_legalAuthenticator_assignedEntity, fhir_practitionerRole, fhir_bundle);
-  };
 
   // ClinicalDocument.authenticator [hl7:templateId[@root='1.2.40.0.34.6.0.11.1.49'] or [hl7:templateId[@root='1.3.6.1.4.1.19376.1.3.3.1.5']]
   cda.authenticator as cda_resultValidator ->
@@ -8730,6 +8710,27 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // ClinicalDocument/informationRecipient
   // see document type specific group
+
+  // ClinicalDocument/legalAuthenticator -> Composition.attester.where(mode='legal')
+  cda.legalAuthenticator as cda_legalAuthenticator ->
+    fhir_composition.attester as fhir_composition_attester then {
+      // ClinicalDocument.legalAuthenticator.time
+      cda_legalAuthenticator.time where (nullFlavor.exists().not()) -> fhir_composition_attester.time;
+      // ClinicalDocument.legalAuthenticator.signatureCode
+      // in CDA constantly 'S' -> in FHIR 'legal'
+      cda_legalAuthenticator.signatureCode -> fhir_composition_attester.mode = 'legal' "CdaLegalAuthenticatorSignatureCodeToFhirCompositionAttesterMode";
+      // ClinicalDocument.legalAuthenticator.assignedEntity
+      cda_legalAuthenticator.assignedEntity as cda_legalAuthenticator_assignedEntity ->
+        // Create a PractitionerRole
+        fhir_bundle.entry as fhir_bundle_entry01,
+        fhir_bundle_entry01.resource = create('PractitionerRole') as fhir_practitionerRole,
+        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+        fhir_bundle_entry01.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_composition_attester.party = create('Reference') as fhir_composition_attester_reference,
+        fhir_composition_attester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+        fhir_composition_attester_reference.type = 'PractitionerRole'
+        then CdaAssignedEntityToFhirPractitionerRole(cda_legalAuthenticator_assignedEntity, fhir_practitionerRole, fhir_bundle);
+  };
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
