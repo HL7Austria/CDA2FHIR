@@ -42,10 +42,6 @@ jobs:
           path: .
           file: validator_cli.jar
 
-      - name: Download eHDSI Laboratory IG
-        run: |
-          wget https://fhir.ehdsi.eu/laboratory/package.tgz
-
       - name: Convert & validate test file to FHIR XML and JSON
         run: |
           python scripts/convert_and_validate.py
