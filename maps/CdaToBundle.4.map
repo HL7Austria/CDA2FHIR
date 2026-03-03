@@ -8070,7 +8070,7 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     then {
       // map the CDA header
       cda then CdaLabHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle) "CdaLabHeaderToFhirComposition";
-      cda then CdaHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport) "CdaHeaderToFhirDiagnosticReport";
+      cda then CdaLabHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport) "CdaLabHeaderToFhirDiagnosticReport";
       cda then CdaLabHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_diagnosticReport, fhir_serviceRequest) "CdaLabHeaderToFhir"; 
 
       // map the CDA body
@@ -8161,19 +8161,20 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
   };
 }
 
-group CdaHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
-  cda -> fhir_diagnosticReport.meta as fhir_diagnosticReport_meta,
-    fhir_diagnosticReport_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu'
-    "FhirDiagnosticReportProfile";
+group CdaLabHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
+  // TODO: for ELGA no profile has been defined yet
+  // cda -> fhir_diagnosticReport.meta as fhir_diagnosticReport_meta,
+  //   fhir_diagnosticReport_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu'
+  //   "FhirDiagnosticReportProfile";
 
-  // ClinicalDocument.code
+  // ClinicalDocument/code
   cda.code as cda_code then {
     cda_code.code as code_code ->
     fhir_diagnosticReport.category as fhir_diagnosticReport_category,
     fhir_diagnosticReport_category.coding = translate(code_code, '#cda-lab-clinicaldocument-code-2-fhir-category' , 'Coding') "code";
   };
 
-  // ClinicalDocument.code.translation
+  // ClinicalDocument/code/translation
   cda.code as cda_code then {
     // for CDA laboratory report translation is fixed to 11502-2 LOINC
     cda_code.translation -> fhir_diagnosticReport.code;
@@ -8186,34 +8187,37 @@ group CdaHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir
       "CdaMissingCodeTranslationToFhirCompositionType";
   };
 
-  // ClinicalDocument.title
+  // ClinicalDocument/title
   // see Composition
 
-  // ClinicalDocument.sdtc:statusCode
+  // ClinicalDocument/sdtc:statusCode
   // TODO clarify mapping
   cda.sdtcStatusCode as cda_statusCode where cda.sdtcStatusCode.exists() then {
     cda_statusCode.code as cda_code -> fhir_diagnosticReport.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-diagnosticreport-status' , 'code');
   } "CdaStatusCodeToFhirCompositionStatusMapped";
   cda where cda.sdtcStatusCode.exists().not() -> fhir_diagnosticReport.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
-  // TODO ClinicalDocument.hl7at:terminologyDate
-  // cda.terminologyDate ->
-  // TODO ClinicalDocument.hl7at:formatCode
-  // cda.formatCode ->
-  // TODO ClinicalDocument.hl7at:practiceSettingCode
-  // cda.practiceSettingCode ->
-  // ClinicalDocument.effectiveTime
+
+  // ClinicalDocument/hl7at:terminologyDate
+  // see Composition
+  
+  // ClinicalDocument/hl7at:formatCode: will not be mapped. (see AG ELGA CDA2FHIR 2025-11-17)
+
+  // ClinicalDocument/hl7at:practiceSettingCode
+  cda.practiceSettingCode -> fhir_diagnosticReport.category;
+
+  // ClinicalDocument/effectiveTime
   cda.effectiveTime as cda_effectiveTime -> fhir_diagnosticReport.effective = create('dateTime') as fhir_diagnosticReport_effective then TSDateTime(cda_effectiveTime, fhir_diagnosticReport_effective) "CdaEffectiveTimeToFhirDiagnosticReportEffective";
 
-  // ClinicalDocument.confidentialityCode
+  // ClinicalDocument/confidentialityCode
   // see Composition
 
-  // ClinicalDocument.languageCode
+  // ClinicalDocument/languageCode
   // see Composition
 
-  // ClinicalDocument.setId
+  // ClinicalDocument/setId
   cda.setId -> fhir_diagnosticReport.identifier;
 
-  // ClinicalDocument.versionNumber
+  // ClinicalDocument/versionNumber
   // see Composition
 }
 
