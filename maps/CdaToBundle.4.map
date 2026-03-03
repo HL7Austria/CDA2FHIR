@@ -8150,29 +8150,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
       "CdaMissingCodeTranslationToFhirCompositionType";
   };
 
-  // ClinicalDocument.author (as person)
-  cda.author as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
-    // create the PractitionerRole in order to capture the author.functionCode
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_composition.author = create('Reference') as fhir_composition_author_reference,
-    fhir_composition_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_composition_author_reference.type = 'PractitionerRole' then
-    CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
-
-  // ClinicalDocument.author (as device)
-  cda.author as cda_author where $this.assignedAuthor.assignedAuthoringDevice.exists() ->
-    // create the Device
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('Device') as fhir_device,
-    fhir_device.id = uuid() as fhir_device_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
-    fhir_composition.author = create('Reference') as fhir_composition_author_reference,
-    fhir_composition_author_reference.reference = append('urn:uuid:', fhir_device_id),
-    fhir_composition_author_reference.type = 'Device' then
-    CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle);
 
   // ClinicalDocument.dataEnterer[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.22'] or [@root='1.2.40.0.34.11.20003']]
   cda.dataEnterer as cda_dataEnterer then {
@@ -8819,7 +8796,29 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
     cda_recordTarget.patientRole as cda_patientRole then CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle) "CdaPatientRoleToFhirPatient";
   } "CdaRecordTargetToFhirPatient";
 
-  
+  // ClinicalDocument/author (as person) -> Composition.author
+  cda.author as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
+    // create the PractitionerRole in order to capture the author.functionCode
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_composition.author = create('Reference') as fhir_composition_author_reference,
+    fhir_composition_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_composition_author_reference.type = 'PractitionerRole' then
+    CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
+
+  // ClinicalDocument/author (as device) -> Composition.author
+  cda.author as cda_author where $this.assignedAuthor.assignedAuthoringDevice.exists() ->
+    // create the Device
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Device') as fhir_device,
+    fhir_device.id = uuid() as fhir_device_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
+    fhir_composition.author = create('Reference') as fhir_composition_author_reference,
+    fhir_composition_author_reference.reference = append('urn:uuid:', fhir_device_id),
+    fhir_composition_author_reference.type = 'Device' then
+    CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle);
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
