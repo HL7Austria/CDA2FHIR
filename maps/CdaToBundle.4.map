@@ -8153,24 +8153,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
   
 
 
-  // Participant Auftraggeber / Ordering Provider
-  // ClinicalDocument.participant[@typeCode='REF']
-  cda.participant as cda_orderingProvider where ($this.typeCode='REF' and nullFlavor.exists().not()) ->
-    // Create a PractitionerRole
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_serviceRequest.requester = create('Reference') as fhir_serviceRequest_requester_reference,
-    fhir_serviceRequest_requester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_serviceRequest_requester_reference.type = 'PractitionerRole' then {
-      // ClinicalDocument.participant[@typeCode='REF'].time
-      cda_orderingProvider.time as cda_orderingProvider_time where (nullFlavor.exists().not()) then {
-        cda_orderingProvider_time.value as v -> fhir_serviceRequest.authoredOn = cast(v, 'string');
-      };
-      // ClinicalDocument.participant[@typeCode='REF'].associatedEntity
-      cda_orderingProvider.associatedEntity as cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle);
-  } "CdaOrderingProviderToFhirServiceRequestRequester";
 
   // Participant Fachlicher Ansprechpartner
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.20']] or [@root='1.2.40.0.34.11.1.1.1']
@@ -8732,6 +8714,9 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
         fhir_composition_attester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
         fhir_composition_attester_reference.type = 'PractitionerRole' then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
     };
+
+  // ClinicalDocument/participant[@typeCode='REF']
+  // see document type specific group
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
@@ -8830,6 +8815,25 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
   //       } "CdaIntendedRecipientToFhirRelatedPerson";
   //   };
   // };  
+
+  // Participant Auftraggeber / Ordering Provider
+  // ClinicalDocument/participant[@typeCode='REF'] -> ServiceRequest.requester
+  cda.participant as cda_orderingProvider where ($this.typeCode='REF' and nullFlavor.exists().not()) ->
+    // Create a PractitionerRole
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_serviceRequest.requester = create('Reference') as fhir_serviceRequest_requester_reference,
+    fhir_serviceRequest_requester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_serviceRequest_requester_reference.type = 'PractitionerRole' then {
+      // ClinicalDocument.participant[@typeCode='REF'].time
+      cda_orderingProvider.time as cda_orderingProvider_time where (nullFlavor.exists().not()) then {
+        cda_orderingProvider_time.value as v -> fhir_serviceRequest.authoredOn = cast(v, 'string');
+      };
+      // ClinicalDocument.participant[@typeCode='REF'].associatedEntity
+      cda_orderingProvider.associatedEntity as cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle);
+  } "CdaOrderingProviderToFhirServiceRequestRequester";
 }
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.1.3&effectiveDate=2020-11-24T10:03:02&language=de-DE
