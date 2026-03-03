@@ -8068,8 +8068,12 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_serviceRequest_subject_reference.type = 'Patient'
 
     then {
-      cda then CdaLabHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle) "CdaHeaderToFhirComposition";
+      // map the CDA header
+      cda then CdaLabHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle) "CdaLabHeaderToFhirComposition";
       cda then CdaHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport) "CdaHeaderToFhirDiagnosticReport";
+      cda then CdaLabHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_diagnosticReport, fhir_serviceRequest) "CdaLabHeaderToFhir"; 
+
+      // map the CDA body
       // ClinicalDocument.component
       cda.component as cda_component then {
         // ClinicalDocument.component.structuredBody
