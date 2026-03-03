@@ -26,17 +26,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install coverage
 
-      - name: Install MaLaC-HD
+      - name: Install MaLaC-HD with CDA model
         run: |
-          git clone https://gitlab.com/cdehealth/malac/models.git
-          pip install -e models/fhir
-          pip install -e models/cda
-          git clone https://gitlab.com/cdehealth/malac/utils.git
-          pip install -e utils
-          git clone https://gitlab.com/cdehealth/malac/transformer.git
-          pip install -e transformer/fhir
-          git clone https://gitlab.com/cdehealth/malac-hd.git
-          pip install -e malac-hd
+          pip install -e malac-hd[cda]
 
       - name: Run MaLaC-HD
         run: |
@@ -56,22 +48,11 @@ jobs:
 
       - name: Convert & validate test file to FHIR XML and JSON
         run: |
-          mkdir coverage
-          mkdir output
-          mkdir validation
-          for filename in input/*.xml; do
-              basename=$(basename "$filename" .xml)
-              coverage run --source=python-maps --data-file=coverage/.coverage.xml.$basename --branch python-maps/CdaToFhir.4.py -s $filename -t output/$basename.fhir.xml
-              coverage run --source=python-maps --data-file=coverage/.coverage.json.$basename --branch python-maps/CdaToFhir.4.py -s $filename -t output/$basename.fhir.json
-              java -jar validator_cli.jar output/$basename.fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.val.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.val.xml.log || echo "validation errors in FHIR XML"
-              java -jar validator_cli.jar output/$basename.fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.val.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.val.json.log || echo "validation errors in FHIR JSON"
-          done
+          python scripts/convert_and_validate.py
 
       - name: coverage
         run: |
-          coverage combine --keep --data-file=coverage/.coverage coverage/
-          coverage xml --data-file=coverage/.coverage -o coverage/coverage.xml
-          coverage html --data-file=coverage/.coverage
+          python scripts/combine_coverage.py
 
       - name: display coverage
         uses: orgoro/coverage@v3.2
