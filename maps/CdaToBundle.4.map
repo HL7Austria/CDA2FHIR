@@ -8174,20 +8174,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
 
 
 
-  // ClinicalDocument.relatedDocument
-  cda.relatedDocument as cda_relatedDocument then {
-    // ClinicalDocument.relatedDocument.parentDocument
-    cda_relatedDocument.parentDocument as cda_parentDocument ->
-      fhir_composition.relatesTo as fhir_composition_relatesTo then {
-        // ClinicalDocument.relatedDocument.typeCode
-        // in Laboratory this is constrained to RPLC -> replaces
-        cda_relatedDocument.typeCode -> fhir_composition_relatesTo.code = 'replaces' "CdaParentDocumentTypeCodeToFhirRelatesToCode";
-        //  ClinicalDocument.relatedDocument.parentDocument.id
-        cda_parentDocument.id as cda_parentDocument_id ->
-          fhir_composition_relatesTo.target = create('Identifier') as fhir_target_identifier
-          then II(cda_parentDocument_id, fhir_target_identifier);
-      };
-  };
 
   // ClinicalDocument.componentOf
   cda.componentOf as cda_componentOf then {
@@ -8711,6 +8697,21 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
       // ClinicalDocument.documentationOf.serviceEvent.performer
       // TODO based on analysis of sample reports currently not required
     };
+  };
+
+  // ClinicalDocument/relatedDocument -> Composition.relatesTo
+  cda.relatedDocument as cda_relatedDocument then {
+    // ClinicalDocument.relatedDocument.parentDocument
+    cda_relatedDocument.parentDocument as cda_parentDocument ->
+      fhir_composition.relatesTo as fhir_composition_relatesTo then {
+        // ClinicalDocument.relatedDocument.typeCode
+        // in Laboratory this is constrained to RPLC -> replaces
+        cda_relatedDocument.typeCode -> fhir_composition_relatesTo.code = 'replaces' "CdaParentDocumentTypeCodeToFhirRelatesToCode";
+        //  ClinicalDocument.relatedDocument.parentDocument.id
+        cda_parentDocument.id as cda_parentDocument_id ->
+          fhir_composition_relatesTo.target = create('Identifier') as fhir_target_identifier
+          then II(cda_parentDocument_id, fhir_target_identifier);
+      };
   };
 }
 
