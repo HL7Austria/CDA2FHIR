@@ -7959,13 +7959,16 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 // _________________________ Document Level Template  _________________________
 
 group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) {
-  // ClinicalDocument/id
+  // ClinicalDocument/id -> Bundle.identifier
   cda.id -> fhir_bundle.identifier "CdaIdToFhirBundleIdentifier";
 
   cda -> 
     // Set basic meta data for the FHIR bundle
+    // Bundle.id
     fhir_bundle.id = uuid(),
+    // Bundle.type
     fhir_bundle.type = 'document',
+    // Bundle.timestamp
     fhir_bundle.timestamp = (now()),
 
     // Create the Composition to have it as reference for later transformations
@@ -8079,16 +8082,16 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
 // _________________________ Header Level Templates _________________________
 
 group CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
-  // ClinicalDocument/title
+  // ClinicalDocument/title -> Composition.title
   cda.title as cda_title -> fhir_composition.title = (cda_title.xmlText);
 
-  // ClinicalDocument/sdtc:statusCode
+  // ClinicalDocument/sdtc:statusCode -> Composition.status
   cda.sdtcStatusCode as cda_statusCode then {
     cda_statusCode.code as cda_code -> fhir_composition.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-composition-status' , 'code');
   } "CdaStatusCodeToFhirCompositionStatusMapped";
   cda where cda.sdtcStatusCode.exists().not() -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
 
-  //ClinicalDocument/hl7at:terminologyDate
+  //ClinicalDocument/hl7at:terminologyDate -> Composition.extension
   cda.terminologyDate as cda_terminologyDate -> 
     fhir_composition.extension as fhir_composition_terminologyDate_extension,
     fhir_composition_terminologyDate_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-terminologyDate',
@@ -8096,22 +8099,22 @@ group CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_compo
 
   // ClinicalDocument/hl7at:formatCode: will not be mapped. (see AG ELGA CDA2FHIR 2025-11-17)
 
-  // ClinicalDocument/hl7at:practiceSettingCode
+  // ClinicalDocument/hl7at:practiceSettingCode -> Composition.category
   cda.practiceSettingCode -> fhir_composition.category;
 
-  // ClinicalDocument/effectiveTime
+  // ClinicalDocument/effectiveTime -> Composition.date
   cda.effectiveTime -> fhir_composition.date;
 
-  // ClinicalDocument/confidentialityCode
+  // ClinicalDocument/confidentialityCode -> Composition.confidentiality
   cda.confidentialityCode -> fhir_composition.confidentiality;
 
-  // ClinicalDocument/languageCode
+  // ClinicalDocument/languageCode -> Composition.language
   cda.languageCode -> fhir_composition.language;
 
-  // ClinicalDocument/setId
+  // ClinicalDocument/setId -> Composition.identifier
   cda.setId -> fhir_composition.identifier;
 
-  // ClinicalDocument/versionNumber
+  // ClinicalDocument/versionNumber -> Composition.extension
   cda.versionNumber as cda_versionNumber then {
     cda_versionNumber.value as cda_versionNumber_value ->
       fhir_composition.extension as fhir_composition_extenstion,
