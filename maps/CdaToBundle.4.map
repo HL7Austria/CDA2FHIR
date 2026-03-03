@@ -8173,31 +8173,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
 
 
 
-  // ClinicalDocument.documentationOf
-  cda.documentationOf as cda_documentationOf then {
-    // ClinicalDocument.documentationOf.serviceEvent
-    cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent ->
-      fhir_composition.event as fhir_composition_event then {
-
-      // ClinicalDocument.documentationOf.serviceEvent.id
-      // TODO Extension has to be specified in AT Lab IG
-      cda_documentationOf_serviceEvent.id as serviceEvent_id then {
-        serviceEvent_id.root as serviceEvent_id_root ->
-        fhir_composition_event.extension as fhir_composition_event_extension,
-        fhir_composition_event_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-eventId',
-        fhir_composition_event_extension.value = create('oid') as fhir_composition_event_extension_oid,
-        fhir_composition_event_extension_oid.value = append('urn:oid:', serviceEvent_id_root)
-        "CdaServiceEventIdToFhirEventIdExtension";
-      } "CdaServiceEventIdToFhirEventId";
-
-      // ClinicalDocument.documentationOf.serviceEvent.code
-      cda_documentationOf_serviceEvent.code -> fhir_composition_event.code;
-      // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
-      cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
-      // ClinicalDocument.documentationOf.serviceEvent.performer
-      // TODO based on analysis of sample reports currently not required
-    };
-  };
 
   // ClinicalDocument.relatedDocument
   cda.relatedDocument as cda_relatedDocument then {
@@ -8710,6 +8685,33 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
   // ClinicalDocument/inFulfillmentOf
   // see document type specific group
   // TODO check if relevant for all document types
+
+  // ClinicalDocument/documentationOf -> Composition.event
+  cda.documentationOf as cda_documentationOf then {
+    // ClinicalDocument.documentationOf.serviceEvent
+    cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent ->
+      fhir_composition.event as fhir_composition_event then {
+
+      // ClinicalDocument.documentationOf.serviceEvent.id
+      // TODO Extension has to be specified in AT Lab IG
+      cda_documentationOf_serviceEvent.id as serviceEvent_id then {
+        serviceEvent_id.root as serviceEvent_id_root ->
+        fhir_composition_event.extension as fhir_composition_event_extension,
+        // TODO change extension from lab to general
+        fhir_composition_event_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-eventId',
+        fhir_composition_event_extension.value = create('oid') as fhir_composition_event_extension_oid,
+        fhir_composition_event_extension_oid.value = append('urn:oid:', serviceEvent_id_root)
+        "CdaServiceEventIdToFhirEventIdExtension";
+      } "CdaServiceEventIdToFhirEventId";
+
+      // ClinicalDocument.documentationOf.serviceEvent.code
+      cda_documentationOf_serviceEvent.code -> fhir_composition_event.code;
+      // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
+      cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
+      // ClinicalDocument.documentationOf.serviceEvent.performer
+      // TODO based on analysis of sample reports currently not required
+    };
+  };
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
