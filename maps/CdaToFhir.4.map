@@ -8897,22 +8897,6 @@ group CdaEncompassingEncounterToFhirEncounter(source cda_encompassingEncounter :
   };
 }
 
-// // source dataEnterer: https://art-decor.org/art-decor/decor-templates--hl7chcda-?id=2.16.756.5.30.1.1.10.2.7
-// // source author: https://art-decor.org/art-decor/decor-templates--hl7chcda-?id=2.16.840.1.113883.10.12.102
-// // target: https://build.fhir.org/ig/hl7ch/ch-core//StructureDefinition-ch-ext-epr-time.html
-// group ChExtEprTime(source src: TSDateTime, target ext: Extension) {
-//   src -> ext.url = 'http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-time' "url";
-//   src -> ext.value = create('dateTime') as value then TSDateTime(src, value) "value";
-// }
-
-
-// // https://art-decor.org/art-decor/decor-templates--hl7chcda-?id=2.16.756.5.30.1.1.10.3.45
-// // target: http://build.fhir.org/ig/hl7ch/ch-core/branches/master/StructureDefinition-ch-ext-epr-sectionid.html
-// group ChExtEprSectionId(source src: II, target ext: Extension) {
-//   src -> ext.url = 'http://fhir.ch/ig/ch-core/StructureDefinition/ch-ext-epr-sectionid' "url";
-//   src -> ext.value = create('Identifier') as value then II(src, value) "value";
-// }
-
 // _________________________ Section Level Templates _________________________
 
 group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
@@ -9067,23 +9051,9 @@ group CdaAnnotationSectionToFhirSection(source cda_section: Section, target fhir
     "FhirAnnotationSectionCoding";
 }
 
-
- 
-
-
-// group ClinicalDocumentSection(source cda : ClinicalDocument, source src : Section, source patient : Patient, target tgt, target bundle: Bundle) {
-//   src.id as id where ($this.root=%cda.id.root)=false -> tgt.extension as ext then ChExtEprSectionId(id, ext) "sectionId";
-//   src.title as t -> tgt.title = (t.dataString);
-//   src.code -> tgt.code;
-//   src.text as cdaText -> tgt.text as fhirText then {
-//     cdaText -> fhirText.status = 'generated' "narrativeStatus";
-//     cdaText as t -> fhirText.div = t "narrativeText";
-//   } "cdaText";
-//   src.section as srcSection -> tgt.section as tgtSection then ClinicalDocumentSection(cda, srcSection, patient, tgtSection, bundle);
-// }
-
 // _________________________ Entry Level Templates   ________________________
 
+// see document type specific group
 
 // _________________________ Template Type not specified  ___________________
 
@@ -9192,8 +9162,3 @@ group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, ta
     // Cave: Using PrimaryPerformer even though cda specifies PRF. 
     performer_function_extension_value_coding.code = 'PPRF' then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
 }
-
-// group NarrativeLink(source url, target ext: Extension) {
-//   url -> ext.url = 'http://hl7.org/fhir/StructureDefinition/narrativeLink' "url";
-//   url -> ext.value = create('url') as value, value.value=url "value";
-// }
