@@ -499,7 +499,7 @@ group CdaLabBodyToFhirComposition(source cda: ClinicalDocument, source cda_struc
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_specimen_uuid) then {
     cda_structuredBody.component as cda_component then {
       // Probeninformation (Specimen Section)
-      cda_component.section as cda_section where code.where(code='10' and codeSystem='1.2.40.0.34.5.11') then CdaSpecimenSectionToFhirSpecimenWithSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_specimen, fhir_bundle, fhir_serviceRequest);
+      cda_component.section as cda_section where code.where(code='10' and codeSystem='1.2.40.0.34.5.11') then CdaLabSpecimenSectionToFhirSpecimenWithSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_specimen, fhir_bundle, fhir_serviceRequest);
 
       // Laboratory Specialty Section
       cda_component.section as cda_section where templateId.where(root='1.2.40.0.34.6.0.11.2.102' or root='1.3.6.1.4.1.19376.1.3.3.2.1')
@@ -511,11 +511,44 @@ group CdaLabBodyToFhirComposition(source cda: ClinicalDocument, source cda_struc
   cda where (cda.descendants().where(root='1.3.6.1.4.1.19376.1.3.1.2').count() = 0 or cda.descendants().where(root='1.3.6.1.4.1.19376.1.3.1.2').count() > 1) then {
     cda_structuredBody.component as cda_component then {
       // Probeninformation (Specimen Section)
-      cda_component.section as cda_section where code.where(code='10' and codeSystem='1.2.40.0.34.5.11') then CdaSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
+      cda_component.section as cda_section where code.where(code='10' and codeSystem='1.2.40.0.34.5.11') then CdaLabSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
 
       // Laboratory Specialty Section
       cda_component.section as cda_section where templateId.where(root='1.2.40.0.34.6.0.11.2.102' or root='1.3.6.1.4.1.19376.1.3.3.2.1')
         -> fhir_composition.section as fhir_section then CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
     };
   } "CdaSectionsToFhirSectionsWithNoneOrMultipleSpecimen";
+}
+
+group CdaLabSpecimenSectionToFhirSpecimenWithSpecimen(source cda_section: Section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_specimen: Specimen, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
+  // section.entry (Probeninformation (Specimen Entry))
+  cda_section.entry as cda_section_entry then {
+    // section.entry.act
+    cda_section_entry.act as cda_act where $this.code.where(code='10') then {
+      // section.entry.act.entryRelationship
+      cda_act.entryRelationship as cda_entryRelationship then {
+        // section.entry.act.entryRelationship.procedure
+        cda_entryRelationship.procedure as cda_procedure then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
+      };
+    };
+  };
+}
+
+group CdaLabSpecimenSectionToFhirSpecimen(source cda_section: Section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
+  // section.entry (Probeninformation (Specimen Entry))
+  cda_section.entry as cda_section_entry then {
+    // section.entry.act
+    cda_section_entry.act as cda_act where $this.code.where(code='10') then {
+      // section.entry.act.entryRelationship
+      cda_act.entryRelationship as cda_entryRelationship then {
+        // section.entry.act.entryRelationship.procedure
+        cda_entryRelationship.procedure as cda_procedure ->
+          // create the specimen to have it as reference for later transformations
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Specimen') as fhir_specimen,
+          fhir_specimen.id = uuid() as fhir_specimen_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_specimen_id) then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
+      };
+    };
+  };
 }

@@ -9067,39 +9067,6 @@ group CdaAnnotationSectionToFhirSection(source cda_section: Section, target fhir
     "FhirAnnotationSectionCoding";
 }
 
-group CdaSpecimenSectionToFhirSpecimenWithSpecimen(source cda_section: Section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_specimen: Specimen, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
-  // section.entry (Probeninformation (Specimen Entry))
-  cda_section.entry as cda_section_entry then {
-    // section.entry.act
-    cda_section_entry.act as cda_act where $this.code.where(code='10') then {
-      // section.entry.act.entryRelationship
-      cda_act.entryRelationship as cda_entryRelationship then {
-        // section.entry.act.entryRelationship.procedure
-        cda_entryRelationship.procedure as cda_procedure then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
-      };
-    };
-  };
-}
-
-group CdaSpecimenSectionToFhirSpecimen(source cda_section: Section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
-  // section.entry (Probeninformation (Specimen Entry))
-  cda_section.entry as cda_section_entry then {
-    // section.entry.act
-    cda_section_entry.act as cda_act where $this.code.where(code='10') then {
-      // section.entry.act.entryRelationship
-      cda_act.entryRelationship as cda_entryRelationship then {
-        // section.entry.act.entryRelationship.procedure
-        cda_entryRelationship.procedure as cda_procedure ->
-          // create the specimen to have it as reference for later transformations
-          fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Specimen') as fhir_specimen,
-          fhir_specimen.id = uuid() as fhir_specimen_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_specimen_id) then CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest);
-      };
-    };
-  };
-}
-
 group CdaSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, target fhir_specimen: Specimen, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
   cda_procedure ->
     fhir_specimen.meta as fhir_specimen_meta,
