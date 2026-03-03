@@ -28,7 +28,7 @@ jobs:
 
       - name: Install MaLaC-HD with CDA model
         run: |
-          pip install -e malac-hd[cda]
+          pip install malac-hd[cda]
 
       - name: Run MaLaC-HD
         run: |
