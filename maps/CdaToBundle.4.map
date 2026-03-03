@@ -8159,41 +8159,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
       coding_coding.code = '11502-2'
       "CdaMissingCodeTranslationToFhirCompositionType";
   };
-
-  
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  // ClinicalDocument.componentOf
-  cda.componentOf as cda_componentOf then {
-    // ClinicalDocument.componentOf.encompassingEncounter
-    cda_componentOf.encompassingEncounter as cda_encompassingEncounter ->
-      fhir_bundle.entry as fhir_bundle_entry,
-      fhir_bundle_entry.resource = create('Encounter') as fhir_encounter,
-      fhir_encounter.id = uuid() as fhir_encounter_id,
-      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_encounter_id),
-      // create reference between composition and encounter
-      fhir_composition.encounter = create('Reference') as fhir_composition_encounter_reference,
-      fhir_composition_encounter_reference.reference = append('urn:uuid:', fhir_encounter_id),
-      fhir_composition_encounter_reference.type = 'Encounter',
-
-      // create reference between diagnosticReport and encounter
-      fhir_diagnosticReport.encounter = create('Reference') as fhir_diagnosticReport_encounter_reference,
-      fhir_diagnosticReport_encounter_reference.reference = append('urn:uuid:', fhir_encounter_id),
-      fhir_diagnosticReport_encounter_reference.type = 'Encounter'
-      then CdaEncompassingEncounterToFhirEncounter(cda_encompassingEncounter, fhir_encounter, fhir_bundle);
-  };
 }
 
 group CdaHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
@@ -8713,6 +8678,9 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
           then II(cda_parentDocument_id, fhir_target_identifier);
       };
   };
+
+  // ClinicalDocument/componentOf
+  // see document type specific group
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
@@ -8865,6 +8833,26 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
       // fhir_serviceRequest.intent
       cda -> fhir_serviceRequest.intent = 'order' "FhirServiceRequestIntent";
     };
+  };
+
+  // ClinicalDocument/componentOf -> Encounter
+  cda.componentOf as cda_componentOf then {
+    // ClinicalDocument.componentOf.encompassingEncounter
+    cda_componentOf.encompassingEncounter as cda_encompassingEncounter ->
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Encounter') as fhir_encounter,
+      fhir_encounter.id = uuid() as fhir_encounter_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_encounter_id),
+      // create reference between composition and encounter
+      fhir_composition.encounter = create('Reference') as fhir_composition_encounter_reference,
+      fhir_composition_encounter_reference.reference = append('urn:uuid:', fhir_encounter_id),
+      fhir_composition_encounter_reference.type = 'Encounter',
+
+      // create reference between diagnosticReport and encounter
+      fhir_diagnosticReport.encounter = create('Reference') as fhir_diagnosticReport_encounter_reference,
+      fhir_diagnosticReport_encounter_reference.reference = append('urn:uuid:', fhir_encounter_id),
+      fhir_diagnosticReport_encounter_reference.type = 'Encounter'
+      then CdaEncompassingEncounterToFhirEncounter(cda_encompassingEncounter, fhir_encounter, fhir_bundle);
   };
 }
 
