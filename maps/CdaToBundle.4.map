@@ -8159,71 +8159,6 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
 
 
 
-  // Participant Versicherung
-  // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.26']] or [@root='1.2.40.0.34.11.1.1.6']
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') ->
-
-    // Create Coverage
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('Coverage') as fhir_coverage,
-    fhir_coverage.id = uuid() as fhir_coverage_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_coverage_id),
-    fhir_patient.id as fhir_patient_id,
-    // Based on https://chat.fhir.org/#narrow/channel/179166-implementers/topic/Data-absent-reason.20on.201.2E.2E1.20element.20with.20Required.20binding.3F
-    // Coverage.status HAS TO BE SET to a value from the corresponding value set (its a mandatory field with a required binding)
-    // As such, 'active' will be chosen as it has to be assumed that if insurance information is part of the CDA that the corresponding insurance is active at
-    // the time of the creation of the CDA.
-    fhir_coverage.status = 'active',
-    fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
-    fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
-    fhir_coverage_beneficiary_reference.type = 'Patient' then {
-
-      cda_participant.time -> fhir_coverage.period;
-
-      cda_participant.associatedEntity as cda_associatedEntity then {
-
-        cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
-        // SELF: Versicherter ist der Patient
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' ->
-          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
-          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
-          fhir_coverage_policyHolder_reference.type = 'Patient';
-
-        // FAMDEP: Familienversichert
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'FAMDEP' ->
-
-          fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
-          fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
-
-          fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
-          fhir_relatedPerson_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
-          fhir_relatedPerson_patient_reference.type = 'Patient',
-
-          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
-          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
-          fhir_coverage_policyHolder_reference.type = 'RelatedPerson' then {
-            cda_associatedEntity.id -> fhir_relatedPerson.identifier;
-            cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_relatedPerson.address;
-
-            cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_relatedPerson.telecom;
-
-            cda_associatedEntity.associatedPerson as cda_associatedPerson then {
-              cda_associatedPerson.name -> fhir_relatedPerson.name;
-            };
-          };
-
-        cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
-          fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Organization') as fhir_organization,
-          fhir_organization.id = uuid() as fhir_organization_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
-          fhir_coverage.payor = create('Reference') as fhir_coverage_payor_reference,
-          fhir_coverage_payor_reference.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_coverage_payor_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
-      };
-    };
 
   // Participant Betreuungsorganisation
   // ClinicalDocument.participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.29']]
@@ -8702,6 +8637,72 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
           fhir_patient_contact_organization.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
       };
   };
+
+  // Participant Versicherung
+  // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.26' or @root='1.2.40.0.34.11.1.1.6']] -> Coverage
+  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') ->
+
+    // Create Coverage
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Coverage') as fhir_coverage,
+    fhir_coverage.id = uuid() as fhir_coverage_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_coverage_id),
+    fhir_patient.id as fhir_patient_id,
+    // Based on https://chat.fhir.org/#narrow/channel/179166-implementers/topic/Data-absent-reason.20on.201.2E.2E1.20element.20with.20Required.20binding.3F
+    // Coverage.status HAS TO BE SET to a value from the corresponding value set (its a mandatory field with a required binding)
+    // As such, 'active' will be chosen as it has to be assumed that if insurance information is part of the CDA that the corresponding insurance is active at
+    // the time of the creation of the CDA.
+    fhir_coverage.status = 'active',
+    fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
+    fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_coverage_beneficiary_reference.type = 'Patient' then {
+
+      cda_participant.time -> fhir_coverage.period;
+
+      cda_participant.associatedEntity as cda_associatedEntity then {
+
+        cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
+        // SELF: Versicherter ist der Patient
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' ->
+          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
+          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
+          fhir_coverage_policyHolder_reference.type = 'Patient';
+
+        // FAMDEP: Familienversichert
+        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'FAMDEP' ->
+
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+          fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
+
+          fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+          fhir_relatedPerson_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
+          fhir_relatedPerson_patient_reference.type = 'Patient',
+
+          fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
+          fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
+          fhir_coverage_policyHolder_reference.type = 'RelatedPerson' then {
+            cda_associatedEntity.id -> fhir_relatedPerson.identifier;
+            cda_associatedEntity.addr where (nullFlavor.exists().not()) -> fhir_relatedPerson.address;
+
+            cda_associatedEntity.telecom where (nullFlavor.exists().not()) -> fhir_relatedPerson.telecom;
+
+            cda_associatedEntity.associatedPerson as cda_associatedPerson then {
+              cda_associatedPerson.name -> fhir_relatedPerson.name;
+            };
+          };
+
+        cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+          fhir_organization.id = uuid() as fhir_organization_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage.payor = create('Reference') as fhir_coverage_payor_reference,
+          fhir_coverage_payor_reference.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_coverage_payor_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+      };
+    };
 }
 
 group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest) extends CdaHeaderToFhir {
