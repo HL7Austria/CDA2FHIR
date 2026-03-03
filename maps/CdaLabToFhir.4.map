@@ -1014,59 +1014,6 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
   } "CdaLabSpecimenCollectionToFhirSpecimen";
 }
 
-group CdaLabPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument, source cda_act: Act, target fhir_observation: Observation, target fhir_bundle: Bundle) {
-  // cda_act.performer exists
-  cda_act.performer as cda_act_performer
-      where cda_act.performer.exists()
-      then CdaPerformerToFhirObservationPerformer(cda_act_performer, fhir_observation, fhir_bundle)
-      "CdaActPerformerToFhirObservationPerformer";
-
-  // the following lines execute only if cda_act.performer does not exist
-  cda_act where cda_act.performer.exists().not() then {
-    // TODO check for author in case documentationOf.serviceEvent.performer does not exist
-    cda where cda.documentationOf[0].serviceEvent.performer.exists() then {
-        // ClinicalDocument.documentationOf
-        cda.documentationOf first as cda_documentationOf then {
-            // ClinicalDocument.documentationOf.serviceEvent
-            cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent then {
-                cda_documentationOf_serviceEvent.performer as cda_documentationOf_serviceEvent_performer 
-                then CdaPerformerToFhirObservationPerformer(cda_documentationOf_serviceEvent_performer, fhir_observation, fhir_bundle)
-                "CdaDocumentationOfPerformerToFhirObservationPerformer";
-            };
-        };
-    } "CdaDocumentationOfServiceEventPerformerExists";
-    // no performer has been specified in documentationOf[1]serviceEvent.performer. As a result the ClinicalDocument.authors will be taken as performer
-    cda where cda.documentationOf[0].serviceEvent.performer.exists().not() then {
-        // ClinicalDocument.author (as person)
-        cda.author first as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
-          fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
-          fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
-          fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-          fhir_observation_performer_reference.type = 'PractitionerRole'
-          then {
-            cda_author.time -> fhir_observation.issued;
-
-            // create the PractitionerRole in order to capture the author.functionCode
-            cda_author then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle) "CdaAuthorToFhirPractitionerRole";
-        } "CdaAuthorToObservationPerformer";
-    } "CdaAuthorPerformerExists";
-  } "CdaActNoPerformer";
-}
-
-group CdaLabPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocument, source cda_act: Act, source cda_laboratory_organizer: Organizer, target fhir_observation: Observation, target fhir_bundle: Bundle) {
-  // cda_laboratory_organizer.performer exists
-  cda_laboratory_organizer.performer as cda_laboratory_organizer_performer
-      where cda_laboratory_organizer.performer.exists()
-      then CdaPerformerToFhirObservationPerformer(cda_laboratory_organizer_performer, fhir_observation, fhir_bundle)
-      "CdaOrganizerPerformerToFhirObservationPerformer";
-
-  // the following lines execute only if cda_laboratory_organizer.performer does not exist
-  cda_laboratory_organizer where cda_laboratory_organizer.performer.exists().not() then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle) "CdaOrganizerNoPerformer";
-}
-
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
   cda_organizer ->
     fhir_observation.meta as fhir_observation_meta,
@@ -1143,4 +1090,59 @@ group CdaLabOrganizerToFhirObservationWithSpecimen(source cda: ClinicalDocument,
     fhir_observation_specimen_reference.reference = append('urn:uuid:', fhir_specimen_id),
     fhir_observation_specimen_reference.type = 'Specimen'
     "ObservationSpecimenReference";
+}
+
+// _________________________ Template Type not specified  ___________________
+
+group CdaLabPerformerToObservationPerformerFirstLevel(source cda: ClinicalDocument, source cda_act: Act, target fhir_observation: Observation, target fhir_bundle: Bundle) {
+  // cda_act.performer exists
+  cda_act.performer as cda_act_performer
+      where cda_act.performer.exists()
+      then CdaPerformerToFhirObservationPerformer(cda_act_performer, fhir_observation, fhir_bundle)
+      "CdaActPerformerToFhirObservationPerformer";
+
+  // the following lines execute only if cda_act.performer does not exist
+  cda_act where cda_act.performer.exists().not() then {
+    // TODO check for author in case documentationOf.serviceEvent.performer does not exist
+    cda where cda.documentationOf[0].serviceEvent.performer.exists() then {
+        // ClinicalDocument.documentationOf
+        cda.documentationOf first as cda_documentationOf then {
+            // ClinicalDocument.documentationOf.serviceEvent
+            cda_documentationOf.serviceEvent as cda_documentationOf_serviceEvent then {
+                cda_documentationOf_serviceEvent.performer as cda_documentationOf_serviceEvent_performer 
+                then CdaPerformerToFhirObservationPerformer(cda_documentationOf_serviceEvent_performer, fhir_observation, fhir_bundle)
+                "CdaDocumentationOfPerformerToFhirObservationPerformer";
+            };
+        };
+    } "CdaDocumentationOfServiceEventPerformerExists";
+    // no performer has been specified in documentationOf[1]serviceEvent.performer. As a result the ClinicalDocument.authors will be taken as performer
+    cda where cda.documentationOf[0].serviceEvent.performer.exists().not() then {
+        // ClinicalDocument.author (as person)
+        cda.author first as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
+          fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_observation_performer_reference.type = 'PractitionerRole'
+          then {
+            cda_author.time -> fhir_observation.issued;
+
+            // create the PractitionerRole in order to capture the author.functionCode
+            cda_author then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle) "CdaAuthorToFhirPractitionerRole";
+        } "CdaAuthorToObservationPerformer";
+    } "CdaAuthorPerformerExists";
+  } "CdaActNoPerformer";
+}
+
+group CdaLabPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocument, source cda_act: Act, source cda_laboratory_organizer: Organizer, target fhir_observation: Observation, target fhir_bundle: Bundle) {
+  // cda_laboratory_organizer.performer exists
+  cda_laboratory_organizer.performer as cda_laboratory_organizer_performer
+      where cda_laboratory_organizer.performer.exists()
+      then CdaPerformerToFhirObservationPerformer(cda_laboratory_organizer_performer, fhir_observation, fhir_bundle)
+      "CdaOrganizerPerformerToFhirObservationPerformer";
+
+  // the following lines execute only if cda_laboratory_organizer.performer does not exist
+  cda_laboratory_organizer where cda_laboratory_organizer.performer.exists().not() then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle) "CdaOrganizerNoPerformer";
 }
