@@ -9085,16 +9085,6 @@ group CdaAnnotationSectionToFhirSection(source cda_section: Section, target fhir
 // _________________________ Entry Level Templates   ________________________
 
 
-group CdaObservationToFhirObservation(source cda_observation : CDAObservation, target fhir_observation : Observation) {
-  // observation.id
-  cda_observation.id -> fhir_observation.identifier;
-  // observation.code
-  // to be defined in derived versions of this group
-  // observation.text
-  // TODO
-  // observation.statusCode
-
-}
 
 group LaboratoryObservationCodeCheck(source cda_laboratory_observation : CDAObservation, source mapping_result_coding: Coding, target fhir_observation: Observation) {
   // if mapping result is 'OTH' the code from within the CDA has no resemblance in eHDSILabCode
