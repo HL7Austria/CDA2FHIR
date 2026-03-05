@@ -8407,7 +8407,21 @@ group CdaLabSpecimenSectionToFhirSpecimen(source cda_section: Section, target fh
   };
 }
 
-group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: ClinicalDocument, source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_specimen: Specimen, target fhir_serviceRequest: ServiceRequest) extends CdaSectionToFhirSection {
+group CdaLabSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
+  // section.code
+  // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
+  cda_section.code -> fhir_section.code;
+  // TODO: remove before production
+  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+  // ONLY FOR TESTING
+  cda_section.code -> fhir_section.code as fhir_section_code,
+    fhir_section_code.coding as fhir_section_code_coding,
+    fhir_section_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    fhir_section_code_coding.code = 'OTH'
+    "CdaSectionCodeToFhirCompositionSectionCode";
+}
+
+group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: ClinicalDocument, source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_specimen: Specimen, target fhir_serviceRequest: ServiceRequest) extends CdaLabSectionToFhirSection {
   // section.entry (Laboratory Report Data Processing Entry)
   cda_section.entry as cda_section_entry then {
     // section.entry.act
@@ -8547,7 +8561,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
   };
 }
 
-group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) extends CdaSectionToFhirSection {
+group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) extends CdaLabSectionToFhirSection {
   // section.entry (Laboratory Report Data Processing Entry)
   cda_section.entry as cda_section_entry then {
     // section.entry.act
