@@ -15,14 +15,13 @@ conceptmap "cda-sdtc-statuscode-2-fhir-composition-status" {
 // Mapping according to https://wiki.hl7.at/index.php/Geschlecht
 // nullFlavor "UNK" will be mapped by FML to "unknown"
 conceptmap "ELGAAdministrativeGenderFHIRGender" {
-  // TODO create proper conceptmap which is able to have multiple groups dealing with more than one source code system
+  prefix r = "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender"
   prefix s = "https://termgit.elga.gv.at/CodeSystem/hl7-at-administrativegender-ergaenzung"
-  // prefix a = "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender"
   prefix t = "http://hl7.org/fhir/administrative-gender"
 
-  s:  "F" == t: "female"
-  s:  "M" == t: "male"
-  s: "UN" == t: "other"
+  r:  "F" == t: "female"
+  r:  "M" == t: "male"
+  r: "UN" == t: "other"
   s:  "D" == t: "other"
   s:  "I" == t: "other"
   s:  "O" == t: "other"
