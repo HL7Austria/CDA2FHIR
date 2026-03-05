@@ -938,7 +938,6 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
 // Target: http://hl7.org/fhir/device.html
 group CdaAuthorToFhirDevice(source cda_author : Author, target fhir_device : Device, target fhir_bundle : Bundle){
     // author.functionCode
-    // TODO correct?
     cda_author.functionCode -> fhir_device.type;
     
     // author.time
@@ -961,7 +960,6 @@ group CdaAuthorToFhirDevice(source cda_author : Author, target fhir_device : Dev
           fhir_device_deviceName.name = (cda_manufacturerModelName.xmlText),
           fhir_device_deviceName.type = 'model-name';
         // author.assignedAuthor.assignedAuthoringDevice.softwareName
-        // TODO not clear if this is the right place to store that information
         cda_assignedAuthoringDevice.softwareName as cda_softwareName ->
           fhir_device.deviceName as fhir_device_deviceName,
           fhir_device_deviceName.name = (cda_softwareName.xmlText),
