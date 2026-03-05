@@ -93,8 +93,6 @@ conceptmap "OIDtoURI" {
   prefix s = "http://cda.oid"
   prefix t = "http://fhir.system"
 
-  // TODO see how Matchbox AND MaLaC can be supported
-  // unmapped for s = provided
   // entries based on https://github.com/hapifhir/org.hl7.fhir.core/blob/b590cb3fedbb0791702c637e76fefdae2cba2f78/org.hl7.fhir.utilities/src/main/java/org/hl7/fhir/utilities/OIDUtils.java#L43
   // lines have been commented out where they're not supposed to be relevant for AT
   s:"2.16.840.1.113883.6.96" == t:"http://snomed.info/sct"
