@@ -766,7 +766,8 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
           // fhir_patient_contact_extension_role.url = 'http://hl7.org/fhir/6.0/StructureDefinition/extension-Patient.contact.role',
           // as stated in https://chat.fhir.org/#narrow/channel/179166-implementers/topic/R6.20backport.20extensions/with/548111424 R6 backport extensions are currently not supported
           // use the following placeholder in the meantime
-          // TODO change once R6 has been published
+          // 
+          // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/68
           fhir_patient_contact_extension_role.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-patient-contact.role',
           fhir_patient_contact_extension_role.value = create('CodeableConcept') as role_codeable_concept,
           role_codeable_concept.coding = create('Coding') as role_coding,
@@ -902,7 +903,7 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
     cda_author.functionCode -> fhir_practitionerRole.specialty;
 
     // ClinicalDocument.author.time
-    // TODO extension?
+    // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/159
 
     // ClinicalDocument.author.assignedAuthor
     cda_author.assignedAuthor as cda_author_assignedAuthor then {
@@ -939,8 +940,9 @@ group CdaAuthorToFhirDevice(source cda_author : Author, target fhir_device : Dev
     // author.functionCode
     // TODO correct?
     cda_author.functionCode -> fhir_device.type;
+    
     // author.time
-    // TODO extension?
+    // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/159
 
     // author.assignedAuthor
     cda_author.assignedAuthor as cda_author_assignedAuthor then {
