@@ -66,6 +66,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Specimen" alias Specimen as ta
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir"
+imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir"
 
 
 // _________________________ Document Level Template  _________________________
@@ -105,7 +106,7 @@ group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) 
       // CDA Labor- und Mikrobiologiebefund -> FHIR
       cda_code.code as code_code where ($this = '11502-2' or $this = '18725-2') then CdaLabToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
       // CDA e-Impfpass -> FHIR
-      // cda_code.code as code_code where ($this = '11369-6') then CdaAteImpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
+      cda_code.code as code_code where ($this = '11369-6') then CdaEimpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
       // CDA e-Medikation -> FHIR
       // TODO
     } "CdaToFhirBundle";  

@@ -1,0 +1,47 @@
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir" = "CdaEimpfToFhir"
+
+conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
+  prefix s = "http://loinc.org"
+
+  s: "11369-6" == s: "11369-6"
+}
+
+imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
+
+// _________________________ Document Level Template  _________________________
+
+group CdaEimpfToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) {
+  cda then {
+      // map the CDA header
+      cda then CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhirComposition";
+      cda then CdaEimpfHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhir"; 
+
+      // // map the CDA body
+      // // ClinicalDocument.component
+      // cda.component as cda_component then {
+      //   // ClinicalDocument.component.structuredBody
+      //   cda_component.structuredBody as cda_structuredBody
+      //     then CdaLabBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle);
+      // };
+    } "CdaEimpfToFhirBundle";
+}
+
+group CdaEimpfHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_bundle : Bundle) extends CdaHeaderToFhirComposition {
+  // ClinicalDocument/code -> Composition.category
+  cda.code as cda_code then {
+    cda_code.code as code_code ->
+    fhir_composition.category as fhir_composition_category,
+    fhir_composition_category.coding = translate(code_code, '#cda-eimpf-clinicaldocument-code-2-fhir-category' , 'Coding') "code";
+  };
+
+  // ClinicalDocument/code/translation -> Composition.type
+  cda.code as cda_code -> fhir_composition.type as fhir_composition_type,
+    fhir_composition_type.coding as fhir_composition_type_coding,
+    fhir_composition_type_coding.system = 'http://loinc.org',
+    fhir_composition_type_coding.code = '60591-5' then {
+      cda_code.translation as cda_code_translation then CECodeableConcept(cda_code_translation, fhir_composition_type);
+  };
+}
+
+group CdaEimpfHeaderToFhir(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_bundle : Bundle) extends CdaHeaderToFhir {
+}
