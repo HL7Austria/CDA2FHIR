@@ -586,7 +586,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // ClinicalDocument/inFulfillmentOf
   // see document type specific group
-  // TODO check if relevant for all document types
+  // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/158
 
   // ClinicalDocument/documentationOf -> Composition.event
   cda.documentationOf as cda_documentationOf then {

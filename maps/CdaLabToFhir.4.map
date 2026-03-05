@@ -8217,7 +8217,6 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
     };
 
   // ClinicalDocument/inFulfillmentOf -> ServiceRequest
-  // TODO check if relevant for all document types
   cda.inFulfillmentOf as cda_inFulFillmentOf then {
     // ClinicalDocument.inFulfillmentOf.order
     cda_inFulFillmentOf.order as cda_inFulFillmentOf_order then {
