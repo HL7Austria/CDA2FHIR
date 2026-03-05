@@ -671,7 +671,6 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
       "FhirPatientIdentifierTypeCodingSS";
 
     // // setting identifier.type.coding according to profile for National unique individual identifier
-    // // TODO check if allowed in case of MyHealth@EU
     // cda_patientRole_id where (cda_patientRole_id.root = '1.2.40.0.10.2.1.1.149') ->
     //   // according to profile no or this fixed value is required
     //   fhir_patient_identifier.assigner as assigner,
