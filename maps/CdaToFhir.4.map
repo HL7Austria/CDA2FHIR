@@ -1063,12 +1063,8 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
         cda_section.languageCode as cda_languageCode then {
           cda_languageCode.code as cda_languageCode_code ->
 
-            // as long as TODO below has not been solved
+            // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/162
             fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionTextWithLang";
-            // TODO fix output:
-            //   Currently, the output will look like <div xml:lang="XX"><div xmlns="http://www.w3.org/1999/xhtml">section.text</div></div>
-            //   However, the div-tag with the xml:lang should be within the div-tag with the xmlns.
-            //
             //  fhir_section_text.div = append('<div xml:lang="', cda_languageCode_code, '">', cda_section_text, '</div>') "asdf";
         };
       } "CdaSectionTextToFhirSectionTextWithLanguage";
@@ -1084,6 +1080,7 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
     fhir_section_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
     fhir_section_author_reference.type = 'PractitionerRole' then
     CdaAuthorToFhirPractitionerRole(cda_section_author, fhir_practitionerRole, fhir_bundle);
+  
   // section.informant
   // TODO ?
 
