@@ -657,7 +657,6 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
     cda_patientRole_id then II(cda_patientRole_id, fhir_patient_identifier) "CdaIdToFhirIdentifier";
 
     // setting identifier.type.coding according to profile for Social Security Number
-    // TODO deal with nullFlavor
     cda_patientRole_id where (cda_patientRole_id.root = '1.2.40.0.10.1.4.3.1') ->
       // according to profile no or this fixed value is required
       fhir_patient_identifier.assigner as assigner,
