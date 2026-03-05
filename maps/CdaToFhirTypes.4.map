@@ -101,11 +101,11 @@ conceptmap "OIDtoURI" {
   s:"2.16.840.1.113883.6.3" == t:"http://hl7.org/fhir/sid/icd-10"
   // s:"2.16.840.1.113883.6.42" == t:"http://hl7.org/fhir/sid/icd-9"
   // s:"2.16.840.1.113883.6.104" == t:"http://hl7.org/fhir/sid/icd-9"
-  // s:"2.16.840.1.113883.6.103" == t:"http://hl7.org/fhir/sid/icd-9" // TODO confirm this
+  // s:"2.16.840.1.113883.6.103" == t:"http://hl7.org/fhir/sid/icd-9"
   s:"2.16.840.1.113883.6.73" == t:"http://www.whocc.no/atc"
   // s:"2.16.840.1.113883.3.26.1.1" == t:"http://ncimeta.nci.nih.gov"
   // s:"2.16.840.1.113883.3.26.1.1.1" == t:"http://ncimeta.nci.nih.gov"
-  // s:"2.16.840.1.113883.6.88" == t:"http://www.nlm.nih.gov/research/umls/rxnorm" // TODO confirm this
+  // s:"2.16.840.1.113883.6.88" == t:"http://www.nlm.nih.gov/research/umls/rxnorm"
   // s:"2.16.840.1.113883.6.59" == t:"http://hl7.org/fhir/sid/cvx"
   // s:"2.16.840.1.113883.12.292" == t:"http://hl7.org/fhir/sid/cvx"
   // s:"2.16.840.1.113883.6.12" == t:"http://www.ama-assn.org/go/cpt"
