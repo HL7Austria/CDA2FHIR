@@ -1035,8 +1035,8 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
   // section.id
-  // TODO extension?
-
+  // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/161
+  
   // section.code
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
   cda_section.code -> fhir_section.code;
