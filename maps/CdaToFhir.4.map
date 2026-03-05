@@ -611,7 +611,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
       // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
       cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
       // ClinicalDocument.documentationOf.serviceEvent.performer
-      // TODO based on analysis of sample reports currently not required
+      // see document type specific group
     };
   };
 
