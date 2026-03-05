@@ -1034,8 +1034,6 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
 }
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
-  // section.templateId
-  // TODO necessary?
   // section.id
   // TODO extension?
 
