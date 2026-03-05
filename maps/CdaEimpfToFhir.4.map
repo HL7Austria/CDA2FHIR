@@ -167,14 +167,21 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target 
     cda_section_entry where ($this.substanceAdministration.templateId.where(root='1.2.40.0.34.6.0.11.3.1') then {
       // section/entry/substanceAdministration -> Immunization
       cda_section_entry.substanceAdministration as cda_section_entry_substanceAdministration -> 
+        // create Immunization
         fhir_bundle.entry as fhir_bundle_entry,
         fhir_bundle_entry.resource = create('Immunization') as fhir_immunization,
         fhir_immunization.id = uuid() as fhir_immunization_id,
         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_immunization_id),
+        // link section entry to Immunization
         fhir_section.entry = create('Reference') as fhir_section_entry_reference,
         fhir_section_entry_reference.reference = append('urn:uuid:', fhir_immunization_id),
-        fhir_section_entry_reference.type = 'Immunization' then 
-        CdaEimpfSubstanceAdministrationToFhirImmunization(cda_section_entry_substanceAdministration, fhir_immunization, fhir_patient, fhir_bundle);
+        fhir_section_entry_reference.type = 'Immunization',
+        // link Immunization to Patient
+        fhir_patient.id as fhir_patient_id,
+        fhir_immunization.patient = create('Reference') as fhir_immunization_patient_reference,
+        fhir_immunization_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
+        fhir_immunization_patient_reference.type = 'Patient' then 
+        CdaEimpfSubstanceAdministrationToFhirImmunization(cda_section_entry_substanceAdministration, fhir_immunization, fhir_bundle);
     }; 
 
     // Immunization Entry Impfung nicht angegeben - 1.2.40.0.34.6.0.11.3.28
@@ -193,7 +200,7 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target 
 
 // _________________________ Entry Level Template  _________________________
 
-group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization, target fhir_bundle: Bundle) {
   // substanceAdministration/id -> Immunization.identifier 
   cda_substanceAdministration.id -> fhir_immunization.identifier;
 
