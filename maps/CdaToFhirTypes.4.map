@@ -661,7 +661,9 @@ group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> 
 }
 
 group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends Any <<types>> {
-  src.originalText -> tgt.text;
+  // TODO deal with references
+  // src.originalText as src_originalText -> tgt.text = (src_originalText.xmlText);
+  
   src where ($this.nullFlavor.exists().not()) ->
     tgt.coding as coding
     // in order to be able to capture the primary code in case there are translations

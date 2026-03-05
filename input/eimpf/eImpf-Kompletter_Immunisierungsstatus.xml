@@ -262,56 +262,14 @@
                             <consumable typeCode="CSM">
                                 <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
                                     classCode="MANU">
-                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
-                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="1.2.40.0.34.6.0.11.9.31"/>
                                     <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
                                     <!-- UniqueIdentifier (Serialisierungsnummer, Packungs-Identifikator) -->
                                     <id root="1.2.40.0.34.99.123.12.1" extension="1234"/>
                                     <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
-                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
-                                        <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
-                                        <code code="2427872" codeSystem="1.2.40.0.34.4.16.1"
-                                            displayName="ENCEPUR FSPR 0,25ML KIND">
-                                            <originalText>
-                                                <reference value="#prodName-1"/>
-                                            </originalText>
-                                        </code>
-                                        <!-- Zulassungsname des Impfstoffes -->
-                                        <name>Encepur 0,25 ml für Kinder Injektionssuspension in
-                                            einer Fertigspritze</name>
-                                        <!-- Chargennummer -->
-                                        <lotNumberText>6232165-5687</lotNumberText>
-                                        <!-- Komponente zur Aufnahme des Wirkstoffs -->
-                                        <pharm:ingredient classCode="ACTI">
-                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
-                                                <!-- ATC-Code des Wirkstoffs aus Fachinformation -->
-                                                <pharm:code code="J07BA01"
-                                                  codeSystem="2.16.840.1.113883.6.73"
-                                                  codeSystemName="whoATC"/>
-                                                <!-- Name des Wirkstoffs -->
-                                                <pharm:name>FSME, inaktiviert, ganzes
-                                                  Virus</pharm:name>
-                                            </pharm:ingredient>
-                                        </pharm:ingredient>
+                                        <code nullFlavor="NA"/>
                                     </manufacturedMaterial>
-                                    <manufacturerOrganization classCode="ORG"
-                                        determinerCode="INSTANCE">
-                                        <!-- ID der Organisation  -->
-                                        <id root="1.2.40.0.34.99.4677"/>
-                                        <!-- Name der Organisation -->
-                                        <name>Hersteller-FSME-Impfstoff</name>
-                                        <!-- Kontaktdaten der Organisation -->
-                                        <!--<telecom value="tel:+43.6138.3453446.0"/>
-                                        <!-\- Adresse der Organisation -\->
-                                        <addr>
-                                            <streetName>Hersteller-FSME-Impfstoff-Gasse</streetName>
-                                            <houseNumber>1-7</houseNumber>
-                                            <postalCode>5350</postalCode>
-                                            <city>St.Wolfgang</city>
-                                            <state>Salzburg</state>
-                                            <country>AUT</country>
-                                        </addr>-->
-                                    </manufacturerOrganization>
                                 </manufacturedProduct>
                             </consumable>
                             <!-- Impfende Person FSME 1 -->
@@ -560,11 +518,9 @@
                                     <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
                                         <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
                                         <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
-                                        <code code="2427872" codeSystem="1.2.40.0.34.4.16.1"
-                                            displayName="ENCEPUR FSPR 0,25ML KIND">
-                                            <originalText>
-                                                <reference value="#prodName-2"/>
-                                            </originalText>
+                                        <code nullFlavor="OTH">
+                                            <translation code="2427872" codeSystem="1.2.40.0.34.4.16.1"
+                                            displayName="ENCEPUR FSPR 0,25ML KIND"/>
                                         </code>
                                         <!-- Zulassungsname des Impfstoffes -->
                                         <name>Encepur 0,25 ml für Kinder Injektionssuspension in
