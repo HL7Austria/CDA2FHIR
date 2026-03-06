@@ -414,7 +414,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
         };
 
         // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
-        cda_criterion.value as cda_criterion_value then {
+        cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists().not()) then {
           cda_criterion_value.code as cda_criterion_value_code ->
             fhir_immunization_protocolApplied.doseNumber = cast(cda_criterion_value_code, 'string') as fhir_immunization_protocolApplied_doseNumber,
             fhir_immunization_protocolApplied_doseNumber.extension as fhir_immunization_protocolApplied_doseNumber_extension,
@@ -422,20 +422,12 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
             fhir_immunization_protocolApplied_doseNumber_extension.value = create('Coding') as fhir_coding then 
               // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString.extension.coding
               CECoding(cda_criterion_value, fhir_coding);
-          /*
-            // Implement i.o.t. handle NullFlavor 
-                        // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString
-                    cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists().not()) then {
-                      cda_criterion_value.code as value_code ->
-                      fhir_protocolApplied.doseNumberString = cast (value_code, 'string') as fhir_immunization_doseNumberString,
-                      fhir_immunization_doseNumberString.extension as fhir_doseNumber_extension,
-                      fhir_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
-                      // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString.Coding
-                      fhir_doseNumber_extension.value = create('Coding') as extension_coding then CECoding(cda_criterion_value,extension_coding);
-
-                      };
-          */
         };
+        // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
+        cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists()) -> 
+          fhir_immunization_protocolApplied.doseNumber = create('string') as fhir_immunization_protocolApplied_doseNumber,
+          fhir_immunization_protocolApplied_doseNumber.extension as fhir_immunization_protocolApplied_doseNumber_extension then 
+          CdaNullFlavorToFhirNullFlavor(cda_criterion_value, fhir_immunization_protocolApplied_doseNumber_extension); 
       }; 
     }; 
   };
