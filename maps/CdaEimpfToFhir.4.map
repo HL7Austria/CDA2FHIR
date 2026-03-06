@@ -286,48 +286,6 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
     };
   };
 
-           
-          
-  //         // "0...1" //manufacturedProduct/manufacturedMaterial/lotNumberText -> AtApsImmunization.lotNumber
-  //         cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
-      
-  //         cda_manufacturedProduct.manufacturerOrganization as cda_manufacturerOrganization then {
-      
-  //           cda_manufacturerOrganization ->
-  //             fhir_bundle.entry as fhir_bundle_entry,
-  //             fhir_bundle_entry.resource = create('Organization') as fhir_organization,
-  //             fhir_organization.id = uuid() as fhir_organization_id,
-  //             fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
-  //             fhir_immunization.manufacturer = create('Reference') as fhir_immunization_organization,
-  //             fhir_immunization_organization.reference = append('urn:uuid:', fhir_organization_id),
-  //             fhir_immunization_organization.type = 'Organization' then
-  //             CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization);
-  //         };
-  //       };
-
-  //       cda_manufacturedMaterial.code where ($this.nullFlavor.exists().not()) then {
-
-          
-  //         // "0...1" //manufacturedProduct/manufacturedMaterial/lotNumberText -> AtApsImmunization.lotNumber
-  //         cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
-      
-  //         cda_manufacturedProduct.manufacturerOrganization as cda_manufacturerOrganization then {
-      
-  //           cda_manufacturerOrganization ->
-  //             fhir_bundle.entry as fhir_bundle_entry,
-  //             fhir_bundle_entry.resource = create('Organization') as fhir_organization,
-  //             fhir_organization.id = uuid() as fhir_organization_id,
-  //             fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
-  //             fhir_immunization.manufacturer = create('Reference') as fhir_immunization_organization,
-  //             fhir_immunization_organization.reference = append('urn:uuid:', fhir_organization_id),
-  //             fhir_immunization_organization.type = 'Organization' then
-  //             CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization);
-  //         };
-  //       };
-  //     };
-  //   };
-  // };
-
     // cda_substanceAdministration.performer as cda_performer then {
     
     //   cda_performer -> fhir_bundle.entry as fhir_bundle_entry03,
