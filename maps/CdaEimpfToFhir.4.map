@@ -59,6 +59,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
   cda_structuredBody -> 
     // section problems
     fhir_composition.section as fhir_composition_problems_section,
+    fhir_composition_problems_section.title = 'Gesundheitsprobleme und Risiken (Problems)',
     fhir_composition_problems_section.code as fhir_composition_problems_section_code,
     fhir_composition_problems_section_code.coding as fhir_composition_problems_section_code_coding,
     fhir_composition_problems_section_code_coding.system = 'http://loinc.org',
@@ -73,6 +74,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
 
     // section allergies
     fhir_composition.section as fhir_composition_allergies_section,
+    fhir_composition_allergies_section.title = 'Allergien und Intoleranzen (Allergies and Intolerances)',
     fhir_composition_allergies_section.code as fhir_composition_allergies_section_code,
     fhir_composition_allergies_section_code.coding as fhir_composition_allergies_section_code_coding,
     fhir_composition_allergies_section_code_coding.system = 'http://loinc.org',
@@ -87,6 +89,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
 
     // section medications
     fhir_composition.section as fhir_composition_medications_section,
+    fhir_composition_medications_section.title = 'Medikationsliste (Medication Summary)',
     fhir_composition_medications_section.code as fhir_composition_medications_section_code,
     fhir_composition_medications_section_code.coding as fhir_composition_medications_section_code_coding,
     fhir_composition_medications_section_code_coding.system = 'http://loinc.org',
@@ -101,6 +104,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
 
     // section procedures
     fhir_composition.section as fhir_composition_procedures_section,
+    fhir_composition_procedures_section.title = 'Eingriffe und Therapien (History of Procedures)',
     fhir_composition_procedures_section.code as fhir_composition_procedures_section_code,
     fhir_composition_procedures_section_code.coding as fhir_composition_procedures_section_code_coding,
     fhir_composition_procedures_section_code_coding.system = 'http://loinc.org',
@@ -115,6 +119,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
 
     // section medical devices
     fhir_composition.section as fhir_composition_devices_section,
+    fhir_composition_devices_section.title = 'Implantate, medizinische Geräte (Medical Devices)',
     fhir_composition_devices_section.code as fhir_composition_devices_section_code,
     fhir_composition_devices_section_code.coding as fhir_composition_devices_section_code_coding,
     fhir_composition_devices_section_code_coding.system = 'http://loinc.org',
@@ -128,8 +133,6 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
     fhir_composition_devices_section_text.div = append('Kein Text für diese Section vorhanden.')
 
     "prefillRequiredApsSections";
-
-
   
   cda_structuredBody.component as cda_component then {
 
@@ -159,6 +162,9 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
 group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code;
+
+  // section/title
+  cda_section -> fhir_section.title = 'Impfungen (Immunizations)' "FhirSectionTitle";
 
   // section/entry
   cda_section.entry as cda_section_entry then {
