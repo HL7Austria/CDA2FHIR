@@ -272,6 +272,17 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/pharm:ingredient
         // TODO
       };
+
+      // substanceAdministration/consumable/manufacturedProduct/manufacturerOrganization -> Immunization.manufacturer
+      cda_manufacturedProduct.manufacturerOrganization as cda_manufacturerOrganization ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+        fhir_organization.id = uuid() as fhir_organization_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+        fhir_immunization.manufacturer = create('Reference') as fhir_immunization_organization_reference,
+        fhir_immunization_organization_reference.reference = append('urn:uuid:', fhir_organization_id),
+        fhir_immunization_organization_reference.type = 'Organization' then
+        CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization);
     };
   };
 
