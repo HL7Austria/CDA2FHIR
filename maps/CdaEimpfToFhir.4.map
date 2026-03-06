@@ -387,56 +387,58 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
     fhir_immunization_performer_actor_reference.type = 'PractitionerRole' then 
       CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole, fhir_bundle);
 
-    // // 1…* M	entryRelationship/observation( Immunization Target Entry - 1.2.40.0.34.6.0.11.3.2 )
-    // cda_substanceAdministration -> fhir_immunization.protocolApplied as fhir_protocolApplied then {
-    //   //ClinicalDocument/component/structuredBody/component/section/entry/substanceAdministration/entryRelationship
-    //   cda_substanceAdministration.entryRelationship as cda_entryRelationship,
-    //   // ClinicalDocument/component/structuredBody/component/section/entry/substanceAdministration/entryRelationship/observation[templateId[@root='1.2.40.0.34.6.0.11.3.2']]
-    //   cda_entryRelationship.observation as cda_observation where $this.templateId.where(root='1.2.40.0.34.6.0.11.3.2').exists() then {
-
-    //     // 1…1 M 	//observation/code -> AtApsImmunization.protocolApplied.targetDisease
-    //     cda_observation.code as cda_observation_code -> 
-    //     fhir_protocolApplied.targetDisease as fhir_immunization_targetDisease then CECodeableConcept(cda_observation_code, fhir_immunization_targetDisease);
-    //   };
+  cda_substanceAdministration -> fhir_immunization.protocolApplied as fhir_immunization_protocolApplied then {
+    
+    // substanceAdministration/entryRelationship (Immunization Target Entry)
+    cda_substanceAdministration.entryRelationship as cda_substanceAdministration_entryRelationship where ($this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.2')) then {
+      cda_substanceAdministration_entryRelationship.observation as cda_observation then {
+        // substanceAdministration/entryRelationship/observation/code -> Immunization.protocolApplied.targetDisease
+        cda_observation.code -> fhir_immunization_protocolApplied.targetDisease;
+      };
+    };
       
-    //   // 1…1 M precondition/Criterion( Immunization Schedule Entry - 1.2.40.0.34.6.0.11.3.10) 
-    //   cda_substanceAdministration.precondition as cda_precondition,
-    //   cda_precondition.criterion as cda_criterion then {
-        
-    //     // 1…1 	//criterion/code/@code -> AtApsImmunization.protocolApplied.series
-    //     cda_criterion.code as cda_criterion_code where ($this.nullFlavor.exists().not()), cda_criterion_code.code as code ->
-    //     fhir_protocolApplied.series = cast(code, 'string') as fhir_immunization_series,
-    //     fhir_immunization_series.extension as fhir_series_extension,
-    //     fhir_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
-    //     // 1…1 	//criterion/code -> AtApsImmunization.protocolApplied.series.Coding
-    //     fhir_series_extension.value = create('Coding') as extension_coding then {
+    // substanceAdministration/precondition (Immunization Schedule Entry)
+    cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
+      // substanceAdministration/precondition/criterion
+      cda_substanceAdministration_precondition.criterion as cda_criterion then {
+        // substanceAdministration/precondition/criterion/code -> Immunization.protocolApplied.series
+        cda_criterion.code as cda_criterion_code where ($this.nullFlavor.exists().not()) then {
+          // substanceAdministration/precondition/criterion/code/@code -> Immunization.protocolApplied.series
+          cda_criterion_code.code as cda_criterion_code_code ->
+            fhir_immunization_protocolApplied.series = cast(cda_criterion_code_code, 'string') as fhir_immunization_protocolApplied_series,
+            fhir_immunization_protocolApplied_series.extension as fhir_immunization_protocolApplied_series_extension,
+            fhir_immunization_protocolApplied_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
+            fhir_immunization_protocolApplied_series_extension.value = create('Coding') as fhir_coding then 
+              // substanceAdministration/precondition/criterion/code -> Immunization.protocolApplied.series.extension.coding
+              CECoding(cda_criterion_code, fhir_coding);
+        };
 
-    //     cda_criterion_code.code as code -> extension_coding.code = cast(code, 'string');
-    //     cda_criterion_code.codeSystem as system -> extension_coding.system = translate(system, '#OIDtoURI', 'code');
-    //     cda_criterion_code.displayName as display -> extension_coding.display = cast(display, 'string');
-    //     // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString
-    //     cda_criterion.value as cda_criterion_value, cda_criterion_value.code as value_code -> 
-    //     fhir_protocolApplied.doseNumberString = cast (value_code, 'string') as fhir_immunization_doseNumberString,
-    //     fhir_immunization_doseNumberString.extension as fhir_doseNumber_extension,
-    //     fhir_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
-    //     // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString.Coding
-    //     fhir_doseNumber_extension.value = create('Coding') as extension_coding then CECoding(cda_criterion_value,extension_coding);
-    //       /*
-    //         // Implement i.o.t. handle NullFlavor 
-    //                     // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString
-    //                 cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists().not()) then {
-    //                   cda_criterion_value.code as value_code ->
-    //                   fhir_protocolApplied.doseNumberString = cast (value_code, 'string') as fhir_immunization_doseNumberString,
-    //                   fhir_immunization_doseNumberString.extension as fhir_doseNumber_extension,
-    //                   fhir_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
-    //                   // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString.Coding
-    //                   fhir_doseNumber_extension.value = create('Coding') as extension_coding then CECoding(cda_criterion_value,extension_coding);
+        // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
+        cda_criterion.value as cda_criterion_value then {
+          cda_criterion_value.code as cda_criterion_value_code ->
+            fhir_immunization_protocolApplied.doseNumber = cast(cda_criterion_value_code, 'string') as fhir_immunization_protocolApplied_doseNumber,
+            fhir_immunization_protocolApplied_doseNumber.extension as fhir_immunization_protocolApplied_doseNumber_extension,
+            fhir_immunization_protocolApplied_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
+            fhir_immunization_protocolApplied_doseNumber_extension.value = create('Coding') as fhir_coding then 
+              // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString.extension.coding
+              CECoding(cda_criterion_value, fhir_coding);
+          /*
+            // Implement i.o.t. handle NullFlavor 
+                        // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString
+                    cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists().not()) then {
+                      cda_criterion_value.code as value_code ->
+                      fhir_protocolApplied.doseNumberString = cast (value_code, 'string') as fhir_immunization_doseNumberString,
+                      fhir_immunization_doseNumberString.extension as fhir_doseNumber_extension,
+                      fhir_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
+                      // 1…1 R	//criterion/value/@code --> AtApsImmunization.protocolApplied.doseNumber.doseNumberString.Coding
+                      fhir_doseNumber_extension.value = create('Coding') as extension_coding then CECoding(cda_criterion_value,extension_coding);
 
-    //                   };
-    //       */
-    //     };
-    //   }; 
-    // }; 
+                      };
+          */
+        };
+      }; 
+    }; 
+  };
 
     // // ToDO Add entryRelationship(Immunization Billability Entry - 1.2.40.0.34.6.0.11.3.5) 
 
@@ -449,9 +451,9 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
     // //     cda_observation -> fhir_bundle.entry as fhir_bundle_entry_07,
     // //     fhir_bundle_entry_07.resource = create('Location') as fhir_location,
     // //     fhir_location.id = uuid() as fhir_location_id,
-    // //     fhir_bundle_entry_07.fullUrl = append('urn:uuid',fhir_location_id),
+    // //     fhir_bundle_entry_07.fullUrl = append('urn:uuid:',fhir_location_id),
     // //     fhir_immunization.location as fhir_immunization_location,
-    // //     fhir_immunization_location.reference = append('urn:uuid',fhir_location_id),
+    // //     fhir_immunization_location.reference = append('urn:uuid:',fhir_location_id),
     // //     fhir_immunization_location.type = 'Location' then cda_ImpfsettingToFhirImmunizationLocation(cda_observation,fhir_location); 
     // //   }; 
     // //   cda_observation where $this.code.where(code='IS009') then {
