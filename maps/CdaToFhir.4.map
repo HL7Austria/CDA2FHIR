@@ -961,9 +961,8 @@ group CdaAuthorToFhirDevice(source cda_author : Author, target fhir_device : Dev
           fhir_device_deviceName.type = 'model-name';
         // author.assignedAuthor.assignedAuthoringDevice.softwareName
         cda_assignedAuthoringDevice.softwareName as cda_softwareName ->
-          fhir_device.deviceName as fhir_device_deviceName,
-          fhir_device_deviceName.name = (cda_softwareName.xmlText),
-          fhir_device_deviceName.type = 'other';
+          fhir_device.version as fhir_device_version,
+          fhir_device_version.value = (cda_softwareName.xmlText);
       };
       // author.assignedAuthor.representedOrganization
       cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
