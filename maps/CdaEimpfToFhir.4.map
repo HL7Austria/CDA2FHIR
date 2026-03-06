@@ -17,7 +17,11 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 // _________________________ Document Level Template  _________________________
 
 group CdaEimpfToFhirBundle(source cda: CDAClinicalDocument, target fhir_patient: FHIRPatient, target fhir_composition: FHIRComposition, target fhir_bundle: FHIRBundle) {
-  cda then {
+  cda ->
+    // at least on Bundle level the profile is to be set
+    fhir_bundle.meta as fhir_bundle_meta,
+    fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
+    then {
       // map the CDA header
       cda then CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhirComposition";
       cda then CdaEimpfHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhir"; 
