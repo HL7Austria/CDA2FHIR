@@ -22,8 +22,8 @@ conceptmap "ELGA2FHIRAddressUse" {
 
   s:"TMP" == t:"temp" // temporary address -> use = temp; type = both
 
-  s:"PHYS" == t:"home" // physical visit address -> use = home; type = physical
-  s:"PST" == t:"home" // billing address -> use = home; type = postal
+  // s:"PHYS" // NOT MAPPED physical visit address
+  // s:"PST" // NOT MAPPED billing address
 }
 
 // TODO review mapping
@@ -861,12 +861,12 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   //   "FhirAddressAtCoreAddressProfile";
 
   // addr.use
-  cda_address.use as cda_use ->
-    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') then {
-      cda_use where (cda_use != 'PHYS' and cda_use != 'PST') -> fhir_address.type = 'both' "CdaAddressUseToFhirAddressTypeBoth";
-      cda_use where (cda_use = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
-      cda_use where (cda_use = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePostal";
-    } "CdaAddressUseToFhirAddressUseAndType";
+  cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
+    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
+  
+  cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
+
+  cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
 
   cda_address.item as cda_address_item then {
     // addr.postalCode
