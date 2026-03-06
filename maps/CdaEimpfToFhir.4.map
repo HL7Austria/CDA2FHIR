@@ -269,6 +269,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/lotNumberText -> Immunization.lotNumber
         cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
 
+        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/pharm:ingredient
+        // TODO
       };
     };
   };
