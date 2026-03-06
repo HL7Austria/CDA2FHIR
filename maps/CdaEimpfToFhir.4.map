@@ -163,7 +163,7 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target 
   // section/entry
   cda_section.entry as cda_section_entry then {
     
-    // Immunization Entry - 1.2.40.0.34.6.0.11.3.1
+    // Immunization Entry - 1.2.40.0.34.6.0.11.3.1 -> Immunization
     cda_section_entry where ($this.substanceAdministration.templateId.where(root='1.2.40.0.34.6.0.11.3.1') then {
       // section/entry/substanceAdministration -> Immunization
       cda_section_entry.substanceAdministration as cda_section_entry_substanceAdministration -> 
@@ -217,7 +217,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   // substanceAdministration/routeCode -> Immunization.route
   cda_substanceAdministration.routeCode where ($this.nullFlavor.exists().not()) -> fhir_immunization.route;
 
-  // substanceAdministration/doseQuantity --> AtApsImmunization.doseQuantity
+  // substanceAdministration/doseQuantity -> AtApsImmunization.doseQuantity
   cda_substanceAdministration.doseQuantity as cda_substanceAdministration_doseQuantity where ($this.nullFlavor.exists().not()) -> 
     fhir_immunization.doseQuantity as fhir_immunization_doseQuantity then
     PQQuantity(cda_substanceAdministration_doseQuantity, fhir_immunization_doseQuantity)
@@ -249,6 +249,9 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
           CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension); 
 
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
+        //
+        // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
+        //
         cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'OTH') ->
           fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
           fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then {
