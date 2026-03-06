@@ -51,6 +51,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Procedure" alias Procedur
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Organizer" alias Organizer as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias Act as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias Participant2 as source 
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
@@ -1271,4 +1272,45 @@ group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, ta
     performer_function_extension_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
     // Cave: Using PrimaryPerformer even though cda specifies PRF. 
     performer_function_extension_value_coding.code = 'PPRF' then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
+}
+
+group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle){
+  // time
+  // TODO
+
+  // participantRole
+  cda_participant.participantRole as cda_participant_role -> 
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+    fhir_practitioner.id = uuid() as fhir_practitioner_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+    fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+    fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+        // participantRole/id ->  Practitioner.identifier
+        cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
+        
+        // participantRole/addr -> Practitioner.address
+        cda_participant_role.addr -> fhir_practitioner.address;
+
+        // participantRole/telecom -> Practitioner.telecom
+        cda_participant_role.telecom -> fhir_practitioner.telecom;
+       
+        // participantRole/playingDevice
+        // TODO
+
+        // participantRole/playingEntity -> Practitioner.name
+        cda_participant_role.playingEntity as cda_participant_role_playingEntity then {
+          // participantRole/playingEntity/name -> Practitioner.name
+          cda_participant_role_playingEntity.name -> fhir_practitioner.name;
+        };
+        
+        // participantRole/scopingEntity -> PractitionerRole.organization 
+        cda_participant_role.scopingEntity as cda_participant_role_scoping_entity then {
+          cda_participant_role_scoping_entity.desc as cda_participant_role_scoping_entity_desc ->
+            fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization_reference,
+            fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
+        }
+      };
+    };
 }
