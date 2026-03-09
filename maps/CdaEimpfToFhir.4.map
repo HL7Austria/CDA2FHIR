@@ -1,3 +1,7 @@
+// TODO
+//   check CDA2FHIR meeting minutes for TODOs
+//   check uses-Section and include all what is necessary
+
 map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir" = "CdaEimpfToFhir"
 
 conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
@@ -535,6 +539,10 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
       cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
         fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
         fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
+        // 
+        // TODO see https://hl7at.atlassian.net/wiki/spaces/BAL/pages/1091764225/2026-03-09+AG+ELGA+CDA+Laborbefund+zu+FHIR
+        //      see https://hl7.eu/fhir/base-r5/missing-data.html
+        //
         then CdaNullFlavorToFhirNullFlavor(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
 
       // substanceAdministration/author/assignedAuthor
