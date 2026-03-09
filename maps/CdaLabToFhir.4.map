@@ -8407,7 +8407,7 @@ group CdaLabSpecimenSectionToFhirSpecimen(source cda_section: Section, target fh
   };
 }
 
-group CdaLabSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
+group CdaLabSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
   // section.code
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
   cda_section.code -> fhir_section.code;
