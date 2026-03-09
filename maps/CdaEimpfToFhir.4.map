@@ -277,30 +277,10 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 
       // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial
       cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
-        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-        // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
-        //
-        // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
-        //
-        cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA') ->
-          fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
-          fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then 
-          CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension); 
-
-        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-        //
-        // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
-        //
-        cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'OTH') ->
-          fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
-          fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then {
-            cda_manufacturedMaterial_code then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension);
-
-            cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_immunization_vaccineCode);
-          };
-
-        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-        cda_manufacturedMaterial.code where ($this.nullFlavor.exists().not()) -> fhir_immunization.vaccineCode; 
+        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name -> Immunization.vaccineCode
+        cda_manufacturedMaterial -> 
+          fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
+            CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunization_vaccineCode);
 
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
         //TODO
@@ -520,30 +500,18 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
 
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial
         cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
-          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-          // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
-          //
-          // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
-          //
-          cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA') ->
-            fhir_immunizationRecommendation_recommendation.vaccineCode as fhir_immunizationRecommendation_recommendation_vaccineCode,
-            fhir_immunizationRecommendation_recommendation_vaccineCode.extension as fhir_immunizationRecommendation_recommendation_vaccineCode_extension then 
-            CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunizationRecommendation_recommendation_vaccineCode_extension); 
-
-          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-          //
-          // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
-          //
-          cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'OTH') ->
-            fhir_immunizationRecommendation_recommendation.vaccineCode as fhir_immunizationRecommendation_recommendation_vaccineCode,
-            fhir_immunizationRecommendation_recommendation_vaccineCode.extension as fhir_immunizationRecommendation_recommendation_vaccineCode_extension then {
-              cda_manufacturedMaterial_code then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunizationRecommendation_recommendation_vaccineCode_extension);
-
-              cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_immunizationRecommendation_recommendation_vaccineCode);
-            };
-
-          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-          cda_manufacturedMaterial.code where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation_recommendation.vaccineCode; 
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> ImmunizationRecommendation.recommendation.vaccineCode
+          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = false) then {
+            cda_manufacturedMaterial -> 
+              fhir_immunizationRecommendation_recommendation.vaccineCode as fhir_immunizationRecommendation_recommendation_vaccineCode then 
+                CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_vaccineCode);
+          };
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> ImmunizationRecommendation.recommendation.contraindicatedVaccineCode
+          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = true) then {
+            cda_manufacturedMaterial -> 
+              fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode as fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode then 
+                CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode);
+          }
 
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
           //TODO
@@ -622,4 +590,30 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
       }; 
     }; 
   };
+}
+
+
+group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: Material, target fhir_vaccineCode: CodeableConcept) {
+  // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
+  // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
+  //
+  // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
+  //
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA') ->
+    fhir_vaccineCode.extension as fhir_vaccineCode_extension then 
+    CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_vaccineCode_extension); 
+
+  // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
+  //
+  // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
+  //
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'OTH') ->
+    fhir_vaccineCode.extension as fhir_vaccineCode_extension then {
+      cda_manufacturedMaterial_code then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_vaccineCode_extension);
+
+      cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_vaccineCode);
+    };
+
+  // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor.exists().not()) then CDCodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode); 
 }
