@@ -324,6 +324,15 @@
                                     <id root="1.2.40.0.34.99.4613.3.3" extension="232311"/>
                                     <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
                                         codeSystem="1.2.40.0.34.5.2"/>
+                                        <!-- Adresse der Organisation -->
+                                    <addr>
+                                        <streetName>Person Author-FSME1-Gasse</streetName>
+                                        <houseNumber>1-7</houseNumber>
+                                        <postalCode>5350</postalCode>
+                                        <city>St.Wolfgang</city>
+                                        <state>Salzburg</state>
+                                        <country>AUT</country>
+                                    </addr>
                                     <assignedPerson>
                                         <name>
                                             <prefix>Dr.</prefix>

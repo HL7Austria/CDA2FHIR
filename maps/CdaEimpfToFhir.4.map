@@ -243,12 +243,6 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 
       // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial
       cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
-        /*ToDo: 
-          - Group refractor code (change manufacturedProduct to manufacturedMaterial)
-            Gruppe die manuFacturedProduct zu FHIR Immunization Mapped.
-            cda_manufacturedProduct then CdaManufacturedMaterialToFhirImmunizationMedication(cda_manufacturedProduct, fhir_immunization, fhir_bundle);
-        */
-
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
         // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
         //

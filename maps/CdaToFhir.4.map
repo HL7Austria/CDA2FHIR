@@ -915,6 +915,10 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
         fhir_practitioner.qualification as fhir_practitioner_qualification,
         fhir_practitioner_qualification.code as fhir_practitioner_qualification_code then
         CECodeableConcept(cda_author_assignedAuthor_code,fhir_practitioner_qualification_code);
+
+      // author/assignedAuthor/addr
+      cda_author_assignedAuthor.addr -> fhir_practitioner.address;
+
       // ClinicalDocument.author.assignedAuthor.telecom
       cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
       // ClinicalDocument.author.assignedAuthor.assignedPerson
