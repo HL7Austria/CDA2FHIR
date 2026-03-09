@@ -530,7 +530,15 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
 
     // substanceAdministration/author
     cda_substanceAdministration.author as cda_substanceAdministration_author then {
-      cda_substanceAdministration_author.time -> fhir_immunizationRecommendation.date;
+      // substanceAdministration/author -> ImmunizationRecommendation.date
+      cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
+      cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
+        fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
+        fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
+        then CdaNullFlavorToFhirNullFlavor(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
+
+      // substanceAdministration/author/assignedAuthor
+      // TODO
     };
 
     // substanceAdministration/participant (Participant Body - Verifier = Korrigierende Person (Datenverarbeitende Person))
@@ -591,7 +599,6 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     }; 
   };
 }
-
 
 group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: Material, target fhir_vaccineCode: CodeableConcept) {
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
