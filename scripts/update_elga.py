@@ -1,6 +1,7 @@
 import os
 import requests
 import base64
+import urllib.parse
 
 HEADERS = { 'PRIVATE-TOKEN' : os.environ['GITLAB_CI_TOKEN'] }
 PROJECT_ID = os.environ['GITLAB_ELGA_CDA2FHIR_REPO']
@@ -75,6 +76,11 @@ res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository
 check_response(res)
 
 # create MR
-res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/merge_requests?source_branch={SOURCE_BRANCH}&target_branch={TARGET_BRANCH}&title=Release {SOURCE_BRANCH}&description={RELEASE_DESCRIPTION}', headers=HEADERS)
+data = {
+    'source_branch': SOURCE_BRANCH,
+    'target_branch': TARGET_BRANCH,
+    'description': RELEASE_DESCRIPTION
+}
+res = requests.post('https://gitlab.com/api/v4/projects/{PROJECT_ID}/merge_requests?' + urllib.parse.urlencode(data), headers=HEADERS)
 check_response(res)
 
