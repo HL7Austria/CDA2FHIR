@@ -78,10 +78,8 @@ check_response(res)
 
 # create MR
 
-# replace all "by @<username> " occurences as they might link to wrong users in GitLab
-updated_release_description = re.sub(r'by @([^\s]+) ', '', RELEASE_DESCRIPTION)
-# replace all "@<username> " occurences as they might link to wrong users in GitLab
-updated_release_description = re.sub(r'@([^\s]+) ', '', updated_release_description)
+# replace all "@<username>" occurences as they might link to wrong users in GitLab
+updated_release_description = re.sub(r'@', '', RELEASE_DESCRIPTION)
 # add link to original GitHub release
 updated_release_description = f'**Link to GitHub-Release:** {RELEASE_URL}\n{updated_release_description}' 
 
