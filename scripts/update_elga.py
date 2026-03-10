@@ -62,11 +62,11 @@ commit = { 'branch': SOURCE_BRANCH,
 commit_actions = commit['actions']
 
 # update README.md
-with open('README.md', 'rb') as binary_file:
+with open(os.path.join('python-maps', 'CdaToFhir.4.py'), 'rb') as binary_file:
     binary_file_data = binary_file.read()
     base64_encoded_data = base64.b64encode(binary_file_data) 
     base64_output = base64_encoded_data.decode('utf-8')
-    commit_actions.append(create_action('README.md', base64_output, encoding='base64'))
+    commit_actions.append(create_action('CdaToBundle.4.py', base64_output, encoding='base64'))
     
 # update malac-hd version
 commit_actions.append(create_action('requirements.txt', f'malac-hd[cda]=={retrieve_current_malac_version()}'))
