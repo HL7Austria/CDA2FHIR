@@ -32,7 +32,7 @@ jobs:
 
       - name: Run MaLaC-HD
         run: |
-          malac-hd -m maps/CdaToFhir.4.map -co python-maps/CdaToFhir.4.py
+          malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
 
       - name: Update requirements
         run: |

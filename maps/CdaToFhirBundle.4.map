@@ -1,4 +1,4 @@
-map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir" = "CdaToFhir"
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir-bundle" = "CdaToFhirBundle"
 
 //
 // Mapping CDA2FHIR
@@ -66,8 +66,8 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Specimen" alias Specimen as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
-imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir"
-imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir"
+imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir-bundle"
+imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle"
 
 
 // _________________________ Document Level Template  _________________________

@@ -31,7 +31,7 @@ for config in config_json:
             "--source=python-maps",
             f"--data-file={COVERAGE_DIR}/{directory}/.coverage.xml.{basename}",
             "--branch",
-            "python-maps/CdaToFhir.4.py",
+            "python-maps/CdaToFhirBundle.4.py",
             "-s", filepath,
             "-t", f"{OUTPUT_DIR}/{directory}/{basename}.fhir.xml"
         ], check=False)
@@ -42,7 +42,7 @@ for config in config_json:
             "--source=python-maps",
             f"--data-file={COVERAGE_DIR}/{directory}/.coverage.json.{basename}",
             "--branch",
-            "python-maps/CdaToFhir.4.py",
+            "python-maps/CdaToFhirBundle.4.py",
             "-s", filepath,
             "-t", f"{OUTPUT_DIR}/{directory}/{basename}.fhir.json"
         ], check=False)
