@@ -2,7 +2,7 @@ import os
 import requests
 import base64
 
-HEADERS = { 'PRIVATE-TOKEN' : os.environ['GLE_GITLAB_CI_TOKEN'] }
+HEADERS = { 'PRIVATE-TOKEN' : os.environ['GITLAB_CI_TOKEN'] }
 PROJECT_ID = os.environ['GITLAB_ELGA_CDA2FHIR_REPO']
 TARGET_BRANCH = os.environ['GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH']
 SOURCE_BRANCH = 'test-02'
