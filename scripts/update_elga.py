@@ -1,11 +1,12 @@
 import os
 import requests
 import base64
-import urllib.parse
+import re
 
 HEADERS = { 'PRIVATE-TOKEN' : os.environ['GITLAB_CI_TOKEN'] }
 PROJECT_ID = os.environ['GITLAB_ELGA_CDA2FHIR_REPO']
 TARGET_BRANCH = os.environ['GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH']
+RELEASE_URL = os.environ['RELEASE_URL']
 SOURCE_BRANCH = os.environ['RELEASE_TAG']
 RELEASE_DESCRIPTION = os.environ['RELEASE_DESCRIPTION']
 
@@ -76,6 +77,11 @@ res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository
 check_response(res)
 
 # create MR
+
+# replace all "by @<username> " occurences as they might link to wrong users in GitLab
+updated_release_description = re.sub(r'by @([^\s]+) ', '', RELEASE_DESCRIPTION)
+updated_release_description = f'**Link to GitHub-Release:** {RELEASE_URL}\n{updated_release_description}' 
+
 data = {
     'title': f'Release {SOURCE_BRANCH}',
     'source_branch': SOURCE_BRANCH,
@@ -84,4 +90,3 @@ data = {
 }
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/merge_requests', headers=HEADERS, json=data)
 check_response(res)
-
