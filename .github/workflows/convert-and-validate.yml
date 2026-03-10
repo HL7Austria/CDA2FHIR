@@ -6,7 +6,7 @@ on:
   push:
     branches: [ elga-dev ]
   pull_request:
-    branches: [ elga-dev ]
+    branches: [ elga, elga-dev ]
 
 jobs:
   convert-and-validate:
@@ -32,7 +32,7 @@ jobs:
 
       - name: Run MaLaC-HD
         run: |
-          malac-hd -m maps/CdaToFhir.4.map -co python-maps/CdaToFhir.4.py
+          malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
 
       - name: Download FHIR validator
         uses: Legion2/download-release-action@v2.1.0
@@ -65,7 +65,7 @@ jobs:
             coverage/
             output/
             validation/
-            python-maps/CdaToFhir.4.py
+            python-maps/CdaToFhirBundle.4.py
             htmlcov/
 
       - name: Validate

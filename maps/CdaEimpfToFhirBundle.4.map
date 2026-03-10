@@ -2,7 +2,7 @@
 //   check CDA2FHIR meeting minutes for TODOs
 //   check uses-Section and include all what is necessary
 
-map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir" = "CdaEimpfToFhir"
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle" = "CdaEimpfToFhirBundle"
 
 conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
   prefix s = "http://loinc.org"
