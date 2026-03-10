@@ -32,5 +32,7 @@ jobs:
           GITLAB_CI_TOKEN: ${{ secrets.GLE_GITLAB_CI_TOKEN }}
           GITLAB_ELGA_CDA2FHIR_REPO: ${{ vars.GITLAB_ELGA_CDA2FHIR_REPO }}
           GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH: ${{ vars.GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_DESCRIPTION: ${{ github.event.release.body }}
         run: |
           python scripts/update_elga.py
