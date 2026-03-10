@@ -107,7 +107,7 @@ group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) 
       // CDA e-Impfpass -> FHIR
       // cda_code.code as code_code where ($this = '11369-6') then CdaAteImpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
       // CDA e-Medikation -> FHIR
-      // TODO
+      cda_code.code as code_code where ($this = '') then CdaEMedToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);)
     } "CdaToFhirBundle";  
 }
 
