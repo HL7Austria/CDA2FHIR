@@ -491,6 +491,10 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
 
     // substanceAdministration/effectiveTime
     // TODO
+    cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime -> 
+      fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion then {
+        cda_substanceAdministration_effectiveTime -> fhir_recommendation_dateCriterion.value; 
+      }
 
     // substanceAdministration/doseQuantity
     // TODO
