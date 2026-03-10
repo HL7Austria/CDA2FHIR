@@ -2189,8 +2189,8 @@
                             <statusCode code="active"/>
                             <!-- "Empfohlenes Impfdatum": Die Impfempfehlung bezieht sich immer auf einen Zeitraum, ein nullFlavor kann verwendet werden  -->
                             <effectiveTime xsi:type="IVL_TS">
-                                <low value="20200817"/>
-                                <high nullFlavor="UNK"/>
+                                <low nullFlavor="UNK"/>
+                                <high value="20200817"/>
                             </effectiveTime>
                             <!-- Die Art der Anwendung (des Impfstoffes) z.B. subkutan, intramuskulär; wird immer der nullFlavor angegeben. -->
                             <routeCode nullFlavor="NA"/>

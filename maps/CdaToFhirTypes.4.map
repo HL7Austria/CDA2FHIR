@@ -621,6 +621,7 @@ group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any <<types>
 
 group IVLTSDateTime(source src : IVL_TS, target tgt : dateTime) extends Any <<types>> {
   src.low as s then TSDateTime(s, tgt);
+  src.high as sh then TSDateTime(sh,tgt);
 }
 
 group STstring(source src : ST, target tgt : string) extends Any <<types>> {
