@@ -1,0 +1,469 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="ELGA_Stylesheet_v1.0.xsl"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<!--
+		=======================================================================
+		ELGA CDA Implementierungsleitfäden
+		
+		*** CDA Demo-Dokument ***
+		Dies ist ein Beispielbefund. Bei den Inhalten handelt es sich um synthetische Mustertexte und keinesfalls um personenbezogene Echtdaten oder realistische Befunde.
+		Das Beispiel veranschaulicht die technischen Möglichkeiten unter Verwendung eines Maximums der erlaubten Optionen.
+		
+		Spezieller Leitfaden: e-Medikation (Pharmazeutische Empfehlung) 2.06.2
+		ELGA Interoperabilitätsstufe (EIS) "Full Support"
+		
+		auf der Basis des allgemeinen Leitfadens: CDA Dokumente im österreichischen Gesundheitswesen
+		
+		Autor:
+			Jürgen Brandstätter
+			CodeWerk Software Services and Development GmbH
+			j.brandstaetter@codewerk.at
+			Oliver Kuttin, ELGA GmbH
+			Stefan Sabutsch, ELGA GmbH
+								
+		Dokumentrevision:	6
+		Datum: 				03.01.2017
+		
+		Die Kommentare in diesem CDA Dokument dienen lediglich der Orientierungshilfe und sind nicht 
+		Bestandteil einer konkreten Implementierung!
+		=======================================================================
+	-->
+	<!--
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+
+			Administrative Daten "CDA Header"
+
+			siehe Allgemeiner Leitfaden, Kapitel 6
+
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+	-->
+	<!--
+			========================================================================
+			========================================================================
+			Dokumentenstruktur
+			siehe Allgemeiner Leitfaden, Kapitel 6.2
+			========================================================================
+			========================================================================
+	-->
+	<!--
+		Hoheitsbereich des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.3)
+	-->
+	<realmCode code="AT"/>
+	<!--
+		Dokumentformat (siehe Allgemeiner Leitfaden, Kapitel 6.2.4)
+	-->
+	<typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+	<!--
+		ELGA Implementierungsleitfaden-Kennzeichnung (siehe Allgemeiner Leitfaden, Kapitel 6.2.5)
+	-->
+	<!-- Folgt dem Template des Allgemeinen Implementierungsleitfadens "CDA Dokumente im österreichischen Gesundheitswesen" -->
+	<templateId root="1.2.40.0.34.11.1" assigningAuthorityName="ELGA"/>
+	<!-- Folgt dem Template des Speziellen Implementierungsleitfadens "e-Medikation" (Pharmazeutische Empfehlung)  -->
+	<templateId root="1.2.40.0.34.11.8.4" assigningAuthorityName="ELGA"/>
+	<!-- IHE PHARM -->
+	<templateId root="1.3.6.1.4.1.19376.1.9.1.1.2" assigningAuthorityName="IHE PHARM"/>
+	<!-- IHE PCC -->
+	<templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1" assigningAuthorityName="IHE PCC"/>	
+	<!-- ELGA Interoperabilitätsstufe (EIS) "Full Support" -->
+	<templateId root="1.2.40.0.34.11.8.0.3" assigningAuthorityName="ELGA"/>
+	<!--
+		Dokumenten-Id (siehe Allgemeiner Leitfaden, Kapitel 6.2.6)
+	-->
+	<id root="1.2.40.0.10.1.4.3.4.2.1" extension="7NW2AYSYQNSU" assigningAuthorityName="e-MedAT"/>
+	<!--
+		Dokumentenklasse (siehe Allgemeiner Leitfaden, Kapitel 6.2.7)
+	-->
+	<code code="61356-2" displayName="Medication pharmaceutical advice.extended Document" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+	<!--
+		Titel des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.8)
+	-->
+	<title>Pharmazeutische Empfehlung</title>
+	<!--
+		Erstellungsdatum des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.9)
+	-->
+	<effectiveTime value="20130325082015+0100"/>
+	<!--
+		Vertraulichkeitscode (siehe Allgemeiner Leitfaden, Kapitel 6.2.10)
+	-->
+	<confidentialityCode code="N" displayName="normal" codeSystem="2.16.840.1.113883.5.25" codeSystemName="HL7:Confidentiality"/>
+	<!--
+		Sprachcode des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.11)
+	-->
+	<languageCode code="de-AT"/>
+	<!--
+		Versionierung des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.12)
+	-->
+	<setId root="1.2.40.0.10.1.4.3.4.2.1" extension="7b4x6qA2p40La53i4dya" assigningAuthorityName="e-MedAT"/>
+	<versionNumber value="1"/>
+	<!--
+			========================================================================
+			========================================================================
+			Teilnehmende Parteien
+			siehe Allgemeiner Leitfaden, Kapitel 6.3
+			========================================================================
+			========================================================================
+	-->
+	<!--
+		========================================================================
+		Patient (siehe Allgemeiner Leitfaden, Kapitel 6.3.1)
+		========================================================================
+	-->
+	<recordTarget>
+		<patientRole>
+			<!-- 
+				IDs des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.2)
+			-->
+			<!-- Identifikation des Patienten im lokalen System -->
+			<id root="1.2.40.0.34.99.111.1.2" extension="abcefg" assigningAuthorityName="Ordination Dr. Meier"/>
+			<!-- Sozialversicherungsnummer des Patienten	-->
+			<id root="1.2.40.0.10.1.4.3.1" extension="1111241261" assigningAuthorityName="Österreichische Sozialversicherung"/>
+			<!-- Sozialversicherungsnummer des Patienten	-->
+			<id root="1.2.40.0.10.2.1.1.149" extension="xxxyyyzzz" assigningAuthorityName="Österreichische Stammzahlenregisterbehörde"/>
+			<!--
+				Adresse des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.3)
+			-->
+			<addr use="H">
+				<streetAddressLine>Musterstraße 13a</streetAddressLine>
+				<postalCode>7000</postalCode>
+				<city>Eisenstadt</city>
+				<state>Burgenland</state>
+				<country>AUT</country>
+			</addr>
+			<!--
+				Kontaktdaten des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.4)
+			-->
+			<telecom use="H" value="tel:+43.2682.40400"/>
+			<telecom use="MC" value="tel:+43.664.1234567"/>
+			<telecom value="mailto:herberthannes.mustermann@provider.at"/>
+			<patient>
+				<!-- 
+					Name des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.5)
+				-->
+				<name>
+					<prefix qualifier="AC">Dipl.Ing.</prefix>
+					<prefix qualifier="PR">Hofrat</prefix>
+					<given>Herbert</given>
+					<given>Hannes</given>
+					<family>Mustermann</family>
+					<family qualifier="BR">VorDerHeirat</family>
+					<suffix qualifier="AC">BSc</suffix>
+					<suffix qualifier="AC">MBA</suffix>
+				</name>
+				<!--
+					Geschlecht des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.6)
+				-->
+				<administrativeGenderCode code="M" displayName="Male" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
+				<!--
+					Geburtsdatum des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.7)
+				-->
+				<birthTime value="19611224"/>
+				<!--
+					Familienstand des Patienten  (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.8)
+				-->
+				<maritalStatusCode code="M" displayName="Married" codeSystem="2.16.840.1.113883.5.2" codeSystemName="HL7:MaritalStatus"/>
+				<!--
+					Religionszugehörigkeit des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.9)
+				 -->
+				<religiousAffiliationCode code="101" displayName="Römisch-Katholisch" codeSystem="2.16.840.1.113883.2.16.1.4.1" codeSystemName="HL7.AT:ReligionAustria"/>
+				<!-- 
+					Vormund/Sachwalter des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.12)
+					"Person"
+				-->
+				<guardian>
+					<!--
+						Adresse des Vormunds/Sachwalters (Person)
+					-->
+					<addr>
+						<streetAddressLine>Musterstraße 1234</streetAddressLine>
+						<postalCode>8011</postalCode>
+						<city>Graz</city>
+						<state>Steiermark</state>
+						<country>AUT</country>
+					</addr>
+					<!--
+						Kontaktdaten des Vormunds/Sachwalters (Person)
+					-->
+					<telecom use="MC" value="tel:+43.676.1234567"/>
+					<telecom use="H" value="tel:+43.316.717.653.9939"/>
+					<telecom use="WP" value="tel:+43.316.608.271.9000"/>
+					<guardianPerson>
+						<!--
+							Name der Vormund/Sachwalter-Organisation
+						-->
+						<name>
+							<given>Susi</given>
+							<family>Sorgenvoll</family>
+						</name>
+					</guardianPerson>
+				</guardian>
+				<!-- 
+					Geburtsort des Patienten (siehe Allgemeiner Leitfaden, Kapitel 6.3.1.2.14)
+				-->
+				<birthplace>
+					<place>
+						<addr>Graz</addr>
+					</place>
+				</birthplace>
+			</patient>
+		</patientRole>
+	</recordTarget>
+	<!--
+		========================================================================
+		Verfasser des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2)
+		========================================================================
+	-->
+	<author>
+		<!--
+			Funktionscode des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.1)
+		-->
+		<functionCode code="A" displayName="Arzt" codeSystem="1.2.40.0.34.99.4613.10.4" codeSystemName="Ordination Dr. Meier Funktionscodes"/>
+		<!--
+			Zeitpunkt der Erstellung (z.B. des Diktats) (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.2)
+		-->
+		<time value="20130325082015+0100"/>
+		<assignedAuthor>
+			<!--  
+				Identifikation des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.3)
+			-->
+			<id root="1.2.40.0.34.99.4613.3.3" extension="1111" assigningAuthorityName="Ordination Dr. Meier"/>
+			<!--  
+				Fachrichtung des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.4)
+			-->
+			<code code="107" displayName="Fachärztin/Facharzt für Chirurgie" codeSystem="1.2.40.0.34.5.160" codeSystemName="ELGA_Fachärzte"/>
+			<!--
+				Kontaktdaten des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.5)
+			-->
+			<telecom use="WP" value="tel:+43.6138.3453446.1111"/>
+			<!--
+				Personendaten des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.6)
+			-->
+			<assignedPerson>
+				<!-- Name des Verfassers des Dokuments -->
+				<name>
+					<prefix>Dr.</prefix>
+					<given>Isabella</given>
+					<family>Meier</family>
+				</name>
+			</assignedPerson>
+			<!--
+				Organisation, in deren Auftrag der Verfasser des Dokuments die Dokumentation verfasst hat (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.7)
+			-->
+			<representedOrganization>
+				<!--
+					ID der Organisation aus dem GDA Index
+				-->
+				<id root="1.2.40.0.34.99.4613" assigningAuthorityName="GDA Index"/>
+				<!--
+					Name der Organisation
+				-->
+				<name>Ordination Dr. Meier</name>
+				<!-- 
+					Kontaktdaten der Organisation
+				-->
+				<telecom value="tel:+43.6138.3453446.0"/>
+				<telecom value="fax:+43.6138.3453446.4674"/>
+				<telecom value="mailto:info@drmeier.at"/>
+				<telecom value="http://www.drmeier.at"/>
+				<!--
+					Adresse der Organisation
+				-->
+				<addr>
+					<streetName>Mozartgasse</streetName>
+					<houseNumber>1-7</houseNumber>
+					<postalCode>5350</postalCode>
+					<city>St.Wolfgang</city>
+					<state>Salzburg</state>
+					<country>AUT</country>
+				</addr>
+			</representedOrganization>
+		</assignedAuthor>
+	</author>
+	<!--
+		========================================================================
+		Verwahrer des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.4)
+		========================================================================
+	-->
+	<custodian>
+		<assignedCustodian>
+			<representedCustodianOrganization>
+				<!--
+					ID der Organisation aus dem GDA Index (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.2)
+				-->
+				<id root="1.2.40.0.34.99.4613" assigningAuthorityName="GDA Index"/>
+				<!--
+					Name der Organisation (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.3)
+				-->
+				<name>Ordination Dr. Meier</name>
+				<!-- 
+					Kontaktdaten der Organisation (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.4)
+				-->
+				<telecom value="tel:+43.6138.3453446.0"/>
+				<!--
+					Adresse der Organisation (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.5)
+				-->
+				<addr>
+					<streetName>Mozartgasse</streetName>
+					<houseNumber>1-7</houseNumber>
+					<postalCode>5350</postalCode>
+					<city>St.Wolfgang</city>
+					<state>Salzburg</state>
+					<country>AUT</country>
+				</addr>
+			</representedCustodianOrganization>
+		</assignedCustodian>
+	</custodian>
+	<!--
+		========================================================================
+		Rechtlicher Unterzeichner (siehe Allgemeiner Leitfaden, Kapitel 6.3.6)
+		========================================================================
+	-->
+	<legalAuthenticator>
+		<!-- 
+			Zeitpunkt der Unterzeichnung (siehe Allgemeiner Leitfaden, Kapitel 6.3.6.2.2)
+		-->
+		<time value="20130325082015+0100"/>
+		<!-- 
+			Signaturcode (siehe Allgemeiner Leitfaden, Kapitel 6.3.6.2.3)
+		-->
+		<signatureCode code="S"/>
+		<!--
+			Personen- und Organisationsdaten des Rechtlichen Unterzeichners des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.6.2.4)
+		-->
+		<assignedEntity>
+			<!--  
+				Identifikation des Rechtlichen Unterzeichners des Dokuments
+			-->
+			<id root="1.2.40.0.34.99.4613.3.3" extension="1111" assigningAuthorityName="Ordination Dr. Meier"/>
+			<!--
+				Kontaktdaten des Rechtlichen Unterzeichners des Dokuments
+			-->
+			<telecom use="WP" value="tel:+43.6138.3453446.1111"/>
+			<!--
+				Personendaten des Rechtlichen Unterzeichners des Dokuments
+			-->
+			<assignedPerson>
+				<!-- Name des Rechtlichen Unterzeichners des Dokuments -->
+				<name>
+					<prefix>Dr.</prefix>
+					<given>Isabella</given>
+					<family>Meier</family>
+				</name>
+			</assignedPerson>
+			<!--
+				Organisation, in deren Auftrag der Rechtlichen Unterzeichners des Dokuments die Dokumentation unterzeichnet hat
+			-->
+			<representedOrganization>
+				<!--
+					ID der Organisation aus dem GDA Index
+				-->
+				<id root="1.2.40.0.34.99.4613" assigningAuthorityName="GDA Index"/>
+				<!--
+					Name der Organisation
+				-->
+				<name>Ordination Dr. Meier</name>
+				<!-- 
+					Kontaktdaten der Organisation
+				-->
+				<telecom value="tel:+43.6138.3453446.0"/>
+				<telecom value="fax:+43.6138.3453446.4674"/>
+				<telecom value="mailto:info@drmeier.at"/>
+				<telecom value="http://www.drmeier.at"/>
+				<!--
+					Adresse der Organisation
+				-->
+				<addr>
+					<streetName>Mozartgasse</streetName>
+					<houseNumber>1-7</houseNumber>
+					<postalCode>5350</postalCode>
+					<city>St.Wolfgang</city>
+					<state>Salzburg</state>
+					<country>AUT</country>
+				</addr>
+			</representedOrganization>
+		</assignedEntity>
+	</legalAuthenticator>
+	<!--
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+
+			Medizinische Inhalte "CDA Body"
+
+			siehe Allgemeiner Leitfaden, Kapitel 7
+
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+	-->
+	<component>
+		<!--
+			ELGA Interoperabilitätsstufe (EIS) "Full Support"
+		-->
+		<structuredBody>
+			<!--
+					*********************************************************************************
+					Empfohlene Medikation
+
+					Siehe Spezieller Leitfaden "Entlassungsbrief (Ärztlich)", Kapitel 4.2.6
+					*********************************************************************************
+			-->
+			<component>
+				<section>
+					<templateId root="1.2.40.0.34.11.8.4.2.1" assigningAuthorityName="ELGA"/>
+					<templateId root="1.3.6.1.4.1.19376.1.9.1.2.2" assigningAuthorityName="IHE PHARM"/>
+					<id root="1.2.40.0.10.1.4.3.4.2.1" extension="7NW2AYSYQNSU" assigningAuthorityName="e-MedAT"/>
+					<code code="61357-0" displayName="Medication Pharmaceutical Advice.Brief" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+					<title>Pharmazeutische Empfehlung</title>
+					<text>
+						<table ID="pepos-1">
+							<thead>
+								<tr>
+									<th>Verordnung oder Abgabe</th>
+									<th>Dokumenten ID</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>Verordnung</td>
+									<td>1.2.40.0.10.1.4.3.4.2.2 / WYE82A2G8EEW_4733</td>
+									<td>Storno/Absetzen</td>
+								</tr>
+							</tbody>
+						</table>
+					</text>
+					<entry typeCode="DRIV">
+						<observation classCode="OBS" moodCode="EVN">
+							<templateId root="1.2.40.0.34.11.8.4.3.1" assigningAuthorityName="ELGA"/>
+							<templateId root="1.3.6.1.4.1.19376.1.9.1.3.3" assigningAuthorityName="IHE PHARM"/>
+							<id root="1.2.40.0.10.1.4.3.4.2.4" extension="7NW2AYSYQNSU_aaa12" assigningAuthorityName="Ordination Dr. Meier"/>
+							<code code="CANCEL" displayName="Storno/Absetzen" codeSystem="1.3.6.1.4.1.19376.1.9.2.1" codeSystemName="IHE Pharmaceutical Advice Status List"/>
+							<text>
+								<reference value='#pepos-1'/>
+							</text>
+							<statusCode code="completed"/>
+							<entryRelationship typeCode="REFR">
+								<substanceAdministration classCode="SBADM" moodCode="INT">
+									<id root="1.2.40.0.10.1.4.3.4.2.2" extension="WYE82A2G8EEW_4733" assigningAuthorityName="Ordination Dr. Meier"/>
+									<consumable>
+										<manufacturedProduct>
+											<manufacturedMaterial nullFlavor="NA"/>
+										</manufacturedProduct>
+									</consumable>
+								</substanceAdministration>
+							</entryRelationship>
+						</observation>
+					</entry>
+				</section>
+			</component>
+		</structuredBody>
+	</component>
+</ClinicalDocument>
