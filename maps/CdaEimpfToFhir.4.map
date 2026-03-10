@@ -365,9 +365,11 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   // TODO
 
   // substanceAdministration/participant (Participant Body - Data Enterer = "Eintragende Person": Die dokumentierende Person (z.B. Medizinische Dokumentationsassistenz, Schreibkraft))
+  //
+  // TODO
+  // substanceAdministration/participant/time -> Immunization.recorded? (but deleted in R5)
+  //
   cda_substanceAdministration.participant as cda_participant where ($this.templateId.where(root='1.2.40.0.34.6.0.11.9.47')) -> 
-    // TODO
-    // substanceAdministration/participant/time -> Immunization.recorded? (but deleted in R5)
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
     fhir_practitionerRole.id = uuid() as fhir_practitioner_id,
