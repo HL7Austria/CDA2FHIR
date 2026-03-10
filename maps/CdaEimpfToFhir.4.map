@@ -490,8 +490,24 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     // TODO
 
     // substanceAdministration/effectiveTime
-    // TODO
+    cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime then {
 
+      cda_substanceAdministration_effectiveTime.low as cda_effectiveTime_low where ($this.value.exists()) -> 
+        fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion,
+        fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
+        fhir_recommendation_dateCriterion_code.coding as fhir_dateCriterion_code_coding, 
+        fhir_dateCriterion_code_coding.system = 'http://hl7.org/fhir/ValueSet/immunization-recommendation-date-criterion',
+        fhir_dateCriterion_code_coding.code = '30981-5',
+        fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_low,fhir_dateCriterion_value);
+    
+      cda_substanceAdministration_effectiveTime.high as cda_effectiveTime_high where ($this.value.exists()) -> 
+        fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion,
+        fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
+        fhir_recommendation_dateCriterion_code.coding as fhir_dateCriterion_code_coding, 
+        fhir_dateCriterion_code_coding.system = 'http://hl7.org/fhir/ValueSet/immunization-recommendation-date-criterion',
+        fhir_dateCriterion_code_coding.code = '59777-3',
+        fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_high,fhir_dateCriterion_value);
+    };     
     // substanceAdministration/doseQuantity
     // TODO
 
