@@ -77,10 +77,11 @@ check_response(res)
 
 # create MR
 data = {
+    'title': f'Release {SOURCE_BRANCH}',
     'source_branch': SOURCE_BRANCH,
     'target_branch': TARGET_BRANCH,
     'description': RELEASE_DESCRIPTION
 }
-res = requests.post('https://gitlab.com/api/v4/projects/{PROJECT_ID}/merge_requests?' + urllib.parse.urlencode(data), headers=HEADERS)
+res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/merge_requests', headers=HEADERS, json=data)
 check_response(res)
 
