@@ -86,7 +86,7 @@ data = {
     'title': f'Release {SOURCE_BRANCH}',
     'source_branch': SOURCE_BRANCH,
     'target_branch': TARGET_BRANCH,
-    'description': RELEASE_DESCRIPTION
+    'description': updated_release_description
 }
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/merge_requests', headers=HEADERS, json=data)
 check_response(res)
