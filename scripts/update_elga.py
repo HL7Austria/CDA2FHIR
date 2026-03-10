@@ -7,6 +7,9 @@ PROJECT_ID = os.environ['GITLAB_ELGA_CDA2FHIR_REPO']
 TARGET_BRANCH = os.environ['GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH']
 SOURCE_BRANCH = 'test-02'
 
+print('PROJECT_ID ' + PROJECT_ID)
+print('TARGET_BRANCH' + TARGET_BRANCH)
+
 def check_response(res):
     try:
         res.raise_for_status()

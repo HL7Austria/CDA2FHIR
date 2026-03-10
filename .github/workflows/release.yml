@@ -30,7 +30,7 @@ jobs:
       - name: Create MR in ELGA repository
         env:
           GITLAB_CI_TOKEN: ${{ secrets.GLE_GITLAB_CI_TOKEN }}
-          GITLAB_ELGA_CDA2FHIR_REPO: ${{ env.GITLAB_ELGA_CDA2FHIR_REPO }}
-          GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH: ${{ env.GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH }}
+          GITLAB_ELGA_CDA2FHIR_REPO: ${{ vars.GITLAB_ELGA_CDA2FHIR_REPO }}
+          GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH: ${{ vars.GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH }}
         run: |
           python scripts/update_elga.py
