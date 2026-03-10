@@ -490,12 +490,32 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     // TODO
 
     // substanceAdministration/effectiveTime
-    // TODO
-    cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime -> 
-      fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion then {
-        cda_substanceAdministration_effectiveTime -> fhir_recommendation_dateCriterion.value; 
-      }
 
+    cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime where (low.value.exists()) -> 
+      fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion then {
+
+        cda_substanceAdministration_effectiveTime -> 
+          fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
+          fhir_recommendation_dateCriterion_code.coding as cda_dateCriterion_code_coding, 
+          cda_dateCriterion_code_coding.system = 'http://hl7.org/fhir/ValueSet/immunization-recommendation-date-criterion',
+          cda_dateCriterion_code_coding.code = '30981-5';
+
+        cda_substanceAdministration_effectiveTime.low -> fhir_recommendation_dateCriterion.value;
+
+      };
+    
+    cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime where (high.value.exists()) -> 
+      fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion then {
+
+        cda_substanceAdministration_effectiveTime -> 
+          fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
+          fhir_recommendation_dateCriterion_code.coding as cda_dateCriterion_code_coding, 
+          cda_dateCriterion_code_coding.system = 'http://hl7.org/fhir/ValueSet/immunization-recommendation-date-criterion',
+          cda_dateCriterion_code_coding.code = '59777-3';
+
+        cda_substanceAdministration_effectiveTime.high -> fhir_recommendation_dateCriterion.value;
+      };
+    
     // substanceAdministration/doseQuantity
     // TODO
 
