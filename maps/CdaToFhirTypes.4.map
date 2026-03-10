@@ -22,8 +22,8 @@ conceptmap "ELGA2FHIRAddressUse" {
 
   s:"TMP" == t:"temp" // temporary address -> use = temp; type = both
 
-  s:"PHYS" == t:"home" // physical visit address -> use = home; type = physical
-  s:"PST" == t:"home" // billing address -> use = home; type = postal
+  // s:"PHYS" // NOT MAPPED physical visit address
+  // s:"PST" // NOT MAPPED billing address
 }
 
 // TODO review mapping
@@ -527,7 +527,9 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
   // src.root as r where src.extension.exists()
   //    -> tgt.system = translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
   src.root as r where src.extension.exists()
-     -> tgt.system = translate(r, '#OIDtoURI', 'code') "root1";
+     -> tgt.system = translate(r, '#OIDtoURI', 'code') then {
+      src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
+     } "root1";
 
   // testing if it is possible to use translate in where
   // src.root as r where (translate('#OIDtoURI', r)) ->
@@ -535,11 +537,14 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
 
   src.root as r where src.extension.empty()
         and src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
-     -> tgt.system = 'urn:ietf:rfc:3986', tgt.value = ('urn:uuid:' + r.lower()) "rootuuid";
+     -> tgt.system = 'urn:ietf:rfc:3986', tgt.value = ('urn:uuid:' + r.lower()) then {
+      src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
+     }  "rootuuid";
   src.root as r where src.extension.empty() and src.root.contains('.')
-     ->  tgt.system = 'urn:ietf:rfc:3986',  tgt.value = append('urn:oid:', r) "rootoid";
+     ->  tgt.system = 'urn:ietf:rfc:3986',  
+    tgt.value = append('urn:oid:', r), 
+    tgt.assigner as a,  a.display = 'Bundesministerium für Gesundheit' "rootoid";
   src.extension as e -> tgt.value = e;
-  src.assigningAuthorityName as s ->  tgt.assigner as a,  a.display = s;
   // there's no equivalent for displayable in FHIR - and it probably will never matter, but if it does, it might map to Identifier.use.
   src.displayable as displayable -> tgt.extension as ext then {
     displayable -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/extension-displayable' "url";
@@ -661,7 +666,9 @@ group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> 
 }
 
 group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends Any <<types>> {
-  src.originalText -> tgt.text;
+  // TODO deal with references
+  // src.originalText as src_originalText -> tgt.text = (src_originalText.xmlText);
+  
   src where ($this.nullFlavor.exists().not()) ->
     tgt.coding as coding
     // in order to be able to capture the primary code in case there are translations
@@ -859,12 +866,12 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   //   "FhirAddressAtCoreAddressProfile";
 
   // addr.use
-  cda_address.use as cda_use ->
-    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') then {
-      cda_use where (cda_use != 'PHYS' and cda_use != 'PST') -> fhir_address.type = 'both' "CdaAddressUseToFhirAddressTypeBoth";
-      cda_use where (cda_use = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
-      cda_use where (cda_use = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePostal";
-    } "CdaAddressUseToFhirAddressUseAndType";
+  cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
+    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
+  
+  cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
+
+  cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
 
   cda_address.item as cda_address_item then {
     // addr.postalCode
