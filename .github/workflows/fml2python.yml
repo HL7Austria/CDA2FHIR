@@ -5,7 +5,7 @@ name: Convert FML to Python (MaLaC-HD)
 on:
   push:
     branches:
-      - main
+      - elga
 
 jobs:
   convert-and-commit:
@@ -26,21 +26,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-      - name: Install MaLaC-HD
+      - name: Install MaLaC-HD with CDA model
         run: |
-          git clone https://gitlab.com/cdehealth/malac/models.git
-          pip install -e models/fhir
-          pip install -e models/cda
-          git clone https://gitlab.com/cdehealth/malac/utils.git
-          pip install -e utils
-          git clone https://gitlab.com/cdehealth/malac/transformer.git
-          pip install -e transformer/fhir
-          git clone https://gitlab.com/cdehealth/malac-hd.git
-          pip install -e malac-hd
+          pip install malac-hd[cda]
 
       - name: Run MaLaC-HD
         run: |
-          malac-hd -m maps/CdaToBundle.4.map -co python-maps/CdaToBundle.4.py
+          malac-hd -m maps/CdaToFhir.4.map -co python-maps/CdaToFhir.4.py
 
       - name: Commit any converted outputs
         run: |
@@ -53,6 +45,4 @@ jobs:
             echo "Changes will be committed automatically"
             git commit -m "Automated: convert FML to Python using MaLaC-HD"
             git push origin HEAD:${{ github.ref }}
-            echo "Invoke automatic transformation of test files"
-            curl -X POST https://gitlab.com/api/v4/projects/53941928/ref/malac_myhealtheu/trigger/pipeline?token=${{ secrets.GITLAB_PIPELINE_TRIGGER }}
           fi
