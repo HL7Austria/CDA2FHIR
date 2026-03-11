@@ -646,5 +646,5 @@ group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: Material,
     };
 
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
-  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor.exists().not()) then CDCodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode); 
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor.exists().not()) then CECodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode); 
 }
