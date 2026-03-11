@@ -1,6 +1,5 @@
 // TODO
 //   check CDA2FHIR meeting minutes for TODOs
-//   check uses-Section and include all what is necessary
 
 map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle" = "CdaEimpfToFhirBundle"
 
@@ -10,17 +9,24 @@ conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
   s: "11369-6" == s: "11369-6"
 }
 
-uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias CDAClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias CdaClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias CdaStructuredBody as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias CdaSection as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/SubstanceAdministration" alias CdaSubstanceAdministration as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMaterial as source
 
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FHIRBundle as target
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FHIRComposition as target
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias FHIRPatient as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias FhirPatient as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Immunization" alias FhirImmunization as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/ImmunizationRecommendation" alias FhirImmunizationRecommendation as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias FhirCodeableConcept as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
 // _________________________ Document Level Template  _________________________
 
-group CdaEimpfToFhirBundle(source cda: CDAClinicalDocument, target fhir_patient: FHIRPatient, target fhir_composition: FHIRComposition, target fhir_bundle: FHIRBundle) {
+group CdaEimpfToFhirBundle(source cda: CdaClinicalDocument, target fhir_patient: FhirPatient, target fhir_composition: FhirComposition, target fhir_bundle: FhirBundle) {
   cda ->
     // at least on Bundle level the profile is to be set
     fhir_bundle.meta as fhir_bundle_meta,
@@ -40,7 +46,7 @@ group CdaEimpfToFhirBundle(source cda: CDAClinicalDocument, target fhir_patient:
     } "CdaEimpfToFhirBundle";
 }
 
-group CdaEimpfHeaderToFhirComposition(source cda : CDAClinicalDocument, target fhir_composition : FHIRComposition, target fhir_patient: FHIRPatient, target fhir_bundle : FHIRBundle) extends CdaHeaderToFhirComposition {
+group CdaEimpfHeaderToFhirComposition(source cda: CdaClinicalDocument, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaHeaderToFhirComposition {
   // ClinicalDocument/code -> Composition.category
   cda.code as cda_code then {
     cda_code.code as code_code ->
@@ -57,12 +63,12 @@ group CdaEimpfHeaderToFhirComposition(source cda : CDAClinicalDocument, target f
   };
 }
 
-group CdaEimpfHeaderToFhir(source cda : ClinicalDocument, target fhir_composition : FHIRComposition, target fhir_patient: FHIRPatient, target fhir_bundle : FHIRBundle) extends CdaHeaderToFhir {
+group CdaEimpfHeaderToFhir(source cda: CdaClinicalDocument, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaHeaderToFhir {
 }
 
 // _________________________ Section Level Template  _________________________
 
-group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition : FHIRComposition, target fhir_patient: FHIRPatient, target fhir_bundle : FHIRBundle) {
+group CdaEimpfBodyToFhir(source cda: CdaClinicalDocument, source cda_structuredBody: CdaStructuredBody, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) {
   // prefill required APS sections in order to have a valid APS instance
   cda_structuredBody -> 
     // section problems
@@ -169,7 +175,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
   } "CdaEimpfBodyToFhir";
 }
 
-group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code;
 
@@ -214,7 +220,7 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target 
   // TODO
 }
 
-group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code;
 
@@ -248,7 +254,7 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: Section, ta
 
 // _________________________ Entry Level Template  _________________________
 
-group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization, target fhir_bundle: Bundle) {
+group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunization: FhirImmunization, target fhir_bundle: FhirBundle) {
   // substanceAdministration/id -> Immunization.identifier 
   cda_substanceAdministration.id -> fhir_immunization.identifier;
 
@@ -475,7 +481,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   // TODO
 }
 
-group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunizationRecommendation: ImmunizationRecommendation, target fhir_bundle: Bundle) {
+group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
   // substanceAdministration/id -> ImmunizationRecommendation.identifier 
   cda_substanceAdministration.id -> fhir_immunizationRecommendation.identifier;
 
@@ -624,7 +630,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
   };
 }
 
-group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: Material, target fhir_vaccineCode: CodeableConcept) {
+group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMaterial, target fhir_vaccineCode: FhirCodeableConcept) {
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
   // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
   //
