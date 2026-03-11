@@ -556,13 +556,23 @@ group INT(source src : INT, target tgt : integer) extends Any <<types>> {
   src.value as v -> tgt.value = v "integer";
 }
 
-group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
-  src.low as source_low -> tgt.low as target_low then IVXB_INT(source_low, target_low) "IVL_INTLow";
-  src.high as source_high -> tgt.high as target_high then IVXB_INT(source_high, target_high) "IVL_INTHigh";
+group INTQuantity(source src: INT, target tgt: Quantity) extends Any <<types>> {
+  src -> tgt.system = 'http://unitsofmeasure.org' "FhirQuantitySystem";
+  src ->
+    tgt.code = '1',
+    tgt.unit = '1';
+  src.value as value -> tgt.value = value;
 }
 
-group IVXB_INT(source src : IVXB_INT, target tgt : Quantity) extends Any <<types>>{
-   src.value as value -> tgt.value = value;
+group REALQuantity(source src: INT, target tgt: Quantity) extends INTQuantity <<types>> {
+}
+
+group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
+  src.low as source_low -> tgt.low as target_low then IVXB_INTQuantity(source_low, target_low) "IVL_INTLow";
+  src.high as source_high -> tgt.high as target_high then IVXB_INTQuantity(source_high, target_high) "IVL_INTHigh";
+}
+
+group IVXB_INTQuantity(source src : IVXB_INT, target tgt : Quantity) extends INTQuantity <<types>>{
 }
 
 group BL(source src : BL, target tgt: boolean) extends Any <<types>> {
@@ -1075,9 +1085,16 @@ group IVXB_PQQuantity(source src : IVXB_PQ, target tgt : Quantity) extends PQQua
 //   src where $this.inclusive=true -> tgt.comparator = '>=' "CdaInclusiveToFhirComparatorInclusive";
 // }
 
-group RTOPQPQRatio(source src : RTO_PQ_PQ, target tgt : Ratio) extends Any <<types>> {
-  src.numerator as numerator -> tgt.numerator as targetNumerator then PQQuantity(numerator, targetNumerator) "numerator";
-  src.denominator as denominator -> tgt.denominator as targetDenominator then PQQuantity(denominator, targetDenominator) "denominator";
+group RTORatio(source src: RTO, target tgt: Ratio) extends Any <<types>> {
+  // numerator
+  src.numerator: INT as src_numerator -> tgt.numerator as tgt_numerator then INTQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorINTToFhirQuantity";
+  src.numerator: REAL as src_numerator -> tgt.numerator as tgt_numerator then REALQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorREALToFhirQuantity";
+  src.numerator: PQ as src_numerator -> tgt.numerator as tgt_numerator then PQQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorPQToFhirQuantity";
+
+  // denominator
+  src.denominator: INT as src_denominator -> tgt.denominator as tgt_denominator then INTQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorINTToFhirQuantity";
+  src.denominator: REAL as src_denominator -> tgt.denominator as tgt_denominator then REALQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorREALToFhirQuantity";
+  src.denominator: PQ as src_denominator -> tgt.denominator as tgt_denominator then PQQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorPQToFhirQuantity";
 }
 
 group CdaNullFlavorToFhirNullFlavor(source src : ANY, target tgt : Extension) extends Any <<types>> {
