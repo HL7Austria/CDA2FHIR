@@ -5,6 +5,14 @@ map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-type
 // CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
 // FHIR: http://hl7.org/fhir/r4/
 
+conceptmap "v3-NullFlavor-2-data-absent-reason" {
+  prefix s = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix t = "http://terminology.hl7.org/CodeSystem/data-absent-reason"
+
+  s: "UNK" == t: "unknown"
+  s: "NAV" == t: "temp-unknown"
+  s: "NA" == t: "not-applicable"
+}
 
 // TODO review mapping
 // based on BlackTusk
@@ -1107,4 +1115,12 @@ group CdaNullFlavorToFhirNullFlavor(source src : ANY, target tgt : Extension) ex
       fhir_extension_code.value = (cda_nullFlavor)
       "code";
   } "CdaNullFlavorToFhirNullFlavor";
+}
+
+group CdaNullFlavorToFhirDataAbsentReason(source src: ANY, target tgt: Extension) extends Any <<types>> {
+  src.nullFlavor as cda_nullFlavor then {
+    cda_nullFlavor -> tgt.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason' "url";
+
+    cda_nullFlavor -> tgt.value = translate(cda_nullFlavor, '#v3-NullFlavor-2-data-absent-reason', 'code') "code";
+  } "CdaNullFlavorToFhirDataAbsentReason";
 }

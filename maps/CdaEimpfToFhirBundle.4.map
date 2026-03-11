@@ -445,8 +445,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
         // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
         cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists()) -> 
           fhir_immunization_protocolApplied.doseNumber = create('string') as fhir_immunization_protocolApplied_doseNumber,
-          fhir_immunization_protocolApplied_doseNumber.extension as fhir_immunization_protocolApplied_doseNumber_extension then 
-          CdaNullFlavorToFhirNullFlavor(cda_criterion_value, fhir_immunization_protocolApplied_doseNumber_extension); 
+          fhir_immunization_protocolApplied_doseNumber.extension as fhir_immunization_protocolApplied_doseNumber_extension then
+          CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunization_protocolApplied_doseNumber_extension); 
       }; 
     }; 
   };
