@@ -10331,11 +10331,24 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
   } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // observation.value(xsi:type="INT")
-  cda_laboratory_observation.value: INT as cda_observation_value then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaValueINTToFhirObservationValue";
+  cda_laboratory_observation.value: INT as cda_observation_value ->
+    fhir_observation.value = create('Quantity') as fhir_observation_value
+    then INTQuantity(cda_observation_value, fhir_observation_value) "CdaValueINTToFhirObservationValue";
 
-  // observation.value(xsi:type="TS")
-  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
-  
+  // observation.value(xsi:type="IVL_INT")
+  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
+    cda_observation_value where (cda_observation_value.value.exists()) ->
+      fhir_observation.value = create('Quantity') as fhir_observation_value
+      then INTQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueQuantity";
+    
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
+      fhir_observation.value = create('Range') as fhir_observation_value
+      then IVL_INTRange(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueRange";
+  } "CdaObservationValueIVL_INTToFhirObservationValue";
+
+  // observation.value(xsi:type="ST")
+  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+
   // observation.value(xsi:type="CV")
   cda_laboratory_observation.value: CV as cda_observation_value ->
     fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
@@ -10344,6 +10357,9 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     fhir_observation_value_coding.code = 'OTH' then 
       CVCodeableConcept(cda_observation_value, fhir_observation_value) 
       "CdaObservationValueCVToFhirObservationValueCodeableConcept";
+
+  // observation.value(xsi:type="TS")
+  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
 
   // observation.value(xsi:type="CD")
   cda_laboratory_observation where cda_laboratory_observation.value.exists((code='255599008' or code='281268007') and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -10425,55 +10441,23 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
           CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
     }"CdaIncompleteObservationToFhirObservationStatus";
       
-  // observation.value(xsi:type="ST")
-  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-  
-  // observation.value(xsi:type="IVL_INT")
-  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
-    cda_observation_value where (cda_observation_value.value.exists()) then CdaLaboratoryObservationToFhirObservationValueINT(cda_laboratory_observation, fhir_observation) "CdaObservationValueIVL_INTToFhirObservationValueInteger";
-    
-    // As the mapping of IVL_INT would have to be realized
-    // by using string-data type as target because Range
-    // requires a unit and a system in the Quantities this
-    // was deemed to complex. As a result, the
-    // valueCodeableConcept will be set to "OTH" and
-    // the original value will be captured in an extension.
-    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
-      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-      fhir_observation_value.coding as fhir_observation_value_coding,
-      fhir_observation_value_coding.code = 'OTH',
-      fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('Range') as fhir_observation_value_extension_value then IVL_INTRange(cda_observation_value, fhir_observation_value_extension_value) 
-        "CdaObservationValueIVL_INTToFhirObservationRange";
-  } "CdaObservationValueIVL_INTToFhirObservationValue";
+  // observation.value(xsi:type="RTO")
+  cda_laboratory_observation.value: RTO as cda_observation_value -> 
+    fhir_observation.value = create('Ratio') as fhir_observation_value then RTORatio(cda_observation_value, fhir_observation_value) 
+    "CdaObservationValueRTOToFhirObservationValueRatio";
+
+  // observation.value(xsi:type="RTO_QTY_QTY")
+  cda_laboratory_observation.value: RTO_QTY_QTY as cda_observation_value -> 
+    fhir_observation.value = create('Ratio') as fhir_observation_value then RTORatio(cda_observation_value, fhir_observation_value) 
+    "CdaObservationValueRTO_QTY_QTYToFhirObservationValueRatio";
+
+  // observation.value(xsi:type="RTO_PQ_PQ")
+  cda_laboratory_observation.value: RTO_PQ_PQ as cda_observation_value -> 
+    fhir_observation.value = create('Ratio') as fhir_observation_value then RTORatio(cda_observation_value, fhir_observation_value) 
+    "CdaObservationValueRTO_PQ_PQToFhirObservationValueRatio";
 
   // TODO other datatypes
 	// // in the case of microbial culture finding with sample report, observation.value element contains result interpretation -> error or correct? is it allowed to use an interpretationCode Element without a value-Element itself?
-	// // Interval of Physical Quantities
-	// cdaObs.value: IVL_PQ as obsValueCDA -> observation.value = create('Range') as value then IVLPQRange(obsValueCDA, value) "observationValueIVLPQ";
-	// // Physical Quantity - not standard conformant, but required for example report
-	// cdaObs.value: PQ as obsValueCDA -> observation.value = create('Quantity') as value then PQQuantity(obsValueCDA,value) "observationValuePQ";
-	// // Boolean
-	// cdaObs.value: BL as obsValueCDA -> observation.value = create('boolean') as value then Boolean(obsValueCDA,value) "observationValueBool";
-	// // Ratio
-	// cdaObs.value: RTO as obsValueCDA -> observation.value = create('Ratio') as value then RTORatio(obsValueCDA,value) "observationValueRTO";
-	// // Ratio of quantities
-	// cdaObs.value: RTO_QTY_QTY as obsValueCDA -> observation.value = create('Ratio') as value then RTOQTYQTYRatio(obsValueCDA,value) "observationValueRTOQTYQTY";
-	// // Ratio of physical quantities
-	// cdaObs.value: RTO_PQ_PQ as obsValueCDA -> observation.value = create('Ratio') as value then RTOPQPQRatio(obsValueCDA,value) "observationValueRTOPQPQ";
-}
-
-group CdaLaboratoryObservationToFhirObservationValueINT(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {
-  cda_laboratory_observation.value as cda_observation_value then {
-    cda_observation_value.value as cda_observation_value_attribute -> 
-      fhir_observation.value = cast(cda_observation_value_attribute, 'string') as fhir_observation_value,
-      fhir_observation_value.extension as fhir_observation_value_extension,
-      fhir_observation_value_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-originalDataType',
-      fhir_observation_value_extension.value = create('integer') as fhir_observation_value_extension_value then INT(cda_observation_value, fhir_observation_value_extension_value) 
-      "CdaValueToFhirValueINT";
-  } "CdaValueINTToFhirObservationValue";
 }
 
 group CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(source cda_laboratory_observation: CDAObservation, target fhir_observation: Observation) {

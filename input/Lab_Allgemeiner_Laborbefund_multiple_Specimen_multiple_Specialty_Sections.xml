@@ -3126,7 +3126,10 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value unit="10*9/L" value="165" xsi:type="PQ"/>
+                                            <value xsi:type="RTO">
+                                                <numerator value="1" xsi:type="INT"/>
+                                                <denominator value="128" xsi:type="INT"/>
+                                            </value>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3157,7 +3160,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value unit="10*12/L" value="5.39" xsi:type="PQ"/>
+                                            <value value="5" xsi:type="INT"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -7016,7 +7019,10 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="%" value="116" xsi:type="PQ"/>
+                                            <value xsi:type="RTO_PQ_PQ">
+                                                <numerator value="1" unit="mg/dl" xsi:type="PQ"/>
+                                                <denominator value="128" unit="mg/dl" xsi:type="PQ"/>
+                                            </value>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
