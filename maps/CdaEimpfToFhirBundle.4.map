@@ -1,3 +1,6 @@
+// TODO
+//   check CDA2FHIR meeting minutes for TODOs
+
 map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle" = "CdaEimpfToFhirBundle"
 
 conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
@@ -6,17 +9,24 @@ conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
   s: "11369-6" == s: "11369-6"
 }
 
-uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias CDAClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias CdaClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias CdaStructuredBody as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias CdaSection as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/SubstanceAdministration" alias CdaSubstanceAdministration as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMaterial as source
 
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FHIRBundle as target
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FHIRComposition as target
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias FHIRPatient as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias FhirPatient as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Immunization" alias FhirImmunization as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/ImmunizationRecommendation" alias FhirImmunizationRecommendation as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias FhirCodeableConcept as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
 // _________________________ Document Level Template  _________________________
 
-group CdaEimpfToFhirBundle(source cda: CDAClinicalDocument, target fhir_patient: FHIRPatient, target fhir_composition: FHIRComposition, target fhir_bundle: FHIRBundle) {
+group CdaEimpfToFhirBundle(source cda: CdaClinicalDocument, target fhir_patient: FhirPatient, target fhir_composition: FhirComposition, target fhir_bundle: FhirBundle) {
   cda ->
     // at least on Bundle level the profile is to be set
     fhir_bundle.meta as fhir_bundle_meta,
@@ -36,7 +46,7 @@ group CdaEimpfToFhirBundle(source cda: CDAClinicalDocument, target fhir_patient:
     } "CdaEimpfToFhirBundle";
 }
 
-group CdaEimpfHeaderToFhirComposition(source cda : CDAClinicalDocument, target fhir_composition : FHIRComposition, target fhir_patient: FHIRPatient, target fhir_bundle : FHIRBundle) extends CdaHeaderToFhirComposition {
+group CdaEimpfHeaderToFhirComposition(source cda: CdaClinicalDocument, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaHeaderToFhirComposition {
   // ClinicalDocument/code -> Composition.category
   cda.code as cda_code then {
     cda_code.code as code_code ->
@@ -53,12 +63,12 @@ group CdaEimpfHeaderToFhirComposition(source cda : CDAClinicalDocument, target f
   };
 }
 
-group CdaEimpfHeaderToFhir(source cda : ClinicalDocument, target fhir_composition : FHIRComposition, target fhir_patient: FHIRPatient, target fhir_bundle : FHIRBundle) extends CdaHeaderToFhir {
+group CdaEimpfHeaderToFhir(source cda: CdaClinicalDocument, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaHeaderToFhir {
 }
 
 // _________________________ Section Level Template  _________________________
 
-group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition : FHIRComposition, target fhir_patient: FHIRPatient, target fhir_bundle : FHIRBundle) {
+group CdaEimpfBodyToFhir(source cda: CdaClinicalDocument, source cda_structuredBody: CdaStructuredBody, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) {
   // prefill required APS sections in order to have a valid APS instance
   cda_structuredBody -> 
     // section problems
@@ -155,7 +165,9 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
     // cda_component.section as cda_antikoerper_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_4 then CdaAntikoerperSectionToFhirCompositionSection(cda_antikoerper_section, fhir_section_4, fhir_bundle);
     
     // Impfempfehlungen - kodiert - 1.2.40.0.34.6.0.11.2.2
-    // cda_component.section as cda_impfempfehlung_section where code.where(code='18776-5' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_5 then CdaImpfempfehlungSectionToFhirCompositionSection(cda_impfempfehlung_section, fhir_section_5, fhir_bundle);
+    // APS section: plan of care
+    cda_component.section as cda_section where code.where(code='18776-5' and codeSystem='2.16.840.1.113883.6.1') -> 
+      fhir_composition.section as fhir_section then CdaEimpfImpfempfehlungKodiertToFhirSection(cda_section, fhir_section, fhir_patient, fhir_bundle);
     
     // Beilagen - 1.2.40.0.34.6.0.11.2.71
     // cda_component.section as cda_beilagen_section where code.where(code='BEIL' and codeSystem='1.2.40.0.34.5.40') -> fhir_composition.section as fhir_section_6 then CdaBeilagenSectionToFhirCompositionSection(cda_beilagen_section, fhir_section_6, fhir_bundle);
@@ -163,7 +175,7 @@ group CdaEimpfBodyToFhir(source cda : ClinicalDocument, source cda_structuredBod
   } "CdaEimpfBodyToFhir";
 }
 
-group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code;
 
@@ -208,13 +220,46 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: Section, target 
   // TODO
 }
 
+group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
+  // section/code -> Composition.section.code
+  cda_section.code -> fhir_section.code;
+
+  // section/title
+  cda_section -> fhir_section.title = 'Behandlungsplan (Plan of Care)' "FhirSectionTitle";
+
+  // section/entry
+  cda_section.entry as cda_section_entry then {
+    // section/entry/substanceAdministration -> ImmunizationRecommendation
+    cda_section_entry.substanceAdministration as cda_section_entry_substanceAdministration -> 
+      // create ImmunizationRecommendation
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('ImmunizationRecommendation') as fhir_immunizationRecommendation,
+      fhir_immunizationRecommendation.id = uuid() as fhir_immunizationRecommendation_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_immunizationRecommendation_id),
+      // link section entry to ImmunizationRecommendation
+      fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+      fhir_section_entry_reference.reference = append('urn:uuid:', fhir_immunizationRecommendation_id),
+      fhir_section_entry_reference.type = 'ImmunizationRecommendation',
+      // link ImmunizationRecommendation to Patient
+      fhir_patient.id as fhir_patient_id,
+      fhir_immunizationRecommendation.patient = create('Reference') as fhir_immunizationRecommendation_patient_reference,
+      fhir_immunizationRecommendation_patient_reference.reference = append('urn:uuid:', fhir_patient_id),
+      fhir_immunizationRecommendation_patient_reference.type = 'Patient' then 
+      CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_section_entry_substanceAdministration, fhir_immunizationRecommendation, fhir_bundle);
+  };
+
+  // Übersetzung
+  // TODO
+}
+
 // _________________________ Entry Level Template  _________________________
 
-group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: SubstanceAdministration, target fhir_immunization: Immunization, target fhir_bundle: Bundle) {
+group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunization: FhirImmunization, target fhir_bundle: FhirBundle) {
   // substanceAdministration/id -> Immunization.identifier 
   cda_substanceAdministration.id -> fhir_immunization.identifier;
 
   // substanceAdministration/text
+  // TODO
 
   // substanceAdministration/statusCode -> Immunization.status
   cda_substanceAdministration.statusCode -> fhir_immunization.status; 
@@ -242,30 +287,10 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 
       // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial
       cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
-        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-        // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
-        //
-        // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
-        //
-        cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA') ->
-          fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
-          fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then 
-          CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension); 
-
-        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-        //
-        // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
-        //
-        cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'OTH') ->
-          fhir_immunization.vaccineCode as fhir_immunization_vaccineCode,
-          fhir_immunization_vaccineCode.extension as fhir_immunization_vaccineCode_extension then {
-            cda_manufacturedMaterial_code then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_immunization_vaccineCode_extension);
-
-            cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_immunization_vaccineCode);
-          };
-
-        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> Immunization.vaccineCode
-        cda_manufacturedMaterial.code where ($this.nullFlavor.exists().not()) -> fhir_immunization.vaccineCode; 
+        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name -> Immunization.vaccineCode
+        cda_manufacturedMaterial -> 
+          fhir_immunization.vaccineCode as fhir_immunization_vaccineCode then 
+            CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunization_vaccineCode);
 
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
         //TODO
@@ -454,4 +479,178 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
     
   // substanceAdministration/reference (External Document Entry) 
   // TODO
+}
+
+group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
+  // substanceAdministration/id -> ImmunizationRecommendation.identifier 
+  cda_substanceAdministration.id -> fhir_immunizationRecommendation.identifier;
+
+  cda_substanceAdministration -> fhir_immunizationRecommendation.recommendation as fhir_immunizationRecommendation_recommendation then {
+    // substanceAdministration/code -> fhir_immunizationRecommendation.recommendation.forecastStatus
+    cda_substanceAdministration.code -> fhir_immunizationRecommendation_recommendation.forecastStatus;
+
+    // substanceAdministration/text
+    // TODO
+
+    // substanceAdministration/statusCode
+    // TODO
+
+    // substanceAdministration/effectiveTime
+    cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime then {
+
+      cda_substanceAdministration_effectiveTime.low as cda_effectiveTime_low where ($this.value.exists()) -> 
+        fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion,
+        fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
+        fhir_recommendation_dateCriterion_code.coding as fhir_dateCriterion_code_coding, 
+        fhir_dateCriterion_code_coding.system = 'http://loinc.org',
+        fhir_dateCriterion_code_coding.code = '30981-5',
+        fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_low,fhir_dateCriterion_value);
+    
+      cda_substanceAdministration_effectiveTime.high as cda_effectiveTime_high where ($this.value.exists()) -> 
+        fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion,
+        fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
+        fhir_recommendation_dateCriterion_code.coding as fhir_dateCriterion_code_coding, 
+        fhir_dateCriterion_code_coding.system = 'http://loinc.org',
+        fhir_dateCriterion_code_coding.code = '59777-3',
+        fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_high,fhir_dateCriterion_value);
+    };     
+    // substanceAdministration/doseQuantity
+    // TODO
+
+    // substanceAdministration/consumable
+    cda_substanceAdministration.consumable as cda_consumable then {
+      // substanceAdministration/consumable/manufacturedProduct
+      cda_consumable.manufacturedProduct as cda_manufacturedProduct then {
+        // substanceAdministration/consumable/manufacturedProduct/id
+        // TODO
+
+        // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial
+        cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> ImmunizationRecommendation.recommendation.vaccineCode
+          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = false) then {
+            cda_manufacturedMaterial -> 
+              fhir_immunizationRecommendation_recommendation.vaccineCode as fhir_immunizationRecommendation_recommendation_vaccineCode then 
+                CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_vaccineCode);
+          };
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> ImmunizationRecommendation.recommendation.contraindicatedVaccineCode
+          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = true) then {
+            cda_manufacturedMaterial -> 
+              fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode as fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode then 
+                CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode);
+          }
+
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
+          //TODO
+
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/lotNumberText
+          // TODO
+
+          // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/pharm:ingredient
+          // TODO
+        };
+
+        // substanceAdministration/consumable/manufacturedProduct/manufacturerOrganization
+        // TODO
+      };
+    };
+
+    // substanceAdministration/author
+    cda_substanceAdministration.author as cda_substanceAdministration_author then {
+      // substanceAdministration/author -> ImmunizationRecommendation.date
+      cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
+      cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
+        fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
+        fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
+        // 
+        // TODO see https://hl7at.atlassian.net/wiki/spaces/BAL/pages/1091764225/2026-03-09+AG+ELGA+CDA+Laborbefund+zu+FHIR
+        //      see https://hl7.eu/fhir/base-r5/missing-data.html
+        //
+        then CdaNullFlavorToFhirNullFlavor(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
+
+      // substanceAdministration/author/assignedAuthor
+      // TODO
+    };
+
+    // substanceAdministration/participant (Participant Body - Verifier = Korrigierende Person (Datenverarbeitende Person))
+    // TODO
+
+    // substanceAdministration/participant (Participant Body - Authorized Editor = Berechtigter bearbeitender GDA (OID aus dem GDA-Index))
+    // TODO
+
+    // substanceAdministration/participant (Participant Body - Data Enterer = "Eintragende Person": Die dokumentierende Person (z.B. Medizinische Dokumentationsassistenz, Schreibkraft))
+    // TODO
+
+    // substanceAdministration/entryRelationship (Immunization Target Entry)
+    cda_substanceAdministration.entryRelationship as cda_substanceAdministration_entryRelationship where ($this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.2')) then {
+      cda_substanceAdministration_entryRelationship.observation as cda_observation then {
+        // substanceAdministration/entryRelationship/observation/code -> ImmunizationRecommendation.recommendation.targetDisease
+        cda_observation.code -> fhir_immunizationRecommendation_recommendation.targetDisease;
+      };
+    };
+
+    // substanceAdministration/entryRelationship (Comment Entry)
+    // TODO
+
+    // substanceAdministration/reference (External Document Entry) 
+    // TODO
+
+    // substanceAdministration/precondition (Immunization Schedule Entry)
+    cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
+      // substanceAdministration/precondition/criterion
+      cda_substanceAdministration_precondition.criterion as cda_criterion then {
+        // substanceAdministration/precondition/criterion/code -> Immunization.protocolApplied.series
+        cda_criterion.code as cda_criterion_code where ($this.nullFlavor.exists().not()) then {
+          // substanceAdministration/precondition/criterion/code/@code -> Immunization.protocolApplied.series
+          cda_criterion_code.code as cda_criterion_code_code ->
+            fhir_immunizationRecommendation_recommendation.series = cast(cda_criterion_code_code, 'string') as fhir_immunizationRecommendation_recommendation_series,
+            fhir_immunizationRecommendation_recommendation_series.extension as fhir_immunizationRecommendation_recommendation_series_extension,
+            fhir_immunizationRecommendation_recommendation_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
+            fhir_immunizationRecommendation_recommendation_series_extension.value = create('Coding') as fhir_coding then 
+              // substanceAdministration/precondition/criterion/code -> Immunization.protocolApplied.series.extension.coding
+              CECoding(cda_criterion_code, fhir_coding);
+        };
+
+        // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
+        cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists().not()) then {
+          cda_criterion_value.code as cda_criterion_value_code ->
+            fhir_immunizationRecommendation_recommendation.doseNumber = cast(cda_criterion_value_code, 'string') as fhir_immunizationRecommendation_recommendation_doseNumber,
+            fhir_immunizationRecommendation_recommendation_doseNumber.extension as fhir_immunizationRecommendation_recommendation_doseNumber_extension,
+            fhir_immunizationRecommendation_recommendation_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString',
+            fhir_immunizationRecommendation_recommendation_doseNumber_extension.value = create('Coding') as fhir_coding then 
+              // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString.extension.coding
+              CECoding(cda_criterion_value, fhir_coding);
+        };
+        // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
+        cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists()) -> 
+          fhir_immunizationRecommendation_recommendation.doseNumber = create('string') as fhir_immunizationRecommendation_recommendation_doseNumber,
+          fhir_immunizationRecommendation_recommendation_doseNumber.extension as fhir_immunizationRecommendation_recommendation_doseNumber_extension then 
+          CdaNullFlavorToFhirNullFlavor(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension); 
+      }; 
+    }; 
+  };
+}
+
+group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMaterial, target fhir_vaccineCode: FhirCodeableConcept) {
+  // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
+  // Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
+  //
+  // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
+  //
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA') ->
+    fhir_vaccineCode.extension as fhir_vaccineCode_extension then 
+    CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_vaccineCode_extension); 
+
+  // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
+  //
+  // TODO: nullFlavor-extension vs. dataAbsentReason-extension vs. nullFlavor-coding
+  //
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'OTH') ->
+    fhir_vaccineCode.extension as fhir_vaccineCode_extension then {
+      cda_manufacturedMaterial_code then CdaNullFlavorToFhirNullFlavor(cda_manufacturedMaterial_code, fhir_vaccineCode_extension);
+
+      cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_vaccineCode);
+    };
+
+  // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
+  cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor.exists().not()) then CECodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode); 
 }
