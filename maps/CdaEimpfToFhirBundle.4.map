@@ -496,7 +496,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
         fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion,
         fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
         fhir_recommendation_dateCriterion_code.coding as fhir_dateCriterion_code_coding, 
-        fhir_dateCriterion_code_coding.system = 'http://hl7.org/fhir/ValueSet/immunization-recommendation-date-criterion',
+        fhir_dateCriterion_code_coding.system = 'http://loinc.org',
         fhir_dateCriterion_code_coding.code = '30981-5',
         fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_low,fhir_dateCriterion_value);
     
@@ -504,7 +504,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
         fhir_immunizationRecommendation_recommendation.dateCriterion as fhir_recommendation_dateCriterion,
         fhir_recommendation_dateCriterion.code as fhir_recommendation_dateCriterion_code, 
         fhir_recommendation_dateCriterion_code.coding as fhir_dateCriterion_code_coding, 
-        fhir_dateCriterion_code_coding.system = 'http://hl7.org/fhir/ValueSet/immunization-recommendation-date-criterion',
+        fhir_dateCriterion_code_coding.system = 'http://loinc.org',
         fhir_dateCriterion_code_coding.code = '59777-3',
         fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_high,fhir_dateCriterion_value);
     };     
