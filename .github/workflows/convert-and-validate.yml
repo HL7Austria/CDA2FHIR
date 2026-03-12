@@ -64,7 +64,6 @@ jobs:
             output/
             validation/
             python-maps/CdaToFhirBundle.4.py
-            htmlcov/
 
       - name: Validate
         run: |
