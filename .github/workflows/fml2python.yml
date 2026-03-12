@@ -26,6 +26,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
+      - name: Install dependecies
+        run: |
+          pip install requests
+
       - name: Install MaLaC-HD with CDA model
         run: |
           pip install malac-hd[cda]
