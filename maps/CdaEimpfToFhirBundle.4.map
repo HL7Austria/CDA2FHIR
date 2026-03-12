@@ -635,11 +635,11 @@ group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMateri
   // based on https://hl7.eu/fhir/base-r5/missing-data.html
   cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA' or $this.nullFlavor = 'OTH') then {
     cda_manufacturedMaterial_code.nullFlavor as cda_manufacturedMaterial_code_nullFlavor ->
-    fhir_vaccineCode.coding as fhir_vaccineCode_coding,
-    fhir_vaccineCode_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
-    fhir_vaccineCode_coding.code = translate(cda_manufacturedMaterial_code_nullFlavor, '#v3-NullFlavor-2-data-absent-reason', 'code') then {
-      cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_vaccineCode);
-    };
+      fhir_vaccineCode.coding as fhir_vaccineCode_coding,
+      fhir_vaccineCode_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+      fhir_vaccineCode_coding.code = translate(cda_manufacturedMaterial_code_nullFlavor, '#v3-NullFlavor-2-data-absent-reason', 'code') then {
+        cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation then CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_vaccineCode);
+      };
   };
 
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
