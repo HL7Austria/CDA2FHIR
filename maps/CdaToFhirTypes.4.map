@@ -684,7 +684,15 @@ group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends A
     // 2025-07-28 CDA2FHIR AG decided to not use "userSelected" - in FHIR all codes are equal
     // coding.userSelected = true
     then CECoding(src, coding) "code";
-  src where ($this.nullFlavor.exists()) -> tgt.extension as tgt_extension then CdaNullFlavorToFhirNullFlavor(src, tgt_extension) "nullFlavor";
+  
+  // based on https://hl7.eu/fhir/base-r5/missing-data.html
+  src where ($this.nullFlavor.exists()) then {
+    src.nullFlavor as src_nullFlavor -> 
+      tgt.coding as tgt_coding,
+      tgt_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+      tgt_coding.code = translate(cda_manufacturedMaterial_code_nullFlavor, '#v3-NullFlavor-2-data-absent-reason', 'code') "nullFlavor";
+  } "nullFlavor";
+
   src.translation as translation -> tgt.coding as coding then CDCoding(translation, coding);
 }
 
@@ -1108,16 +1116,7 @@ group RTORatio(source src: RTO, target tgt: Ratio) extends Any <<types>> {
   src.denominator: PQ as src_denominator -> tgt.denominator as tgt_denominator then PQQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorPQToFhirQuantity";
 }
 
-group CdaNullFlavorToFhirNullFlavor(source src : ANY, target tgt : Extension) extends Any <<types>> {
-  src.nullFlavor as cda_nullFlavor then {
-    cda_nullFlavor -> tgt.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-nullFlavor' "url";
-
-    cda_nullFlavor -> tgt.value = create('code') as fhir_extension_code,
-      fhir_extension_code.value = (cda_nullFlavor)
-      "code";
-  } "CdaNullFlavorToFhirNullFlavor";
-}
-
+// based on https://hl7.eu/fhir/base-r5/missing-data.html
 group CdaNullFlavorToFhirDataAbsentReason(source src: ANY, target tgt: Extension) extends Any <<types>> {
   src.nullFlavor as cda_nullFlavor then {
     cda_nullFlavor -> tgt.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason' "url";

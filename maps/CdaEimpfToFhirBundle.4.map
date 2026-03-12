@@ -443,6 +443,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
               CECoding(cda_criterion_value, fhir_coding);
         };
         // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
+        // based on https://hl7.eu/fhir/base-r5/missing-data.html
         cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists()) -> 
           fhir_immunization_protocolApplied.doseNumber = create('string') as fhir_immunization_protocolApplied_doseNumber,
           fhir_immunization_protocolApplied_doseNumber.extension as fhir_immunization_protocolApplied_doseNumber_extension then
@@ -558,6 +559,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     cda_substanceAdministration.author as cda_substanceAdministration_author then {
       // substanceAdministration/author -> ImmunizationRecommendation.date
       cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
+      // based on https://hl7.eu/fhir/base-r5/missing-data.html
       cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
         fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
         fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
@@ -617,6 +619,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
               CECoding(cda_criterion_value, fhir_coding);
         };
         // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
+        // based on https://hl7.eu/fhir/base-r5/missing-data.html
         cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists()) -> 
           fhir_immunizationRecommendation_recommendation.doseNumber = create('string') as fhir_immunizationRecommendation_recommendation_doseNumber,
           fhir_immunizationRecommendation_recommendation_doseNumber.extension as fhir_immunizationRecommendation_recommendation_doseNumber_extension then 
@@ -629,6 +632,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
 group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMaterial, target fhir_vaccineCode: FhirCodeableConcept) {
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
   // nullFlavor = 'NA' covers Vaccine Product nicht angegeben - 1.2.40.0.34.6.0.11.9.31
+  // based on https://hl7.eu/fhir/base-r5/missing-data.html
   cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor = 'NA' or $this.nullFlavor = 'OTH') then {
     cda_manufacturedMaterial_code.nullFlavor as cda_manufacturedMaterial_code_nullFlavor ->
     fhir_vaccineCode.coding as fhir_vaccineCode_coding,

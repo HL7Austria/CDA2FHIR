@@ -745,11 +745,12 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
         extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime',
         extension.value = create('dateTime') as fhir_patient_birthTime_dateTime then TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime) "CdaPatientBirthTimeToFhirPatientBirthTimeExtension";
     };
+    // based on https://hl7.eu/fhir/base-r5/missing-data.html
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists()) ->
       fhir_patient.birthDate as fhir_patient_birthDate,
       fhir_patient_birthDate.extension as fhir_patient_birthDate_extension then
-      CdaNullFlavorToFhirNullFlavor(cda_patient_birthTime, fhir_patient_birthDate_extension)
-      "CdaPatientBirthTimeNullFlavorToFhirPatientBirthDateNullFlavor";
+      CdaNullFlavorToFhirDataAbsentReason(cda_patient_birthTime, fhir_patient_birthDate_extension)
+      "CdaPatientBirthTimeNullFlavorToFhirPatientBirthDateDataAbsentReason";
 
     // patient.deceasedInd
     cda_patient.sdtcDeceasedInd as cda_patient_deceasedInd where cda_patient.sdtcDeceasedTime.empty() -> fhir_patient.deceased = create('boolean') as fhir_patient_deceased then BL(cda_patient_deceasedInd, fhir_patient_deceased) "CdaPatientDeceasedIndToFhirPatientDeceasedBoolean";
