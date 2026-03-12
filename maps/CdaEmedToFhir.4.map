@@ -1,4 +1,4 @@
-map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir" = "CdaLabToFhir"
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-emed-to-fhir" = "CdaEmedToFhir"
 
 //
 // Mapping ELGA-CDA eMedikation to FHIR
@@ -30,10 +30,61 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Organization" alias Organizati
 uses "http://hl7.org/fhir/4.3/StructureDefinition/DiagnosticReport" alias DiagnosticReport as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/ServiceRequest" alias ServiceRequest as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation as target
-uses "http://hl7.org/fhir/4.3/StructureDefinition/Specimen" alias Specimen as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
+
+// _________________________ Document Level Template  _________________________
+
 group CdaEmedToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) { // Mapping ELGA-CDA eMedikation to FHIR
-   cda -> fhir_bundle "rule0"; // Mapping the CDA document to the FHIR bundle
+   
+   // map the CDA header
+   cda then CdaEmedHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEmedHeaderToFhirComposition";
+   cda then CdaEmedHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEmedHeaderToFhir"; 
+
+   // map the CDA body
+   // ClinicalDocument.component
+   cda.component as cda_component then {
+     // ClinicalDocument.component.structuredBody
+     cda_component.structuredBody as cda_structuredBody
+   then CdaEmedBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
+   } "CdaEmedToFhirBundle";
 }
+
+// _________________________ Header Level Templates _________________________
+
+group CdaEmedHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaHeaderToFhirComposition {
+   
+  cda.code as cda_code then {
+
+   // ClinicalDocument/code -> Composition.category
+   cda_code.code as code_code_code ->
+    fhir_composition.category as fhir_composition_category,
+    fhir_composition_category.coding = translate(code_code_code, '#cda-emed-clinicaldocument-code-2-fhir-category' , 'Coding') "CdaEmedCodeToFhirCompositionCategory";
+
+   // ClinicalDocument/code/translation (document class) -> Composition.type
+   // for CDA eMedication, translation is fixed to 52471-0 LOINC
+   cda_code.translation -> fhir_composition.type "CdaEmedCodeTranslationToFhirCompositionType";
+   // in case CDA does not have translation, the Composition.type will be explicitly set
+   cda_code where cda_code.translation.exists().not() ->
+     fhir_composition.type = create('CodeableConcept') as type_coding,
+     type_coding.coding = create('Coding') as coding_coding,
+     coding_coding.system = 'http://loinc.org',
+     coding_coding.code = '52471-0'
+     "CdaEmedMissingCodeTranslationToFhirCompositionType";
+
+  } "CdaEmedCodeToFhirComposition";
+   
+}
+
+group CdaEmedHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaHeaderToFhir {
+   //cda -> fhir_bundle "CdaEmedHeaderToFhir"; // Mapping the CDA document header to the FHIR bundle
+}
+
+// _________________________ Body Level Templates ____________________________
+
+group CdaEmedBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaBodyToFhirComposition {
+   cda_structuredBody -> fhir_composition "CdaEmedBodyToFhirComposition"; // Mapping the CDA document body to the FHIR composition
+}
+  
+  
