@@ -485,12 +485,13 @@
                                         <reference value="#criterion-1"/>
                                     </text>
                                     <!-- Dosiskennung -->
-                                    <value xsi:type="CD" code="D1" codeSystem="1.2.40.0.34.5.183"
+                                    <!-- <value xsi:type="CD" code="D1" codeSystem="1.2.40.0.34.5.183"
                                         displayName="Dosis 1">
                                         <originalText>
                                             <reference value="#dosenr-1"/>
                                         </originalText>
-                                    </value>
+                                    </value> -->
+                                    <value xsi:type="CD" nullFlavor="UNK"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
