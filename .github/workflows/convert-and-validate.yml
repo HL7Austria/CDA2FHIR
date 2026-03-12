@@ -51,6 +51,7 @@ jobs:
       - name: Download eHDSI Laboratory IG
         run: |
           wget https://fhir.ehdsi.eu/laboratory/package.tgz
+          mkdir -p ~/.fhir/packages/myhealth.eu.fhir.mvc-package#9.1.0 && wget -qO- https://fhir.ehdsi.eu/mvc-package/package.tgz | tar -xz -C ~/.fhir/packages/myhealth.eu.fhir.mvc-package#9.1.0
 
       - name: Convert & validate test file to FHIR XML and JSON
         run: |
