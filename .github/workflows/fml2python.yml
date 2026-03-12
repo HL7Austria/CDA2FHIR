@@ -1,0 +1,52 @@
+# Workflow to convert the given FML to Python using MaLaC-HD
+
+name: Convert FML to Python (MaLaC-HD)
+
+on:
+  push:
+    branches:
+      - elga
+
+jobs:
+  convert-and-commit:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # ensures full history for committing
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install MaLaC-HD with CDA model
+        run: |
+          pip install malac-hd[cda]
+
+      - name: Run MaLaC-HD
+        run: |
+          malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
+
+      - name: Update requirements
+        run: |
+          python scripts/update_requirements.py
+
+      - name: Commit any converted outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add python-maps/
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+          else
+            echo "Changes will be committed automatically"
+            git commit -m "Automated: convert FML to Python using MaLaC-HD"
+            git push origin HEAD:${{ github.ref }}
+          fi
