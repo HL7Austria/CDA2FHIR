@@ -693,7 +693,8 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
       fhir_provenance_agent_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
       fhir_provenance_agent_role_coding.code = 'ENT';
 
-    cda_participant_role -> 
+    // participantRole -> PractitionerRole
+    cda_participant_role where ($this.playingEntity.exists()) -> 
       fhir_bundle.entry as fhir_bundle_entry_01,
       fhir_bundle_entry_01.resource = create('PractitionerRole') as fhir_practitionerRole,
       fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
@@ -717,9 +718,6 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
         // participantRole/telecom -> Practitioner.telecom
         cda_participant_role.telecom -> fhir_practitioner.telecom;
        
-        // participantRole/playingDevice
-        // TODO
-
         // participantRole/playingEntity -> Practitioner.name
         cda_participant_role.playingEntity as cda_participant_role_playingEntity then {
           // participantRole/playingEntity/name -> Practitioner.name
@@ -732,6 +730,64 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
             fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization_reference,
             fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
         };
+      };
+    
+    // participantRole -> Device
+    cda_participant_role where ($this.playingDevice.exists()) ->
+      // create Device
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Device') as fhir_device,
+      fhir_device.id = uuid() as fhir_device_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
+      // link Device to Provenance
+      fhir_provenance_agent.who = create('Reference') as fhir_provenance_agent_who_reference,
+      fhir_provenance_agent_who_reference.reference = append('urn:uuid:', fhir_device_id),
+      fhir_provenance_agent_who_reference.type = 'Device' then {
+        // participantRole/id ->  Device.identifier
+        cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_device.identifier;
+        
+        // participantRole/playingDevice -> Device 
+        cda_participant_role.playingDevice as cda_participant_role_playingDevice then {
+          // participantRole/playingDevice/manufacturerModelName -> Device.name
+          cda_participant_role_playingDevice.manufacturerModelName as cda_manufacturerModelName ->
+            fhir_device.deviceName as fhir_device_deviceName,
+            fhir_device_deviceName.name = (cda_manufacturerModelName.xmlText),
+            fhir_device_deviceName.type = 'model-name';
+          // participantRole/playingDevice/softwareName -> Device.version
+          cda_participant_role_playingDevice.softwareName as cda_softwareName ->
+            fhir_device.version as fhir_device_version,
+            fhir_device_version.value = (cda_softwareName.xmlText);
+        }
+
+        cda_participant_role where ($this.addr.exists() or $this.telecom.exists() or $this.scopingEntity.exists()) ->
+          // create Organization
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Organization') as fhir_organization,
+          fhir_organization.id = uuid() as fhir_organization_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_organization_id),
+          // link Organization to Device
+          fhir_device.owner = create('Reference') as fhir_device_owner_reference,
+          fhir_device_owner_reference.reference = append('urn:uuid:', fhir_organization_id),
+          fhir_device_owner_reference.type = 'Organization' then {
+            // participantRole/addr -> Organization.address
+            cda_participant_role.addr -> fhir_organization.address;
+
+            // participantRole/telecom -> Organization.telecom
+            cda_participant_role.telecom -> fhir_organization.telecom;
+                  
+            // participantRole/scopingEntity -> PractitionerRole.organization 
+            cda_participant_role.scopingEntity as cda_participant_role_scoping_entity then {
+              cda_participant_role_scoping_entity.desc as cda_participant_role_scoping_entity_desc -> 
+                fhir_organization.name = (cda_participant_role_scoping_entity_desc.xmlText);
+            };
+            // set data-absent-reason in case no organization name is present
+            cda_participant_role where ($this.scopingEntity.exists().not()) ->
+              fhir_organization.name as fhir_organization_name,
+              fhir_organization_name.extension as fhir_organization_name_extension,
+              fhir_organization_name_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+              fhir_organization_name_extension.value = create('code') as fhir_organization_name_extension_value,
+              fhir_organization_name_extension_value.value = 'unknown';
+          };
       };
   };
 }
