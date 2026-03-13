@@ -538,14 +538,18 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
       // TODO
     };
 
-    // substanceAdministration/participant (Participant Body - Verifier = Korrigierende Person (Datenverarbeitende Person))
-    // TODO
-
-    // substanceAdministration/participant (Participant Body - Authorized Editor = Berechtigter bearbeitender GDA (OID aus dem GDA-Index))
-    // TODO
-
-    // substanceAdministration/participant (Participant Body - Data Enterer = "Eintragende Person": Die dokumentierende Person (z.B. Medizinische Dokumentationsassistenz, Schreibkraft))
-    // TODO
+    // substanceAdministration/participant[@typeCode!='AUT'] -> Provenance
+    // Participant Body - Authorized Editor = Berechtigter bearbeitender GDA (OID aus dem GDA-Index) (@typeCode = 'AUT') is currently ignored
+    cda_substanceAdministration.participant as cda_participant where ($this.typeCode != 'AUT') -> 
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Provenance') as fhir_provenance,
+      fhir_provenance.id = uuid() as fhir_provenance_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_provenance_id),
+      fhir_immunization.id as fhir_immunization_id,
+      fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
+      fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunization_id),
+      fhir_provenance_target_reference.type = 'Immunization' then 
+        CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle);
 
     // substanceAdministration/entryRelationship (Immunization Target Entry)
     cda_substanceAdministration.entryRelationship as cda_substanceAdministration_entryRelationship where ($this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.2')) then {
