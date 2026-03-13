@@ -321,8 +321,6 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   };
 
   // substanceAdministration/performer -> Immunization.performer
-  // TODO check for playingEntity
-  // TODO check for playingDevice
   cda_substanceAdministration.performer as cda_substanceAdministration_performer ->
     // create Provenance
     fhir_bundle.entry as fhir_bundle_entry01,
