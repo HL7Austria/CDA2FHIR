@@ -739,6 +739,9 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
         // participantRole/id ->  Device.identifier
         cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_device.identifier;
         
+        // participantRole/telecom -> Device.contact
+        cda_participant_role.telecom -> fhir_device.contact;
+
         // participantRole/playingDevice -> Device 
         cda_participant_role.playingDevice as cda_participant_role_playingDevice then {
           // participantRole/playingDevice/manufacturerModelName -> Device.name
@@ -752,7 +755,7 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
             fhir_device_version.value = (cda_softwareName.xmlText);
         }
 
-        cda_participant_role where ($this.addr.exists() or $this.telecom.exists() or $this.scopingEntity.exists()) ->
+        cda_participant_role where ($this.addr.exists() or $this.scopingEntity.exists()) ->
           // create Organization
           fhir_bundle.entry as fhir_bundle_entry,
           fhir_bundle_entry.resource = create('Organization') as fhir_organization,
@@ -764,9 +767,6 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
           fhir_device_owner_reference.type = 'Organization' then {
             // participantRole/addr -> Organization.address
             cda_participant_role.addr -> fhir_organization.address;
-
-            // participantRole/telecom -> Organization.telecom
-            cda_participant_role.telecom -> fhir_organization.telecom;
                   
             // participantRole/scopingEntity -> PractitionerRole.organization 
             cda_participant_role.scopingEntity as cda_participant_role_scoping_entity then {
