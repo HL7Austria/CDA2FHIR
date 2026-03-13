@@ -16,6 +16,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/SubstanceAdministration" 
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMaterial as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias CdaPerformer2 as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias CdaAuthor as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
@@ -321,6 +322,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 
   // substanceAdministration/performer -> Immunization.performer
   // TODO check for playingEntity
+  // TODO check for playingDevice
   cda_substanceAdministration.performer as cda_substanceAdministration_performer ->
     // create Provenance
     fhir_bundle.entry as fhir_bundle_entry01,
@@ -348,7 +350,6 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
     fhir_immunization_performer_function_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0443',
     fhir_immunization_performer_function_coding.code = 'AP' then 
       CdaPerformerToFhirProvenance(cda_substanceAdministration_performer, fhir_provenance, fhir_practitionerRole, fhir_bundle);
-  // TODO check for playingDevice
 
   // substanceAdministration/author -> Immunization.performer
   //
@@ -356,20 +357,34 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   // substanceAdministration/author/time
   // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
   //
+  // TODO check for assignedPerson / assignedAuthoringDevice
   cda_substanceAdministration.author as cda_substanceAdministration_author -> 
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    // create Provenance
+    fhir_bundle.entry as fhir_bundle_entry01,
+    fhir_bundle_entry01.resource = create('Provenance') as fhir_provenance,
+    fhir_provenance.id = uuid() as fhir_provenance_id,
+    fhir_bundle_entry01.fullUrl = append('urn:uuid:', fhir_provenance_id),
+    // link Immunization to Provenance.target
+    fhir_immunization.id as fhir_immunization_id,
+    fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
+    fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunization_id),
+    fhir_provenance_target_reference.type = 'Immunization',
+    // create PractitionerRole in order to use it as Immunization.performer
+    fhir_bundle.entry as fhir_bundle_entry02,
+    fhir_bundle_entry02.resource = create('PractitionerRole') as fhir_practitionerRole,
     fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_bundle_entry02.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    // link PractitionerRole to Immunization.perfomer
     fhir_immunization.performer as fhir_immunization_performer,
-    fhir_immunization_performer.function as fhir_immunization_performer_function,
-    fhir_immunization_performer_function.coding as fhir_immunization_performer_function_coding,
-    fhir_immunization_performer_function_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
-    fhir_immunization_performer_function_coding.code = 'AUT',
     fhir_immunization_performer.actor = create('Reference') as fhir_immunization_performer_actor_reference,
     fhir_immunization_performer_actor_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_immunization_performer_actor_reference.type = 'PractitionerRole' then 
-      CdaAuthorToFhirPractitionerRole(cda_substanceAdministration_author, fhir_practitionerRole, fhir_bundle);
+    fhir_immunization_performer_actor_reference.type = 'PractitionerRole',
+    // set Immunization.performer.function
+    fhir_immunization_performer.function as fhir_immunization_performer_function,
+    fhir_immunization_performer_function.coding as fhir_immunization_performer_function_coding,
+    fhir_immunization_performer_function_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0443',
+    fhir_immunization_performer_function_coding.code = 'OP' then 
+      CdaAuthorToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_practitionerRole, fhir_bundle);
 
   // substanceAdministration/informant
   // TODO
@@ -747,4 +762,32 @@ group CdaPerformerToFhirProvenance(source cda_performer: CdaPerformer2, target f
     fhir_provenance_agent_who_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
     fhir_provenance_agent_who_reference.type = 'PractitionerRole' then 
       CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
+}
+
+group CdaAuthorToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: FhirPractitionerRole, target fhir_bundle: FhirBundle){
+  // author/time -> Provenance.occurredDateTime
+  cda_author.time as cda_participant_time -> 
+    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
+      TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
+
+  // Provenance.recorded
+  cda_author -> 
+    fhir_provenance.recorded as fhir_provenance_recorded,
+    fhir_provenance_recorded.extension as fhir_provenance_recorded_extension,
+    fhir_provenance_recorded_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+    fhir_provenance_recorded_extension.value = create('code') as fhir_provenance_recorded_extension_value,
+    fhir_provenance_recorded_extension_value.value = 'unknown';
+
+  // author/assignedEntity -> PractitionerRole
+  cda_author ->
+    fhir_provenance.agent as fhir_provenance_agent,
+    fhir_provenance_agent.type as fhir_provenance_agent_type,
+    fhir_provenance_agent_type.coding as fhir_provenance_agent_type_coding,
+    fhir_provenance_agent_type_coding.system = 'http://terminology.hl7.org/CodeSystem/provenance-participant-type',
+    fhir_provenance_agent_type_coding.code = 'author',
+    fhir_practitionerRole.id as fhir_practitionerRole_id,
+    fhir_provenance_agent.who = create('Reference') as fhir_provenance_agent_who_reference,
+    fhir_provenance_agent_who_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_provenance_agent_who_reference.type = 'PractitionerRole' then 
+      CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
 }
