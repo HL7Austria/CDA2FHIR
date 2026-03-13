@@ -374,12 +374,16 @@
                                         <country>AUT</country>
                                     </addr>
                                     <telecom use="WP" value="tel:+43.316.608.271.9000"/>
-                                    <playingEntity>
+                                    <!-- <playingEntity>
                                         <name>
                                             <given>Amelia</given>
                                             <family>Verifier-FSME1-Amtsarzt</family>
                                         </name>
-                                    </playingEntity>
+                                    </playingEntity> -->
+                                    <playingDevice>
+                                        <manufacturerModelName>Korrigierende Software</manufacturerModelName>
+                                        <softwareName>v1.0.0-korr</softwareName>
+                                    </playingDevice>
                                     <scopingEntity classCode="ENT" determinerCode="INSTANCE">
                                         <desc>Landessanitätsdirektion Verifier-FSME1</desc>
                                     </scopingEntity>
