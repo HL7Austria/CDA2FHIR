@@ -331,13 +331,17 @@
                                         <state>Salzburg</state>
                                         <country>AUT</country>
                                     </addr>
-                                    <assignedPerson>
+                                    <!-- <assignedPerson>
                                         <name>
                                             <prefix>Dr.</prefix>
                                             <given>Frank</given>
                                             <family>Author-FSME1</family>
                                         </name>
-                                    </assignedPerson>
+                                    </assignedPerson> -->
+                                    <assignedAuthoringDevice>
+                                        <manufacturerModelName>Authoring Software</manufacturerModelName>
+                                        <softwareName>v1.0.0-author</softwareName>
+                                    </assignedAuthoringDevice>
                                     <representedOrganization>
                                         <!-- ID der Organisation aus dem GDA Index -->
                                         <id root="1.2.40.0.34.99.4613"
