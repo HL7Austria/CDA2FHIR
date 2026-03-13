@@ -479,7 +479,12 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   };
     
   // substanceAdministration/reference (External Document Entry) 
-  // TODO
+  substanceAdministration.reference as cda_reference then {
+    cda_reference -> fhir_immunization.identifier as fhir_identifier then {
+      cda_reference.id as cda_reference_id  -> fhir_identifier.value;
+      cda_reference.code as cda_reference_code -> fhir_identifier.type;
+    };
+  };
 }
 
 group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
