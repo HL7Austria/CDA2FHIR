@@ -14,6 +14,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias Cda
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias CdaSection as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/SubstanceAdministration" alias CdaSubstanceAdministration as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMaterial as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
@@ -21,6 +22,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias FhirPatient as 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Immunization" alias FhirImmunization as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/ImmunizationRecommendation" alias FhirImmunizationRecommendation as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias FhirCodeableConcept as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Provenance" alias FhirProvenance as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
@@ -381,7 +383,16 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
       CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole, fhir_bundle);
 
   // substanceAdministration/participant (Participant Body - Verifier = Korrigierende Person (Datenverarbeitende Person))
-  // TODO
+  cda_substanceAdministration.participant as cda_participant where ($this.templateId.where(root='1.2.40.0.34.6.0.11.9.44')) -> 
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Provenance') as fhir_provenance,
+    fhir_provenance.id = uuid() as fhir_provenance_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_provenance_id),
+    fhir_immunization.id as fhir_immunization_id,
+    fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
+    fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunization_id),
+    fhir_provenance_target_reference.type = 'Immunization' then 
+      CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle);
 
   // substanceAdministration/participant (Participant Body - Authorized Editor = Berechtigter bearbeitender GDA (OID aus dem GDA-Index))
   // TODO
@@ -644,4 +655,71 @@ group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMateri
 
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
   cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor.exists().not()) then CECodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode); 
+}
+
+// _________________________ Template Type not specified  ___________________
+
+group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, target fhir_provenance: FhirProvenance, target fhir_bundle: FhirBundle){
+  // participant/time -> Provenance.occurredDateTime
+  cda_participant.time as cda_participant_time -> 
+    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
+      TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaParticipantTimeToFhirProvenanceOccurred";
+
+  // Provenance.recorded
+  cda_participant -> 
+    fhir_provenance.recorded as fhir_provenance_recorded,
+    fhir_provenance_recorded.extension as fhir_provenance_recorded_extension,
+    fhir_provenance_recorded_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+    fhir_provenance_recorded_extension.value = create('code') as fhir_provenance_recorded_extension_value,
+    fhir_provenance_recorded_extension_value.value = 'unknown';
+
+  // participant/participantRole -> Provenance.agent
+  cda_participant.participantRole as cda_participant_role -> fhir_provenance.agent as fhir_provenance_agent then {
+    cda_participant where ($this.templateId.where(root='1.2.40.0.34.6.0.11.9.44')) -> 
+      fhir_provenance_agent.type as fhir_provenance_agent_type,
+      fhir_provenance_agent_type.coding as fhir_provenance_agent_type_coding,
+      fhir_provenance_agent_type_coding.system = 'http://terminology.hl7.org/CodeSystem/provenance-participant-type',
+      fhir_provenance_agent_type_coding.code = 'verifier';
+
+    cda_participant_role -> 
+      fhir_bundle.entry as fhir_bundle_entry_01,
+      fhir_bundle_entry_01.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+      fhir_bundle_entry_01.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+      fhir_provenance_agent.who = create('Reference') as fhir_provenance_agent_who_reference,
+      fhir_provenance_agent_who_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+      fhir_provenance_agent_who_reference.type = 'PractitionerRole',
+      fhir_bundle.entry as fhir_bundle_entry_02,
+      fhir_bundle_entry_02.resource = create('Practitioner') as fhir_practitioner,
+      fhir_practitioner.id = uuid() as fhir_practitioner_id,
+      fhir_bundle_entry_02.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+      fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+      fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+      fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+        // participantRole/id ->  Practitioner.identifier
+        cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
+        
+        // participantRole/addr -> Practitioner.address
+        cda_participant_role.addr -> fhir_practitioner.address;
+
+        // participantRole/telecom -> Practitioner.telecom
+        cda_participant_role.telecom -> fhir_practitioner.telecom;
+       
+        // participantRole/playingDevice
+        // TODO
+
+        // participantRole/playingEntity -> Practitioner.name
+        cda_participant_role.playingEntity as cda_participant_role_playingEntity then {
+          // participantRole/playingEntity/name -> Practitioner.name
+          cda_participant_role_playingEntity.name -> fhir_practitioner.name;
+        };
+        
+        // participantRole/scopingEntity -> PractitionerRole.organization 
+        cda_participant_role.scopingEntity as cda_participant_role_scoping_entity then {
+          cda_participant_role_scoping_entity.desc as cda_participant_role_scoping_entity_desc ->
+            fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization_reference,
+            fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
+        };
+      };
+  };
 }

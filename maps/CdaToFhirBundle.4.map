@@ -1321,7 +1321,6 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
           cda_participant_role_scoping_entity.desc as cda_participant_role_scoping_entity_desc ->
             fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization_reference,
             fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
-        }
-      };
+        };
     };
 }
