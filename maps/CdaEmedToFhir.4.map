@@ -4,6 +4,14 @@ map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-emed-to-fhir" = "C
 // Mapping ELGA-CDA eMedikation to FHIR
 //
 
+conceptmap "cda-emed-clinicaldocument-code-2-fhir-category" {
+  prefix s = "http://loinc.org"
+
+  s: "56445-0" == s: "56445-0"
+  s: "57833-6" == s: "57833-6"
+  s: "60593-1" == s: "60593-1"
+}
+
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias Author as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedAuthor" alias AssignedAuthor as source
@@ -58,9 +66,9 @@ group CdaEmedHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_
   cda.code as cda_code then {
 
    // ClinicalDocument/code -> Composition.category
-   cda_code.code as code_code_code ->
+   cda_code.code as code_code ->
     fhir_composition.category as fhir_composition_category,
-    fhir_composition_category.coding = translate(code_code_code, '#cda-emed-clinicaldocument-code-2-fhir-category' , 'Coding') "CdaEmedCodeToFhirCompositionCategory";
+    fhir_composition_category.coding = translate(code_code, '#cda-emed-clinicaldocument-code-2-fhir-category' , 'Coding') "CdaEmedCodeToFhirCompositionCategory";
 
    // ClinicalDocument/code/translation (document class) -> Composition.type
    // for CDA eMedication, translation is fixed to 52471-0 LOINC
