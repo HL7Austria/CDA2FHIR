@@ -8,6 +8,17 @@ INPUT_DIR = "input"
 OUTPUT_DIR = "output"
 COVERAGE_DIR = "coverage"
 VALIDATION_DIR = "validation"
+EXTENSIONS_PACKAGE = "hl7.fhir.uv.extensions.r4#5.2.0"
+EXTENSIONS_URL = "https://packages.fhir.org/hl7.fhir.uv.extensions.r4/5.2.0"
+
+FHIR_CACHE_DIR = os.path.expanduser(f"~/.fhir/packages/{EXTENSIONS_PACKAGE}")
+if not os.path.exists(FHIR_CACHE_DIR):
+    os.makedirs(FHIR_CACHE_DIR, exist_ok=True)
+    print(f"Downloading cross-version extensions package into {FHIR_CACHE_DIR}...")
+    subprocess.run(
+        f"wget -qO- {EXTENSIONS_URL} | tar -xz -C {FHIR_CACHE_DIR}",
+        shell=True, check=True
+    )
 
 with open(os.path.join(INPUT_DIR, 'config.json'), 'r') as file:
     config_json = json.load(file)
@@ -55,6 +66,7 @@ for config in config_json:
                 "-locale", "de-AT",
                 "-version", "4.0",
                 "-ig", f"{directory}_package.tgz",
+                "-ig", EXTENSIONS_PACKAGE,
                 "-html-output", f"{VALIDATION_DIR}/{directory}/{basename}.val.xml.html",
                 "-show-message-ids",
                 "-allow-example-urls", "true",
@@ -73,6 +85,7 @@ for config in config_json:
                 "-locale", "de-AT",
                 "-version", "4.0",
                 "-ig", f"{directory}_package.tgz",
+                "-ig", EXTENSIONS_PACKAGE,
                 "-html-output", f"{VALIDATION_DIR}/{directory}/{basename}.val.json.html",
                 "-show-message-ids",
                 "-allow-example-urls", "true",
