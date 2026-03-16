@@ -481,7 +481,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   // substanceAdministration/reference/externalDocument -> Immunization.identifier
   cda_substanceAdministration.reference as cda_reference then {
       cda_reference.externalDocument as cda_externalDocument then {
-        cda_externalDocument.id as id -> fhir_immunization.identifier as fhir_identifier then II(id, fhir_identifier) then {
+        cda_externalDocument.id as id -> fhir_immunization.identifier as fhir_identifier,
+        fhir_identifier.use = 'secondary' then II(id, fhir_identifier) then {
           cda_externalDocument.code -> fhir_identifier.type; 
         };
       };
