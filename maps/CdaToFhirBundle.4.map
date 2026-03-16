@@ -930,7 +930,12 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
       cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
       // ClinicalDocument.author.assignedAuthor.assignedPerson
       cda_author_assignedAuthor.assignedPerson as cda_assignedPerson then {
-        cda_assignedPerson.name -> fhir_practitioner.name;
+        // ClinicalDocument.author.assignedAuthor.assignedPerson -> Practitioner.name
+        cda_assignedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_assignedPerson.name as cda_assignedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_assignedPerson_name, fhir_practitioner_name_extension);
       };
       // ClinicalDocument.author.assignedAuthor.representedOrganization
       cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->

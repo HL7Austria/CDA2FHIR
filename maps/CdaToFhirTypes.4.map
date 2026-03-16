@@ -13,6 +13,7 @@ conceptmap "v3-NullFlavor-2-data-absent-reason" {
   s: "NAV" == t: "temp-unknown"
   s: "NA" == t: "not-applicable"
   s: "OTH" == t: "unknown" // mapping not perfect
+  s: "MSK" == t: "masked"
 }
 
 // TODO review mapping
