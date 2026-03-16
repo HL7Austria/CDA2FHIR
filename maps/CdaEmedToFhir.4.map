@@ -52,11 +52,11 @@ group CdaEmedToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pat
 
    // map the CDA body
    // ClinicalDocument.component
-   cda.component as cda_component then {
+   //cda.component as cda_component then {
      // ClinicalDocument.component.structuredBody
-     cda_component.structuredBody as cda_structuredBody
-   then CdaEmedBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
-   } "CdaEmedToFhirBundle";
+   //  cda_component.structuredBody as cda_structuredBody
+   //then CdaEmedBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
+   //} "CdaEmedToFhirBundle";
 }
 
 // _________________________ Header Level Templates _________________________
@@ -91,8 +91,24 @@ group CdaEmedHeaderToFhir(source cda: ClinicalDocument, target fhir_composition:
 
 // _________________________ Body Level Templates ____________________________
 
-group CdaEmedBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaBodyToFhirComposition {
-   cda_structuredBody -> fhir_composition "CdaEmedBodyToFhirComposition"; // Mapping the CDA document body to the FHIR composition
-}
+//group CdaEmedBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+
+//   cda_structuredBody.component as cda_structuredBody_component then {
+     // Map each CDA section to the FHIR composition sections
+     //cda_structuredBody_component.section as cda_section then CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_patient, fhir_bundle);
+//   } "CdaEmedBodyToFhirComposition";
+//}
+
+//group CdaEmedSectionToFhir(source cda: ClinicalDocument, source cda_section: Section, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+   
+//   cda_section as cda_section then {
+//      cda_section.entry as cda_entry then {
+         // Map CDA entries to FHIR resources (e.g., Observations, Procedures, etc.)
+         //cda_entry.observation as cda_observation then CdaEmedObservationToFhir(cda, cda_observation, fhir_composition, fhir_patient, fhir_bundle);
+         //cda_entry.procedure as cda_procedure then CdaEmedProcedureToFhir(cda, cda_procedure, fhir_composition, fhir_patient, fhir_bundle);
+         // Add more mappings for other CDA entry types as needed
+//      }
+//   } "CdaEmedSectionToFhir"; // Mapping the CDA sections to the FHIR composition sections
+//}
   
   
