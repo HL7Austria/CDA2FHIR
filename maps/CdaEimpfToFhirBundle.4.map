@@ -307,6 +307,10 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 
           fhir_immunization.extension as fhir_immunization_extension,
           fhir_immunization_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
+          fhir_immunization_extension.extension as fhir_immunization_extension_dataType, 
+          fhir_immunization_extension_dataType.url = 'http://hl7.org/fhir/StructureDefinition/_datatype',
+          fhir_immunization_extension_dataType.value = create('string') as fhir_immunization_extension_dataType_value,
+          fhir_immunization_extension_dataType_value.value = 'CodeableReference', 
           fhir_immunization_extension.extension as fhir_immunization_extension_extension,
           fhir_immunization_extension_extension.url = 'reference',
           fhir_immunization_extension_extension.value = create('Reference') as fhir_administeredProductReference,
