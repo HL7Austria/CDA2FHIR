@@ -571,18 +571,61 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     };
 
     // substanceAdministration/author
-    cda_substanceAdministration.author as cda_substanceAdministration_author then {
-      // substanceAdministration/author -> ImmunizationRecommendation.date
-      cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
-      // based on https://hl7.eu/fhir/base-r5/missing-data.html
-      cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
-        fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
-        fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
-        then CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
+    // if author is a person
+    cda_substanceAdministration.author as cda_substanceAdministration_author where ($this.assignedAuthor.assignedPerson.exists()) -> 
+      // create Provenance
+      fhir_bundle.entry as fhir_bundle_entry01,
+      fhir_bundle_entry01.resource = create('Provenance') as fhir_provenance,
+      fhir_provenance.id = uuid() as fhir_provenance_id,
+      fhir_bundle_entry01.fullUrl = append('urn:uuid:', fhir_provenance_id),
+      // link ImmunizationRecommendation to Provenance.target
+      fhir_immunizationRecommendation.id as fhir_immunizationRecommendation_id,
+      fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
+      fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunizationRecommendation_id),
+      fhir_provenance_target_reference.type = 'Immunization',
+      // create PractitionerRole in order to use it as Immunization.performer
+      fhir_bundle.entry as fhir_bundle_entry02,
+      fhir_bundle_entry02.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+      fhir_bundle_entry02.fullUrl = append('urn:uuid:', fhir_practitionerRole_id) then { 
+        // substanceAdministration/author -> ImmunizationRecommendation.date
+        cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
+        // substanceAdministration/author -> ImmunizationRecommendation.date
+        // based on https://hl7.eu/fhir/base-r5/missing-data.html
+        cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
+          fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
+          fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
+          then CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
 
-      // substanceAdministration/author/assignedAuthor
-      // TODO
-    };
+        // substanceAdministration/author -> Provenance
+        cda_substanceAdministration_author then CdaAuthorPersonToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_practitionerRole, fhir_bundle);
+      };
+
+    // substanceAdministration/author
+    // if author is a device
+    cda_substanceAdministration.author as cda_substanceAdministration_author where ($this.assignedAuthor.assignedAuthoringDevice.exists()) -> 
+      // create Provenance
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Provenance') as fhir_provenance,
+      fhir_provenance.id = uuid() as fhir_provenance_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_provenance_id),
+      // link ImmunizationRecommendation to Provenance.target
+      fhir_immunizationRecommendation.id as fhir_immunizationRecommendation_id,
+      fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
+      fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunizationRecommendation_id),
+      fhir_provenance_target_reference.type = 'Immunization' then {
+        // substanceAdministration/author -> ImmunizationRecommendation.date
+        cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
+        // substanceAdministration/author -> ImmunizationRecommendation.date
+        // based on https://hl7.eu/fhir/base-r5/missing-data.html
+        cda_substanceAdministration_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
+          fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
+          fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
+          then CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
+
+        // substanceAdministration/author -> Provenance
+        cda_substanceAdministration_author then CdaAuthorDeviceToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_bundle);
+      };
 
     // substanceAdministration/participant[@typeCode!='AUT'] -> Provenance
     // Participant Body - Authorized Editor = Berechtigter bearbeitender GDA (OID aus dem GDA-Index) (@typeCode = 'AUT') is currently ignored
