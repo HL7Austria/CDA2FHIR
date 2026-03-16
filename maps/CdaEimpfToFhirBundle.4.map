@@ -299,7 +299,36 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
         cda_manufacturedMaterial.lotNumberText where ($this.nullFlavor.exists().not()) -> fhir_immunization.lotNumber;
 
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/pharm:ingredient
-        // TODO
+        cda_manufacturedMaterial where (name.exists() or pharmIngredient.exists()) -> 
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Medication') as fhir_medication,
+          fhir_medication.id = uuid() as fhir_medication_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medication_id),
+
+          fhir_immunization.extension as fhir_immunization_extension,
+          fhir_immunization_extension.url = 'http://hl7.org/fhir/StructureDefinition/extension-Immunization.administeredProduct',
+          fhir_immunization_extension.value = create('Reference') as fhir_administeredProductReference,
+          fhir_administeredProductReference.reference = append('urn:uuid:', fhir_medication_id),
+          fhir_administeredProductReference.type = 'Medication' then {
+
+            // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name -> Medication.code.text
+            cda_manufacturedMaterial.name as cda_manufacturedMaterial_name -> 
+              fhir_medication.code as fhir_medication_code,
+              fhir_medication_code.text as fhir_medication_code_text then ENstring(cda_manufacturedMaterial_name, fhir_medication_code_text); 
+            };
+
+            cda_manufacturedMaterial.pharmIngredient as cda_manufacturedMaterial_pharmIngredient -> 
+              fhir_medication.ingredient as fhir_medication_ingredient then {
+                cda_manufacturedMaterial_pharmIngredient.pharmIngredient as cda_manufacturedMaterial_pharmIngredient_pharmIngredient -> 
+                  fhir_medication_ingredient.itemCodeableConcept as fhir_medication_ingredient_itemCodeableConcept then {
+                    // cda_manufacturedMaterial/pharmIngredient/pharmIngredient/code -> Medication.ingredient.itemCodeableConcept.coding
+                    cda_manufacturedMaterial_pharmIngredient_pharmIngredient.code -> fhir_medication_ingredient_itemCodeableConcept.coding;
+                    // cda_manufacturedMaterial/pharmIngredient/pharmIngredient/name -> Medication.ingredient.itemCodeableConcept.text 
+                    cda_manufacturedMaterial_pharmIngredient_pharmIngredient.name -> fhir_medication_ingredient_itemCodeableConcept.text;
+                  };
+              };
+        };
+        
       };
 
       // substanceAdministration/consumable/manufacturedProduct/manufacturerOrganization -> Immunization.manufacturer
