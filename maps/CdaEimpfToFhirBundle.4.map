@@ -306,7 +306,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medication_id),
 
           fhir_immunization.extension as fhir_immunization_extension,
-          fhir_immunization_extension.url = 'http://hl7.org/fhir/StructureDefinition/extension-Immunization.administeredProduct',
+          fhir_immunization_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Immunization.administeredProduct',
           fhir_immunization_extension.value = create('Reference') as fhir_administeredProductReference,
           fhir_administeredProductReference.reference = append('urn:uuid:', fhir_medication_id),
           fhir_administeredProductReference.type = 'Medication' then {
