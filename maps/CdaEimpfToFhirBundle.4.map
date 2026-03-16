@@ -477,15 +477,14 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
       cda_observation.value: CD -> fhir_immunization.fundingSource; 
     };
   };
-    
-  // substanceAdministration/reference (External Document Entry) 
-  substanceAdministration.reference as cda_reference,
-  cda_reference.externalDocument as cda_externalDocument then {
-    cda_externalDocument -> fhir_immunization.identifier as fhir_identifier then {
-      cda_externalDocument.id as cda_reference_id  -> fhir_identifier.value;
-      cda_externalDocument.code as cda_reference_code -> fhir_identifier.type;
-    };
-  };
+
+  // substanceAdministration/reference/externalDocument -> Immunization.identifier
+  cda_substanceAdministration.reference as cda_reference then {
+      cda_reference.externalDocument as cda_externalDocument then {
+        cda_externalDocument.id as id -> fhir_immunization.identifier as fhir_identifier then II(id, fhir_identifier) then {
+          cda_externalDocument.code -> fhir_identifier.type; 
+        };
+      };
 }
 
 group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
