@@ -595,8 +595,14 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     // substanceAdministration/entryRelationship (Comment Entry)
     // TODO
 
-    // substanceAdministration/reference (External Document Entry) 
-    // TODO
+    // substanceAdministration/reference/externalDocument -> Immunization.identifier
+    cda_substanceAdministration.reference as cda_substanceAdministration_reference then {
+        cda_substanceAdministration_reference.externalDocument as cda_substanceAdministration_reference_externalDocument then {
+          cda_substanceAdministration_reference_externalDocument.id as cda_substanceAdministration_reference_externalDocument_id -> fhir_immunizationRecommendation.identifier as fhir_immunizationRecommendation_identifier,
+          fhir_immunizationRecommendation_identifier.use = 'secondary' then II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunizationRecommendation_identifier) then {
+            cda_substanceAdministration_reference_externalDocument.code -> fhir_immunizationRecommendation_identifier.type; 
+          };
+        };
 
     // substanceAdministration/precondition (Immunization Schedule Entry)
     cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
