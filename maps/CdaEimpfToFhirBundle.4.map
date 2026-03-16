@@ -477,9 +477,17 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
       cda_observation.value: CD -> fhir_immunization.fundingSource; 
     };
   };
-    
-  // substanceAdministration/reference (External Document Entry) 
-  // TODO
+
+  // substanceAdministration/reference/externalDocument -> Immunization.identifier
+  cda_substanceAdministration.reference as cda_substanceAdministration_reference then {
+    cda_substanceAdministration_reference.externalDocument as cda_substanceAdministration_reference_externalDocument then {
+      cda_substanceAdministration_reference_externalDocument.id as cda_substanceAdministration_reference_externalDocument_id -> 
+        fhir_immunization.identifier as fhir_immunization_identifier,
+        fhir_immunization_identifier.use = 'secondary' then II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunization_identifier) then {
+          cda_substanceAdministration_reference_externalDocument.code -> fhir_immunization_identifier.type;
+        };
+    };
+  };
 }
 
 group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
@@ -589,8 +597,14 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     // substanceAdministration/entryRelationship (Comment Entry)
     // TODO
 
-    // substanceAdministration/reference (External Document Entry) 
-    // TODO
+    // substanceAdministration/reference/externalDocument -> Immunization.identifier
+    cda_substanceAdministration.reference as cda_substanceAdministration_reference where ($this.externalDocument.templateId.where(root='1.2.40.0.34.6.0.11.3.14')) then {
+        cda_substanceAdministration_reference.externalDocument as cda_substanceAdministration_reference_externalDocument then {
+          cda_substanceAdministration_reference_externalDocument.id as cda_substanceAdministration_reference_externalDocument_id -> fhir_immunizationRecommendation.identifier as fhir_immunizationRecommendation_identifier,
+          fhir_immunizationRecommendation_identifier.use = 'secondary' then II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunizationRecommendation_identifier) then {
+            cda_substanceAdministration_reference_externalDocument.code -> fhir_immunizationRecommendation_identifier.type; 
+          };
+        };
 
     // substanceAdministration/precondition (Immunization Schedule Entry)
     cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
