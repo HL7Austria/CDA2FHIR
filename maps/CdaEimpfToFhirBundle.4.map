@@ -1,6 +1,3 @@
-// TODO
-//   check CDA2FHIR meeting minutes for TODOs
-
 map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle" = "CdaEimpfToFhirBundle"
 
 conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
@@ -222,7 +219,8 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: CdaSection, targ
   };
 
   // Übersetzung
-  // TODO
+  // currently not necessary to be mapped:
+  //   Since the section/text is not displayed, the translation is irrelevant in that context.
 }
 
 group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
@@ -254,7 +252,8 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection,
   };
 
   // Übersetzung
-  // TODO
+  // currently not necessary to be mapped:
+  //   Since the section/text is not displayed, the translation is irrelevant in that context.
 }
 
 // _________________________ Entry Level Template  _________________________
@@ -264,7 +263,10 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   cda_substanceAdministration.id -> fhir_immunization.identifier;
 
   // substanceAdministration/text
-  // TODO
+  // currently not necessary to be mapped:
+  //   Within the text element, references are made to sections of the section/text. 
+  //   Since the "Complete Immunization Status" currently displays only coded information, 
+  //   this element is not included.
 
   // substanceAdministration/statusCode -> Immunization.status
   cda_substanceAdministration.statusCode -> fhir_immunization.status; 
@@ -395,7 +397,9 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
       CdaAuthorDeviceToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_bundle);
 
   // substanceAdministration/informant
-  // TODO
+  // currently not necessary to be mapped:
+  //   Self-reporting of vaccinations has not yet been implemented. 
+  //   Therefore, it is not currently relevant for mapping.
 
   // substanceAdministration/participant[@typeCode!='AUT'] -> Provenance
   // Participant Body - Authorized Editor = Berechtigter bearbeitender GDA (OID aus dem GDA-Index) (@typeCode = 'AUT') is currently ignored
@@ -457,7 +461,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
   };
 
   // substanceAdministration/entryRelationship (Immunization Billability Entry)
-  // TODO
+  // currently not necessary to be mapped:
+  //    This has not yet been implemented. Therefore, it is not currently relevant for the mapping.
 
   // substanceAdministration/entryRelationship (Zusatzklassifikation)
   cda_substanceAdministration.entryRelationship as cda_substanceAdministration_entryRelationship where ($this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.168')) then {
@@ -495,10 +500,14 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     cda_substanceAdministration.code -> fhir_immunizationRecommendation_recommendation.forecastStatus;
 
     // substanceAdministration/text
-    // TODO
+    // currently not necessary to be mapped:
+    //   Within the text element, references are made to sections of the section/text. 
+    //   Since the "Complete Immunization Status" currently displays only coded information, 
+    //   this element is not included.
 
     // substanceAdministration/statusCode
-    // TODO
+    // currently not necessary to be mapped:
+    //    Constant code in CDA won't be mapped to FHIR as there is no resemblance in FHIR.
 
     // substanceAdministration/effectiveTime
     cda_substanceAdministration.effectiveTime as cda_substanceAdministration_effectiveTime then {
@@ -519,6 +528,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
         fhir_dateCriterion_code_coding.code = '59777-3',
         fhir_recommendation_dateCriterion.value as fhir_dateCriterion_value then TSDateTime(cda_effectiveTime_high,fhir_dateCriterion_value);
     };     
+
     // substanceAdministration/doseQuantity
     // TODO
 
@@ -548,7 +558,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
           //TODO
 
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/lotNumberText
-          // TODO
+          // not to be mapped:
+          //   In case of immunization recommendations the logNumberText cannot be mapped because it is not applicable
 
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/pharm:ingredient
           // TODO
