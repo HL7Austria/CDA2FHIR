@@ -582,7 +582,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
       fhir_immunizationRecommendation.id as fhir_immunizationRecommendation_id,
       fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
       fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunizationRecommendation_id),
-      fhir_provenance_target_reference.type = 'Immunization',
+      fhir_provenance_target_reference.type = 'ImmunizationRecommendation',
       // create PractitionerRole in order to use it as Immunization.performer
       fhir_bundle.entry as fhir_bundle_entry02,
       fhir_bundle_entry02.resource = create('PractitionerRole') as fhir_practitionerRole,
@@ -613,7 +613,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
       fhir_immunizationRecommendation.id as fhir_immunizationRecommendation_id,
       fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
       fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_immunizationRecommendation_id),
-      fhir_provenance_target_reference.type = 'Immunization' then {
+      fhir_provenance_target_reference.type = 'ImmunizationRecommendation' then {
         // substanceAdministration/author -> ImmunizationRecommendation.date
         cda_substanceAdministration_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
         // substanceAdministration/author -> ImmunizationRecommendation.date
