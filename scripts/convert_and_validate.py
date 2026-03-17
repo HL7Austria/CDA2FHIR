@@ -60,7 +60,7 @@ for config in config_json:
                 "-allow-example-urls", "true",
                 "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
                 "-extension", "any",
-                "-display-issues-are-warnings"
+                "-display-issues-are-warnings" # https://confluence.hl7.org/spaces/FHIR/pages/35718580/Using+the+FHIR+Validator#UsingtheFHIRValidator-Displaywarnings
             ], stdout=log_file, stderr=subprocess.STDOUT)
 
             if result.returncode != 0:
@@ -79,7 +79,7 @@ for config in config_json:
                 "-allow-example-urls", "true",
                 "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
                 "-extension", "any",
-                "-display-issues-are-warnings"
+                "-display-issues-are-warnings" # https://confluence.hl7.org/spaces/FHIR/pages/35718580/Using+the+FHIR+Validator#UsingtheFHIRValidator-Displaywarnings
             ], stdout=log_file, stderr=subprocess.STDOUT)
 
             if result.returncode != 0:
