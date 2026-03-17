@@ -72,6 +72,9 @@ conceptmap "ELGAEntityNameUseFHIRNameUse" {
 // TODO review mapping
 // TODO add TITLE to name-part-qualifier
 // As soon as 'TITLE' is part of FHIR name-part-qualifier this conceptmap is obsolete.
+//
+// TODO full ConceptMap is required as https://termgit.elga.gv.at/ValueSet-elga-entitynamepartqualifier.html contains concepts from ONE code system
+//                      however, https://hl7.org/fhir/extensions/ValueSet-name-part-qualifier.html (see https://hl7.org/fhir/extensions/StructureDefinition-iso21090-EN-qualifier.html) contains concepts from TWO code systems
 conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2"
@@ -492,6 +495,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/CS" alias CS as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/code" alias code as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/CE" alias CE as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/CD" alias CD as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CV" alias CV as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias CodeableConcept as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Coding" alias Coding as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ST" alias ST as source
@@ -550,6 +554,25 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
 
 group INT(source src : INT, target tgt : integer) extends Any <<types>> {
   src.value as v -> tgt.value = v "integer";
+}
+
+group INTQuantity(source src: INT, target tgt: Quantity) extends Any <<types>> {
+  src -> tgt.system = 'http://unitsofmeasure.org' "FhirQuantitySystem";
+  src ->
+    tgt.code = '1',
+    tgt.unit = '1';
+  src.value as value -> tgt.value = value;
+}
+
+group REALQuantity(source src: INT, target tgt: Quantity) extends INTQuantity <<types>> {
+}
+
+group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
+  src.low as source_low -> tgt.low as target_low then IVXB_INTQuantity(source_low, target_low) "IVL_INTLow";
+  src.high as source_high -> tgt.high as target_high then IVXB_INTQuantity(source_high, target_high) "IVL_INTHigh";
+}
+
+group IVXB_INTQuantity(source src : IVXB_INT, target tgt : Quantity) extends INTQuantity <<types>>{
 }
 
 group BL(source src : BL, target tgt: boolean) extends Any <<types>> {
@@ -660,6 +683,10 @@ group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends C
 group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept <<types>> {
 }
 
+group CVCodeableConcept(source src: CV, target tgt: CodeableConcept) extends CECodeableConcept <<types>> {
+
+}
+
 // group ENHumanName(source src : EN, target tgt : HumanName) extends Any <<types>> {
 //   src.family as v -> tgt.family = (v.dataString);
 //   src.given as v -> tgt.given = (v.dataString);
@@ -740,10 +767,82 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
   } "CdaNameItem";
 }
 
+group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_patient : Patient){
+  // For each cda_name_item_family create HumanName (With all CDA Elements)
+  cda_patient_name.item as cda_name_item then {
+    cda_name_item.family as cda_name_item_family -> 
+      fhir_patient.name = create('HumanName') as fhir_humanName then {
+        // name.family
+        cda_name_item_family ->
+          // name.family
+          fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
+            // name.family.qualifier
+            cda_name_item_family where cda_name_item_family.qualifier.exists() then {
+              cda_name_item_family.qualifier as qualifier ->
+                fhir_humanName_family.extension as extension,
+                extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+                extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+                "qualifierValue";
+            } "CdaNameFamilyQualifierToFhirNameExtension";
+          } "CdaNameFamilyToFhirNameGiven";
+
+        cda_patient_name.item as cda_name_item then {
+          // name.use
+          cda_name_item.use as cda_name_item_use -> fhir_humanName.use = translate(cda_name_item_use, '#ELGAEntityNameUseFHIRNameUse', 'code');
+
+          // content of name-tag
+          cda_name_item.xmlText as cda_name_item_xmlText -> fhir_humanName.text = (cda_name_item_xmlText);
+
+          // name.prefix
+          cda_name_item.prefix as cda_name_item_prefix ->
+            // name.prefix
+            fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix then {
+              // name.prefix.qualifier
+              cda_name_item_prefix where cda_name_item_prefix.qualifier.exists() then {
+                cda_name_item_prefix.qualifier as qualifier ->
+                  fhir_humanName_prefix.extension as extension,
+                  extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+                  extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+                  "qualifierValue";
+              } "CdaNamePrefixQualifierToFhirNameExtension";
+            } "CdaNamePrefixToFhirNameGiven";
+
+          // name.given
+          cda_name_item.given as cda_name_item_given ->
+            // name.given
+            fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
+              // name.given.qualifier
+              cda_name_item_given where cda_name_item_given.qualifier.exists() then {
+                cda_name_item_given.qualifier as qualifier ->
+                  fhir_humanName_given.extension as extension,
+                  extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+                  extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+                  "qualifierValue";
+              } "CdaNameGivenQualifierToFhirNameExtension";
+            } "CdaNameGivenToFhirNameGiven";
+
+          // name.suffix
+          cda_name_item.suffix as cda_name_item_suffix ->
+            // name.suffix
+            fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
+              // name.suffix.qualifier
+              cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() then {
+                cda_name_item_suffix.qualifier as qualifier ->
+                  fhir_humanName_suffix.extension as extension,
+                  extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
+                  extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
+                  "qualifierValue";
+              } "CdaNameSuffixQualifierToFhirNameExtension";
+            } "CdaNameSuffixToFhirNameGiven";
+        } "CdaNameItem";
+      };
+  }; 
+}
+
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
 // Target: http://hl7.org/fhir/organization.html
 group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaOrganization, target fhir_organization : Organization) {
-  cda_organization.id -> fhir_organization.identifier;
+  cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
   cda_organization.name -> fhir_organization.name;
   cda_organization.telecom -> fhir_organization.telecom;
   // cda_organization.addr as cda_organization_addr ->
@@ -955,7 +1054,8 @@ group TELContactPoint(source src : TEL, target tgt : ContactPoint) extends Any <
     "valueme";
 
   // telecom.useablePeriod
-  src.useablePeriod -> tgt.period;
+  // TODO deactivated until https://github.com/HL7Austria/CDA2FHIR/pull/62 is resolved
+  // src.useablePeriod -> tgt.period;
 }
 
 group PQQuantity(source src : PQ, target tgt : Quantity) extends Any <<types>> {
@@ -985,9 +1085,16 @@ group IVXB_PQQuantity(source src : IVXB_PQ, target tgt : Quantity) extends PQQua
 //   src where $this.inclusive=true -> tgt.comparator = '>=' "CdaInclusiveToFhirComparatorInclusive";
 // }
 
-group RTOPQPQRatio(source src : RTO_PQ_PQ, target tgt : Ratio) extends Any <<types>> {
-  src.numerator as numerator -> tgt.numerator as targetNumerator then PQQuantity(numerator, targetNumerator) "numerator";
-  src.denominator as denominator -> tgt.denominator as targetDenominator then PQQuantity(denominator, targetDenominator) "denominator";
+group RTORatio(source src: RTO, target tgt: Ratio) extends Any <<types>> {
+  // numerator
+  src.numerator: INT as src_numerator -> tgt.numerator as tgt_numerator then INTQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorINTToFhirQuantity";
+  src.numerator: REAL as src_numerator -> tgt.numerator as tgt_numerator then REALQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorREALToFhirQuantity";
+  src.numerator: PQ as src_numerator -> tgt.numerator as tgt_numerator then PQQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorPQToFhirQuantity";
+
+  // denominator
+  src.denominator: INT as src_denominator -> tgt.denominator as tgt_denominator then INTQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorINTToFhirQuantity";
+  src.denominator: REAL as src_denominator -> tgt.denominator as tgt_denominator then REALQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorREALToFhirQuantity";
+  src.denominator: PQ as src_denominator -> tgt.denominator as tgt_denominator then PQQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorPQToFhirQuantity";
 }
 
 group CdaNullFlavorToFhirNullFlavor(source src : ANY, target tgt : Extension) extends Any <<types>> {

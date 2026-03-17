@@ -22,6 +22,7 @@ jobs:
       - name: Update pip
         run: |
           python -m pip install --upgrade pip
+          pip install coverage
 
       - name: Install MaLaC-HD
         run: |
@@ -32,7 +33,7 @@ jobs:
           pip install -e utils
           git clone https://gitlab.com/cdehealth/malac/transformer.git
           pip install -e transformer/fhir
-          git clone -b cda2fhir_myhealtheu https://gitlab.com/cdehealth/malac-hd.git
+          git clone https://gitlab.com/cdehealth/malac-hd.git
           pip install -e malac-hd
 
       - name: Run MaLaC-HD
@@ -50,29 +51,44 @@ jobs:
       - name: Download eHDSI Laboratory IG
         run: |
           wget https://fhir.ehdsi.eu/laboratory/package.tgz
+          mkdir -p ~/.fhir/packages/myhealth.eu.fhir.mvc-package#9.1.0 && wget -qO- https://fhir.ehdsi.eu/mvc-package/package.tgz | tar -xz -C ~/.fhir/packages/myhealth.eu.fhir.mvc-package#9.1.0
 
-      - name: Convert test file to FHIR XML and JSON
+      - name: Convert & validate test file to FHIR XML and JSON
         run: |
-          python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.xml
-          python python-maps/CdaToBundle.4.py -s input/Lab_Allgemeiner_Laborbefund.xml -t fhir.json
+          mkdir coverage
+          mkdir output
+          mkdir validation
+          for filename in input/*.xml; do
+              basename=$(basename "$filename" .xml)
+              coverage run --source=python-maps --data-file=coverage/.coverage.xml.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.fhir.xml
+              coverage run --source=python-maps --data-file=coverage/.coverage.json.$basename --branch python-maps/CdaToBundle.4.py -s $filename -t output/$basename.fhir.json
+              java -jar validator_cli.jar output/$basename.fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.val.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.val.xml.log || echo "validation errors in FHIR XML"
+              java -jar validator_cli.jar output/$basename.fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation/$basename.val.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation/$basename.val.json.log || echo "validation errors in FHIR JSON"
+          done
 
-      - name: Validate
+      - name: coverage
         run: |
-          java -jar validator_cli.jar fhir.xml -locale de-AT -version 4.0 -ig package.tgz -html-output validation.xml.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.xml.log || echo "validation errors in FHIR XML"
-          java -jar validator_cli.jar fhir.json -locale de-AT -version 4.0 -ig package.tgz -html-output validation.json.html -show-message-ids -allow-example-urls true -advisor-file advisor.json -extension any > validation.json.log || echo "validation errors in FHIR JSON"
+          coverage combine --keep --data-file=coverage/.coverage coverage/
+          coverage xml --data-file=coverage/.coverage -o coverage/coverage.xml
+          coverage html --data-file=coverage/.coverage
+
+      - name: display coverage
+        uses: orgoro/coverage@v3.2
+        with:
+          coverageFile: coverage/coverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: upload
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
+          include-hidden-files: true
           path: |
-            fhir.xml
-            fhir.json
-            validation.xml.log
-            validation.json.log
-            validation.xml.html
-            validation.json.html
+            coverage/
+            output/
+            validation/
             python-maps/CdaToBundle.4.py
+            htmlcov/
 
       - name: Validate
         run: |
