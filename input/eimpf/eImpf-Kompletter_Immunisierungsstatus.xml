@@ -265,8 +265,6 @@
                                     <templateId root="1.2.40.0.34.6.0.11.9.31"/>
                                     <templateId root="2.16.840.1.113883.10.20.1.53"/>
                                     <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
-                                    <!-- UniqueIdentifier (Serialisierungsnummer, Packungs-Identifikator) -->
-                                    <id root="1.2.40.0.34.99.123.12.1" extension="1234"/>
                                     <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
                                         <code nullFlavor="NA"/>
                                     </manufacturedMaterial>
@@ -333,13 +331,17 @@
                                         <state>Salzburg</state>
                                         <country>AUT</country>
                                     </addr>
-                                    <assignedPerson>
+                                    <!-- <assignedPerson>
                                         <name>
                                             <prefix>Dr.</prefix>
                                             <given>Frank</given>
                                             <family>Author-FSME1</family>
                                         </name>
-                                    </assignedPerson>
+                                    </assignedPerson> -->
+                                    <assignedAuthoringDevice>
+                                        <manufacturerModelName>Authoring Software</manufacturerModelName>
+                                        <softwareName>v1.0.0-author</softwareName>
+                                    </assignedAuthoringDevice>
                                     <representedOrganization>
                                         <!-- ID der Organisation aus dem GDA Index -->
                                         <id root="1.2.40.0.34.99.4613"
@@ -376,12 +378,16 @@
                                         <country>AUT</country>
                                     </addr>
                                     <telecom use="WP" value="tel:+43.316.608.271.9000"/>
-                                    <playingEntity>
+                                    <!-- <playingEntity>
                                         <name>
                                             <given>Amelia</given>
                                             <family>Verifier-FSME1-Amtsarzt</family>
                                         </name>
-                                    </playingEntity>
+                                    </playingEntity> -->
+                                    <playingDevice>
+                                        <manufacturerModelName>Korrigierende Software</manufacturerModelName>
+                                        <softwareName>v1.0.0-korr</softwareName>
+                                    </playingDevice>
                                     <scopingEntity classCode="ENT" determinerCode="INSTANCE">
                                         <desc>Landessanitätsdirektion Verifier-FSME1</desc>
                                     </scopingEntity>
@@ -485,13 +491,12 @@
                                         <reference value="#criterion-1"/>
                                     </text>
                                     <!-- Dosiskennung -->
-                                    <!-- <value xsi:type="CD" code="D1" codeSystem="1.2.40.0.34.5.183"
+                                    <value xsi:type="CD" code="D1" codeSystem="1.2.40.0.34.5.183"
                                         displayName="Dosis 1">
                                         <originalText>
                                             <reference value="#dosenr-1"/>
                                         </originalText>
-                                    </value> -->
-                                    <value xsi:type="CD" nullFlavor="UNK"/>
+                                    </value>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
@@ -529,6 +534,9 @@
                                         <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
                                         <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
                                         <code nullFlavor="OTH">
+                                            <originalText>
+                                                <reference value="#prodName-4"/>
+                                            </originalText>
                                             <translation code="2427872" codeSystem="1.2.40.0.34.4.16.1"
                                             displayName="ENCEPUR FSPR 0,25ML KIND"/>
                                         </code>
@@ -2190,7 +2198,7 @@
                             <statusCode code="active"/>
                             <!-- "Empfohlenes Impfdatum": Die Impfempfehlung bezieht sich immer auf einen Zeitraum, ein nullFlavor kann verwendet werden  -->
                             <effectiveTime xsi:type="IVL_TS">
-                                <low value="202008"/>
+                                <low value="20200813"/>
                                 <high nullFlavor="UNK"/>
                             </effectiveTime>
                             <!-- Die Art der Anwendung (des Impfstoffes) z.B. subkutan, intramuskulär; wird immer der nullFlavor angegeben. -->
