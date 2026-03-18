@@ -1,4 +1,4 @@
-map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir" = "CdaToFhir"
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir-bundle" = "CdaToFhirBundle"
 
 //
 // Mapping CDA2FHIR
@@ -648,6 +648,7 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
       identifier_type.coding as type_coding,
       type_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0203',
       type_coding.code = 'PI'
+      // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/174
       // ,
       // type_coding.display = 'Patient internal identifier'
       "FhirPatientIdentifierTypeCodingPI";
@@ -668,6 +669,7 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
       identifier_type.coding as type_coding,
       type_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0203',
       type_coding.code = 'SS'
+      // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/174
       // ,
       // type_coding.display = 'Social Security Number'
       "FhirPatientIdentifierTypeCodingSS";
@@ -681,8 +683,10 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
       fhir_patient_identifier.type as identifier_type,
       identifier_type.coding as type_coding,
       type_coding.system = 'http://terminology.hl7.org/CodeSystem/v2-0203',
-      type_coding.code = 'NI',
-      type_coding.display = 'National unique individual identifier'
+      type_coding.code = 'NI'
+      // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/174
+      // ,
+      // type_coding.display = 'National unique individual identifier'
       "FhirPatientIdentifierTypeCodingNI";
   } "CdaPatientIdToFhirPatientIdentifier";
 
@@ -741,11 +745,12 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
         extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-birthTime',
         extension.value = create('dateTime') as fhir_patient_birthTime_dateTime then TSDateTime(cda_patient_birthTime, fhir_patient_birthTime_dateTime) "CdaPatientBirthTimeToFhirPatientBirthTimeExtension";
     };
+    // based on https://hl7.eu/fhir/base-r5/missing-data.html
     cda_patient.birthTime as cda_patient_birthTime where (nullFlavor.exists()) ->
       fhir_patient.birthDate as fhir_patient_birthDate,
       fhir_patient_birthDate.extension as fhir_patient_birthDate_extension then
-      CdaNullFlavorToFhirNullFlavor(cda_patient_birthTime, fhir_patient_birthDate_extension)
-      "CdaPatientBirthTimeNullFlavorToFhirPatientBirthDateNullFlavor";
+      CdaNullFlavorToFhirDataAbsentReason(cda_patient_birthTime, fhir_patient_birthDate_extension)
+      "CdaPatientBirthTimeNullFlavorToFhirPatientBirthDateDataAbsentReason";
 
     // patient.deceasedInd
     cda_patient.sdtcDeceasedInd as cda_patient_deceasedInd where cda_patient.sdtcDeceasedTime.empty() -> fhir_patient.deceased = create('boolean') as fhir_patient_deceased then BL(cda_patient_deceasedInd, fhir_patient_deceased) "CdaPatientDeceasedIndToFhirPatientDeceasedBoolean";
@@ -925,7 +930,12 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
       cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
       // ClinicalDocument.author.assignedAuthor.assignedPerson
       cda_author_assignedAuthor.assignedPerson as cda_assignedPerson then {
-        cda_assignedPerson.name -> fhir_practitioner.name;
+        // ClinicalDocument.author.assignedAuthor.assignedPerson -> Practitioner.name
+        cda_assignedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_assignedPerson.name as cda_assignedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_assignedPerson_name, fhir_practitioner_name_extension);
       };
       // ClinicalDocument.author.assignedAuthor.representedOrganization
       cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
@@ -1201,7 +1211,11 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
       // assignedEntity.assignedPerson
       cda_assignedEntity.assignedPerson as cda_assignedPerson then {
         // assignedEntity.assignedPerson.name
-        cda_assignedPerson.name -> fhir_practitioner.name;
+        cda_assignedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_assignedPerson.name as cda_assignedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_assignedPerson_name, fhir_practitioner_name_extension);
       };
       // assignedEntity.representedOrganization
       cda_assignedEntity.representedOrganization as cda_representedOrganization ->
@@ -1243,7 +1257,11 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
       // associatedEntity.associatedPerson
       cda_associatedEntity.associatedPerson as cda_associatedPerson then {
         // associatedEntity.associatedPerson.name
-        cda_associatedPerson.name -> fhir_practitioner.name;
+        cda_associatedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_associatedPerson.name as cda_associatedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_associatedPerson_name, fhir_practitioner_name_extension);
       };
       // associatedEntity.scopingOrganization
       cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
@@ -1316,7 +1334,6 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
           cda_participant_role_scoping_entity.desc as cda_participant_role_scoping_entity_desc ->
             fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization_reference,
             fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
-        }
-      };
+        };
     };
 }

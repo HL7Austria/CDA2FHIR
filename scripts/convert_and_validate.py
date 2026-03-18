@@ -31,7 +31,7 @@ for config in config_json:
             "--source=python-maps",
             f"--data-file={COVERAGE_DIR}/{directory}/.coverage.xml.{basename}",
             "--branch",
-            "python-maps/CdaToFhir.4.py",
+            "python-maps/CdaToFhirBundle.4.py",
             "-s", filepath,
             "-t", f"{OUTPUT_DIR}/{directory}/{basename}.fhir.xml"
         ], check=False)
@@ -42,7 +42,7 @@ for config in config_json:
             "--source=python-maps",
             f"--data-file={COVERAGE_DIR}/{directory}/.coverage.json.{basename}",
             "--branch",
-            "python-maps/CdaToFhir.4.py",
+            "python-maps/CdaToFhirBundle.4.py",
             "-s", filepath,
             "-t", f"{OUTPUT_DIR}/{directory}/{basename}.fhir.json"
         ], check=False)
@@ -59,7 +59,8 @@ for config in config_json:
                 "-show-message-ids",
                 "-allow-example-urls", "true",
                 "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
-                "-extension", "any"
+                "-extension", "any",
+                "-display-issues-are-warnings" # https://confluence.hl7.org/spaces/FHIR/pages/35718580/Using+the+FHIR+Validator#UsingtheFHIRValidator-Displaywarnings
             ], stdout=log_file, stderr=subprocess.STDOUT)
 
             if result.returncode != 0:
@@ -77,7 +78,8 @@ for config in config_json:
                 "-show-message-ids",
                 "-allow-example-urls", "true",
                 "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
-                "-extension", "any"
+                "-extension", "any",
+                "-display-issues-are-warnings" # https://confluence.hl7.org/spaces/FHIR/pages/35718580/Using+the+FHIR+Validator#UsingtheFHIRValidator-Displaywarnings
             ], stdout=log_file, stderr=subprocess.STDOUT)
 
             if result.returncode != 0:
