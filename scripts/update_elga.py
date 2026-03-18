@@ -37,7 +37,7 @@ def check_response(res):
         print("ERROR: " + res.text)
         print(' ')    
         print(' ')
-        # res.raise_for_status()
+        res.raise_for_status()
 
 def create_action(file_path, content, action='update', encoding='text'):
     return {
@@ -64,7 +64,15 @@ def commit(topic, source_path, target_path, action='Update'):
     try:
         res.raise_for_status()
     except:
-        res.raise_for_status()
+        if "A file with this name doesn't exist" in res.text:
+            commit(topic, source_path, target_path, action='Create')
+        else:
+            print(' ')    
+            print(' ')
+            print("ERROR: " + res.text)
+            print(' ')    
+            print(' ')
+            res.raise_for_status()
 
 # create new branch based on TARGET_BRANCH
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/branches?branch={SOURCE_BRANCH}&ref={TARGET_BRANCH}', headers=HEADERS)
