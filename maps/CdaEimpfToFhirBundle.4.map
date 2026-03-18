@@ -540,7 +540,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     // substanceAdministration/doseQuantity
     cda_substanceAdministration.doseQuantity as cda_substanceAdministration_doseQuantity where ($this.nullFlavor.exists().not()) -> 
       fhir_immunizationRecommendation.extension as fhir_immunizationRecommendation_extension,
-      fhir_immunizationRecommendation_extension.url = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/extension-ImmunizationRecommendation.doseQuantity',
+      fhir_immunizationRecommendation_extension.url = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-ext-immunizationRecommendation-doseQuantity',
       fhir_immunizationRecommendation_extension.valueQuantity = create('Quantity') as fhir_immunizationRecommendation_extension_valueQuantity then
       PQQuantity(cda_substanceAdministration_doseQuantity, fhir_immunizationRecommendation_extension_valueQuantity);
 
