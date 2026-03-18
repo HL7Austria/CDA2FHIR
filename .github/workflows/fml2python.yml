@@ -32,7 +32,6 @@ jobs:
 
       - name: Install MaLaC-HD with CDA model
         run: |
-          cat python-maps/requirements.txt
           pip install -r python-maps/requirements.txt
 
       - name: Run MaLaC-HD
