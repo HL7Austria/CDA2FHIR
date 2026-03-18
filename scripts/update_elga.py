@@ -71,13 +71,13 @@ res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository
 check_response(res)
 
 # update README.md
-commit(os.path.join('python-maps', 'README.md'), 'README.md')
+commit('README', os.path.join('python-maps', 'README.md'), 'README.md')
 
 # update CdaToFhirBundle.py
-commit(os.path.join('python-maps', 'CdaToFhirBundle.4.py'), 'CdaToFhirBundle.4.py')
+commit('CDA2FHIR mapping', os.path.join('python-maps', 'CdaToFhirBundle.4.py'), 'CdaToFhirBundle.4.py')
     
 # update requirements.txt
-commit(os.path.join('python-maps', 'requirements.txt'), 'requirements.txt')
+commit('dependencies', os.path.join('python-maps', 'requirements.txt'), 'requirements.txt')
 
 # update documentation
 data = {
@@ -92,7 +92,7 @@ for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
     with pandas.ExcelWriter(excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
         df.to_excel(writer, sheet_name='META', header=False)
 
-    commit(excel, os.path.join('documentation', os.path.basename(excel)))
+    commit('documentation', excel, os.path.join('documentation', os.path.basename(excel)))
 
 # create MR
 
