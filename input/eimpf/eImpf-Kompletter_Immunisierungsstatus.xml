@@ -253,7 +253,9 @@
                             <!-- Impfdatum -->
                             <effectiveTime value="20160617121500+0200"/>
                             <!-- Die Art der Anwendung (des Impfstoffes) -->
-                            <routeCode nullFlavor="NA"/>
+                            <routeCode code="34206005" codeSystem="2.16.840.1.113883.6.96"
+                                codeSystemName="SNOMED CT"
+                                displayName="Subkutane Anwendungsart"/>
                             <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
                             <approachSiteCode nullFlavor="NA"/>
                             <!-- Menge des Wirkstoffs des verabreichten Arzneimittels -->
@@ -2202,7 +2204,9 @@
                                 <high nullFlavor="UNK"/>
                             </effectiveTime>
                             <!-- Die Art der Anwendung (des Impfstoffes) z.B. subkutan, intramuskulär; wird immer der nullFlavor angegeben. -->
-                            <routeCode nullFlavor="NA"/>
+                            <routeCode code="34206005" codeSystem="2.16.840.1.113883.6.96"
+                                codeSystemName="SNOMED CT"
+                                displayName="Subkutane Anwendungsart"/>
                             <!-- Der Ort der Anwendung bzw. die Körperstelle; wird immer der nullFlavor angegeben. -->
                             <approachSiteCode nullFlavor="NA"/>
                             <!-- Empfohlene Dosierung. Z.B. die Anzahl der Ampullen  -->
