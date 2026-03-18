@@ -94,7 +94,7 @@ for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
         binary_file_data = binary_file.read()
         base64_encoded_data = base64.b64encode(binary_file_data) 
         base64_output = base64_encoded_data.decode('utf-8')
-        commit_actions.append(create_action(os.path.join('documentation', os.path.basename(excel)), base64_output, encoding='base64', action='create'))
+        commit_actions.append(create_action(os.path.join('documentation', os.path.basename(excel)), base64_output, encoding='base64'))
     
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/commits', headers=HEADERS, json=commit)
 check_response(res)
