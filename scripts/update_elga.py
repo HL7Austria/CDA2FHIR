@@ -47,37 +47,39 @@ def create_action(file_path, content, action='update', encoding='text'):
         'content': content
     }
 
+def commit(topic, source_path, target_path, action='Update'):
+    # create new commit
+    commit = { 'branch': SOURCE_BRANCH,
+            'commit_message': f'{action} {topic}',
+            'actions': []}
+    commit_actions = commit['actions']
+
+    with open(source_path, 'rb') as binary_file:
+        binary_file_data = binary_file.read()
+        base64_encoded_data = base64.b64encode(binary_file_data) 
+        base64_output = base64_encoded_data.decode('utf-8')
+        commit_actions.append(create_action(target_path, base64_output, encoding='base64', action=action.lower()))
+
+    res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/commits', headers=HEADERS, json=commit)
+    try:
+        res.raise_for_status()
+    except:
+        res.raise_for_status()
+
 # create new branch based on TARGET_BRANCH
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/branches?branch={SOURCE_BRANCH}&ref={TARGET_BRANCH}', headers=HEADERS)
 check_response(res)
 
-# create new commit
-commit = { 'branch': SOURCE_BRANCH,
-           'commit_message': 'Release new mapping',
-           'actions': []}
-commit_actions = commit['actions']
-
 # update README.md
-with open(os.path.join('python-maps', 'README.md'), 'rb') as binary_file:
-    binary_file_data = binary_file.read()
-    base64_encoded_data = base64.b64encode(binary_file_data) 
-    base64_output = base64_encoded_data.decode('utf-8')
-    commit_actions.append(create_action('README.md', base64_output, encoding='base64'))
+commit(os.path.join('python-maps', 'README.md'), 'README.md')
 
 # update CdaToFhirBundle.py
-with open(os.path.join('python-maps', 'CdaToFhirBundle.4.py'), 'rb') as binary_file:
-    binary_file_data = binary_file.read()
-    base64_encoded_data = base64.b64encode(binary_file_data) 
-    base64_output = base64_encoded_data.decode('utf-8')
-    commit_actions.append(create_action('CdaToFhirBundle.4.py', base64_output, encoding='base64'))
+commit(os.path.join('python-maps', 'CdaToFhirBundle.4.py'), 'CdaToFhirBundle.4.py')
     
 # update requirements.txt
-with open(os.path.join('python-maps', 'requirements.txt'), 'rb') as binary_file:
-    binary_file_data = binary_file.read()
-    base64_encoded_data = base64.b64encode(binary_file_data) 
-    base64_output = base64_encoded_data.decode('utf-8')
-    commit_actions.append(create_action('requirements.txt', base64_output, encoding='base64'))
+commit(os.path.join('python-maps', 'requirements.txt'), 'requirements.txt')
 
+# update documentation
 data = {
     'Metadata': [os.environ['RELEASE_URL'], os.environ['RELEASE_TAG'], os.environ['RELEASE_DATE']]
 }
@@ -90,14 +92,7 @@ for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
     with pandas.ExcelWriter(excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
         df.to_excel(writer, sheet_name='META', header=False)
 
-    with open(excel, 'rb') as binary_file:
-        binary_file_data = binary_file.read()
-        base64_encoded_data = base64.b64encode(binary_file_data) 
-        base64_output = base64_encoded_data.decode('utf-8')
-        commit_actions.append(create_action(os.path.join('documentation', os.path.basename(excel)), base64_output, encoding='base64'))
-    
-res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/commits', headers=HEADERS, json=commit)
-check_response(res)
+    commit(excel, os.path.join('documentation', os.path.basename(excel)))
 
 # create MR
 
