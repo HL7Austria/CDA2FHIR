@@ -2,6 +2,8 @@ import os
 import requests
 import base64
 import re
+import pandas
+import glob
 
 HEADERS = { 'PRIVATE-TOKEN' : os.environ['GITLAB_CI_TOKEN'] }
 PROJECT_ID = os.environ['GITLAB_ELGA_CDA2FHIR_REPO']
@@ -75,6 +77,24 @@ with open(os.path.join('python-maps', 'requirements.txt'), 'rb') as binary_file:
     base64_encoded_data = base64.b64encode(binary_file_data) 
     base64_output = base64_encoded_data.decode('utf-8')
     commit_actions.append(create_action('requirements.txt', base64_output, encoding='base64'))
+
+data = {
+    'Metadata': [os.environ['RELEASE_URL'], os.environ['RELEASE_TAG'], os.environ['RELEASE_DATE']]
+}
+index = ['RELEASE_URL', 'RELEASE_TAG', 'RELEASE_DATE']
+df = pandas.DataFrame(data, index = index)
+
+for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
+    print(excel)
+
+    with pandas.ExcelWriter(excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+        df.to_excel(writer, sheet_name='META', header=False)
+
+    with open(excel, 'rb') as binary_file:
+        binary_file_data = binary_file.read()
+        base64_encoded_data = base64.b64encode(binary_file_data) 
+        base64_output = base64_encoded_data.decode('utf-8')
+        commit_actions.append(create_action(excel, base64_output, encoding='base64', action='create'))
     
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/commits', headers=HEADERS, json=commit)
 check_response(res)
