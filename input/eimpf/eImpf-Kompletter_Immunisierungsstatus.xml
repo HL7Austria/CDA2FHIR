@@ -960,7 +960,7 @@
                                     </addr>
                                     <telecom value="tel:+11.2222.333"/>
                                     <assignedPerson>
-                                        <name>
+                                        <name> 
                                             <prefix>Dr.</prefix>
                                             <given>Sabine</given>
                                             <family>Performer-Influenza</family>
