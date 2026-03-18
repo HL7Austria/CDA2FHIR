@@ -538,7 +538,12 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     };     
 
     // substanceAdministration/doseQuantity
-    // TODO
+    cda_substanceAdministration.doseQuantity as cda_substanceAdministration_doseQuantity where ($this.nullFlavor.exists().not()) -> 
+      fhir_immunizationRecommendation.extension as fhir_immunizationRecommendation_extension,
+      fhir_immunizationRecommendation_extension.url = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/extension-ImmunizationRecommendation.doseQuantity',
+      fhir_immunizationRecommendation_extension.valueQuantity = create('Quantity') as fhir_immunizationRecommendation_extension_valueQuantity then
+      IVLPQRange(cda_substanceAdministration_doseQuantity, fhir_immunizationRecommendation_extension_valueQuantity);
+
 
     // substanceAdministration/consumable
     cda_substanceAdministration.consumable as cda_consumable then {
