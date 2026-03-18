@@ -49,10 +49,10 @@ def create_action(file_path, content, action='update', encoding='text'):
 
 def commit(topic, source_path, target_path, action='Update'):
     # create new commit
-    commit = { 'branch': SOURCE_BRANCH,
+    commit_data = { 'branch': SOURCE_BRANCH,
             'commit_message': f'{action} {topic}',
             'actions': []}
-    commit_actions = commit['actions']
+    commit_actions = commit_data['actions']
 
     with open(source_path, 'rb') as binary_file:
         binary_file_data = binary_file.read()
@@ -60,7 +60,7 @@ def commit(topic, source_path, target_path, action='Update'):
         base64_output = base64_encoded_data.decode('utf-8')
         commit_actions.append(create_action(target_path, base64_output, encoding='base64', action=action.lower()))
 
-    res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/commits', headers=HEADERS, json=commit)
+    res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/commits', headers=HEADERS, json=commit_data)
     try:
         res.raise_for_status()
     except:
