@@ -188,7 +188,7 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: CdaSection, targ
   cda_section.entry as cda_section_entry then {
     
     // Immunization Entry - 1.2.40.0.34.6.0.11.3.1 -> Immunization
-    cda_section_entry where ($this.substanceAdministration.templateId.where(root='1.2.40.0.34.6.0.11.3.1') then {
+    cda_section_entry where ($this.substanceAdministration.templateId.where(root='1.2.40.0.34.6.0.11.3.1')) then {
       // section/entry/substanceAdministration -> Immunization
       cda_section_entry.substanceAdministration as cda_section_entry_substanceAdministration -> 
         // create Immunization
@@ -688,7 +688,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
                 fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
 
                 // Create a substring from the start till the first occurrence of < character
-                fhir_immunizationRecommendation_recommendation.description = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'));
+                fhir_immunizationRecommendation_recommendation.description = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
             };
           };
         };
