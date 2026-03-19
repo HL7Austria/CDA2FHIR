@@ -2526,6 +2526,25 @@
                                     </manufacturedMaterial>
                                 </manufacturedProduct>
                             </consumable>
+                            <author typeCode="AUT" contextControlCode="OP">
+                                <time value="20240315143000+0100"/>
+                                <assignedAuthor classCode="ASSIGNED">
+                                    <id root="1.2.40.0.34.99.9999.1.1" extension="device-001"/>
+                                    <code code="309343006"
+                                        codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Physician"/>
+                                    <telecom use="WP" value="tel:+43-1-12345678"/>
+                                    <assignedAuthoringDevice classCode="DEV" determinerCode="INSTANCE">
+                                        <manufacturerModelName>VaccinationSystem Pro 3.0</manufacturerModelName>
+                                        <softwareName>ImpfpassSoftware v2.5.1</softwareName>
+                                    </assignedAuthoringDevice>
+                                    <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                                        <id root="1.2.40.0.34.99.9999" extension="org-001"/>
+                                        <name>Musterkrankenhaus Wien</name>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
                             <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
                             <entryRelationship typeCode="RSON">
                                 <observation classCode="OBS" moodCode="EVN">
