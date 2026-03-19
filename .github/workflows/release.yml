@@ -25,7 +25,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests
+          pip install requests pandas openpyxl
 
       - name: Create MR in ELGA repository
         env:
@@ -35,5 +35,6 @@ jobs:
           RELEASE_URL: ${{ github.event.release.html_url }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
           RELEASE_DESCRIPTION: ${{ github.event.release.body }}
+          RELEASE_DATE: ${{ github.event.release.published_at }}
         run: |
           python scripts/update_elga.py
