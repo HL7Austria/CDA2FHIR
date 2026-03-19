@@ -2466,6 +2466,99 @@
                             </precondition>
                         </substanceAdministration>
                     </entry>
+                    <!-- Impfempfehlungen Entry FSME -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration classCode="SBADM" moodCode="PRP"
+                            negationInd="false">
+                            <templateId root="1.2.40.0.34.6.0.11.3.3"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.25"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12.2"/>
+                            <id root="1.2.40.0.34.99.4613.3.5.1" extension="1"/>
+                            <!-- Klassifikation der Impfempfehlung und deren Bedeutung für den Impfling. -->
+                            <code code="171258008" codeSystem="2.16.840.1.113883.6.96"
+                                codeSystemName="SNOMED CT"/>
+                            <text>
+                                <reference value="#sbdmrec-1"/>
+                            </text>
+                            <statusCode code="active"/>
+                            <!-- "Empfohlenes Impfdatum": Die Impfempfehlung bezieht sich immer auf einen Zeitraum, ein nullFlavor kann verwendet werden  -->
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20200813"/>
+                                <high value="20200913"/>
+                            </effectiveTime>
+                            <!-- Die Art der Anwendung (des Impfstoffes) z.B. subkutan, intramuskulär; wird immer der nullFlavor angegeben. -->
+                            <routeCode code="34206005" codeSystem="2.16.840.1.113883.6.96"
+                                codeSystemName="SNOMED CT"
+                                displayName="Subkutane Anwendungsart"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle; wird immer der nullFlavor angegeben. -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Empfohlene Dosierung. Z.B. die Anzahl der Ampullen  -->
+                            <doseQuantity value="1" unit="{Stueck}"/>
+                            <!-- "Empfohlener Impfstoff": Angaben zum ärztlich empfohlenen Arzneimittel  -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <code nullFlavor="OTH">
+                                            <originalText>
+                                                <reference value="#prodName-4"/>
+                                            </originalText>
+                                            <translation code="2-00269"
+                                                codeSystem="1.2.40.0.34.4.17"
+                                                displayName="FSME-IMMUN FSPR 0,25ML NAD F"/>
+                                        </code>
+                                        <name>FSME-Immun 0,25 ml Junior Injektionssuspension in
+                                            einer Fertigspritze</name>
+                                        <lotNumberText nullFlavor="NA"/>
+                                        <pharm:ingredient classCode="ACTI">
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <pharm:code code="J07BA01"
+                                                  codeSystem="2.16.840.1.113883.6.73"
+                                                  codeSystemName="whoATC"/>
+                                                <pharm:name>FSME, inaktiviert, ganzes
+                                                  Virus</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836403007" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Frühsommer-Meningoencephalitis Impfstoff"/>
+                                    <text>
+                                        <reference value="#target-4"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Angabe, um welche Impfung oder Teilimpfung es sich handelt (entsprechend einem Impfschema) -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code code="SCHEMA005" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="eImpf_Ergaenzung"
+                                        displayName="FSME Grundschema, FSME-Immun"/>
+                                    <text>
+                                        <reference value="#criterion-4"/>
+                                    </text>
+                                    <value xsi:type="CD" code="B" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Auffrischungsimpfung">
+                                        <originalText>
+                                            <reference value="#dosenr-4"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
                 </section>
             </component>
         </structuredBody>
