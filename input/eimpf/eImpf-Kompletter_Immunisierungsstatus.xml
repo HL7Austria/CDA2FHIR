@@ -2558,6 +2558,36 @@
                                     <statusCode code="completed"/>
                                 </observation>
                             </entryRelationship>
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+
+                                    <!-- ELGA templateId for External Document Entry -->
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+
+                                    <!-- OID of the source document — must match ClinicalDocument/id of the referenced CDA -->
+                                    <id root="1.2.40.0.34.99.9999.3.1" extension="document-20240315-001"/>
+
+                                    <!-- Classification of the external document — must match ClinicalDocument/code -->
+                                    <code code="11369-6"
+                                        codeSystem="2.16.840.1.113883.6.1"
+                                        codeSystemName="LOINC"
+                                        displayName="History of Immunization Narrative"/>
+
+                                    <!-- Narrative Text Reference (Inclusion 1.2.40.0.34.6.0.11.9.1) -->
+                                    <!-- Title, date and author of the external document as reference to section.text -->
+                                    <text>
+                                        <reference value="#refDoc-001"/>
+                                    </text>
+
+                                    <!-- setId — must match ClinicalDocument/setId of the referenced CDA -->
+                                    <setId root="1.2.40.0.34.99.9999.3.1" extension="setid-20240315-001"/>
+
+                                    <!-- versionNumber — must match ClinicalDocument/versionNumber of the referenced CDA -->
+                                    <versionNumber value="1"/>
+
+                                </externalDocument>
+                            </reference>
+                            
                             <!-- Angabe, um welche Impfung oder Teilimpfung es sich handelt (entsprechend einem Impfschema) -->
                             <precondition>
                                 <criterion classCode="OBS" moodCode="EVN.CRT">
