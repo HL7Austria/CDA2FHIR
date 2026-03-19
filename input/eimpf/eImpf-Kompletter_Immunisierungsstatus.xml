@@ -1047,6 +1047,9 @@
                                             <family>Nachtragende-Influenza</family>
                                         </name>
                                     </playingEntity>
+                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                        <desc>Musterkrankenhaus Wien</desc>
+                                    </scopingEntity>
                                 </participantRole>
                             </participant>
                             <!-- Impfziel -->
