@@ -26,21 +26,13 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
-      - name: Install dependecies
-        run: |
-          pip install requests
-
       - name: Install MaLaC-HD with CDA model
         run: |
-          pip install malac-hd[cda]
+          pip install -r python-maps/requirements.txt
 
       - name: Run MaLaC-HD
         run: |
           malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
-
-      - name: Update requirements
-        run: |
-          python scripts/update_requirements.py
 
       - name: Commit any converted outputs
         run: |
