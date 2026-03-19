@@ -2542,7 +2542,7 @@
                                         <name>Musterkrankenhaus Wien</name>
                                     </representedOrganization>
                                 </assignedAuthor>
-                            </author>System ID: C:\Users\crenner\OneDrive - ELGA GmbH\Desktop\Dev\cda2fhir_dev\CDA2FHIR\input\eimpf\eImpf-Kompletter_Immunisierungsstatus.xml
+                            </author>
                             <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
                             <entryRelationship typeCode="RSON">
                                 <observation classCode="OBS" moodCode="EVN">
