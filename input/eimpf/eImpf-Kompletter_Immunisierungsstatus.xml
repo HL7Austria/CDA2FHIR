@@ -253,9 +253,8 @@
                             <!-- Impfdatum -->
                             <effectiveTime value="20160617121500+0200"/>
                             <!-- Die Art der Anwendung (des Impfstoffes) -->
-                            <routeCode code="34206005" codeSystem="2.16.840.1.113883.6.96"
-                                codeSystemName="SNOMED CT"
-                                displayName="Subkutane Anwendungsart"/>
+                            <routeCode code="100000073633" codeSystem="2.16.840.1.113883.6.96"
+                                displayName="subkutane Anwendung"/>
                             <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
                             <approachSiteCode nullFlavor="NA"/>
                             <!-- Menge des Wirkstoffs des verabreichten Arzneimittels -->
@@ -682,8 +681,8 @@
                                     <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
                                         <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
                                         <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
-                                        <code code="2427872" codeSystem="1.2.40.0.34.4.16.1"
-                                            displayName="ENCEPUR FSPR 0,25ML KIND">
+                                        <code code="4977720" codeSystem="1.2.40.0.34.4.16.1"
+                                            displayName="ENCEPUR FSPR 0,25ML KIND BN">
                                             <originalText>
                                                 <reference value="#prodName-3"/>
                                             </originalText>
@@ -909,7 +908,7 @@
                                     <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
                                         <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
                                         <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
-                                        <code displayName="VAXIGRIP TETRA FSPR O.K" code="4467858"
+                                        <code displayName="VAXIGRIP INJ FSPR 0,5ML +1K." code="6050105"
                                             codeSystem="1.2.40.0.34.4.16.1">
                                             <originalText>
                                                 <reference value="#prodName-5"/>
@@ -2448,9 +2447,9 @@
                             <precondition>
                                 <criterion classCode="OBS" moodCode="EVN.CRT">
                                     <templateId root="1.2.40.0.34.6.0.11.3.10"/>
-                                    <code code="SCHEMA005" codeSystem="1.2.40.0.34.5.183"
-                                        codeSystemName="eImpf_Ergaenzung"
-                                        displayName="FSME Grundschema, FSME-Immun"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="​eImpf_Ergaenzung"
+                                        displayName="FSME"/>
                                     <text>
                                         <reference value="#criterion-4"/>
                                     </text>
@@ -2587,9 +2586,9 @@
                             <precondition>
                                 <criterion classCode="OBS" moodCode="EVN.CRT">
                                     <templateId root="1.2.40.0.34.6.0.11.3.10"/>
-                                    <code code="SCHEMA005" codeSystem="1.2.40.0.34.5.183"
-                                        codeSystemName="eImpf_Ergaenzung"
-                                        displayName="FSME Grundschema, FSME-Immun"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="​eImpf_Ergaenzung"
+                                        displayName="FSME"/>
                                     <text>
                                         <reference value="#criterion-4"/>
                                     </text>
