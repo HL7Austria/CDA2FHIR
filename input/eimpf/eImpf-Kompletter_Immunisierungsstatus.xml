@@ -253,7 +253,7 @@
                             <!-- Impfdatum -->
                             <effectiveTime value="20160617121500+0200"/>
                             <!-- Die Art der Anwendung (des Impfstoffes) -->
-                            <routeCode code="100000073633" codeSystem="2.16.840.1.113883.6.96"
+                            <routeCode code="100000073633" codeSystem="1.2.40.0.10.1.4.3.4.3.4"
                                 displayName="subkutane Anwendung"/>
                             <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
                             <approachSiteCode nullFlavor="NA"/>
@@ -485,9 +485,9 @@
                             <precondition>
                                 <criterion classCode="OBS" moodCode="EVN.CRT">
                                     <templateId root="1.2.40.0.34.6.0.11.3.10"/>
-                                    <code code="SCHEMA006" codeSystem="1.2.40.0.34.5.183"
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
                                         codeSystemName="eImpf_Ergaenzung"
-                                        displayName="FSME Grundschema, Encepur"/>
+                                        displayName="FSME"/>
                                     <text>
                                         <reference value="#criterion-1"/>
                                     </text>
@@ -632,9 +632,9 @@
                             <precondition>
                                 <criterion classCode="OBS" moodCode="EVN.CRT">
                                     <templateId root="1.2.40.0.34.6.0.11.3.10"/>
-                                    <code code="SCHEMA006" codeSystem="1.2.40.0.34.5.183"
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
                                         codeSystemName="eImpf_Ergaenzung"
-                                        displayName="FSME Grundschema, Encepur"/>
+                                        displayName="FSME"/>
                                     <text>
                                         <reference value="#criterion-2"/>
                                     </text>
@@ -859,9 +859,9 @@
                             <precondition>
                                 <criterion classCode="OBS" moodCode="EVN.CRT">
                                     <templateId root="1.2.40.0.34.6.0.11.3.10"/>
-                                    <code code="SCHEMA006" codeSystem="1.2.40.0.34.5.183"
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
                                         codeSystemName="eImpf_Ergaenzung"
-                                        displayName="FSME Grundschema, Encepur"/>
+                                        displayName="FSME"/>
                                     <text>
                                         <reference value="#criterion-3"/>
                                     </text>
