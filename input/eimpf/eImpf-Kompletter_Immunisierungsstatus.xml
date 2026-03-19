@@ -947,6 +947,7 @@
                             <performer typeCode="PRF">
                                 <!-- Impfende Person -->
                                 <templateId root="1.2.40.0.34.6.0.11.9.21"/>
+                                <time value="20250201092200+0100"/>
                                 <assignedEntity>
                                     <id root="1.2.40.0.34.99.4613.3.3" extension="5454353454532323"/>
                                     <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
