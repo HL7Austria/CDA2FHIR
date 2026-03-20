@@ -1,4 +1,4 @@
-map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-emed-to-fhir" = "CdaEmedToFhir"
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-emed-to-fhir-bundle" = "CdaEmedToFhirBundle"
 
 //
 // Mapping ELGA-CDA eMedikation to FHIR
