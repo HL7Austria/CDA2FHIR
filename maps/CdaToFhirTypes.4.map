@@ -539,13 +539,13 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
   
   // OIDs with extension
   // see https://hl7.org/fhir/R4/datatypes.html#oid
-  src.root as r where (src.root.matches('[0-2](\.(0|[1-9][0-9]*))+') and src.extension.exists()) -> 
+  src.root as r where (src.root.matches('[0-2](\\.(0|[1-9][0-9]*))+') and src.extension.exists()) -> 
     tgt.system = translate(r, '#OIDtoURI', 'code') then {
       src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
     } "oidwithextension";
 
   // OIDs without extension
-  src.root as r where (src.root.matches('[0-2](\.(0|[1-9][0-9]*))+') and src.extension.empty()) -> 
+  src.root as r where (src.root.matches('[0-2](\\.(0|[1-9][0-9]*))+') and src.extension.empty()) -> 
     tgt.system = 'urn:ietf:rfc:3986',  
     tgt.value = append('urn:oid:', r), 
     tgt.assigner as a,  a.display = 'Bundesministerium für Gesundheit' 
