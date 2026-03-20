@@ -114,6 +114,7 @@
                         <city>Wien</city>
                         <state>Wien</state>
                         <country>AUT</country>
+                        <additionalLocator>2. Stock</additionalLocator>
                     </addr>
                     <telecom use="H" value="tel:+43.2682.40400"/>
                     <telecom use="MC" value="tel:+43.664.1234567"/>
