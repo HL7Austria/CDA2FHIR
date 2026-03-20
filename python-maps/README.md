@@ -3,7 +3,8 @@
 A stand-alone python module for converting CDA documents to FHIR.
 
 Currently the following CDA documents are supported:
-- [e-Impfpass](https://wiki.hl7.at/index.php/ILF:E-Impfpass_Guide) (status: partial)
+- [e-Impfpass](https://wiki.hl7.at/index.php/ILF:E-Impfpass_Guide) (status: immunizations and immunization recommendations)
+- [Labor- und Mikrobiologiebefund](https://wiki.hl7.at/index.php/ILF:Labor-_und_Mikrobiologiebefund_Guide) (status: work in progress)
 
 ## Getting Started
 
