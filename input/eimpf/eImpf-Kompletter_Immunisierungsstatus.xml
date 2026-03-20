@@ -125,6 +125,19 @@
                         </name>
                     </guardianPerson>
                 </guardian>
+                <birthPlace>
+                    <place>
+                        <addr use="PST">
+                            <streetName>Birthplace-Straße</streetName>
+                            <houseNumber>4</houseNumber>
+                            <postalCode>7000</postalCode>
+                            <city>Eisenstadt</city>
+                            <state>Burgenland</state>
+                            <country>AUT</country>
+                            <additionalLocator>2. Stock</additionalLocator>
+                        </addr>
+                    </place>
+                </birthPlace>
             </patient>
         </patientRole>
     </recordTarget>
