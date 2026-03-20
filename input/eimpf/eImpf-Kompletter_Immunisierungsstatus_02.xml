@@ -1,0 +1,2613 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="eimpf-stylesheet_v1.0.xsl"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:pharm="urn:ihe:pharm" xmlns:sdtc="urn:hl7-org:sdtc" xmlns:ips="urn:hl7-org:ips"
+    xmlns:hl7at="urn:hl7-at:v3">
+    <!--
+		=======================================================================
+		*** CDA Demo-Dokument "Kompletter Immunisierungsstatus" ***
+            Enthält die Sektionen:
+            * Impfungen
+            * Impfrelevante Erkrankungen
+            * Antikörperbestimmung
+            * Indikationsgruppen
+            * Impfempfehlungen
+
+		basierend auf den Standard:
+		CDA Implementierungsleitfäden - HL7 Implementation Guide for CDA® R2: e-Impfpass, Version 2.0.0
+		Dies ist ein Beispielbefund. Bei den Inhalten handelt es sich um synthetische Mustertexte und keinesfalls um personenbezogene Echtdaten oder realistische Befunde.
+		Autoren:
+			Stefan Sabutsch, ELGA GmbH
+			Oliver Kuttin, ELGA GmbH
+			Andrea Klostermann, ELGA GmbH
+		    Gabriel Kleinoscheg, ELGA GmbH
+		Dokumentrevision:  2.0.0
+		Datum: 			10.08.2023
+		Die Kommentare in diesem CDA Dokument dienen lediglich der Orientierungshilfe und sind nicht
+		Bestandteil einer konkreten Implementierung!
+		=======================================================================
+	-->
+    <!-- ***********************************************************************************************************************************************
+			Administrative Daten "CDA Header"
+    ************************************************************************************************************************************************ -->
+    <!-- Hoheitsbereich des Dokuments -->
+    <realmCode code="AT"/>
+    <!-- Dokumentformat CDA R2 -->
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <!-- Template ID für eHealth Austria Dokumente -->
+    <templateId root="1.2.40.0.34.6.0.11.0.1"/>
+    <!-- TemplateId für den Implementierungsleitfaden e-Impfpass v2 (OID Knoten). Dient als informative Referenz.-->
+    <templateId root="1.2.40.0.34.7.19.2"/>
+    <!-- Template spezieller Implementierungsleitfaden ELGA e-Impfpass - Kompletter Immunisierungsstatus -->
+    <templateId root="1.2.40.0.34.6.0.11.0.4"/>
+    <!-- Immunization Content (IC) Content Module, IHE PCC Technical Framework Revision 11.0 - November 11, 2016. Dient als informative Referenz. -->
+    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.18.1.2"/>
+    <!-- Weltweit eindeutige Dokumenten-Id des CDA-Dokuments -->
+    <id root="1.2.40.0.34.99.4613.3.1" extension="2"/>
+    <!-- Dokumentenklasse -->
+    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1" displayName="HISTORY OF IMMUNIZATIONS">
+        <!-- Dokumenttyp Kompletter Immunisierungsstatus Trasnslation -->
+        <translation code="82593-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"
+            displayName="Immunization summary report"/>
+    </code>
+    <!-- Titel des Dokuments -->
+    <title>Immunisierungsstatus - Zusammenfassung</title>
+    <!-- Terminologiedatum (siehe Allgemeiner Implementierungsleitfaden) -->
+    <hl7at:terminologyDate value="20230717"/>
+    <!-- formatCode (siehe Allgemeiner Implementierungsleitfaden) -->
+    <hl7at:formatCode code="urn:hl7-at:eImpf:2.0.0+20230717" codeSystem="1.2.40.0.34.5.37"
+        displayName="HL7 Austria e-Impfpass 2.0.0+20230717"/>
+    <!-- Fachliche Zuordnung des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
+    <hl7at:practiceSettingCode code="F001" displayName="Allgemeinmedizin"
+        codeSystem="1.2.40.0.34.5.12" codeSystemName="ELGA_PracticeSetting"/>
+    <!-- Erstellungsdatum des Dokuments -->
+    <effectiveTime value="20230717103415+0200"/>
+    <!-- Vertraulichkeitscode -->
+    <confidentialityCode code="N" displayName="normal" codeSystem="2.16.840.1.113883.5.25"
+        codeSystemName="HL7:Confidentiality"/>
+    <!-- Sprachcode des Dokuments -->
+    <languageCode code="de-AT"/>
+    <!-- Versionierung des Dokuments  -->
+    <setId root="1.2.40.0.34.3.9.114.12" extension="4567"/>
+    <versionNumber value="24"/>
+    <!-- Teilnehmende Parteien ========================================================== -->
+    <!-- Patient ======================================================================== -->
+    <recordTarget typeCode="RCT" contextControlCode="OP">
+        <patientRole classCode="PAT">
+            <!-- IDs des Patienten -->
+            <!-- Identifikation des Patienten im lokalen System, im Fall der Dokumentenklasse "Kompletter Immunisierungsstatus" das bPK-GH des Patienten-->
+            <id root="1.2.40.0.10.2.1.1.149" extension="GH:b64EncodedbPKValue"
+                assigningAuthorityName="Österreichische Stammzahlenregisterbehörde"/>
+            <!-- Sozialversicherungsnummer des Patienten -->
+            <id root="1.2.40.0.10.1.4.3.1" extension="1111241261"
+                assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <!-- bPK-GH des Patienten -->
+            <id root="1.2.40.0.10.2.1.1.149" extension="GH:b64encodedbPKValue"/>
+            <!-- Adresse des Patienten -->
+            <addr use="H">
+                <streetAddressLine>Bürgerstraße 13a</streetAddressLine>
+                <postalCode>7000</postalCode>
+                <city>Eisenstadt</city>
+                <state>Burgenland</state>
+                <country>AUT</country>
+            </addr>
+            <!-- Kontaktdaten des Patienten-->
+            <telecom use="H" value="tel:+43.2682.40400"/>
+            <telecom use="MC" value="tel:+43.664.1234567"/>
+            <telecom value="mailto:johannes@buerger.at"/>
+            <patient>
+                <!-- Name des Patienten -->
+                <name>
+                    <given>Johannes</given>
+                    <family>Bürger</family>
+                </name>
+                <!-- Geschlecht des Patienten -->
+                <administrativeGenderCode code="D" displayName="Divers"
+                    codeSystem="1.2.40.0.34.5.224"/>
+                <!-- Geburtsdatum des Patienten -->
+                <birthTime value="20121224"/>
+                <!-- Gesetzlicher Vertreter -->
+                <guardian classCode="GUARD">
+                    <addr use="WP">
+                        <streetAddressLine>GesetzlicherVertreter-StraßeWP 13a</streetAddressLine>
+                        <postalCode>1010</postalCode>
+                        <city>Wien</city>
+                        <state>Wien</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom use="H" value="tel:+43.2682.40400"/>
+                    <telecom use="MC" value="tel:+43.664.1234567"/>
+                    <telecom value="mailto:Josef@GesetzlicherVertreter.at"/>
+                    <guardianPerson>
+                        <name>
+                            <given>Josef</given>
+                            <family>GesetzlicherVertreter</family>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <!-- Verfasser des Dokuments ======================================================================== -->
+    <author typeCode="AUT" contextControlCode="OP">
+        <!-- Zeitpunkt der Erstellung -->
+        <time value="20230717103415+0200"/>
+        <assignedAuthor classCode="ASSIGNED">
+            <!-- Identifikation des verfassenden Systemes -->
+            <id root="1.2.40.0.34.6.104"/>
+            <assignedAuthoringDevice classCode="DEV" determinerCode="INSTANCE">
+                <manufacturerModelName>Zentrale Anwendung e-Impfpass
+                    (author/manufacturerModelName)</manufacturerModelName>
+                <softwareName>Zentrale Anwendung e-Impfpass (author/softwareName)</softwareName>
+            </assignedAuthoringDevice>
+            <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                <!-- ID der Organisation aus dem GDA Index -->
+                <id root="1.2.40.0.34.6.104"/>
+                <name>Zentrale Anwendung e-Impfpass (author/representedOrganization)</name>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <!-- Verwahrer des Dokuments ======================================================================== -->
+    <custodian typeCode="CST">
+        <assignedCustodian classCode="ASSIGNED">
+            <representedCustodianOrganization classCode="ORG" determinerCode="INSTANCE">
+                <!-- ID der Organisation aus dem GDA Index -->
+                <id root="1.2.40.0.34.3.99.1"/>
+                <name>Zentrale Anwendung e-Impfpass (custodian)</name>
+                <telecom value="tel:+43.123.45678-0"/>
+                <addr>
+                    <streetName>Stubenring</streetName>
+                    <houseNumber>1</houseNumber>
+                    <postalCode>1010</postalCode>
+                    <city>Wien</city>
+                    <state>Wien</state>
+                    <country>AUT</country>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <!-- Komponente für die Gesundheitsdienstleistung ========================================================================  -->
+    <documentationOf typeCode="DOC">
+        <serviceEvent classCode="ACT" moodCode="EVN">
+            <code code="41000179103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"
+                displayName="Immunization record (record artifact)"/>
+            <effectiveTime>
+                <low value="20160617121500+0200"/>
+                <high value="20230601120523+0200"/>
+            </effectiveTime>
+        </serviceEvent>
+    </documentationOf>
+    <!-- ***********************************************************************************************************************************************
+			Medizinische Daten "CDA Body"
+    ************************************************************************************************************************************************ -->
+    <component>
+        <structuredBody>
+            <component>
+                <!-- Sektion Impfungen - kodiert -->
+                <section classCode="DOCSECT" moodCode="EVN">
+                    <templateId root="1.2.40.0.34.6.0.11.2.1"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.6"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.23"/>
+                    <id root="1.2.40.0.34.99.4613.3.4" extension="1"/>
+                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                        displayName="HISTORY OF IMMUNIZATIONS"/>
+                    <title>Impfungen</title>
+                    <text>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th styleCode="xELGA_colw:12">Datum</th>
+                                    <th styleCode="xELGA_colw:20">Impfung gegen</th>
+                                    <th styleCode="xELGA_colw:10">Dosis</th>
+                                    <th styleCode="xELGA_colw:20">Impfschema</th>
+                                    <th>Impfstoff</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ID="sbdm-1">
+                                    <td>17.06.2016</td>
+                                    <td ID="target-1">Frühsommer-Meningoencephalitis</td>
+                                    <td ID="dosenr-1">Dosis 1</td>
+                                    <td ID="criterion-1">Normschema</td>
+                                    <td ID="prodName-1">ENCEPUR FSPR 0,25ML KIND</td>
+                                </tr>
+                                <tr ID="sbdm-2">
+                                    <td>17.09.2016</td>
+                                    <td ID="target-2">Frühsommer-Meningoencephalitis</td>
+                                    <td ID="dosenr-2">Dosis 2</td>
+                                    <td ID="criterion-2">Normschema</td>
+                                    <td ID="prodName-2">ENCEPUR FSPR 0,25ML KIND</td>
+                                </tr>
+                                <tr ID="sbdm-3">
+                                    <td>17.09.2017</td>
+                                    <td ID="target-3">Frühsommer-Meningoencephalitis</td>
+                                    <td ID="dosenr-3">Dosis 3</td>
+                                    <td ID="criterion-3">Normschema</td>
+                                    <td ID="prodName-3">ENCEPUR FSPR 0,25ML KIND</td>
+                                </tr>
+                                <tr ID="sbdm-5">
+                                    <td>19.11.2021</td>
+                                    <td ID="target-5">Influenza</td>
+                                    <td ID="dosenr-5">Dosis 1</td>
+                                    <td ID="criterion-5"/>
+                                    <td ID="prodName-5">VaxigripTetra Injektionssuspension in einer
+                                        Fertigspritze</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                    <!-- Impfung FSME1 -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration moodCode="EVN" negationInd="false"
+                            classCode="SBADM">
+                            <templateId root="1.2.40.0.34.6.0.11.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="1"/>
+                            <code code="IMMUNIZ" codeSystem="2.16.840.1.113883.5.4"
+                                codeSystemName="ActCode"/>
+                            <text>
+                                <reference value="#sbdm-1"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <!-- Impfdatum -->
+                            <effectiveTime value="20160617121500+0200"/>
+                            <!-- Die Art der Anwendung (des Impfstoffes) -->
+                            <routeCode code="100000073633" codeSystem="1.2.40.0.10.1.4.3.4.3.4"
+                                displayName="subkutane Anwendung"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Menge des Wirkstoffs des verabreichten Arzneimittels -->
+                            <doseQuantity value="1" unit="{Stueck}"/>
+                            <!-- Impfstoff -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.31"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <code nullFlavor="NA"/>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <!-- Impfende Person FSME 1 -->
+                            <!--<performer typeCode="PRF">
+                                <templateId root="1.2.40.0.34.6.0.11.9.21"/>
+                                <assignedEntity>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="2323333444544"/>
+                                    <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                        codeSystem="1.2.40.0.34.5.2"/>
+                                    <addr use="PHYS">
+                                        <streetName>Performer-FSME1-Str</streetName>
+                                        <houseNumber>22</houseNumber>
+                                        <postalCode>1010</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom value="tel:+11.2222.333"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Performer-FSME1</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-\- ID der Organisation aus dem GDA Index -\->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-\- Name der Organisation -\->
+                                        <name>Praxis Performer-FSME1</name>
+                                        <!-\- Kontaktdaten der Organisation -\->
+                                        <telecom value="tel:+43.6138.3453446.0"/>
+                                        <!-\- Adresse der Organisation -\->
+                                        <!-\- Impfort -\->
+                                        <addr use="PHYS">
+                                            <streetName>Praxis Performer-FSME1-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedEntity>
+                            </performer>-->
+                            <!-- Medizinisch verantwortliche Person -->
+                            <author>
+                                <!-- Zeitpunkt der Freigabe -->
+                                <time value="20160617122000+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="232311"/>
+                                    <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                        codeSystem="1.2.40.0.34.5.2"/>
+                                        <!-- Adresse der Organisation -->
+                                    <addr>
+                                        <streetName>Person Author-FSME1-Gasse</streetName>
+                                        <houseNumber>1-7</houseNumber>
+                                        <postalCode>5350</postalCode>
+                                        <city>St.Wolfgang</city>
+                                        <state>Salzburg</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <!-- <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-FSME1</family>
+                                        </name>
+                                    </assignedPerson> -->
+                                    <assignedAuthoringDevice>
+                                        <manufacturerModelName>Authoring Software</manufacturerModelName>
+                                        <softwareName>v1.0.0-author</softwareName>
+                                    </assignedAuthoringDevice>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Author-FSME1</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Praxis Author-FSME1-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- Korrigierende Person -->
+                            <participant typeCode="VRF">
+                                <templateId root="1.2.40.0.34.6.0.11.9.44"/>
+                                <time value="20210607145210+0200"/>
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.3.99.5624.1.2" extension="5624-68"/>
+                                    <addr use="PHYS">
+                                        <streetName>Verifier-FSME1-Gasse</streetName>
+                                        <houseNumber>22</houseNumber>
+                                        <postalCode>1130</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                    <!-- <playingEntity>
+                                        <name>
+                                            <given>Amelia</given>
+                                            <family>Verifier-FSME1-Amtsarzt</family>
+                                        </name>
+                                    </playingEntity> -->
+                                    <playingDevice>
+                                        <manufacturerModelName>Korrigierende Software</manufacturerModelName>
+                                        <softwareName>v1.0.0-korr</softwareName>
+                                    </playingDevice>
+                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                        <desc>Landessanitätsdirektion Verifier-FSME1</desc>
+                                    </scopingEntity>
+                                </participantRole>
+                            </participant>
+                            <!-- Berechtigter bearbeitender GDA -->
+                            <participant typeCode="AUT">
+                                <templateId root="1.2.40.0.34.6.0.11.9.46"/>
+
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.40.0.34.99.4613.3.3"
+                                        extension="2323"/>
+                                </participantRole>
+                            </participant>
+
+                            <!-- DataEnterer kann von Zentraler Anwendung aus document.dataEnterer von Update Dokument übernomen werden -->
+                            <participant typeCode="ENT">
+                                <templateId root="1.2.40.0.34.6.0.11.9.47"/>
+                                <time value="20160618122000+0200"/>
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.40.0.34.3.1.99.999"/>
+                                    <addr>
+                                        <streetName>DataEnterer-FSME1-Gasse</streetName>
+                                        <houseNumber>1-7</houseNumber>
+                                        <postalCode>5350</postalCode>
+                                        <city>St.Wolfgang</city>
+                                        <state>Salzburg</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                    <playingEntity>
+                                        <name>
+                                            <prefix>AK</prefix>
+                                            <given>Martin</given>
+                                            <family>DataEnterer-FSME1</family>
+                                        </name>
+                                    </playingEntity>
+                                    <scopingEntity classCode="ENT"
+                                        determinerCode="INSTANCE">
+                                        <desc>Praxis DataEnterer-FSME1</desc>
+                                    </scopingEntity>
+                                </participantRole>
+                            </participant>
+                            <!-- Impfziel -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836403007" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Frühsommer-Meningoencephalitis Impfstoff"/>
+                                    <text>
+                                        <reference value="#target-1"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Zusatzklassifikation Impfsetting -->
+                            <entryRelationship typeCode="SUBJ">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.168"/>
+                                    <code codeSystem="2.16.840.1.113883.6.96" code="46224007"/>
+                                    <value xsi:type="CD" codeSystem="1.2.40.0.34.5.183" code="IS005"
+                                    />
+                                </observation>
+                            </entryRelationship>
+                            <!-- Zusatzklassifikation Impfprogramm -->
+                            <entryRelationship typeCode="SUBJ">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.168"/>
+                                    <code codeSystem="1.2.40.0.34.5.183" code="IS009"/>
+                                    <value xsi:type="CD" codeSystem="1.2.40.0.34.5.183" code="IS010"
+                                    />
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="1"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#sbdm-1"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="1"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                            <!-- Impfschema -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="eImpf_Ergaenzung"
+                                        displayName="FSME"/>
+                                    <text>
+                                        <reference value="#criterion-1"/>
+                                    </text>
+                                    <!-- Dosiskennung -->
+                                    <value xsi:type="CD" code="D1" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Dosis 1">
+                                        <originalText>
+                                            <reference value="#dosenr-1"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
+                    <!-- Impfung FSME2 -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration moodCode="EVN" negationInd="false"
+                            classCode="SBADM">
+                            <templateId root="1.2.40.0.34.6.0.11.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="2"/>
+                            <code code="IMMUNIZ" codeSystem="2.16.840.1.113883.5.4"
+                                codeSystemName="ActCode"/>
+                            <text>
+                                <reference value="#sbdm-2"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <!-- Impfdatum -->
+                            <effectiveTime value="20160917151500+0200"/>
+                            <!-- Die Art der Anwendung (des Impfstoffes) -->
+                            <routeCode nullFlavor="NA"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Menge des Wirkstoffs des verabreichten Arzneimittels -->
+                            <doseQuantity nullFlavor="UNK"/>
+                            <!-- Impfstoff -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
+                                        <code nullFlavor="OTH">
+                                            <originalText>
+                                                <reference value="#prodName-4"/>
+                                            </originalText>
+                                            <translation code="2427872" codeSystem="1.2.40.0.34.4.16.1"
+                                            displayName="ENCEPUR FSPR 0,25ML KIND"/>
+                                        </code>
+                                        <!-- Zulassungsname des Impfstoffes -->
+                                        <name>Encepur 0,25 ml für Kinder Injektionssuspension in
+                                            einer Fertigspritze</name>
+                                        <!-- Chargennummer -->
+                                        <lotNumberText nullFlavor="UNK"/>
+                                        <!-- Komponente zur Aufnahme des Wirkstoffs -->
+                                        <pharm:ingredient classCode="ACTI">
+                                            <!-- Code und Name des Wirkstoffs -->
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <!-- ATC-Code des Wirkstoffs aus Fachinformation -->
+                                                <pharm:code code="J07BA01"
+                                                  codeSystem="2.16.840.1.113883.6.73"
+                                                  codeSystemName="whoATC"/>
+                                                <!-- Name des Wirkstoffs -->
+                                                <pharm:name>FSME, inaktiviert, ganzes
+                                                  Virus</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <author>
+                                <!-- Medizinisch verantwortliche Person -->
+                                <!-- Zeitpunkt der Freigabe -->
+                                <time value="20160917152000+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="2323"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-FSME2</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Author-FSME2</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <!-- Impfort -->
+                                        <addr>
+                                            <streetName>Praxis Author-FSME2-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- Impfziel -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836403007" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Frühsommer-Meningoencephalitis Impfstoff"/>
+                                    <text>
+                                        <reference value="#target-2"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="mySampleID"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#sbdm-2"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="mySampleID"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                            <!-- Impfschema -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="eImpf_Ergaenzung"
+                                        displayName="FSME"/>
+                                    <text>
+                                        <reference value="#criterion-2"/>
+                                    </text>
+                                    <!-- Dosiskennung -->
+                                    <value xsi:type="CD" code="D2" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Dosis 2">
+                                        <originalText>
+                                            <reference value="#dosenr-2"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
+                    <!-- Impfung FSME3 (Nachtrag) -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration moodCode="EVN" negationInd="false"
+                            classCode="SBADM">
+                            <templateId root="1.2.40.0.34.6.0.11.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="3"/>
+                            <code code="IMMUNIZ" codeSystem="2.16.840.1.113883.5.4"
+                                codeSystemName="ActCode"/>
+                            <text>
+                                <reference value="#sbdm-3"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <!-- Impfdatum -->
+                            <effectiveTime value="20170917101500+0200"/>
+                            <!-- Die Art der Anwendung (des Impfstoffes) -->
+                            <routeCode nullFlavor="NA"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Menge des Wirkstoffs des verabreichten Arzneimittels -->
+                            <doseQuantity nullFlavor="UNK"/>
+                            <!-- Impfstoff -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
+                                        <code code="4977720" codeSystem="1.2.40.0.34.4.16.1"
+                                            displayName="ENCEPUR FSPR 0,25ML KIND BN">
+                                            <originalText>
+                                                <reference value="#prodName-3"/>
+                                            </originalText>
+                                        </code>
+                                        <!-- Zulassungsname des Impfstoffes -->
+                                        <name>Encepur 0,25 ml für Kinder Injektionssuspension in
+                                            einer Fertigspritze</name>
+                                        <!-- Chargennummer -->
+                                        <lotNumberText nullFlavor="UNK"/>
+                                        <!-- Komponente zur Aufnahme des Wirkstoffs -->
+                                        <pharm:ingredient classCode="ACTI">
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <!-- ATC-Code des Wirkstoffs aus Fachinformation -->
+                                                <pharm:code code="J07BA01"
+                                                  codeSystem="2.16.840.1.113883.6.73"
+                                                  codeSystemName="whoATC"/>
+                                                <!-- Name des Wirkstoffs -->
+                                                <pharm:name>FSME, inaktiviert, ganzes
+                                                  Virus</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <!-- Impfende Person FSME 3 -->
+                            <performer typeCode="PRF">
+                                <templateId root="1.2.40.0.34.6.0.11.9.21"/>
+                                <assignedEntity>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="5454353454532323"/>
+                                    <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                        codeSystem="1.2.40.0.34.5.2"/>
+                                    <addr use="PHYS">
+                                        <streetName>Performer-FSME3-Gasse</streetName>
+                                        <houseNumber>22</houseNumber>
+                                        <postalCode>1010</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom value="tel:+11.2222.333"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Sabine</given>
+                                            <family>Performer-FSME3</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Performer-FSME3</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom value="tel:+43.6138.3453446.0"/>
+                                        <!-- Adresse der Organisation -->
+                                        <!-- Impfort -->
+                                        <addr use="PHYS">
+                                            <streetName>Praxis-Performer-FSME3-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedEntity>
+                            </performer>
+                            <author>
+                                <!--Medizinisch verantwortliche Person -->
+                                <!-- Zeitpunkt der Freigabe -->
+                                <time value="20170917102000+0200"/>
+                                <assignedAuthor>
+                                    <!-- ID der Organisation aus dem GDA Index -->
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="23232561"/>
+                                    <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                        codeSystem="1.2.40.0.34.5.2"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-FSME3</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Author-FSME3</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Praxis-Author-FSME3-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <participant typeCode="ENT">
+                                <!-- Nachtragende Person: Person oder Gerät Überträgt die Daten aus einem Papierimpfpass oder einer anderen Dokumentation in den e-Impfpass -->
+                                <templateId root="1.2.40.0.34.6.0.11.9.14"/>
+                                <!-- Datum der Eintragung -->
+                                <time value="20171212151500+0200"/>
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.40.0.34.99.4613"
+                                        assigningAuthorityName="GDA Index"/>
+                                    <addr>
+                                        <streetName>Nachtragender-FSME3-Gasse</streetName>
+                                        <houseNumber>1-7</houseNumber>
+                                        <postalCode>5350</postalCode>
+                                        <city>St.Wolfgang</city>
+                                        <state>Salzburg</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom value="tel:+43.6138.3453446.0"/>
+                                    <telecom value="fax:+43.6138.3453446.4674"/>
+                                    <playingEntity>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Anna</given>
+                                            <family>Nachtragende-FSME3</family>
+                                        </name>
+                                    </playingEntity>
+                                </participantRole>
+                            </participant>
+                            <!-- Impfziel -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836403007" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Frühsommer-Meningoencephalitis Impfstoff"/>
+                                    <text>
+                                        <reference value="#target-3"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Zusatzklassifikation Impfsetting -->
+                            <entryRelationship typeCode="SUBJ">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.168"/>
+                                    <code codeSystem="2.16.840.1.113883.6.96" code="46224007"/>
+                                    <value xsi:type="CD" codeSystem="1.2.40.0.34.5.183" code="IS005"
+                                    />
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="mySampleID"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#sbdm-3"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="mySampleID"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                            <!-- Impfschema -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="eImpf_Ergaenzung"
+                                        displayName="FSME"/>
+                                    <text>
+                                        <reference value="#criterion-3"/>
+                                    </text>
+                                    <!-- Dosiskennung -->
+                                    <value xsi:type="CD" code="D3" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Dosis 3">
+                                        <originalText>
+                                            <reference value="#dosenr-3"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
+                    <!-- Impfung Influenza (Nachtrag) -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration moodCode="EVN" negationInd="false"
+                            classCode="SBADM">
+                            <templateId root="1.2.40.0.34.6.0.11.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="89"/>
+                            <code code="IMMUNIZ" codeSystem="2.16.840.1.113883.5.4"
+                                codeSystemName="ActCode"/>
+                            <text>
+                                <reference value="#sbdm-5"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <!-- Impfdatum -->
+                            <effectiveTime value="20211119092143+0100"/>
+                            <!-- Die Art der Anwendung (des Impfstoffes) -->
+                            <routeCode nullFlavor="NA"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle, wird nicht verwendet -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Menge des Wirkstoffs des verabreichten Arzneimittels -->
+                            <doseQuantity nullFlavor="UNK"/>
+                            <!-- Impfstoff -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <!-- PZN des Impfstoffes und die Kurzbezeichnung (Handelsname) -->
+                                        <code displayName="VAXIGRIP INJ FSPR 0,5ML +1K." code="6050105"
+                                            codeSystem="1.2.40.0.34.4.16.1">
+                                            <originalText>
+                                                <reference value="#prodName-5"/>
+                                            </originalText>
+                                        </code>
+                                        <!-- Zulassungsname des Impfstoffes -->
+                                        <name>VaxigripTetra Injektionssuspension in einer
+                                            Fertigspritze</name>
+                                        <!-- Chargennummer -->
+                                        <lotNumberText>V3J572V</lotNumberText>
+                                        <!-- Komponente zur Aufnahme des Wirkstoffs -->
+                                        <pharm:ingredient classCode="ACTI">
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <pharm:code code="J07BB02"
+                                                  codeSystem="2.16.840.1.113883.6.73"/>
+                                                <pharm:name>Influenza, gereinigtes
+                                                  Antigen</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                        <pharm:ingredient classCode="ACTI">
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <pharm:code code="1708839"
+                                                  codeSystem="1.2.40.0.34.5.156"/>
+                                                <pharm:name>INFLUENZAVIRUS (AUSZUG,
+                                                  PRODUKTE)</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                    </manufacturedMaterial>
+                                    <manufacturerOrganization classCode="ORG"
+                                        determinerCode="INSTANCE">
+                                        <name>Hersteller Influenza Impfstoff</name>
+                                    </manufacturerOrganization>
+                                </manufacturedProduct>
+                            </consumable>
+                            <!-- Impfende Person Influenza -->
+                            <performer typeCode="PRF">
+                                <!-- Impfende Person -->
+                                <templateId root="1.2.40.0.34.6.0.11.9.21"/>
+                                <time value="20250201092200+0100"/>
+                                <assignedEntity>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="5454353454532323"/>
+                                    <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                        codeSystem="1.2.40.0.34.5.2"/>
+                                    <addr use="PHYS">
+                                        <streetName>Performer-Influenza-Gasse</streetName>
+                                        <houseNumber>22</houseNumber>
+                                        <postalCode>1010</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom value="tel:+11.2222.333"/>
+                                    <assignedPerson>
+                                        <name> 
+                                            <prefix>Dr.</prefix>
+                                            <given>Sabine</given>
+                                            <family>Performer-Influenza</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Performer-Influenza</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom value="tel:+43.6138.3453446.0"/>
+                                        <!-- Adresse der Organisation -->
+                                        <!-- Impfort -->
+                                        <addr use="PHYS">
+                                            <streetName>Praxis-Performer-Influenza-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedEntity>
+                            </performer>
+                            <author>
+                                <!-- Zeitpunkt der Freigabe -->
+                                <time value="20211119102143+0100"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="232312"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-Influenza</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Author-Influenza</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Praxis Author-Influenza-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <participant typeCode="ENT">
+                                <!-- Nachtragende Person: Person oder Gerät Überträgt die Daten aus einem Papierimpfpass oder einer anderen Dokumentation in den e-Impfpass -->
+                                <templateId root="1.2.40.0.34.6.0.11.9.14"/>
+                                <!-- Datum der Eintragung -->
+                                <time value="20211119102143+0100"/>
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.40.0.34.99.4613"
+                                        assigningAuthorityName="GDA Index"/>
+                                    <addr>
+                                        <streetName>Nachtragender-Influenza-Gasse</streetName>
+                                        <houseNumber>1-7</houseNumber>
+                                        <postalCode>5350</postalCode>
+                                        <city>St.Wolfgang</city>
+                                        <state>Salzburg</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom value="tel:+43.6138.3453446.0"/>
+                                    <telecom value="fax:+43.6138.3453446.4674"/>
+                                    <playingEntity>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Anna</given>
+                                            <family>Nachtragende-Influenza</family>
+                                        </name>
+                                    </playingEntity>
+                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                        <desc>Musterkrankenhaus Wien</desc>
+                                    </scopingEntity>
+                                </participantRole>
+                            </participant>
+                            <!-- Impfziel -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836377006" displayName="Influenza Impfstoff"
+                                        codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"/>
+                                    <text>
+                                        <reference value="#target-5"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Zusatzklassifikation Impfsetting -->
+                            <entryRelationship typeCode="SUBJ">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.168"/>
+                                    <code codeSystem="2.16.840.1.113883.6.96" code="46224007"/>
+                                    <value xsi:type="CD" codeSystem="1.2.40.0.34.5.183" code="IS005"
+                                    />
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="mySampleID"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#sbdm-3"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="mySampleID"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                            <!-- Impfschema -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code nullFlavor="NI"/>
+                                    <text>
+                                        <reference value="#criterion-3"/>
+                                    </text>
+                                    <!-- Dosiskennung -->
+                                    <value xsi:type="CD" code="D3" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Dosis 3">
+                                        <originalText>
+                                            <reference value="#dosenr-5"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <!-- Sektion Indikationsgruppen - kodiert -->
+                <section>
+                    <templateId root="1.2.40.0.34.6.0.11.2.4"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.11"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.6"/>
+                    <id root="1.2.40.0.34.99.4613.3.4" extension="4"/>
+                    <code code="11450-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"
+                        displayName="PROBLEM LIST"/>
+                    <title>Spezielle Impfindikation</title>
+                    <text>
+                        <list listType="unordered" styleCode="Disc">
+                            <item>
+                                <content ID="ExpRisk-1">
+                                    <content ID="ExpRiskCode-1">Spezielle Indikation für Tuberkulose
+                                        Impfstoff gemäß Personengruppe"</content>
+                                </content>
+                                <content ID="ExpRisk-2">
+                                    <content ID="ExpRiskCode-2">Spezielle Indikation für Gelbfieber
+                                        Impfstoff gemäß Personengruppe"</content>
+                                </content>
+                            </item>
+                        </list>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <!-- Indikationsgruppen Problem Concern Entry: Tuberkulose -->
+                        <act classCode="ACT" moodCode="EVN">
+                            <templateId root="1.2.40.0.34.6.0.11.3.20"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.27"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.1"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.2"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="4"/>
+                            <code nullFlavor="NA"/>
+                            <!-- Status der Indikation: normalerweise "active", nur bei nicht mehr bestehendem Risiko "completed" -->
+                            <statusCode code="active"/>
+                            <effectiveTime>
+                                <!-- Zeitpunkt zu dem die Problemkonstellation eingetragen wurde und zu berücksichtigen ist -->
+                                <!-- Anzeige im Referenz-Stylesheet als "Indikationszeitraum" -->
+                                <low value="20160605"/>
+                                <!-- effectiveTime.high wird angegeben, wenn die Problemkonstellation nicht mehr zu berücksichtigen ist und statusCode "completed" -->
+                            </effectiveTime>
+                            <!-- Medizinisch verantwortliche Person -->
+                            <author>
+                                <!-- Zeitpunkt der Freigabe -->
+                                <time value="20160617122000+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="2323324"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-Indikationsgruppe-Tuberkulose</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Author-Indikationsgruppe-Tuberkulose</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Praxis-Author-Indikationsgruppe-Tuberkulose-Str</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- Indikationsgruppen Problem Entry: Tuberkulose-->
+                            <entryRelationship typeCode="SUBJ" inversionInd="false">
+                                <observation classCode="OBS" moodCode="EVN" negationInd="false">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.21"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.28"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5"/>
+                                    <id root="1.2.40.0.34.99.4613.3.5" extension="5"/>
+                                    <!-- Fixer Wert "Problem" -->
+                                    <code code="55607006" displayName="Problem"
+                                        codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"/>
+                                    <text>
+                                        <reference value="#ExpRisk-1"/>
+                                    </text>
+                                    <!-- Fixer Wert "completed" -->
+                                    <statusCode code="completed"/>
+                                    <effectiveTime>
+                                        <!-- Angabe, ab wann die Zugehörigkeit zur Indikationsgruppe bestanden hat (effectiveTime.high verboten); wird im Referenz-Stylesheet nicht angezeigt -->
+                                        <low value="20091224"/>
+                                    </effectiveTime>
+                                    <!-- Codierte Angabe der indizierten Impfung (entsprechend der Indikationsgruppe) -->
+                                    <value xsi:type="CD" code="836402002"
+                                        codeSystem="2.16.840.1.113883.6.96"
+                                        displayName="Tuberkulose Impfstoff"
+                                        codeSystemName="SNOMED CT">
+                                        <originalText>
+                                            <reference value="#ExpRiskCode-1"/>
+                                        </originalText>
+                                    </value>
+                                    <!-- Korrektur durch Behörde wird nicht benötigt, da eine vorhande Indikationsgruppe durch einen neuen Eintrag ersetzt werden kann -->
+                                    <!--<participant typeCode="VRF">
+                                        <templateId root="1.2.40.0.34.6.0.11.9.44"/>
+                                        <time value="20240607145210+0200"/>
+                                        <participantRole classCode="ROL">
+                                            <id root="1.2.40.0.34.3.1.99.999"/>
+                                            <addr use="PHYS">
+                                                <streetName>Verifier-Indikationsgruppe-Tuberkulose-Gasse</streetName>
+                                                <houseNumber>22</houseNumber>
+                                                <postalCode>1130</postalCode>
+                                                <city>Wien</city>
+                                                <state>Wien</state>
+                                                <country>AUT</country>
+                                            </addr>
+                                            <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                            <playingEntity>
+                                                <name>
+                                                  <given>Amelia </given>
+                                                  <family>Verifier-Indikationsgruppe-Tuberkulose</family>
+                                                </name>
+                                            </playingEntity>
+                                            <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                                <desc>Landessanitätsdirektion XY Tuberk
+                                                  Indikation</desc>
+                                            </scopingEntity>
+                                        </participantRole>
+                                    </participant>-->
+                                    <!-- Data Enterer, keine Anzeige im Referenz-Stylesheet -->
+                                    <participant typeCode="ENT">
+                                        <templateId root="1.2.40.0.34.6.0.11.9.47"/>
+                                        <time value="20210607145210+0200"/>
+                                        <participantRole classCode="ROL">
+                                            <id root="1.2.40.0.34.3.1.99.999"/>
+                                            <addr use="PHYS">
+                                                <streetName>DataEnterer-Indikationsgruppe-Tuberkulose-Gasse</streetName>
+                                                <houseNumber>25</houseNumber>
+                                                <postalCode>1010</postalCode>
+                                                <city>Wien</city>
+                                                <state>Wien</state>
+                                                <country>AUT</country>
+                                            </addr>
+                                            <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                            <playingEntity>
+                                                <name>
+                                                  <prefix>DGKP</prefix>
+                                                  <given>Martin</given>
+                                                  <family>DataEnterer-Indikationsgruppe-Tuberkulose</family>
+                                                </name>
+                                            </playingEntity>
+                                            <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                                <desc>Praxis
+                                                  DataEnterer-Indikationsgruppe-Tuberkulose</desc>
+                                            </scopingEntity>
+                                        </participantRole>
+                                    </participant>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf das zugrundeliegende CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="1"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#ExpRisk-1"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="1"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                        </act>
+                    </entry>
+                    <entry typeCode="DRIV">
+                        <!-- Indikationsgruppen Problem Concern Entry: Gelbfieber-->
+                        <act classCode="ACT" moodCode="EVN">
+                            <templateId root="1.2.40.0.34.6.0.11.3.20"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.27"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.1"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.2"/>
+                            <id root="1.2.40.0.34.99.4613.3.5.998" extension="4"/>
+                            <code nullFlavor="NA"/>
+                            <!-- Status der Indikation: normalerweise "active", nur bei nicht mehr bestehendem Risiko "completed" -->
+                            <statusCode code="active"/>
+                            <effectiveTime>
+                                <!-- Zeitpunkt zu dem die Problemkonstellation eingetragen wurde und zu berücksichtigen ist -->
+                                <!-- Anzeige im Referenz-Stylesheet als "Indikationszeitraum" -->
+                                <low value="20110615"/>
+                                <!-- effectiveTime.high wird angegeben, wenn die Problemkonstellation nicht mehr zu berücksichtigen ist und statusCode "completed" -->
+                                <high value="20240401"/>
+                            </effectiveTime>
+                            <!-- Medizinisch verantwortliche Person -->
+                            <author>
+                                <!-- Zeitpunkt der Freigabe der Dokumentation -->
+                                <time value="20160617122000+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="2646547568323"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-Indikationsgruppe-Gelbfieber</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis Dr. Indikationsgruppe-Gelbfieber</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Praxis-Author-Indikationsgruppe-Gelbfieber-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- Indikationsgruppen Problem Entry -->
+                            <entryRelationship typeCode="SUBJ" inversionInd="false">
+                                <observation classCode="OBS" moodCode="EVN" negationInd="false">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.21"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.28"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5"/>
+                                    <id root="1.2.40.0.34.99.4613.3.5.44" extension="5"/>
+                                    <!-- Fixer Wert "Problem" -->
+                                    <code code="55607006" displayName="Problem"
+                                        codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"/>
+                                    <text>
+                                        <reference value="#ExpRisk-2"/>
+                                    </text>
+                                    <!-- Fixer Wert "completed" -->
+                                    <statusCode code="completed"/>
+                                    <effectiveTime>
+                                        <!-- Angabe, ab wann die Zugehörigkeit zur Indikationsgruppe bestanden hat (effectiveTime.high verboten), wird im Referenz-Stylesheet nicht angezeigt -->
+                                        <low value="20081224"/>
+                                    </effectiveTime>
+                                    <!-- Codierte Angabe der indizierten Impfung (entsprechend der Indikationsgruppe) -->
+                                    <value xsi:type="CD" code="836385002"
+                                        codeSystem="2.16.840.1.113883.6.96"
+                                        displayName="Gelbfieber Impfstoff"
+                                        codeSystemName="SNOMED CT">
+                                        <originalText>
+                                            <reference value="#ExpRiskCode-2"/>
+                                        </originalText>
+                                    </value>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="15478"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#ExpRisk-2"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="1587778"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                        </act>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <!-- Sektion Impfrelevante Erkrankungen - kodiert -->
+                <section classCode="DOCSECT" moodCode="EVN">
+                    <templateId root="1.2.40.0.34.6.0.11.2.5"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.8"/>
+                    <id root="1.2.40.0.34.99.4613.3.4" extension="3"/>
+                    <code code="11348-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"
+                        displayName="HISTORY OF PAST ILLNESS"/>
+                    <title>Impfrelevante Erkrankungen</title>
+                    <text>
+                        <content ID="relDis-1">Der Patient hatte <content ID="relDisCode-1"
+                                >Röteln</content> (2016-03).</content>
+                        <content ID="relDisComment-1">Patient hat sich gut erholt.</content>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <!-- Impfrelevante Erkrankungen PROBLEM CONCERN Entry: Röteln -->
+                        <act classCode="ACT" moodCode="EVN">
+                            <templateId root="1.2.40.0.34.6.0.11.3.8"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.27"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.1"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5.2"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="6"/>
+                            <code nullFlavor="NA"/>
+                            <!-- Statuscode KANN verwendet werden, um anzugeben, ob die impfrelevante Krankheit noch immunisierende Wirkung hat -->
+                            <!-- Die Verwendung von statusCode und effectiveTime im "Impfrelevante Erkrankungen Problem Concern Entry" hat KEINE Auswirkung auf die Berechnung von Impfempfehlungen durch die zentrale Anwendung des e-Impfpasses -->
+                            <statusCode code="active"/>
+                            <!-- effectiveTime KANN verwendet werden, um das Zeitintervall anzugeben, in dem die impfrelevante Erkrankungen von Interesse ist -->
+                            <effectiveTime>
+                                <!-- Zeitpunkt, an dem die Erkrankung erstmals dokumentiert wurde, keine Anzeige im Referenz-Stylesheet -->
+                                <low value="20160817"/>
+                                <!-- effectiveTime.high gibt den Zeitpunkt an, seitdem die Impfrelevante Erkrankung nicht mehr von Interesse ist (KANN entfallen). MUSS vorhanden sein, wenn statusCode completed. -->
+                            </effectiveTime>
+                            <!-- Medizinisch verantwortliche Person -->
+                            <author>
+                                <!-- Zeitpunkt der Freigabe der Dokumentation (Freigabezeitpunkt) -->
+                                <time value="20180617122000+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4613.3.3" extension="23289653"/>
+                                    <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                        codeSystem="1.2.40.0.34.5.2"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Frank</given>
+                                            <family>Author-Erkrankung-Röteln</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4613"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Praxis-Author-Erkrankung-Röteln</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.6138.3453446.4674"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Praxis-Author-Erkrankung-Röteln-Gasse</streetName>
+                                            <houseNumber>1-7</houseNumber>
+                                            <postalCode>5350</postalCode>
+                                            <city>St.Wolfgang</city>
+                                            <state>Salzburg</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <entryRelationship typeCode="SUBJ" inversionInd="false">
+                                <!-- Impfrelevante Erkrankungen PROBLEM Entry: Röteln -->
+                                <observation classCode="OBS" moodCode="EVN" negationInd="false">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.9"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.28"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.5"/>
+                                    <id root="1.2.40.0.34.99.4613.3.5" extension="7"/>
+                                    <!-- Fixer Wert: Problem -->
+                                    <code code="55607006" codeSystem="2.16.840.1.113883.6.96"
+                                        displayName="Problem" codeSystemName="SNOMED CT"/>
+                                    <!-- Narrative Text Reference -->
+                                    <text>
+                                        <reference value="#relDis-1"/>
+                                    </text>
+                                    <!-- Fixer Wert "completed" -->
+                                    <statusCode code="completed"/>
+                                    <!-- Basierend auf den Angaben in effectiveTime im "Impfrelevante Erkrankungen Problem Entry" können Impfempfehlungen durch die zentrale Anwendung des e-Impfpasses abgegeben werden -->
+                                    <!-- Tatsächliche Erkrankung (im Beispiel "März bis April 2016") -->
+                                    <effectiveTime>
+                                        <low value="201603"/>
+                                        <high value="201604"/>
+                                    </effectiveTime>
+                                    <!-- Code der impfrelevanten Erkrankung -->
+                                    <value xsi:type="CD" displayName="Röteln" code="36653000"
+                                        codeSystem="2.16.840.1.113883.6.96">
+                                        <!-- 'Original Text Reference' -->
+                                        <originalText>
+                                            <reference value="#relDisCode-1"/>
+                                        </originalText>
+                                    </value>
+                                    <!-- Korrektur durch Behörde -->
+                                    <participant typeCode="VRF">
+                                        <!-- Korrigierende Person -->
+                                        <templateId root="1.2.40.0.34.6.0.11.9.44"/>
+                                        <time value="40210607145210+0200"/>
+                                        <participantRole classCode="ROL">
+                                            <id root="1.2.3.99.5624.1.2" extension="5624-68"/>
+                                            <addr use="PHYS">
+                                                <streetName>Verifier-Erkrankung-Röteln-Gasse</streetName>
+                                                <houseNumber>22</houseNumber>
+                                                <postalCode>1130</postalCode>
+                                                <city>Wien</city>
+                                                <state>Wien</state>
+                                                <country>AUT</country>
+                                            </addr>
+                                            <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                            <playingEntity>
+                                                <name>
+                                                  <given>Amelia</given>
+                                                  <family>Verifier-Erkrankung-Röteln</family>
+                                                </name>
+                                            </playingEntity>
+                                            <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                                <desc>Landessanitätsdirektion Korrektur Röteln
+                                                  Wien</desc>
+                                            </scopingEntity>
+                                        </participantRole>
+                                    </participant>
+                                    <!-- Data Enterer Erkankungen Röteln-->
+                                    <participant typeCode="ENT">
+                                        <templateId root="1.2.40.0.34.6.0.11.9.47"/>
+                                        <time value="20210607145210+0200"/>
+                                        <participantRole classCode="ROL">
+                                            <id root="1.2.40.0.34.3.1.99.999"/>
+                                            <addr use="PHYS">
+                                                <streetName>DataEnterer-Erkrankung-Röteln-Gasse</streetName>
+                                                <houseNumber>25</houseNumber>
+                                                <postalCode>1010</postalCode>
+                                                <city>Wien</city>
+                                                <state>Wien</state>
+                                                <country>AUT</country>
+                                            </addr>
+                                            <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                            <playingEntity>
+                                                <name>
+                                                  <prefix>DGKP</prefix>
+                                                  <given>Martin</given>
+                                                  <family>DataEnterer-Erkrankung-Röteln</family>
+                                                </name>
+                                            </playingEntity>
+                                            <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                                <desc>Praxis DataEnterer-Erkrankung-Röteln</desc>
+                                            </scopingEntity>
+                                        </participantRole>
+                                    </participant>
+                                    <!-- Bemerkungen (Anmerkungen) zwecks Eintragung des Nachweises der durchgemachten Erkrankung -->
+                                    <entryRelationship typeCode="COMP">
+                                        <act classCode="ACT" moodCode="EVN">
+                                            <!-- templateId für Annotation Comment -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.17"/>
+                                            <!-- templateId für HL7 CCD Comment -->
+                                            <templateId root="2.16.840.1.113883.10.20.1.40"/>
+                                            <!-- templateId für IHE PCC Comments -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
+                                            <code code="48767-8" displayName="Annotation comment"
+                                                codeSystem="2.16.840.1.113883.6.1"
+                                                codeSystemName="LOINC"/>
+                                            <text>
+                                                <reference value="#relDisComment-1"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <!-- Verantwortliche Person -->
+                                            <author>
+                                                <!-- Zeitpunkt der Freigabe der Dokumentation -->
+                                                <time value="20160617122000+0200"/>
+                                                <assignedAuthor>
+                                                  <id root="1.2.40.0.34.99.4613.3.3"
+                                                  extension="23233652"/>
+                                                  <assignedPerson>
+                                                  <name>
+                                                  <prefix>Dr.</prefix>
+                                                  <given>Frank</given>
+                                                  <family>Autor-Comment-Erkrankung-Röteln</family>
+                                                  </name>
+                                                  </assignedPerson>
+                                                  <representedOrganization>
+                                                  <!-- ID der Organisation aus dem GDA Index -->
+                                                  <id root="1.2.40.0.34.99.4613"
+                                                  assigningAuthorityName="GDA Index"/>
+                                                  <!-- Name der Organisation -->
+                                                  <name>Praxis
+                                                  Autor-Comment-Erkrankung-Röteln</name>
+                                                  <!-- Kontaktdaten der Organisation -->
+                                                  <telecom use="WP" value="tel:+43.6138.3453446.0"/>
+                                                  <telecom use="WP"
+                                                  value="fax:+43.6138.3453446.4674"/>
+                                                  <!-- Adresse der Organisation -->
+                                                  <addr>
+                                                  <streetName>Autor-Comment-Erkrankung-Röteln-Gasse</streetName>
+                                                  <houseNumber>1-7</houseNumber>
+                                                  <postalCode>5350</postalCode>
+                                                  <city>St.Wolfgang</city>
+                                                  <state>Salzburg</state>
+                                                  <country>AUT</country>
+                                                  </addr>
+                                                  </representedOrganization>
+                                                </assignedAuthor>
+                                            </author>
+                                        </act>
+                                    </entryRelationship>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="1"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#relDis-1"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="1"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                        </act>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <!-- Sektion Antikörper-Bestimmung -->
+                <!-- Die Eintragung hat keine Auswirkung auf die automatische Berechnung der Impfempfehlungen, deshalb wird empfohlen, zusätzlich eine ärztliche (individuelle) Impfempfehlung abzugeben. -->
+                <section classCode="DOCSECT" moodCode="EVN">
+                    <templateId root="1.2.40.0.34.6.0.11.2.7"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.3.3.2.1"/>
+                    <id root="1.2.40.0.34.99.4613.3.4" extension="2"/>
+                    <code code="26436-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"
+                        displayName="LABORATORY STUDIES"/>
+                    <title>Laboruntersuchungen</title>
+                    <text>
+                        <paragraph styleCode="xELGA_h3">Masern Impfstoff</paragraph>
+                        <table ID="ankb-1">
+                            <thead>
+                                <tr>
+                                    <th styleCode="xELGA_colw:40">Analyse</th>
+                                    <th>Ergebnis</th>
+                                    <th>Einheit</th>
+                                    <th>Referenzbereiche</th>
+                                    <th styleCode="xELGA_colw:10">Interpretation</th>
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <td>
+                                        <footnote ID="commentRef-1">
+                                            <sup>1)</sup>Zur Immunitätskontrolle kann ab einem Wert
+                                            von 0.16 von einer Immunität ausgegangen
+                                            werden.</footnote>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                <tr ID="analyse-1" styleCode="xELGA_red">
+                                    <td>Masern AK qn.</td>
+                                    <td>0.07</td>
+                                    <td>U/mL</td>
+                                    <td ID="analyseRef-1">&gt; 0.16<sup>1)</sup></td>
+                                    <td>neg.</td>
+                                </tr>
+                                <tr ID="analyse-2" styleCode="xELGA_red">
+                                    <td>Varizellen AK qn.</td>
+                                    <td>0.24</td>
+                                    <td>U/mL</td>
+                                    <td ID="analyseRef-2">&gt; 0.14</td>
+                                    <td>neg.</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <!-- Antikörper-Bestimmung Data Processing Entry: Masern AK -->
+                        <templateId root="1.2.40.0.34.6.0.11.3.15"/>
+                        <templateId root="1.3.6.1.4.1.19376.1.3.1"/>
+                        <act classCode="ACT" moodCode="EVN">
+                            <!-- Fixer Wert -->
+                            <code code="26436-6" codeSystem="2.16.840.1.113883.6.1"
+                                codeSystemName="LOINC" displayName="LABORATORY STUDIES"/>
+                            <!-- Fixer Wert -->
+                            <statusCode code="completed"/>
+                            <!-- Medizinisch verantwortliche Person -->
+                            <author>
+                                <!-- Zeitpunkt der Freigabe -->
+                                <time value="20160617081200+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4614.3.3" extension="2324"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Isabella</given>
+                                            <family>Author-Antikörper-Masern</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4614"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Spital Author-Antikörper-Masern</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.1.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.1.3453446.4674"/>
+                                        <telecom use="WP" value="mailto:info@amadeusspital.at"/>
+                                        <telecom use="WP" value="http://www.amadeusspital.at"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Spital-Author-Antikörper-Masern-Gasse</streetName>
+                                            <houseNumber>18-20</houseNumber>
+                                            <postalCode>1090</postalCode>
+                                            <city>Wien</city>
+                                            <state>Wien</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- Befundgruppe (Antikörper-Bestimmung Battery Organizer) Masern AK -->
+                            <entryRelationship typeCode="COMP">
+                                <organizer classCode="BATTERY" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.18"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.4"/>
+                                    <!-- Impfung (Impfstoff, auf den sich die Antikörper-Bestimmung bezieht) aus Value Set Level 0 -->
+                                    <code code="836382004" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Masern Impfstoff: Serologie"/>
+                                    <!-- Fixer Wert -->
+                                    <statusCode code="completed"/>
+                                    <!-- Antikörper-Bestimmung Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <templateId root="1.2.40.0.34.6.0.11.3.16"/>
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id root="1.2.40.0.34.99.4613.3.5" extension="8"/>
+                                            <!-- Antikörper-Analyse aus Value Set Level 1 (zugehörig zu Impfung) -->
+                                            <code code="7961-6" codeSystem="2.16.840.1.113883.6.1"
+                                                displayName="Masern IG AK qn."
+                                                codeSystemName="LOINC"/>
+                                            <text>
+                                                <reference value="#analyse-1"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <!-- Datum der Blutabnahme oder der Messung -->
+                                            <effectiveTime value="20160616102000+0200"/>
+                                            <value unit="[IU]/mL" value="0.07" xsi:type="PQ"/>
+                                            <!-- Codierte Bewertung des Ergebnisses: NEG: zu wenige Antikörper, kein ausreichender Schutz, POS: ausreichend Antikörper vorhanden, IND: grenzwertig -->
+                                            <interpretationCode code="NEG"
+                                                codeSystem="2.16.840.1.113883.5.83"
+                                                displayName="negative"/>
+                                            <!-- Durchführendes externes Labor (1.2.40.0.34.6.0.11.9.28 Performer Body - Laboratory), keine Anzeige im Referenz-Stylesheet -->
+                                            <performer typeCode="PRF">
+                                                <templateId root="1.2.40.0.34.6.0.11.9.28"/>
+                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
+                                                <time value="20250201092200+0100"/>
+                                                <assignedEntity classCode="ASSIGNED">
+
+                                                    <id root="1.2.40.0.34.99.4613.3.3"
+                                                        extension="2323"/>
+                                                    <code code="100"
+                                                        displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                                        codeSystem="1.2.40.0.34.5.2"/>
+                                                    <addr use="PHYS">
+                                                        <streetName>PerformerBody-AK-Masern-Gasse</streetName>
+                                                        <houseNumber>1-7</houseNumber>
+                                                        <postalCode>5350</postalCode>
+                                                        <city>St.Wolfgang</city>
+                                                        <state>Salzburg</state>
+                                                        <country>AUT</country>
+                                                    </addr>
+                                                    <telecom value="tel:+43.6138.3453446.0"/>
+                                                    <assignedPerson>
+                                                        <name>
+                                                            <prefix>Dr.</prefix>
+                                                            <given>Frank</given>
+                                                            <family>PerformerBody-AK-Masern</family>
+                                                        </name>
+                                                    </assignedPerson>
+                                                    <representedOrganization>
+                                                        <!-- ID der Organisation aus dem GDA Index -->
+                                                        <id root="1.2.40.0.34.99.4613"
+                                                            assigningAuthorityName="GDA Index"/>
+                                                        <!-- Name der Organisation -->
+                                                        <name>Labor PerformerBody-AK-Masern</name>
+                                                        <!-- Kontaktdaten der Organisation -->
+                                                        <telecom value="tel:+43.6138.3453446.0"/>
+                                                        <!-- Adresse der Organisation -->
+                                                        <addr use="PHYS">
+                                                            <streetName>Labor-PerformerBody-AK-Masern-Gasse</streetName>
+                                                            <houseNumber>1-7</houseNumber>
+                                                            <postalCode>5350</postalCode>
+                                                            <city>St.Wolfgang</city>
+                                                            <state>Salzburg</state>
+                                                            <country>AUT</country>
+                                                        </addr>
+                                                    </representedOrganization>
+                                                </assignedEntity>
+                                            </performer>
+                                            <!-- Validierende Person, keine Anzeige im Referenz-Stylesheet -->
+                                            <participant typeCode="AUTHEN">
+                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.5"/>
+                                                <time value="20290827122000+0200"/>
+                                                <participantRole classCode="ROL">
+                                                    <id root="1.2.40.0.34.3.1.99.999"/>
+                                                    <addr use="PHYS">
+                                                        <streetName>Authenticator-AK-Masern-Gasse</streetName>
+                                                        <houseNumber>25</houseNumber>
+                                                        <postalCode>1010</postalCode>
+                                                        <city>Wien</city>
+                                                        <state>Wien</state>
+                                                        <country>AUT</country>
+                                                    </addr>
+                                                    <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                                    <playingEntity>
+                                                        <name>
+                                                            <prefix>Dr.</prefix>
+                                                            <given>M.</given>
+                                                            <family>Authenticator-AK-Masern</family>
+                                                        </name>
+                                                    </playingEntity>
+                                                </participantRole>
+                                            </participant>
+                                            <!-- Anmerkung -->
+                                            <!-- Wenn ein Kommentar vorhanden ist, wird im Referenz-Stylesheet in der Übersichtsdarstellung keine automatische Ergebnis-Interpretation angezeigt -->
+                                            <entryRelationship typeCode="COMP">
+                                                <act classCode="ACT" moodCode="EVN">
+                                                  <templateId root="1.2.40.0.34.6.0.11.3.17"/>
+                                                  <templateId root="2.16.840.1.113883.10.20.1.40"/>
+                                                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
+                                                  <code code="48767-8"
+                                                  codeSystem="2.16.840.1.113883.6.1"
+                                                  codeSystemName="LOINC"
+                                                  displayName="Annotation comment"/>
+                                                  <text>
+                                                  <reference value="#commentRef-1"/>
+                                                  </text>
+                                                  <statusCode code="completed"/>
+                                                </act>
+                                            </entryRelationship>
+                                            <!-- Codierung des Referenzbereiches -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                  <text>
+                                                  <reference value="#analyseRef-1"/>
+                                                  </text>
+                                                  <!-- Für ausreichenden Schutz: >0.16 -->
+                                                  <value xsi:type="IVL_PQ">
+                                                  <low value="0.16" unit="[IU]/mL" inclusive="false"/>
+                                                  <high nullFlavor="PINF"/>
+                                                  </value>
+                                                  <!-- Bewertung des angegebenen Bereichs: POS: Bereich, in dem ausreichender Schutz vorhanden ist -->
+                                                  <interpretationCode code="POS"
+                                                  codeSystem="2.16.840.1.113883.5.83"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                </organizer>
+                            </entryRelationship>
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="mySampleID"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#ankb-1"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="mySampleID"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                        </act>
+                    </entry>
+                    <entry typeCode="DRIV">
+                        <!-- Antikörper-Bestimmung Data Processing Entry: Varizellen AK-->
+                        <templateId root="1.2.40.0.34.6.0.11.3.15"/>
+                        <templateId root="1.3.6.1.4.1.19376.1.3.1"/>
+                        <act classCode="ACT" moodCode="EVN">
+                            <!-- Fixer Wert -->
+                            <code code="26436-6" codeSystem="2.16.840.1.113883.6.1"
+                                codeSystemName="LOINC" displayName="LABORATORY STUDIES"/>
+                            <statusCode code="completed"/>
+                            <!-- Medizinisch verantwortliche Person -->
+                            <author>
+                                <!-- Zeitpunkt der Freigabe der Dokumentation -->
+                                <time value="30160617081200+0200"/>
+                                <assignedAuthor>
+                                    <id root="1.2.40.0.34.99.4614.3.3.2" extension="2324999999"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Inka</given>
+                                            <family>Author-Antikörper-Varizellen</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4614"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Spital Author-Antikörper-Varizellen</name>
+                                        <!-- Kontaktdaten der Organisation -->
+                                        <telecom use="WP" value="tel:+43.1.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.1.3453446.4674"/>
+                                        <telecom use="WP" value="mailto:info@amadeusspital.at"/>
+                                        <telecom use="WP" value="http://www.amadeusspital.at"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Spital-Author-Antikörper-Varizellen-Gürtel</streetName>
+                                            <houseNumber>18-20</houseNumber>
+                                            <postalCode>1090</postalCode>
+                                            <city>Wien</city>
+                                            <state>Wien</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- Befundgruppe (Antikörper-Bestimmung Battery Organizer) Varizellen AK -->
+                            <entryRelationship typeCode="COMP">
+                                <organizer classCode="BATTERY" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.18"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.4"/>
+                                    <!-- Impfung (Impfstoff, auf den sich die Antikörper-Bestimmung bezieht) aus Value Set Level 0 -->
+                                    <code code="836495005" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Varizellen Impfstoff: Serologie"/>
+                                    <!-- Fixer Wert -->
+                                    <statusCode code="completed"/>
+                                    <!-- Antikörper-Bestimmung Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <templateId root="1.2.40.0.34.6.0.11.3.16"/>
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id root="1.2.40.0.34.99.4613.3.5.5" extension="8"/>
+                                            <!-- Antikörper-Analyse aus Value Set Level 1 (zugehörig zu Impfung) -->
+                                            <code code="8046-5" codeSystem="2.16.840.1.113883.6.1"
+                                                displayName="Varizellen AK qn."
+                                                codeSystemName="LOINC"/>
+                                            <text>
+                                                <reference value="#analyse-2"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <!-- Datum der Blutabnahme oder der Messung -->
+                                            <effectiveTime value="60160617081200+0200"/>
+                                            <value unit="[IU]/mL" value="0.24" xsi:type="PQ"/>
+                                            <!-- Codierte Bewertung des Ergebnisses: NEG: zu wenige Antikörper, kein ausreichender Schutz, POS: ausreichend Antikörper vorhanden, IND: grenzwertig -->
+                                            <interpretationCode code="POS"
+                                                codeSystem="2.16.840.1.113883.5.83"
+                                                displayName="positive"/>
+                                            <!-- Durchführendes externes Labor (1.2.40.0.34.6.0.11.9.28 Performer Body - Laboratory) -->
+                                            <performer typeCode="PRF">
+                                                <templateId root="1.2.40.0.34.6.0.11.9.28"/>
+                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
+                                                <time value="20250201092200+0100"/>
+                                                <assignedEntity classCode="ASSIGNED">
+
+                                                  <id root="1.2.40.0.34.99.4613.3.3"
+                                                  extension="23237777"/>
+                                                  <code code="100"
+                                                  displayName="Ärztin/Arzt für Allgemeinmedizin"
+                                                  codeSystem="1.2.40.0.34.5.2"/>
+                                                  <addr use="PHYS">
+                                                  <streetName>PerformerBody-AK-Varizellen-Gasse</streetName>
+                                                  <houseNumber>1-7</houseNumber>
+                                                  <postalCode>5350</postalCode>
+                                                  <city>St.Wolfgang</city>
+                                                  <state>Salzburg</state>
+                                                  <country>AUT</country>
+                                                  </addr>
+                                                  <telecom value="tel:+43.6138.3453446.0"/>
+                                                  <assignedPerson>
+                                                  <name>
+                                                  <prefix>Dr.</prefix>
+                                                  <given>Frank</given>
+                                                  <family>PerformerBody-AK-Varizellen</family>
+                                                  </name>
+                                                  </assignedPerson>
+                                                  <representedOrganization>
+                                                  <!-- ID der Organisation aus dem GDA Index -->
+                                                  <id root="1.2.40.0.34.99.4613"
+                                                  assigningAuthorityName="GDA Index"/>
+                                                  <!-- Name der Organisation -->
+                                                  <name>Labor PerformerBody-AK-Varizellen</name>
+                                                  <!-- Kontaktdaten der Organisation -->
+                                                  <telecom value="tel:+43.6138.3453446.0"/>
+                                                  <!-- Adresse der Organisation -->
+                                                  <addr use="PHYS">
+                                                  <streetName>Labor-PerformerBody-AK-Varizellen-Gasse</streetName>
+                                                  <houseNumber>1-7</houseNumber>
+                                                  <postalCode>5350</postalCode>
+                                                  <city>St.Wolfgang</city>
+                                                  <state>Salzburg</state>
+                                                  <country>AUT</country>
+                                                  </addr>
+                                                  </representedOrganization>
+                                                </assignedEntity>
+                                            </performer>
+
+                                            <!-- Validierende Person -->
+                                            <participant typeCode="AUTHEN">
+                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.5"/>
+                                                <time value="20290827122000+0200"/>
+                                                <participantRole classCode="ROL">
+                                                  <id root="1.2.40.0.34.3.1.99.999"/>
+                                                  <addr use="PHYS">
+                                                  <streetName>Authenticator-AK-Varizellen-Gasse</streetName>
+                                                  <houseNumber>25</houseNumber>
+                                                  <postalCode>1010</postalCode>
+                                                  <city>Wien</city>
+                                                  <state>Wien</state>
+                                                  <country>AUT</country>
+                                                  </addr>
+                                                  <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                                  <playingEntity>
+                                                  <name>
+                                                  <prefix>Dr.</prefix>
+                                                  <given>M.</given>
+                                                  <family>Authenticator-AK-Varizellen</family>
+                                                  </name>
+                                                  </playingEntity>
+
+                                                </participantRole>
+                                            </participant>
+                                            <!-- Korrektur durch Behörde  -->
+                                            <participant typeCode="VRF">
+                                                <templateId root="1.2.40.0.34.6.0.11.9.44"/>
+                                                <time value="20240607145210+0200"/>
+                                                <participantRole classCode="ROL">
+                                                  <id root="1.2.40.0.34.3.1.99.999"/>
+                                                  <addr use="PHYS">
+                                                  <streetName>Verifier-AK-Varizellen-Straße</streetName>
+                                                  <houseNumber>22</houseNumber>
+                                                  <postalCode>1130</postalCode>
+                                                  <city>Wien</city>
+                                                  <state>Wien</state>
+                                                  <country>AUT</country>
+                                                  </addr>
+                                                  <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                                  <playingEntity>
+                                                  <name>
+                                                  <given>Amelia </given>
+                                                  <family>Verifier-AK-Varizellen-Amtsarzt</family>
+                                                  </name>
+                                                  </playingEntity>
+                                                  <scopingEntity classCode="ENT"
+                                                  determinerCode="INSTANCE">
+                                                  <desc>Landessanitätsdirektion AK-Varizellen</desc>
+                                                  </scopingEntity>
+                                                </participantRole>
+                                            </participant>
+
+                                            <!-- Berechtigter bearbeitender GDA -->
+                                            <participant typeCode="AUT">
+                                                <templateId root="1.2.40.0.34.6.0.11.9.46"/>
+
+                                                <participantRole classCode="ROL">
+                                                  <id root="1.2.40.0.34.99.4613.3.3"
+                                                  extension="2323"/>
+                                                </participantRole>
+                                            </participant>
+
+                                            <!-- DataEnterer kann von Zentraler Anwendung aus document.dataEnterer von Update Dokument übernomen werden -->
+                                            <participant typeCode="ENT">
+                                                <templateId root="1.2.40.0.34.6.0.11.9.47"/>
+                                                <time value="20270607145210+0200"/>
+                                                <participantRole classCode="ROL">
+                                                  <id root="1.2.40.0.34.3.1.99.999"/>
+                                                  <addr>
+                                                  <streetName>DataEnterer-AK-Varizellen-Gasse</streetName>
+                                                  <houseNumber>1-7</houseNumber>
+                                                  <postalCode>5350</postalCode>
+                                                  <city>St.Wolfgang</city>
+                                                  <state>Salzburg</state>
+                                                  <country>AUT</country>
+                                                  </addr>
+                                                  <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                                  <playingEntity>
+                                                  <name>
+                                                  <prefix>AK</prefix>
+                                                  <given>Martin</given>
+                                                  <family>DataEnterer-AK-Varizellen</family>
+                                                  </name>
+                                                  </playingEntity>
+                                                  <scopingEntity classCode="ENT"
+                                                  determinerCode="INSTANCE">
+                                                  <desc>Praxis DataEnterer-AK-Varizellen</desc>
+                                                  </scopingEntity>
+                                                </participantRole>
+                                            </participant>
+
+                                            <!-- Codierung des Referenzbereiches -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                  <text>
+                                                  <reference value="#analyseRef-2"/>
+                                                  </text>
+                                                  <!-- Für ausreichenden Schutz: >0.14 -->
+                                                  <value xsi:type="IVL_PQ">
+                                                  <low value="0.14" unit="[IU]/mL" inclusive="false"/>
+                                                  <high nullFlavor="PINF"/>
+                                                  </value>
+                                                  <!-- Bewertung des angegebenen Bereichs: POS: Bereich, in dem ausreichender Schutz vorhanden ist -->
+                                                  <interpretationCode code="POS"
+                                                  codeSystem="2.16.840.1.113883.5.83"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                </organizer>
+                            </entryRelationship>
+
+                            <!-- Referenz auf zugrundeliegendes CDA-Dokument "Update Immunisierungsstatus" -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+                                    <id root="1.2.40.0.34.99.4613.3.1" extension="mySampleID"/>
+                                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                                        displayName="History of Immunization">
+                                        <translation code="87273-9"
+                                            codeSystem="2.16.840.1.113883.6.1"
+                                            codeSystemName="LOINC" displayName="Immunization note"/>
+                                    </code>
+                                    <text>
+                                        <reference value="#ankb-1"/>
+                                    </text>
+                                    <setId root="1.2.40.0.34.99.4613.3.1.1" extension="mySampleID2"/>
+                                    <versionNumber value="1"/>
+                                </externalDocument>
+                            </reference>
+                        </act>
+                    </entry>
+                </section>
+            </component>
+            <component>
+                <!-- Sektion Impfempfehlungen - kodiert -->
+                <section classCode="DOCSECT" moodCode="EVN">
+                    <templateId root="1.2.40.0.34.6.0.11.2.2"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.6"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.23"/>
+                    <id root="1.2.40.0.34.99.4613.3.4" extension="5"/>
+                    <code code="18776-5" codeSystem="2.16.840.1.113883.6.1"
+                        displayName="TREATMENT PLAN"/>
+                    <title>Impfempfehlungen</title>
+                    <text>Entsprechend dem <content ID="extdoc-1">Impfplan Österreich 2019, Version
+                            1, Jänner 2019, Bundesministerium für Arbeit, Soziales, Gesundheit und
+                            Konsumentenschutz</content> werden folgende Impfungen empfohlen<br/><br/>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th styleCode="xELGA_colw:12">Impfzeitraum</th>
+                                    <th styleCode="xELGA_colw:20">Impfung gegen</th>
+                                    <th styleCode="xELGA_colw:10">Dosis</th>
+                                    <th styleCode="xELGA_colw:35">Impfschema</th>
+                                    <th>Impfstoff</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ID="sbdmrec-1">
+                                    <td>17.08.2020 bis 17.09.2020</td>
+                                    <td ID="target-4">Frühsommer-Meningoencephalitis</td>
+                                    <td ID="dosenr-4">Auffrischungsimpfung</td>
+                                    <td ID="criterion-4">FSME Grundschema, FSME-Immun</td>
+                                    <td ID="prodName-4">FSME-IMMUN FSPR 0,25ML NAD F</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <content ID="commentRef-2">offlabel</content><br/>
+                    </text>
+                    <!-- Impfempfehlungen Entry FSME -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration classCode="SBADM" moodCode="PRP"
+                            negationInd="false">
+                            <templateId root="1.2.40.0.34.6.0.11.3.3"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.25"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12.2"/>
+                            <id root="1.2.40.0.34.99.4613.3.5.1" extension="1"/>
+                            <!-- Klassifikation der Impfempfehlung und deren Bedeutung für den Impfling. -->
+                            <code code="171258008" codeSystem="2.16.840.1.113883.6.96"
+                                codeSystemName="SNOMED CT"/>
+                            <text>
+                                <reference value="#sbdmrec-1"/>
+                            </text>
+                            <statusCode code="active"/>
+                            <!-- "Empfohlenes Impfdatum": Die Impfempfehlung bezieht sich immer auf einen Zeitraum, ein nullFlavor kann verwendet werden  -->
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20200813"/>
+                                <high value="20200913"/>
+                            </effectiveTime>
+                            <!-- Die Art der Anwendung (des Impfstoffes) z.B. subkutan, intramuskulär; wird immer der nullFlavor angegeben. -->
+                            <routeCode nullFlavor="NA"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle; wird immer der nullFlavor angegeben. -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Empfohlene Dosierung. Z.B. die Anzahl der Ampullen  -->
+                            <doseQuantity value="1" unit="{Stueck}"/>
+                            <!-- "Empfohlener Impfstoff": Angaben zum ärztlich empfohlenen Arzneimittel  -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <code nullFlavor="OTH">
+                                            <originalText>
+                                                <reference value="#prodName-4"/>
+                                            </originalText>
+                                            <translation code="2-00269"
+                                                codeSystem="1.2.40.0.34.4.17"
+                                                displayName="FSME-IMMUN FSPR 0,25ML NAD F"/>
+                                        </code>
+                                        <name>FSME-Immun 0,25 ml Junior Injektionssuspension in
+                                            einer Fertigspritze</name>
+                                        <lotNumberText nullFlavor="NA"/>
+                                        <pharm:ingredient classCode="ACTI">
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <pharm:code code="J07BA01"
+                                                  codeSystem="2.16.840.1.113883.6.73"
+                                                  codeSystemName="whoATC"/>
+                                                <pharm:name>FSME, inaktiviert, ganzes
+                                                  Virus</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <!-- "Medizinisch verantwortliche Person oder System": Person oder System, das die Empfehlung generiert -->
+                            <author>
+                                <time value="20190617122000+0200"/>
+                                <assignedAuthor classCode="ASSIGNED">
+                                    <!-- Die OID des Authors entscheidet, ob es sich um eine ärztliche Impfempfehlung oder um eine automatisch generierte handelt (1.2.40.0.34.6.104 = OID der zentralen Impfanwendung) -->
+                                    <id root="1.2.40.0.34.99.4614.3.3.2" extension="2324999999"/>
+                                    <assignedPerson>
+                                        <name>
+                                            <prefix>Dr.</prefix>
+                                            <given>Inka</given>
+                                            <family>Author-Impfempfehlung</family>
+                                        </name>
+                                    </assignedPerson>
+                                    <representedOrganization>
+                                        <!-- ID der Organisation aus dem GDA Index -->
+                                        <id root="1.2.40.0.34.99.4614"
+                                            assigningAuthorityName="GDA Index"/>
+                                        <!-- Name der Organisation -->
+                                        <name>Spital Author-Impfempfehlung</name>
+                                        <!-- Kontaktdaten der Organisation, keine Anzeige im Referenz-Stylesheet: telecom, addr  -->
+                                        <telecom use="WP" value="tel:+43.1.3453446.0"/>
+                                        <telecom use="WP" value="fax:+43.1.3453446.4674"/>
+                                        <telecom use="WP" value="mailto:info@amadeusspital.at"/>
+                                        <telecom use="WP" value="http://www.amadeusspital.at"/>
+                                        <!-- Adresse der Organisation -->
+                                        <addr>
+                                            <streetName>Spital-Author-Impfempfehlung-Gürtel</streetName>
+                                            <houseNumber>18-20</houseNumber>
+                                            <postalCode>1090</postalCode>
+                                            <city>Wien</city>
+                                            <state>Wien</state>
+                                            <country>AUT</country>
+                                        </addr>
+                                    </representedOrganization>
+
+                                    <!-- Author = zentrale e-Impf Anwendung - verbleibt für zukünftiges Testen -->
+                                    <!-- <id root="1.2.40.0.34.6.104"/>
+                                    <code code="501" codeSystem="1.2.40.0.34.5.2"/>
+                                    <addr>
+                                        <streetName>Author-Impfempfehlung-FSME-Gasse</streetName>
+                                        <houseNumber>1</houseNumber>
+                                        <postalCode>1010</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom value="mailto:post@sozialministerium.at"/>
+
+                                    <assignedAuthoringDevice classCode="DEV"
+                                        determinerCode="INSTANCE">
+                                        <manufacturerModelName>Zentrale Anwendung e-Impfpass
+                                            Impfempfehlung FSME</manufacturerModelName>
+                                        <softwareName>Zentrale Anwendung e-Impfpass Impfempfehlung
+                                            FSME</softwareName>
+                                    </assignedAuthoringDevice>
+                                    <representedOrganization classCode="ORG"
+                                        determinerCode="INSTANCE">
+                                        <id root="1.2.40.0.34.3.99.1"/>
+                                        <name>Für Gesundheit zuständiges Ministerium (Organisation
+                                            Impfempfehlung FSME)</name>
+                                    </representedOrganization> -->
+                                </assignedAuthor>
+                            </author>
+                            <!-- Korrektur durch Behörde: wird nicht benötigt, da eine vorhande Impfempfehlung durch einen neuen Eintrag ersetzt werden kann  -->
+                            <!--<participant typeCode="VRF">
+                                <templateId root="1.2.40.0.34.6.0.11.9.44"/>
+                                <time value="20240607145210+0200"/>
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.40.0.34.3.1.99.999"/>
+                                    <addr use="PHYS">
+                                        <streetName>Verifier-Impfempfehlung-FSME-Str.</streetName>
+                                        <houseNumber>22</houseNumber>
+                                        <postalCode>1130</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                    <playingEntity>
+                                        <name>
+                                            <given>Amelia </given>
+                                            <family>Verifier-Impfempfehlung-FSME-Amtsarzt</family>
+                                        </name>
+                                    </playingEntity>
+                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                        <desc>Landessanitätsdirektion Impfempfehlung FSME</desc>
+                                    </scopingEntity>
+                                </participantRole>
+                            </participant>-->
+                            <!-- "Eintragende Person": Die dokumentierende Person (Data Enterer), keine Anzeige im Referenz-Stylesheet  -->
+                            <participant typeCode="ENT">
+                                <templateId root="1.2.40.0.34.6.0.11.9.47"/>
+                                <time value="50210607145210+0200"/>
+                                <participantRole classCode="ROL">
+                                    <id root="1.2.40.0.34.3.1.99.999"/>
+                                    <addr use="PHYS">
+                                        <streetName>DataEnterer-Impfempfehlung-FSME
+                                            Gasse</streetName>
+                                        <houseNumber>25</houseNumber>
+                                        <postalCode>1010</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <telecom use="WP" value="tel:+43.316.608.271.9000"/>
+                                    <playingEntity>
+                                        <name>
+                                            <prefix>DGKP</prefix>
+                                            <given>Martin</given>
+                                            <family>DataEnterer-Impfempfehlung-FSME</family>
+                                        </name>
+                                    </playingEntity>
+                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
+                                        <desc>Praxis DataEnterer-Impfempfehlung-FSME</desc>
+                                    </scopingEntity>
+                                </participantRole>
+                            </participant>
+                            <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836403007" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Frühsommer-Meningoencephalitis Impfstoff"/>
+                                    <text>
+                                        <reference value="#target-4"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <!-- Begründung einer von der medizinisch verantwortlichen Person abgegebenen Impfempfehlung -->
+                            <entryRelationship typeCode="RSON">
+                                <act classCode="ACT" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.17"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.40"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
+                                    <code code="48767-8" codeSystem="2.16.840.1.113883.6.1"
+                                        codeSystemName="LOINC" displayName="Annotation comment"/>
+                                    <text>
+                                        <reference value="#commentRef-2"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                    <!-- Verantwortliche Person -->
+                                    <author>
+                                        <time value="20190710153549+0200"/>
+                                        <assignedAuthor classCode="ASSIGNED">
+                                            <id root="1.2.3.999" extension="--example only--"/>
+                                            <code code="100" codeSystem="1.2.40.0.34.5.2"
+                                                displayName="Ärztin/Arzt für Allgemeinmedizin"/>
+                                            <addr>
+                                                <streetName>Autor-Comment-Impfempfehlung-FSME
+                                                  Lände</streetName>
+                                                <houseNumber>50-54</houseNumber>
+                                                <postalCode>1200</postalCode>
+                                                <city>Wien</city>
+                                                <state>Wien</state>
+                                                <country>AUT</country>
+                                            </addr>
+                                            <telecom value="tel:+1-12345678"/>
+                                            <assignedPerson classCode="PSN"
+                                                determinerCode="INSTANCE">
+                                                <name>
+                                                  <prefix>Dr.</prefix>
+                                                  <given>Sabine</given>
+                                                  <family>Autor-Comment-Impfempfehlung-FSME</family>
+                                                </name>
+                                            </assignedPerson>
+                                            <representedOrganization>
+                                                <!-- ID der Organisation aus dem GDA Index -->
+                                                <id root="1.2.40.0.34.99.4312"
+                                                  assigningAuthorityName="GDA Index"/>
+                                                <!-- Name der Organisation -->
+                                                <name>Praxis
+                                                  Autor-Comment-Impfempfehlung-FSME</name>
+                                                <!-- Kontaktdaten der Organisation -->
+                                                <telecom use="WP" value="tel:+43.1.1234.12345678"/>
+                                                <telecom use="WP" value="fax:+43.1.1234.123456789"/>
+                                                <!-- Adresse der Organisation -->
+                                                <addr>
+                                                  <streetName>Praxis
+                                                  Autor-Comment-Impfempfehlung-FSME
+                                                  Lände</streetName>
+                                                  <houseNumber>50-54</houseNumber>
+                                                  <postalCode>1200</postalCode>
+                                                  <city>Wien</city>
+                                                  <state>Wien</state>
+                                                  <country>AUT</country>
+                                                </addr>
+                                            </representedOrganization>
+                                        </assignedAuthor>
+                                    </author>
+                                </act>
+                            </entryRelationship>
+                            <!-- Referenz auf die Information, die der Impfempfehlung zugrunde liegt -->
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.22"/>
+                                    <id root="1.2.40.0.34.7.20" extension="2019.1"/>
+                                    <text>
+                                        <reference value="#extdoc-1"/>
+                                    </text>
+                                </externalDocument>
+                            </reference>
+                            <!-- Angabe, um welche Impfung oder Teilimpfung es sich handelt (entsprechend einem Impfschema) -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="​eImpf_Ergaenzung"
+                                        displayName="FSME"/>
+                                    <text>
+                                        <reference value="#criterion-4"/>
+                                    </text>
+                                    <value xsi:type="CD" code="B" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Auffrischungsimpfung">
+                                        <originalText>
+                                            <reference value="#dosenr-4"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
+                    <!-- Impfempfehlungen Entry FSME -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration classCode="SBADM" moodCode="PRP"
+                            negationInd="true">
+                            <templateId root="1.2.40.0.34.6.0.11.3.3"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.25"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12.2"/>
+                            <id root="1.2.40.0.34.99.4613.3.5.1" extension="1"/>
+                            <!-- Klassifikation der Impfempfehlung und deren Bedeutung für den Impfling. -->
+                            <code code="266758009" codeSystem="2.16.840.1.113883.6.96"
+                                codeSystemName="SNOMED CT"/>
+                            <text>
+                                <reference value="#sbdmrec-1"/>
+                            </text>
+                            <statusCode code="active"/>
+                            <!-- "Empfohlenes Impfdatum": Die Impfempfehlung bezieht sich immer auf einen Zeitraum, ein nullFlavor kann verwendet werden  -->
+                            <effectiveTime xsi:type="IVL_TS">
+                                <low value="20200813"/>
+                                <high value="20200913"/>
+                            </effectiveTime>
+                            <!-- Die Art der Anwendung (des Impfstoffes) z.B. subkutan, intramuskulär; wird immer der nullFlavor angegeben. -->
+                            <routeCode nullFlavor="NA"/>
+                            <!-- Der Ort der Anwendung bzw. die Körperstelle; wird immer der nullFlavor angegeben. -->
+                            <approachSiteCode nullFlavor="NA"/>
+                            <!-- Empfohlene Dosierung. Z.B. die Anzahl der Ampullen  -->
+                            <doseQuantity value="1" unit="{Stueck}"/>
+                            <!-- "Empfohlener Impfstoff": Angaben zum ärztlich empfohlenen Arzneimittel  -->
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.32"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <code nullFlavor="OTH">
+                                            <originalText>
+                                                <reference value="#prodName-4"/>
+                                            </originalText>
+                                            <translation code="2-00269"
+                                                codeSystem="1.2.40.0.34.4.17"
+                                                displayName="FSME-IMMUN FSPR 0,25ML NAD F"/>
+                                        </code>
+                                        <name>FSME-Immun 0,25 ml Junior Injektionssuspension in
+                                            einer Fertigspritze</name>
+                                        <lotNumberText nullFlavor="NA"/>
+                                        <pharm:ingredient classCode="ACTI">
+                                            <pharm:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <pharm:code code="J07BA01"
+                                                  codeSystem="2.16.840.1.113883.6.73"
+                                                  codeSystemName="whoATC"/>
+                                                <pharm:name>FSME, inaktiviert, ganzes
+                                                  Virus</pharm:name>
+                                            </pharm:ingredient>
+                                        </pharm:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <author typeCode="AUT" contextControlCode="OP">
+                                <time value="20240315143000+0100"/>
+                                <assignedAuthor classCode="ASSIGNED">
+                                    <id root="1.2.40.0.34.99.9999.1.1" extension="device-001"/>
+                                    <code code="508"
+                                        codeSystem="1.2.40.0.34.5.2"
+                                        displayName="National Contact Point (NCP)"/>
+                                    <telecom use="WP" value="tel:+43-1-12345678"/>
+                                    <assignedAuthoringDevice classCode="DEV" determinerCode="INSTANCE">
+                                        <manufacturerModelName>VaccinationSystem Pro 3.0</manufacturerModelName>
+                                        <softwareName>ImpfpassSoftware v2.5.1</softwareName>
+                                    </assignedAuthoringDevice>
+                                    <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                                        <id root="1.2.40.0.34.99.9999" extension="org-001"/>
+                                        <name>Musterkrankenhaus Wien</name>
+                                    </representedOrganization>
+                                </assignedAuthor>
+                            </author>
+                            <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
+                            <entryRelationship typeCode="RSON">
+                                <observation classCode="OBS" moodCode="EVN">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.2"/>
+                                    <code code="836403007" codeSystem="2.16.840.1.113883.6.96"
+                                        codeSystemName="SNOMED CT"
+                                        displayName="Frühsommer-Meningoencephalitis Impfstoff"/>
+                                    <text>
+                                        <reference value="#target-4"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                </observation>
+                            </entryRelationship>
+                            <reference typeCode="REFR">
+                                <externalDocument classCode="DOC" moodCode="EVN">
+
+                                    <!-- ELGA templateId for External Document Entry -->
+                                    <templateId root="1.2.40.0.34.6.0.11.3.14"/>
+
+                                    <!-- OID of the source document — must match ClinicalDocument/id of the referenced CDA -->
+                                    <id root="1.2.40.0.34.99.9999.3.1" extension="document-20240315-001"/>
+
+                                    <!-- Classification of the external document — must match ClinicalDocument/code -->
+                                    <code code="11369-6"
+                                        codeSystem="2.16.840.1.113883.6.1"
+                                        codeSystemName="LOINC"
+                                        displayName="History of Immunization Narrative"/>
+
+                                    <!-- Narrative Text Reference (Inclusion 1.2.40.0.34.6.0.11.9.1) -->
+                                    <!-- Title, date and author of the external document as reference to section.text -->
+                                    <text>
+                                        <reference value="#refDoc-001"/>
+                                    </text>
+
+                                    <!-- setId — must match ClinicalDocument/setId of the referenced CDA -->
+                                    <setId root="1.2.40.0.34.99.9999.3.1" extension="setid-20240315-001"/>
+
+                                    <!-- versionNumber — must match ClinicalDocument/versionNumber of the referenced CDA -->
+                                    <versionNumber value="1"/>
+
+                                </externalDocument>
+                            </reference>
+
+                            <!-- Angabe, um welche Impfung oder Teilimpfung es sich handelt (entsprechend einem Impfschema) -->
+                            <precondition>
+                                <criterion classCode="OBS" moodCode="EVN.CRT">
+                                    <templateId root="1.2.40.0.34.6.0.11.3.10"/>
+                                    <code code="SCHEMA209" codeSystem="1.2.40.0.34.5.183"
+                                        codeSystemName="​eImpf_Ergaenzung"
+                                        displayName="FSME"/>
+                                    <text>
+                                        <reference value="#criterion-4"/>
+                                    </text>
+                                    <value xsi:type="CD" code="B" codeSystem="1.2.40.0.34.5.183"
+                                        displayName="Auffrischungsimpfung">
+                                        <originalText>
+                                            <reference value="#dosenr-4"/>
+                                        </originalText>
+                                    </value>
+                                </criterion>
+                            </precondition>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>
