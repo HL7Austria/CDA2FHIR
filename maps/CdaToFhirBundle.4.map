@@ -930,7 +930,12 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
       cda_author_assignedAuthor.telecom -> fhir_practitioner.telecom;
       // ClinicalDocument.author.assignedAuthor.assignedPerson
       cda_author_assignedAuthor.assignedPerson as cda_assignedPerson then {
-        cda_assignedPerson.name -> fhir_practitioner.name;
+        // ClinicalDocument.author.assignedAuthor.assignedPerson -> Practitioner.name
+        cda_assignedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_assignedPerson.name as cda_assignedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_assignedPerson_name, fhir_practitioner_name_extension);
       };
       // ClinicalDocument.author.assignedAuthor.representedOrganization
       cda_author_assignedAuthor.representedOrganization as cda_representedOrganization ->
@@ -1206,7 +1211,11 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
       // assignedEntity.assignedPerson
       cda_assignedEntity.assignedPerson as cda_assignedPerson then {
         // assignedEntity.assignedPerson.name
-        cda_assignedPerson.name -> fhir_practitioner.name;
+        cda_assignedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_assignedPerson.name as cda_assignedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_assignedPerson_name, fhir_practitioner_name_extension);
       };
       // assignedEntity.representedOrganization
       cda_assignedEntity.representedOrganization as cda_representedOrganization ->
@@ -1248,7 +1257,11 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
       // associatedEntity.associatedPerson
       cda_associatedEntity.associatedPerson as cda_associatedPerson then {
         // associatedEntity.associatedPerson.name
-        cda_associatedPerson.name -> fhir_practitioner.name;
+        cda_associatedPerson.name where ($this.nullFlavor.exists().not()) -> fhir_practitioner.name;
+        cda_associatedPerson.name as cda_associatedPerson_name where ($this.nullFlavor.exists()) -> 
+          fhir_practitioner.name as fhir_practitioner_name,
+          fhir_practitioner_name.extension as fhir_practitioner_name_extension then
+            CdaNullFlavorToFhirDataAbsentReason(cda_associatedPerson_name, fhir_practitioner_name_extension);
       };
       // associatedEntity.scopingOrganization
       cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
@@ -1321,7 +1334,6 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
           cda_participant_role_scoping_entity.desc as cda_participant_role_scoping_entity_desc ->
             fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization_reference,
             fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
-        }
-      };
+        };
     };
 }

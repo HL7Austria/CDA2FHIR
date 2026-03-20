@@ -13,6 +13,7 @@ conceptmap "v3-NullFlavor-2-data-absent-reason" {
   s: "NAV" == t: "temp-unknown"
   s: "NA" == t: "not-applicable"
   s: "OTH" == t: "unknown" // mapping not perfect
+  s: "MSK" == t: "masked"
 }
 
 // TODO review mapping
@@ -535,24 +536,38 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
   // TODO deal with OIDs which are not part of the map (e.g. certain identifiers, GDA-IDs, etc.)
   // src.root as r where src.extension.exists()
   //    -> tgt.system = translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
-  src.root as r where src.extension.exists()
-     -> tgt.system = translate(r, '#OIDtoURI', 'code') then {
+  
+  // OIDs with extension
+  // see https://hl7.org/fhir/R4/datatypes.html#oid
+  src.root as r where (src.root.matches('[0-2](\\.(0|[1-9][0-9]*))+') and src.extension.exists()) -> 
+    tgt.system = translate(r, '#OIDtoURI', 'code') then {
       src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
-     } "root1";
+    } "oidwithextension";
+
+  // OIDs without extension
+  src.root as r where (src.root.matches('[0-2](\\.(0|[1-9][0-9]*))+') and src.extension.empty()) -> 
+    tgt.system = 'urn:ietf:rfc:3986',  
+    tgt.value = append('urn:oid:', r), 
+    tgt.assigner as a,  a.display = 'Bundesministerium für Gesundheit' 
+    "oidwithextension";
 
   // testing if it is possible to use translate in where
   // src.root as r where (translate('#OIDtoURI', r)) ->
   //   tgt.system = translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
 
-  src.root as r where src.extension.empty()
-        and src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
-     -> tgt.system = 'urn:ietf:rfc:3986', tgt.value = ('urn:uuid:' + r.lower()) then {
+  // UUID with extension
+  src.root as r where (src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}') and src.extension.exists()) -> 
+    tgt.system = ('urn:uuid:' + r.lower()) then {
       src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
-     }  "rootuuid";
-  src.root as r where src.extension.empty() and src.root.contains('.')
-     ->  tgt.system = 'urn:ietf:rfc:3986',  
-    tgt.value = append('urn:oid:', r), 
-    tgt.assigner as a,  a.display = 'Bundesministerium für Gesundheit' "rootoid";
+    } "uuidwithextension";
+
+  // UUID without extension
+  src.root as r where (src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}') and src.extension.empty()) -> 
+    tgt.system = 'urn:ietf:rfc:3986', 
+    tgt.value = ('urn:uuid:' + r.lower()) then {
+      src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
+    } "uuidwithoutextension";
+
   src.extension as e -> tgt.value = e;
   // there's no equivalent for displayable in FHIR - and it probably will never matter, but if it does, it might map to Identifier.use.
   src.displayable as displayable -> tgt.extension as ext then {
@@ -665,9 +680,7 @@ group CECoding(source src : CE, target tgt : Coding) extends Any <<types>> {
   // src.codeSystem as system -> tgt.system = translate(system, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri');
   src.codeSystem as system -> tgt.system = translate(system, '#OIDtoURI', 'code');
 
-  // TODO for testing purposes (validation with java validator), no displayNames will be mapped
-    //      later the NCPeH will have to translate them
-  // src.displayName as display -> tgt.display = cast(display, 'string');
+  src.displayName as display -> tgt.display = cast(display, 'string');
 }
 
 group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> {
