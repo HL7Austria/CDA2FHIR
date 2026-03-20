@@ -118,12 +118,9 @@
                     <telecom use="H" value="tel:+43.2682.40400"/>
                     <telecom use="MC" value="tel:+43.664.1234567"/>
                     <telecom value="mailto:Josef@GesetzlicherVertreter.at"/>
-                    <guardianPerson>
-                        <name>
-                            <given>Josef</given>
-                            <family>GesetzlicherVertreter</family>
-                        </name>
-                    </guardianPerson>
+                    <guardianOrganization>
+                        <name>Guardian Organization</name>
+                    </guardianOrganization>
                 </guardian>
             </patient>
         </patientRole>
