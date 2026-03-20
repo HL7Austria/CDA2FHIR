@@ -45,8 +45,8 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 // _________________________ Document Level Template  _________________________
 
 group CdaEmedToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) { // Mapping ELGA-CDA eMedikation to FHIR
-   
-   // at least on Bundle level the profile is to be set
+  cda ->   
+    // at least on Bundle level the profile is to be set
     fhir_bundle.meta as fhir_bundle_meta,
     fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
     then {
