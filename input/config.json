@@ -1,7 +1,7 @@
 [
   {
     "directory": "lab",
-    "ig": "https://fhir.ehdsi.eu/laboratory/package.tgzg"
+    "ig": "https://fhir.ehdsi.eu/laboratory/package.tgz"
   },
   {
     "directory": "emed",
