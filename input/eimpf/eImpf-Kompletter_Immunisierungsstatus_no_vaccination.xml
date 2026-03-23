@@ -103,9 +103,12 @@
                 </name>
                 <!-- Geschlecht des Patienten -->
                 <administrativeGenderCode code="M" displayName="Male"
-                    codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
+                    codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender">
+                    <translation code="446151000124109" displayName="Male gender identity"
+                    codeSystem="2.16.840.1.113883.6.96" />
+                </administrativeGenderCode>
                 <!-- Geburtsdatum des Patienten -->
-                <birthTime value="20121224"/>
+                <birthTime nullFlavor="UNK" />
                 <!-- Gesetzlicher Vertreter -->
                 <guardian classCode="GUARD">
                     <addr use="WP">

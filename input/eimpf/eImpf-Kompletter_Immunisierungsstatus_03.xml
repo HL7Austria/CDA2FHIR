@@ -102,10 +102,9 @@
                     <family>Bürger</family>
                 </name>
                 <!-- Geschlecht des Patienten -->
-                <administrativeGenderCode code="M" displayName="Male"
-                    codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
+                <administrativeGenderCode nullFlavor="UNK"/>
                 <!-- Geburtsdatum des Patienten -->
-                <birthTime value="20121224095903+0100"/>
+                <birthTime value="20121224"/>
                 <!-- Gesetzlicher Vertreter -->
                 <guardian classCode="GUARD">
                     <addr use="WP">
@@ -114,7 +113,6 @@
                         <city>Wien</city>
                         <state>Wien</state>
                         <country>AUT</country>
-                        <additionalLocator>2. Stock</additionalLocator>
                     </addr>
                     <telecom use="H" value="tel:+43.2682.40400"/>
                     <telecom use="MC" value="tel:+43.664.1234567"/>
@@ -126,27 +124,11 @@
                         </name>
                     </guardianPerson>
                 </guardian>
-                <birthplace>
-                    <place>
-                        <addr use="PST">
-                            <streetName>Birthplace-Straße</streetName>
-                            <houseNumber>4</houseNumber>
-                            <postalCode>7000</postalCode>
-                            <city>Eisenstadt</city>
-                            <state>Burgenland</state>
-                            <country>AUT</country>
-                            <additionalLocator>2. Stock</additionalLocator>
-                        </addr>
-                    </place>
-                </birthplace>
             </patient>
         </patientRole>
     </recordTarget>
     <!-- Verfasser des Dokuments ======================================================================== -->
     <author typeCode="AUT" contextControlCode="OP">
-        <!-- Funktionscode der Verfasserin des Dokuments -->
-        <functionCode code="26369006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"
-        displayName="Public health nurse"/>
         <!-- Zeitpunkt der Erstellung -->
         <time value="20230717103415+0200"/>
         <assignedAuthor classCode="ASSIGNED">
@@ -340,7 +322,6 @@
                                     <id root="1.2.40.0.34.99.4613.3.3" extension="232311"/>
                                     <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
                                         codeSystem="1.2.40.0.34.5.2"/>
-                                    <telecom use="WP" value="tel:+43.123.45678-0"/>
                                         <!-- Adresse der Organisation -->
                                     <addr>
                                         <streetName>Person Author-FSME1-Gasse</streetName>
