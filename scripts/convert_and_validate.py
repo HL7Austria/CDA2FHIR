@@ -9,19 +9,6 @@ OUTPUT_DIR = "output"
 COVERAGE_DIR = "coverage"
 VALIDATION_DIR = "validation"
 
-subprocess.run([
-    "wget", "https://fhir.ehdsi.eu/laboratory/package.tgz"
-], check=False)
-
-subprocess.run([
-    "mkdir", "-p", os.path.expanduser("~/.fhir/packages/myhealth.eu.fhir.mvc-package#9.1.0")
-], check=False)
-
-subprocess.run([
-    "bash", "-c",
-    "wget -qO- https://fhir.ehdsi.eu/mvc-package/package.tgz | tar -xz -C ~/.fhir/packages/myhealth.eu.fhir.mvc-package#9.1.0"
-], check=False)
-
 with open(os.path.join(INPUT_DIR, 'config.json'), 'r') as file:
     config_json = json.load(file)
 

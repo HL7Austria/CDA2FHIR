@@ -1,5 +1,9 @@
 [
   {
+    "directory": "lab",
+    "ig": "https://hl7.eu/fhir/laboratory/package.tgz"
+  },
+  {
     "directory": "emed",
     "ig": "https://fhir.hl7.at/elga/aps/r4/package.tgz"
   },
