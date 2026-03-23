@@ -9,9 +9,7 @@ on:
 jobs:
   convert-and-validate:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pull-requests: write
+
     steps:
       - name: Check out repo
         uses: actions/checkout@v5
@@ -49,12 +47,6 @@ jobs:
       - name: coverage
         run: |
           python scripts/combine_coverage.py
-
-      - name: display coverage
-        uses: orgoro/coverage@v3.2
-        with:
-          coverageFile: coverage/coverage.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: upload
         uses: actions/upload-artifact@v4
