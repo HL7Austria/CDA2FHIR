@@ -7927,6 +7927,9 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 
 group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) {
   cda ->
+    // create Bundle.meta profile 
+    fhir_bundle.meta as fhir_bundle_meta, 
+    fhir_bundle_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu',
     // create the DiagnosticReport to have it as reference for later transformations
     fhir_bundle.entry as fhir_bundle_entry_1,
     fhir_bundle_entry_1.resource = create('DiagnosticReport') as fhir_diagnosticReport,
