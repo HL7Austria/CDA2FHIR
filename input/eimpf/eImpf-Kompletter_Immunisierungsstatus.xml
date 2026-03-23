@@ -317,6 +317,9 @@
                             </performer>-->
                             <!-- Medizinisch verantwortliche Person -->
                             <author>
+                                <!-- Funktionscode der Verfasserin des Dokuments -->
+                                 <functionCode code="26369006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"
+                                    displayName="Public health nurse"/>
                                 <!-- Zeitpunkt der Freigabe -->
                                 <time value="20160617122000+0200"/>
                                 <assignedAuthor>
