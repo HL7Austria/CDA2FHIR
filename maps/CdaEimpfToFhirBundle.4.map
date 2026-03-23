@@ -29,11 +29,11 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 // _________________________ Document Level Template  _________________________
 
 group CdaEimpfToFhirBundle(source cda: CdaClinicalDocument, target fhir_patient: FhirPatient, target fhir_composition: FhirComposition, target fhir_bundle: FhirBundle) {
-  cda ->
+  // cda ->
     // at least on Bundle level the profile is to be set
-    fhir_bundle.meta as fhir_bundle_meta,
-    fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
-    then {
+    // fhir_bundle.meta as fhir_bundle_meta,
+    // fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
+    // then {
       // map the CDA header
       cda then CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhirComposition";
       cda then CdaEimpfHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhir"; 
@@ -45,7 +45,7 @@ group CdaEimpfToFhirBundle(source cda: CdaClinicalDocument, target fhir_patient:
         cda_component.structuredBody as cda_structuredBody
           then CdaEimpfBodyToFhir(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
       };
-    } "CdaEimpfToFhirBundle";
+    //} "CdaEimpfToFhirBundle";
 }
 
 group CdaEimpfHeaderToFhirComposition(source cda: CdaClinicalDocument, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaHeaderToFhirComposition {
