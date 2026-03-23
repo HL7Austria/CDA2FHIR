@@ -56,11 +56,11 @@ group CdaEmedToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pat
 
       // map the CDA body
       //ClinicalDocument/component
-      //cda.component as cda_component then {
+      cda.component as cda_component then {
         // ClinicalDocument/component/structuredBody
-        //cda_component.structuredBody as cda_structuredBody
-         // then CdaEmedBodyToFhir(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
-      //};
+        cda_component.structuredBody as cda_structuredBody
+          then CdaEmedBodyToFhir(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
+      };
     } "CdaEmedToFhirBundle"; 
 }
 
@@ -69,6 +69,11 @@ group CdaEmedToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pat
 group CdaEmedHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaHeaderToFhirComposition {
    
   cda.code as cda_code then {
+
+  // Set Profile of Composition
+  cda_code ->
+    fhir_composition.meta as fhir_composition_meta,
+    fhir_composition_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-composition' "CdaEmedSetAPSCompositionProfile";
 
    // ClinicalDocument/code -> Composition.category
    cda_code.code as code_code ->
@@ -91,18 +96,96 @@ group CdaEmedHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_
 }
 
 group CdaEmedHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaHeaderToFhir {
-   //cda -> fhir_bundle "CdaEmedHeaderToFhir"; // Mapping the CDA document header to the FHIR bundle
 }
 
 // _________________________ Body Level Templates ____________________________
 
-//group CdaEmedBodyToFhir(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaBodyToFhir {
+group CdaEmedBodyToFhir(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
    
-//   cda_structuredBody.component as cda_structuredBody_component then {
+  // prefill required APS sections in order to have a valid APS instance
+  cda_structuredBody ->
+  // section problems
+    fhir_composition.section as fhir_composition_problems_section,
+    fhir_composition_problems_section.title = 'Gesundheitsprobleme und Risiken (Problems)',
+    fhir_composition_problems_section.code as fhir_composition_problems_section_code,
+    fhir_composition_problems_section_code.coding as fhir_composition_problems_section_code_coding,
+    fhir_composition_problems_section_code_coding.system = 'http://loinc.org',
+    fhir_composition_problems_section_code_coding.code = '11450-4',
+    fhir_composition_problems_section.emptyReason as fhir_composition_problems_section_emptyReason,
+    fhir_composition_problems_section_emptyReason.coding as fhir_composition_problems_section_emptyReason_coding,
+    fhir_composition_problems_section_emptyReason_coding.system = 'http://terminology.hl7.org/CodeSystem/list-empty-reason',
+    fhir_composition_problems_section_emptyReason_coding.code = 'unavailable',
+    fhir_composition_problems_section.text as fhir_composition_problems_section_text,
+    fhir_composition_problems_section_text.status = 'empty',
+    fhir_composition_problems_section_text.div = append('Kein Text für diese Section vorhanden.'),
+
+    // section allergies
+    fhir_composition.section as fhir_composition_allergies_section,
+    fhir_composition_allergies_section.title = 'Allergien und Intoleranzen (Allergies and Intolerances)',
+    fhir_composition_allergies_section.code as fhir_composition_allergies_section_code,
+    fhir_composition_allergies_section_code.coding as fhir_composition_allergies_section_code_coding,
+    fhir_composition_allergies_section_code_coding.system = 'http://loinc.org',
+    fhir_composition_allergies_section_code_coding.code = '48765-2',
+    fhir_composition_allergies_section.emptyReason as fhir_composition_allergies_section_emptyReason,
+    fhir_composition_allergies_section_emptyReason.coding as fhir_composition_allergies_section_emptyReason_coding,
+    fhir_composition_allergies_section_emptyReason_coding.system = 'http://terminology.hl7.org/CodeSystem/list-empty-reason',
+    fhir_composition_allergies_section_emptyReason_coding.code = 'unavailable',
+    fhir_composition_allergies_section.text as fhir_composition_allergies_section_text,
+    fhir_composition_allergies_section_text.status = 'empty',
+    fhir_composition_allergies_section_text.div = append('Kein Text für diese Section vorhanden.'),
+
+    // section medications
+    fhir_composition.section as fhir_composition_medications_section,
+    fhir_composition_medications_section.title = 'Medikationsliste (Medication Summary)',
+    fhir_composition_medications_section.code as fhir_composition_medications_section_code,
+    fhir_composition_medications_section_code.coding as fhir_composition_medications_section_code_coding,
+    fhir_composition_medications_section_code_coding.system = 'http://loinc.org',
+    fhir_composition_medications_section_code_coding.code = '10160-0',
+    fhir_composition_medications_section.emptyReason as fhir_composition_medications_section_emptyReason,
+    fhir_composition_medications_section_emptyReason.coding as fhir_composition_medications_section_emptyReason_coding,
+    fhir_composition_medications_section_emptyReason_coding.system = 'http://terminology.hl7.org/CodeSystem/list-empty-reason',
+    fhir_composition_medications_section_emptyReason_coding.code = 'unavailable',
+    fhir_composition_medications_section.text as fhir_composition_medications_section_text,
+    fhir_composition_medications_section_text.status = 'empty',
+    fhir_composition_medications_section_text.div = append('Kein Text für diese Section vorhanden.'),
+
+    // section procedures
+    fhir_composition.section as fhir_composition_procedures_section,
+    fhir_composition_procedures_section.title = 'Eingriffe und Therapien (History of Procedures)',
+    fhir_composition_procedures_section.code as fhir_composition_procedures_section_code,
+    fhir_composition_procedures_section_code.coding as fhir_composition_procedures_section_code_coding,
+    fhir_composition_procedures_section_code_coding.system = 'http://loinc.org',
+    fhir_composition_procedures_section_code_coding.code = '47519-4',
+    fhir_composition_procedures_section.emptyReason as fhir_composition_procedures_section_emptyReason,
+    fhir_composition_procedures_section_emptyReason.coding as fhir_composition_procedures_section_emptyReason_coding,
+    fhir_composition_procedures_section_emptyReason_coding.system = 'http://terminology.hl7.org/CodeSystem/list-empty-reason',
+    fhir_composition_procedures_section_emptyReason_coding.code = 'unavailable',
+    fhir_composition_procedures_section.text as fhir_composition_procedures_section_text,
+    fhir_composition_procedures_section_text.status = 'empty',
+    fhir_composition_procedures_section_text.div = append('Kein Text für diese Section vorhanden.'),
+
+    // section medical devices
+    fhir_composition.section as fhir_composition_devices_section,
+    fhir_composition_devices_section.title = 'Implantate, medizinische Geräte (Medical Devices)',
+    fhir_composition_devices_section.code as fhir_composition_devices_section_code,
+    fhir_composition_devices_section_code.coding as fhir_composition_devices_section_code_coding,
+    fhir_composition_devices_section_code_coding.system = 'http://loinc.org',
+    fhir_composition_devices_section_code_coding.code = '46264-8',
+    fhir_composition_devices_section.emptyReason as fhir_composition_devices_section_emptyReason,
+    fhir_composition_devices_section_emptyReason.coding as fhir_composition_devices_section_emptyReason_coding,
+    fhir_composition_devices_section_emptyReason_coding.system = 'http://terminology.hl7.org/CodeSystem/list-empty-reason',
+    fhir_composition_devices_section_emptyReason_coding.code = 'unavailable',
+    fhir_composition_devices_section.text as fhir_composition_devices_section_text,
+    fhir_composition_devices_section_text.status = 'empty',
+    fhir_composition_devices_section_text.div = append('Kein Text für diese Section vorhanden.')
+
+    "prefillRequiredApsSections";
+
+   //cda_structuredBody.component as cda_structuredBody_component then {
      // Map each CDA section to the FHIR composition sections
-//     cda_structuredBody_component.section as cda_section then CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_patient, fhir_bundle);
-//   } "CdaEmedBodyToFhir"; // Mapping the CDA body to the FHIR composition
-//}
+     //cda_structuredBody_component.section as cda_section then CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_patient, fhir_bundle);
+   //} "CdaEmedBodyToFhir"; // Mapping the CDA body to the FHIR composition
+}
 
 //group CdaEmedBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
 
