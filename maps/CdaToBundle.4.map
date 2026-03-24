@@ -1863,7 +1863,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
           fhir_diagnosticReport.media as fhir_diagnosticReport_media,
           fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
           fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirMedia(cda_observationMedia, fhir_media, fhir_bundle);
+          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_media, fhir_bundle);
         };
     };
   };
@@ -1984,7 +1984,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_diagnosticReport.media as fhir_diagnosticReport_media,
           fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
           fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirMedia(cda_observationMedia, fhir_media, fhir_bundle);
+          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_media, fhir_bundle);
         };
     };
   };
@@ -2056,7 +2056,7 @@ group CdaBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Section,
           fhir_diagnosticReport.media as fhir_diagnosticReport_media,
           fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
           fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirMedia(cda_observationMedia, fhir_media, fhir_bundle);
+          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_media, fhir_bundle);
         };
     
 }
@@ -2553,45 +2553,45 @@ group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, ta
     performer_function_extension_value_coding.code = 'PPRF' then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
 }
 
-group CdaObservationMediaToFhirMedia(source cda_observationMedia: ObservationMedia,  target fhir_media: Media, target fhir_bundle: Bundle) {
-  // Replace with Observation and Observation.extension.attachment
-  // cda_section.text
-  // TODO check why some text duplication occurs here "DokumentDokument" or "ErstellungsdatumErstellungsdatum"
-  // TODO deal with StrucText_Doc to string
-  // cda_section.text as cda_section_text -> fhir_diagnosticReport_media.comment = cast(cda_section_text, 'string');
-  // cda_observationMedia@ID
+// group CdaObservationMediaToFhirMedia(source cda_observationMedia: ObservationMedia,  target fhir_media: Media, target fhir_bundle: Bundle) {
+//   // Replace with Observation and Observation.extension.attachment
+//   // cda_section.text
+//   // TODO check why some text duplication occurs here "DokumentDokument" or "ErstellungsdatumErstellungsdatum"
+//   // TODO deal with StrucText_Doc to string
+//   // cda_section.text as cda_section_text -> fhir_diagnosticReport_media.comment = cast(cda_section_text, 'string');
+//   // cda_observationMedia@ID
   
-  cda_observationMedia.ID as cda_observationMedia_ID ->
-    fhir_media.identifier as fhir_media_identifier,
-    fhir_media_identifier.value = cda_observationMedia_ID
-    "CdaObservationMediaIDFhirMediaIdentifier";
-  cda_observationMedia -> fhir_media.status = 'completed' "FhirMediaStatus";
-  cda_observationMedia.value as cda_observationMedia_value then {
-    cda_observationMedia_value.mediaType as cda_mediaType -> fhir_media.type = translate(cda_mediaType, '#ELGAMedientypToFHIRmedia-type','code');
-    cda_observationMedia_value -> 
-      fhir_media.content as fhir_media_content,
-      fhir_media_content.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";
-  };
-  cda_observationMedia.performer as cda_observationMedia_performer then CdaPerformerToFhirMediaPerformer(cda_observationMedia_performer, fhir_media,fhir_bundle);
-}
+//   cda_observationMedia.ID as cda_observationMedia_ID ->
+//     fhir_media.identifier as fhir_media_identifier,
+//     fhir_media_identifier.value = cda_observationMedia_ID
+//     "CdaObservationMediaIDFhirMediaIdentifier";
+//   cda_observationMedia -> fhir_media.status = 'completed' "FhirMediaStatus";
+//   cda_observationMedia.value as cda_observationMedia_value then {
+//     cda_observationMedia_value.mediaType as cda_mediaType -> fhir_media.type = translate(cda_mediaType, '#ELGAMedientypToFHIRmedia-type','code');
+//     cda_observationMedia_value -> 
+//       fhir_media.content as fhir_media_content,
+//       fhir_media_content.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";
+//   };
+//   cda_observationMedia.performer as cda_observationMedia_performer then CdaPerformerToFhirMediaPerformer(cda_observationMedia_performer, fhir_media,fhir_bundle);
+// }
 
-group CdaPerformerToFhirMediaPerformer(source cda_performer: Performer, target fhir_media: Media, target fhir_bundle: Bundle) {
-  //ToDo
-  // observation.performer.time - it is assumed that only @value occurs and no interval
-  // cda_performer.time
-  // observation.performer.assignedEntity
+// group CdaPerformerToFhirMediaPerformer(source cda_performer: Performer, target fhir_media: Media, target fhir_bundle: Bundle) {
+//   //ToDo
+//   // observation.performer.time - it is assumed that only @value occurs and no interval
+//   // cda_performer.time
+//   // observation.performer.assignedEntity
   
-  cda_performer.assignedEntity as cda_performer_assignedEntity ->
-    // Create a PractitionerRole
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_media.operator = create('Reference') as fhir_media_performer_reference,
-    fhir_media_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_media_performer_reference.type = 'PractitionerRole'
-    then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
-}
+//   cda_performer.assignedEntity as cda_performer_assignedEntity ->
+//     // Create a PractitionerRole
+//     fhir_bundle.entry as fhir_bundle_entry,
+//     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+//     fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+//     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+//     fhir_media.operator = create('Reference') as fhir_media_performer_reference,
+//     fhir_media_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+//     fhir_media_performer_reference.type = 'PractitionerRole'
+//     then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
+// }
 
 
 // group NarrativeLink(source url, target ext: Extension) {
