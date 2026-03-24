@@ -895,72 +895,48 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   //   meta.profile = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-address'
   //   "FhirAddressAtCoreAddressProfile";
 
-  // addr.use
-  cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
-    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
-  
-  cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
+  // in case NO children elements are being used for address
+  cda_address where ($this.descendants().empty()) then {
+    cda_address -> fhir_address.line = (cda_address.xmlText);
+  }
 
-  cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
+  // in case children elements are being used for address
+  cda_address where ($this.descendants().exists()) then {
+    // addr.use
+    cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
+      fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
+    
+    cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
 
-  cda_address.item as cda_address_item then {
-    // addr.postalCode
-    cda_address_item.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.xmlText);
-    // addr.city
-    cda_address_item.city as cda_city -> fhir_address.city = (cda_city.xmlText);
-    // addr.state
-    cda_address_item.state as cda_state -> fhir_address.state = (cda_state.xmlText);
-    // addr.country
-    cda_address_item.country as cda_country -> fhir_address.country = (cda_country.xmlText);
-  } "CdaAddressItemSimple";
+    cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
 
-  // addr.streetName and addr.houseNumber and addr.additionalLocator
-  cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists()) ->
-    fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line then {
-      cda_address.item as cda_address_item then {
-        // extension for streetName
-        cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
-          extension.value = (cda_address_item_streetName.xmlText)
-          "CdaAdressToFhirStreetNameExtension";
+    cda_address.item as cda_address_item then {
+      // addr.postalCode
+      cda_address_item.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.xmlText);
+      // addr.city
+      cda_address_item.city as cda_city -> fhir_address.city = (cda_city.xmlText);
+      // addr.state
+      cda_address_item.state as cda_state -> fhir_address.state = (cda_state.xmlText);
+      // addr.country
+      cda_address_item.country as cda_country -> fhir_address.country = (cda_country.xmlText);
+    } "CdaAddressItemSimple";
 
-        // extension for houseNumber
-        cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
-          extension.value = (cda_address_item_houseNumber.xmlText)
-          "CdaAdressToFhirHouseNumberExtension";
-
-        // extension for additionalLocator
-        cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
-          extension.value = (cda_address_item_additionalLocator.xmlText)
-          "CdaAdressToFhirAdditionalLocatorExtension";
-      } "CdaAddressItemWithAdditionalLocator";
-    } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
-
-  // addr.streetName and addr.houseNumber and NOT addr.additionalLocator
-  cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists().not()) ->
-    fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText) as fhir_address_line then {
-      cda_address.item as cda_address_item then {
-        // extension for streetName
-        cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
-          extension.value = (cda_address_item_streetName.xmlText)
-          "CdaAdressToFhirStreetNameExtension";
-
-        // extension for houseNumber
-        cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
-          extension.value = (cda_address_item_houseNumber.xmlText)
-          "CdaAdressToFhirHouseNumberExtension";
-      } "CdaAddressItemWithoutAdditionalLocator";
-    } "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
-
-    // addr.streetAddressLine and additionalLocator
-    cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists()) ->
-      fhir_address.line = (cda_address.item.streetAddressLine.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line
-      then {
+    // addr.streetName and addr.houseNumber and addr.additionalLocator
+    cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists()) ->
+      fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line then {
         cda_address.item as cda_address_item then {
+          // extension for streetName
+          cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
+            extension.value = (cda_address_item_streetName.xmlText)
+            "CdaAdressToFhirStreetNameExtension";
+
+          // extension for houseNumber
+          cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
+            extension.value = (cda_address_item_houseNumber.xmlText)
+            "CdaAdressToFhirHouseNumberExtension";
+
           // extension for additionalLocator
           cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
@@ -969,10 +945,42 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
         } "CdaAddressItemWithAdditionalLocator";
       } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
 
-    // addr.streetAddressLine and NOT additionalLocator
-    cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists().not()) ->
-      fhir_address.line = (cda_address.item.streetAddressLine.xmlText)
-      "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+    // addr.streetName and addr.houseNumber and NOT addr.additionalLocator
+    cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists().not()) ->
+      fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText) as fhir_address_line then {
+        cda_address.item as cda_address_item then {
+          // extension for streetName
+          cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
+            extension.value = (cda_address_item_streetName.xmlText)
+            "CdaAdressToFhirStreetNameExtension";
+
+          // extension for houseNumber
+          cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
+            extension.value = (cda_address_item_houseNumber.xmlText)
+            "CdaAdressToFhirHouseNumberExtension";
+        } "CdaAddressItemWithoutAdditionalLocator";
+      } "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+
+      // addr.streetAddressLine and additionalLocator
+      cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists()) ->
+        fhir_address.line = (cda_address.item.streetAddressLine.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line
+        then {
+          cda_address.item as cda_address_item then {
+            // extension for additionalLocator
+            cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
+              extension.value = (cda_address_item_additionalLocator.xmlText)
+              "CdaAdressToFhirAdditionalLocatorExtension";
+          } "CdaAddressItemWithAdditionalLocator";
+        } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
+
+      // addr.streetAddressLine and NOT additionalLocator
+      cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists().not()) ->
+        fhir_address.line = (cda_address.item.streetAddressLine.xmlText)
+        "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+  };
 }
 
 // source: https://art-decor.org/mediawiki/index.php?title=DTr1_TEL.AT
