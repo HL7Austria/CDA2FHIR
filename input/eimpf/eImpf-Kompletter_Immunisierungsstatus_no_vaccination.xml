@@ -125,6 +125,11 @@
                         </name>
                     </guardianPerson>
                 </guardian>
+                <birthplace>
+					<place>
+						<addr>Graz</addr>
+					</place>
+				</birthplace>
             </patient>
         </patientRole>
     </recordTarget>
