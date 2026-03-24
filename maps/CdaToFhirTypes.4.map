@@ -895,21 +895,21 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   //   meta.profile = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-address'
   //   "FhirAddressAtCoreAddressProfile";
 
+  // addr.use
+  cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
+    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
+  
+  cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
+
+  cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
+
   // in case NO children elements are being used for address
-  cda_address where ($this.descendants().empty()) then {
+  cda_address where ($this.xmlText.exists()) then {
     cda_address -> fhir_address.line = (cda_address.xmlText);
   }
 
   // in case children elements are being used for address
   cda_address where ($this.descendants().exists()) then {
-    // addr.use
-    cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
-      fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
-    
-    cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
-
-    cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
-
     cda_address.item as cda_address_item then {
       // addr.postalCode
       cda_address_item.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.xmlText);

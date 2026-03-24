@@ -127,7 +127,7 @@
                 </guardian>
                 <birthplace>
 					<place>
-						<addr>Graz</addr>
+						<addr use="PST">Graz</addr> 
 					</place>
 				</birthplace>
             </patient>
