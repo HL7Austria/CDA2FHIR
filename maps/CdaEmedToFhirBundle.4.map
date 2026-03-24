@@ -83,12 +83,12 @@ group CdaEmedHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_
    // ClinicalDocument/code/translation (document class) -> Composition.type
    // for CDA eMedication, translation is fixed to 52471-0 LOINC
    cda_code.translation -> fhir_composition.type "CdaEmedCodeTranslationToFhirCompositionType";
-   // in case CDA does not have translation, the Composition.type will be explicitly set
+   // in case CDA does not have translation, the Composition.type will be explicitly set (currently set to 60591-5 for valid APS Bundle)
    cda_code where cda_code.translation.exists().not() ->
      fhir_composition.type = create('CodeableConcept') as type_coding,
      type_coding.coding = create('Coding') as coding_coding,
      coding_coding.system = 'http://loinc.org',
-     coding_coding.code = '52471-0'
+     coding_coding.code = '60591-5'
      "CdaEmedMissingCodeTranslationToFhirCompositionType";
 
   } "CdaEmedCodeToFhirComposition";
