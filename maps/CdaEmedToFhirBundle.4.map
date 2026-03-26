@@ -12,6 +12,15 @@ conceptmap "cda-emed-clinicaldocument-code-2-fhir-category" {
   s: "60593-1" == s: "60593-1"
 }
 
+conceptmap "at-cda-to-fhir-medication-code" {
+  prefix s = "http://example.org/cda/emed/medication/code",
+         t = "http://www.whocc.no/atc"
+
+  s: "code1" == t: "A01"
+  s: "code2" == t: "B01"
+  s: "code3" == t: "C01"
+}
+
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias Author as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedAuthor" alias AssignedAuthor as source
@@ -38,6 +47,9 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Organization" alias Organizati
 uses "http://hl7.org/fhir/4.3/StructureDefinition/DiagnosticReport" alias DiagnosticReport as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/ServiceRequest" alias ServiceRequest as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Medication" alias Medication as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/MedicationDispense" alias MedicationDispense as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/MedicationRequest" alias MedicationRequest as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
@@ -178,44 +190,146 @@ group CdaEmedBodyToFhir(source cda: ClinicalDocument, source cda_structuredBody:
     fhir_composition_devices_section.text as fhir_composition_devices_section_text,
     fhir_composition_devices_section_text.status = 'empty',
     fhir_composition_devices_section_text.div = append('Kein Text für diese Section vorhanden.')
-
     "prefillRequiredApsSections";
 
-   //cda_structuredBody.component as cda_structuredBody_component then {
-     // Map each CDA section to the FHIR composition sections
-     //cda_structuredBody_component.section as cda_section then CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_patient, fhir_bundle);
-   //} "CdaEmedBodyToFhir"; // Mapping the CDA body to the FHIR composition
+    // structuredBody/component/section -> Composition.section
+    cda_structuredBody.component as cda_structuredBody_component then {
+     cda_structuredBody_component.section as cda_section then CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_patient, fhir_bundle);
+   } "CdaEmedBodyToFhir";
 }
 
-//group CdaEmedBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
-
-//   cda_structuredBody.component as cda_structuredBody_component then {
-     // Map each CDA section to the FHIR composition sections
-     //cda_structuredBody_component.section as cda_section then CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_patient, fhir_bundle);
-//   } "CdaEmedBodyToFhirComposition";
-//}
-
-//group CdaEmedSectionToFhir(source cda: ClinicalDocument, source cda_section: Section, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+group CdaEmedSectionToFhir(source cda: ClinicalDocument, source cda_section: Section, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
    
-//   cda_section as cda_section then {
-//      cda_section.entry as cda_entry then {
-         // Map CDA entries to FHIR resources (e.g., Observations, Procedures, etc.)
-//         cda_entry.supply as cda_supply then {
-//            cda_supply.id
-//            cda_supply.code
-//            cda_supply.text
-//            cda_supply.quantity
-//            cda_supply.product as cda_product then CdaEmedProductToFhirMedication(cda, cda_product, fhir_composition, fhir_patient, fhir_bundle);
-//         }
-         //cda_entry.observation as cda_observation then CdaEmedObservationToFhir(cda, cda_observation, fhir_composition, fhir_patient, fhir_bundle);
-         //cda_entry.procedure as cda_procedure then CdaEmedProcedureToFhir(cda, cda_procedure, fhir_composition, fhir_patient, fhir_bundle);
-         // Add more mappings for other CDA entry types as needed
-//      }
-//   } "CdaEmedSectionToFhir"; // Mapping the CDA sections to the FHIR composition sections
-//}
+  // Only map section if it contains Medication entries (LOINC code 10160-0)
+   cda_section as cda_section where ($this.code.code = '10160-0') then {
+      cda_section.entry as cda_entry then {
+         cda_entry.supply as cda_entry_supply then {
+          // section/entry/supply -> MedicationDispense
+            cda_entry_supply where ($this.templateId.root = '1.2.40.0.34.11.8.2.3.1') then CdaEmedAbgabeEntryToFhir(cda, cda_entry_supply, fhir_composition, fhir_patient, fhir_bundle) "CdaEmedAbgabeEntryToFhir";
+          // section/entry/supply -> MedicationRequest
+            //cda_entry_supply where ($this.templateId.root = '1.2.40.0.34.11.8.1.3.1') then CdaEmedVerordnungEntryToFhir(cda, cda_entry_supply, fhir_composition, fhir_patient, fhir_bundle) "CdaEmedVerordnungEntryToFhir";
+         }
+      }
+   } "CdaEmedSectionToFhir";
+}
 
-//group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_product: Act, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
-   // Map CDA product to FHIR Medication resource
-//}
+group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_supply: Act, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  
+  
+  cda_supply as cda_supply then {
+    // create FHIR MedicationDispense resource for the supplied medication dispense entry
+    fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('MedicationDispense') as fhir_medicationDispense,
+        fhir_medicationDispense.id = uuid() as fhir_medicationDispense_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medicationDispense_id),
+        fhir_composition.section where ($this.code.coding.code = '10160-0') = create('Reference') as fhir_composition_medication_reference,
+        fhir_composition_medication_reference.reference = append('urn:uuid:', fhir_medicationDispense_id),
+        fhir_medicationDispense_id.type = 'MedicationDispense' then {
+          
+          // supply/id/@root -> MedicationDispense.identifier
+          cda_supply.id -> fhir_medicationDispense.identifier;
+          // supply/code -> MedicationDispense.status (mapping of CDA supply code to FHIR MedicationDispense.status to be defined in detail based on actual CDA instances, currently mapped to "completed" for all supplies)
+          cda_supply.code -> fhir_medicationDispense.status;
+          // supply/quantity -> MedicationDispense.quantity
+          cda_supply.quantity -> fhir_medicationDispense.quantity;
+          // supply/product -> Medication
+          cda_supply.product as cda_product then CdaEmedProductToFhirMedication(cda, cda_product, fhir_composition, fhir_patient, fhir_bundle);
+          // supply/author -> either Practitioner or PractitionerRole depending on the presence of assignedEntity or representedOrganization within the author
+          cda_supply.author as cda_author then CdaEmedSupplyAuthorToFhir(cda, cda_author, fhir_composition, fhir_patient, fhir_bundle);
+          // supply/entryRelationship -> ??
+          //cda_supply.entryRelationship as cda_entryRelationship then CdaEmedSupplyEntryRelationshipToFhir(cda, cda_entryRelationship, fhir_composition, fhir_patient, fhir_bundle);
+        }
+   }
+}
+
+group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_product: Act, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+   
+    // create FHIR Medication resource for the supplied product
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Medication') as fhir_medication,
+    fhir_medication.id = uuid() as fhir_medication_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medication_id),
+    fhir_composition.section = create('Reference') as fhir_composition_section_reference,
+    fhir_composition_section_reference.reference = append('urn:uuid:', fhir_medication_id),
+    fhir_composition_section_reference.type = 'Medication' then {
+
+      // fill FHIR Medication resource with information from CDA product
+      cda_product.manufacturedProduct as cda_product_manufacturedProduct then {
+        cda_product_manufacturedProduct.manufacturedMaterial as cda_product_manufacturedMaterial then {
+
+          
+          cda_product.manufacturedMaterial as cda_product_manufacturedMaterial then {
+
+          }
+          
+
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code/translation -> Medication.identifier
+          cda_product_manufacturedMaterial.code as cda_product_manufacturedMaterial_code then {
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code
+          cda_product_manufacturedMaterial_code -> fhir_medication.code;
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code.coding
+          cda_product_manufacturedMaterial_code.translation -> fhir_medication.identifier;
+          };
+    
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/name -> Medication.code.text
+          cda_product_manufacturedMaterial.name -> Medication.code.text;
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/formCode -> Medication.form
+          cda_product_manufacturedMaterial.ns2:formCode -> Medication.form;
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/asContent/containerPackagedMedicine/capacityQuantity -> Medication.amount
+          cda_product_manufacturedMaterial.ns2:asContent as cda_product_manufacturedMaterial_asContent then {
+          cda_product_manufacturedMaterial_asContent.ns2:containerPackagedMedicine as cda_product_manufacturedMaterial_asContent_containerPackagedMedicine then {
+                  cda_product_manufacturedMaterial_asContent_containerPackagedMedicine.ns2:capacityQuantity -> Medication.amount;
+            };
+          };
+          
+          cda_product_manufacturedMaterial.ns2:ingredient as cda_product_manufacturedMaterial_ingredient then {
+            cda_product_manufacturedMaterial_ingredient.ns2:ingredient as cda_product_manufacturedMaterial_ingredient_ingredient then {
+              cda_product_manufacturedMaterial_ingredient_ingredient.ns2:code as cda_product_manufacturedMaterial_ingredient_ingredient_code then {
+
+                // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient/ingredient/code -> Medication.ingredient.itemCodeableConcept.coding
+                cda_product_manufacturedMaterial_ingredient_ingredient_code -> fhir_medication.ingredient.itemCodeableConcept.coding;
+
+                // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient/ingredient/translation -> Medication.ingredient.itemCodeableConcept.text.extension
+                cda_product_manufacturedMaterial_ingredient_ingredient_code.translation -> fhir_medication.ingredient.itemCodeableConcept.text.extension as fhir_medication_ingredient_itemCodeableConcept_text_extension;,
+                fhir_medication_ingredient_itemCodeableConcept_text_extension.url = 'http://hl7.org/fhir/StructureDefinition/translation',
+                fhir_medication_ingredient_itemCodeableConcept_text_extension.value = create('string') as fhir_translation then cast(cda_product_manufacturedMaterial_ingredient_ingredient_code.translation, 'string');
+              };
+
+              // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient/ingredient/name -> Medication.ingredient.itemCodeableConcept.text
+              cda_product_manufacturedMaterial_ingredient_ingredient.name -> fhir_medication.ingredient.itemCodeableConcept.text; 
+            }:
+          };
+        };
+      };
+    );
+
+}
+
+group CdaEmedSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_author: Author, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+    
+  
+  cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedAuthor.id.root = "1.2.40.0.36.99.1") then {
+
+      // create FHIR Practitioner resource for the assignedAuthor
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+      fhir_practitioner.id = uuid() as fhir_practitioner_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+      fhir_composition.author = create('Reference') as fhir_composition_author_reference,
+      fhir_composition_author_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+      fhir_composition_author_reference.type = 'Practitioner' then {
+
+        cda_author_assignedAuthor.id -> 
+        cda_author_assignedAuthor.assignedEntity as cda_author_assignedAuthor_assignedEntity then {
+          // if assignedEntity has representedOrganization -> map to PractitionerRole, else map to Practitioner
+
+        };
+      };
+  };
+}
+
+group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_supply: Act, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+}
+
   
   
