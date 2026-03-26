@@ -2618,6 +2618,97 @@
                 </section>
             </component>
 
+            <!-- Beilagen -->
+             <component>
+                <section>
+                    <templateId root="1.2.40.0.34.6.0.11.2.71"/>
+                        <id root="1.2.3.999" extension="1234" assigningAuthorityName="Amadeus Spital"/> 
+                        <code code="BEIL" codeSystem="1.2.40.0.34.5.40"/>
+                        <title>Beilagen</title>
+                        <text>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th styleCode="xELGA_colw:50">Beilage</th>
+                                        <th styleCode="xELGA_colw:50">Erstellt 01.01.2026</th>
+                                    </tr>
+                                </thead>
+                            </table>
+                        </text>
+                        <author>
+                            <!-- Funktionscode (siehe Allgemeiner Implementierungsleitfaden) -->
+                            <functionCode code="OA" codeSystem="1.2.40.0.34.99.4613.10.1" codeSystemName="Amadeus Spital - Funktionscodes" displayName="Diensthabender Oberarzt"/>
+                            <!-- Zeitpunkt der Erstellung (z.B. des Diktats) (siehe Allgemeiner Implementierungsleitfaden) -->
+                            <time value="20210601130100+0200"/>
+                            <assignedAuthor>
+                                <!-- Identifikation des Verfassers des Dokuments im lokalen System (siehe Allgemeiner Implementierungsleitfaden) -->
+                                <id root="1.2.40.0.34.99.4613.3.3" extension="1111" assigningAuthorityName="Amadeus Spital"/>
+                                <!-- Fachrichtung des Verfassers des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
+                                <code code="124" codeSystem="1.2.40.0.34.5.160" codeSystemName="ELGA_Fachaerzte" displayName="Fachärztin/Facharzt für Medizinische und Chemische Labordiagnostik"/>
+                                <!-- Kontaktdaten des Verfassers des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
+                                <telecom use="WP" value="tel:+43.1.3453446.1111"/>
+                                <!-- Personendaten des Verfassers des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
+                                <assignedPerson>
+                                    <name>
+                                        <prefix>Dr.</prefix>
+                                        <family>Isabella</family>
+                                        <given>Stern</given>
+                                    </name>
+                                </assignedPerson>
+                                <!--  Organisation, in deren Auftrag der Verfasser des Dokuments die Dokumentation verfasst hat (siehe Allgemeiner Implementierungsleitfaden) -->
+                                <representedOrganization>
+                                    <!-- ID der Organisation aus dem GDA Index -->
+                                    <id root="1.2.40.0.34.99.4613" assigningAuthorityName="GDA Index"/>
+                                    <!-- Name der Organisation -->
+                                    <name>Amadeus Spital - Labor</name>
+                                    <!-- Kontaktdaten der Organisation -->
+                                    <telecom value="tel:+43.1.3453446.0"/>
+                                    <telecom value="fax:+43.1.3453446.4674"/>
+                                    <telecom value="mailto:info@amadeusspital.at"/>
+                                    <telecom value="http://www.amadeusspital.at"/>
+                                    <!-- Adresse der Organisation -->
+                                    <addr>
+                                        <streetName>Währinger Gürtel</streetName>
+                                        <houseNumber>18-20</houseNumber>
+                                        <postalCode>1090</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                        <additionalLocator>Tür 23</additionalLocator>
+                                    </addr>
+                                </representedOrganization>
+                            </assignedAuthor>
+                        </author>
+                        <informant>
+                            <relatedEntity classCode="PRS">
+                                <code code="MTH" displayName="mother" codeSystem="2.16.840.1.113883.5.111"/> 
+                                <relatedPerson>
+                                    <name>
+                                        <family>Musterfrau</family>
+                                        <given>Maria</given>
+                                    </name>
+                                    <telecom value="tel:+43.1.3453446.2222"/>
+                                </relatedPerson>
+                            </relatedEntity>
+                        </informant>
+                        <entry>
+                            <observationMedia classCode="OBS" moodCode="EVN" ID="BEFUND4">
+                                <!-- templateId für Eingebettetes Objekt Entry -->
+                                <templateId root="1.2.40.0.34.6.0.11.3.19"/>
+                                <value mediaType="application/pdf" representation="B64">
+                                    JVBERi0xLjQNCiW1tbW1DQoxIDAgb2JqDQo8PC9UeXBlL0NhdGFsb2cvUGFnZXMgMiAwIFIvTGFu
+                                    ZyhkZS1BVCkgL1N0cnVjdFRyZWVSb290IDEzIDAgUi9NYXJrSW5mbzw8L01hcmtlZCB0cnVlPj4v
+                                </value>
+                            </observationMedia>
+                        </entry>
+                        <component>
+                            <templateId root="1.2.40.0.34.6.0.11.2.8"/>
+                            <title>Sides</title>
+                            <text>sides text</text>
+                            <languageCode code="en"/>
+                        </component>
+                </section>
+             </component>
             <!-- Probeninformation (Specimen Section) -->
             <component typeCode="COMP">
                 <section classCode="DOCSECT">
