@@ -1851,19 +1851,18 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
             };
           };
       };
-      // ToDo
-      // Reference FHIR Section and create Observation instead of Media
+
       cda_act.entryRelationship as cda_entryRelationship where $this.observationMedia.templateId.where(root='1.2.40.0.34.6.0.11.3.19') then {
-        cda_entryRelationship.observationMedia as cda_observationMedia -> 
-              
+        cda_entryRelationship.observationMedia as cda_observationMedia ->
+
+          // Create Observation and link it to the section.
           fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Media') as fhir_media,
-          fhir_media.id = uuid() as fhir_media_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport.media as fhir_diagnosticReport_media,
-          fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
-          fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_media, fhir_bundle);
+          fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+          fhir_observation.id = uuid() as fhir_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference, 
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_bundle);
         };
     };
   };
@@ -1975,18 +1974,17 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
         };
     };
     cda_act.entryRelationship as cda_entryRelationship where $this.observationMedia.templateId.where(root='1.2.40.0.34.6.0.11.3.19') then {
-        cda_entryRelationship.observationMedia as cda_observationMedia -> 
-              
+        cda_entryRelationship.observationMedia as cda_observationMedia ->
+
+          // Create Observation and link it to the section.
           fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Media') as fhir_media,
-          fhir_media.id = uuid() as fhir_media_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport.media as fhir_diagnosticReport_media,
-          fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
-          fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_media, fhir_bundle);
+          fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+          fhir_observation.id = uuid() as fhir_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
+          fhir_section.entry = create('Reference') as fhir_section_entry_reference, 
+          fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_section_entry_reference.type = 'Observation' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_bundle);
         };
-    };
   };
 }
  
@@ -2050,13 +2048,13 @@ group CdaBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Section,
         cda_section_entry.observationMedia as cda_observationMedia -> 
               
           fhir_bundle.entry as fhir_bundle_entry,
-          fhir_bundle_entry.resource = create('Media') as fhir_media,
-          fhir_media.id = uuid() as fhir_media_id,
-          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport.media as fhir_diagnosticReport_media,
-          fhir_diagnosticReport_media.link = create('Reference') as fhir_diagnosticReport_media_link_reference,
-          fhir_diagnosticReport_media_link_reference.reference = append('urn:uuid:',fhir_media_id),
-          fhir_diagnosticReport_media_link_reference.type = 'Media' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_media, fhir_bundle);
+          fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+          fhir_observation.id = uuid() as fhir_observation_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
+          fhir_diagnosticReport.extension as fhir_diagnosticReport_extension, 
+          fhir_diagnosticReport_extension.url = 'http://hl7.org/fhir/StructureDefinition/workflow-supportingInfo',
+          fhir_diagnosticReport_extension.value = create('Reference') as fhir_diagnosticReport_extension_reference, 
+          fhir_diagnosticReport_extension_reference.reference = append('urn:uuid:',fhir_observation_id) then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_bundle);
         };
     
 }
