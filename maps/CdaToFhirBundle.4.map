@@ -36,6 +36,21 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
+conceptmap "ELGAMedientypToFHIRmedia-type" {
+  prefix s = "https://termgit.elga.gv.at/CodeSystem/iana-mime-type"
+  prefix t = "http://terminology.hl7.org/CodeSystem/media-type"
+
+
+  s:"image/gif"     == t:"image"
+  s:"image/jpeg"    == t:"image"
+  s:"image/png"     == t:"image"
+  s:"video/mpeg"    == t:"video"
+  s:"audio/mpeg"    == t:"audio"
+  s:"application/pdf"   == s:"application/pdf"
+  s:"application/dicom" == s:"application/dicom"
+  s:"text/xml"          == s:"text/xml"
+}
+
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias Author as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedAuthor" alias AssignedAuthor as source
