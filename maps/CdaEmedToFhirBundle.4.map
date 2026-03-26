@@ -257,51 +257,121 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
       cda_product.manufacturedProduct as cda_product_manufacturedProduct then {
         cda_product_manufacturedProduct.manufacturedMaterial as cda_product_manufacturedMaterial then {
 
-          
-          cda_product.manufacturedMaterial as cda_product_manufacturedMaterial then {
-
-          }
-          
-
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code/translation -> Medication.identifier
-          cda_product_manufacturedMaterial.code as cda_product_manufacturedMaterial_code then {
+          // cda_product_manufacturedMaterial.code as cda_product_manufacturedMaterial_code then {
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code
-          cda_product_manufacturedMaterial_code -> fhir_medication.code;
+          // cda_product_manufacturedMaterial_code -> fhir_medication.code;
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code.coding
-          cda_product_manufacturedMaterial_code.translation -> fhir_medication.identifier;
+          // cda_product_manufacturedMaterial_code.translation -> fhir_medication.identifier;
+          
+        
+          // draft fhir_medication.code
+          cda_product_manufacturedMaterial.code as cda_product_manufacturedMaterial_code -> fhir_medication.code as fhir_medication_code then{
+
+            // PZN aus Hauptcode
+            cda_product_manufacturedMaterial_code where (codeSystem = '1.2.40.0.34.4.16') -> fhir_medication_code.coding as fhir_medication_code_coding_pzn then {
+              cda_product_manufacturedMaterial_code.code -> fhir_medication_code_coding_pzn.code;
+              fhir_medication_code_coding_pzn.system = '1.2.40.0.34.4.16';
+              fhir_medication_code_coding_pzn.display = 'Pharmazentralnummer';
+            };
+
+            // Zulassungsnummer aus translation
+            cda_product_manufacturedMaterial_code.translation as cda_product_manufacturedMaterial_code_translation
+              where (codeSystem = '1.2.40.0.34.4.17') -> fhir_medication_code.coding as fhir_medication_code_coding_zn_translation then {
+              cda_product_manufacturedMaterial_code_translation.code -> fhir_medication_code_coding_zn_translation.code;
+              fhir_medication_code_coding_zn_translation.system = '1.2.40.0.34.4.17';
+              fhir_medication_code_coding_zn_translation.display = 'Zulassungsnummer';
+            };
+
+            // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/name -> Medication.code.text
+            cda_product_manufacturedMaterial.name -> fhir_medication_code.text;
+            
           };
-    
-          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/name -> Medication.code.text
-          cda_product_manufacturedMaterial.name -> Medication.code.text;
+
+
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/formCode -> Medication.form
-          cda_product_manufacturedMaterial.ns2:formCode -> Medication.form;
+          cda_product_manufacturedMaterial.ns2:formCode as cda_product_manufacturedMaterial_formCode -> fhir_medication.form as fhir_medication_form then {
+            fhir_medication_form_coding.system = 'https://termgit.elga.gv.at/CodeSystem/medikationdarreichungsform';
+
+            cda_product_manufacturedMaterial_formCode.code -> fhir_medication_form_coding.code;
+            cda_product_manufacturedMaterial_formCode.displayName -> fhir_medication_form_coding.display;
+          };
+          
+
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/asContent/containerPackagedMedicine/capacityQuantity -> Medication.amount
           cda_product_manufacturedMaterial.ns2:asContent as cda_product_manufacturedMaterial_asContent then {
-          cda_product_manufacturedMaterial_asContent.ns2:containerPackagedMedicine as cda_product_manufacturedMaterial_asContent_containerPackagedMedicine then {
-                  cda_product_manufacturedMaterial_asContent_containerPackagedMedicine.ns2:capacityQuantity -> Medication.amount;
+            cda_product_manufacturedMaterial_asContent.ns2:containerPackagedMedicine as cda_product_manufacturedMaterial_asContent_containerPackagedMedicine then {
+              cda_product_manufacturedMaterial_asContent_containerPackagedMedicine.ns2:capacityQuantity as cda_product_manufacturedMaterial_asContent_containerPackagedMedicine_capacityQuantity -> fhir_medication.amount as fhir_medication_amount then {
+
+                // numerator
+                cda_product_manufacturedMaterial_asContent_containerPackagedMedicine_capacityQuantity.value -> fhir_medication_amount.numerator.value;
+                cda_product_manufacturedMaterial_asContent_containerPackagedMedicine_capacityQuantity.unit -> fhir_medication_amount.numerator.unit;
+
+                // denominator fix
+                fhir_medication_amount.denominator.value = '1';
+                fhir_medication_amount.denominator.unit = 'Packung';
+
+              };
             };
           };
-          
+
+          // TODO: aktive Wirksstoffe? Siehe IL s. 179
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient (1) -> Medication.ingredient
           cda_product_manufacturedMaterial.ns2:ingredient as cda_product_manufacturedMaterial_ingredient then {
-            cda_product_manufacturedMaterial_ingredient.ns2:ingredient as cda_product_manufacturedMaterial_ingredient_ingredient then {
-              cda_product_manufacturedMaterial_ingredient_ingredient.ns2:code as cda_product_manufacturedMaterial_ingredient_ingredient_code then {
+            cda_product_manufacturedMaterial_ingredient.ns2:ingredient as cda_product_manufacturedMaterial_ingredient_ingredient -> fhir_medication.ingredient as fhir_medication_ingredient then {
 
-                // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient/ingredient/code -> Medication.ingredient.itemCodeableConcept.coding
-                cda_product_manufacturedMaterial_ingredient_ingredient_code -> fhir_medication.ingredient.itemCodeableConcept.coding;
+              cda_product_manufacturedMaterial_ingredient_ingredient.ns2:code as cda_product_manufacturedMaterial_ingredient_ingredient_code -> fhir_medication_ingredient.itemCodeableConcept as fhir_medication_ingredient_itemCodeableConcept then {
 
-                // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient/ingredient/translation -> Medication.ingredient.itemCodeableConcept.text.extension
-                cda_product_manufacturedMaterial_ingredient_ingredient_code.translation -> fhir_medication.ingredient.itemCodeableConcept.text.extension as fhir_medication_ingredient_itemCodeableConcept_text_extension;,
-                fhir_medication_ingredient_itemCodeableConcept_text_extension.url = 'http://hl7.org/fhir/StructureDefinition/translation',
-                fhir_medication_ingredient_itemCodeableConcept_text_extension.value = create('string') as fhir_translation then cast(cda_product_manufacturedMaterial_ingredient_ingredient_code.translation, 'string');
+                // Hauptcode
+                cda_product_manufacturedMaterial_ingredient_ingredient_code
+                  where (codeSystem = '2.16.840.1.113883.6.73')
+                  -> fhir_medication_ingredient_itemCodeableConcept.coding as fhir_medication_ingredient_itemCodeableConcept_coding then {
+                  cda_product_manufacturedMaterial_ingredient_ingredient_code.code -> fhir_medication_ingredient_itemCodeableConcept_coding.code;
+                  fhir_medication_ingredient_itemCodeableConcept_coding.system = 'http://www.whocc.no/atc';
+                  cda_product_manufacturedMaterial_ingredient_ingredient_code.displayName -> fhir_medication_ingredient_itemCodeableConcept_coding.display;                };
+
+                // translation atc-deutsch-wido
+                cda_product_manufacturedMaterial_ingredient_ingredient_code.translation as cda_product_manufacturedMaterial_ingredient_ingredient_code_translation
+                  where (codeSystem = '1.2.276.0.76.5.558')
+                  -> fhir_medication_ingredient_itemCodeableConcept.coding as fhir_medication_ingredient_itemCodeableConcept_coding_translation then {
+                  cda_product_manufacturedMaterial_ingredient_ingredient_code_translation.code -> fhir_medication_ingredient_itemCodeableConcept_coding_translation.code;
+                  fhir_medication_ingredient_itemCodeableConcept_coding_translation.system = 'atc-deutsch-wido';
+                  cda_product_manufacturedMaterial_ingredient_ingredient_code_translation.displayName -> fhir_medication_ingredient_itemCodeableConcept_coding_translation.display;
+                };
+
+                // Name
+                cda_product_manufacturedMaterial_ingredient_ingredient.ns2:name -> fhir_medication_ingredient_itemCodeableConcept.text;
+
+              };
+              
+            };
+          };
+
+
+          // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient (2) -> Medication.ingredient
+          cda_product_manufacturedMaterial.ns2:ingredient as cda_product_manufacturedMaterial_ingredient then {
+            cda_product_manufacturedMaterial_ingredient.ns2:ingredient as cda_product_manufacturedMaterial_ingredient_ingredient -> fhir_medication.ingredient as fhir_medication_ingredient then {
+
+              cda_product_manufacturedMaterial_ingredient_ingredient.ns2:code as cda_product_manufacturedMaterial_ingredient_ingredient_code -> fhir_medication_ingredient.itemCodeableConcept as fhir_medication_ingredient_itemCodeableConcept then {
+
+                // AGES Wirkstoff
+                cda_product_manufacturedMaterial_ingredient_ingredient_code
+                  where (codeSystem = '1.2.40.0.34.5.156')
+                  -> fhir_medication_ingredient_itemCodeableConcept.coding as fhir_medication_ingredient_itemCodeableConcept_coding then {
+                  cda_product_manufacturedMaterial_ingredient_ingredient_code.code -> fhir_medication_ingredient_itemCodeableConcept_coding.code;
+                  fhir_medication_ingredient_itemCodeableConcept_coding.system = 'Medikation_AGES_Wirkstoffe';
+                  cda_product_manufacturedMaterial_ingredient_ingredient_code.displayName -> fhir_medication_ingredient_itemCodeableConcept_coding.display;
+                };
+
+                // Name
+                cda_product_manufacturedMaterial_ingredient_ingredient.ns2:name -> fhir_medication_ingredient_itemCodeableConcept.text;
+
               };
 
-              // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/ingredient/ingredient/name -> Medication.ingredient.itemCodeableConcept.text
-              cda_product_manufacturedMaterial_ingredient_ingredient.name -> fhir_medication.ingredient.itemCodeableConcept.text; 
-            }:
+            };
           };
         };
       };
-    );
 
 }
 
