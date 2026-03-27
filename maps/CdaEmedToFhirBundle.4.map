@@ -238,6 +238,8 @@ group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_supply: 
           cda_supply.author as cda_author then CdaEmedSupplyAuthorToFhir(cda, cda_author, fhir_composition, fhir_patient, fhir_bundle);
           // supply/entryRelationship -> ??
           //cda_supply.entryRelationship as cda_entryRelationship then CdaEmedSupplyEntryRelationshipToFhir(cda, cda_entryRelationship, fhir_composition, fhir_patient, fhir_bundle);
+          // supply/reference -> ??
+          // cda_supply.reference as cda_reference then CdaEmedSupplyReferenceToFhir
         }
    }
 }
@@ -257,18 +259,12 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
       cda_product.manufacturedProduct as cda_product_manufacturedProduct then {
         cda_product_manufacturedProduct.manufacturedMaterial as cda_product_manufacturedMaterial then {
 
-          
-          cda_product.manufacturedMaterial as cda_product_manufacturedMaterial then {
-
-          }
-          
-
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code/translation -> Medication.identifier
           cda_product_manufacturedMaterial.code as cda_product_manufacturedMaterial_code then {
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code
-          cda_product_manufacturedMaterial_code -> fhir_medication.code;
+          cda_product_manufacturedMaterial_code -> fhir_medication.code.coding;
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code.coding
-          cda_product_manufacturedMaterial_code.translation -> fhir_medication.identifier;
+          cda_product_manufacturedMaterial_code.translation -> fhir_medication.identifier.coding;
           };
     
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/name -> Medication.code.text
@@ -307,25 +303,42 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
 
 group CdaEmedSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_author: Author, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
     
-  
-  cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedAuthor.id.root = "1.2.40.0.36.99.1") then {
 
-      // create FHIR Practitioner resource for the assignedAuthor
+  // Author is Person -> map to PractitionerRole and Practitioner
+  cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedAuthor.assignedPerson.exists()) then {
+
+      // create FHIR PractitionerRole and Practitioner resource for the assignedAuthor
       fhir_bundle.entry as fhir_bundle_entry,
-      fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
-      fhir_practitioner.id = uuid() as fhir_practitioner_id,
-      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+      fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
       fhir_composition.author = create('Reference') as fhir_composition_author_reference,
-      fhir_composition_author_reference.reference = append('urn:uuid:', fhir_practitioner_id),
-      fhir_composition_author_reference.type = 'Practitioner' then {
-
-        cda_author_assignedAuthor.id -> 
-        cda_author_assignedAuthor.assignedEntity as cda_author_assignedAuthor_assignedEntity then {
-          // if assignedEntity has representedOrganization -> map to PractitionerRole, else map to Practitioner
-
-        };
-      };
+      fhir_composition_author_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+      fhir_composition_author_reference.type = 'PractitionerRole',
+      fhir_bundle.entry as fhir_bundle_entry2,
+      fhir_bundle_entry2.resource = create('Practitioner') as fhir_practitioner,
+      fhir_practitioner.id = uuid() as fhir_practitioner_id,
+      fhir_bundle_entry2.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+      fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+      fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+      fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then CdaAuthorToFhirPractitionerAndPractitionerRole(cda, cda_author, fhir_practitioner, fhir_practitionerRole, fhir_bundle) "CdaAuthorToFhirPractitionerAndPractitionerRole";
   };
+
+  // Author is Device -> map to Device
+  cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedAuthor.assignedAuthoringDevice.exists()) then {
+
+      // create FHIR Device resource for the assignedAuthor
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Device') as fhir_device,
+      fhir_device.id = uuid() as fhir_device_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
+      fhir_composition.author = create('Reference') as fhir_composition_author_reference,
+      fhir_composition_author_reference.reference = append('urn:uuid:', fhir_device_id),
+      fhir_composition_author_reference.type = 'Device' then CdaAuthorToFhirDevice(cda, cda_author, fhir_device, fhir_bundle) "CdaAuthorToFhirDevice";
+  }; 
+}
+
+group CdaEmedSupplyReferenceToFhir(source cda: ClinicalDocument, source cda_reference: Reference, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
 }
 
 group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_supply: Act, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
