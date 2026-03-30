@@ -1,5 +1,15 @@
 [
   {
+    "directory": "lab",
+    "ig": "https://fhir.ehdsi.eu/laboratory/package.tgz",
+    "manualDependencies": [
+      {
+        "package": "myhealth.eu.fhir.mvc-package#9.1.0",
+        "url": "https://fhir.ehdsi.eu/mvc-package/package.tgz"
+      }
+    ]
+  },
+  {
     "directory": "emed",
     "ig": "https://fhir.hl7.at/elga/aps/r4/package.tgz"
   },
