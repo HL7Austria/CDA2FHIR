@@ -3,6 +3,7 @@ import glob
 import subprocess
 import json
 import urllib.request
+import tarfile
 
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
@@ -19,6 +20,19 @@ for config in config_json:
     os.makedirs(os.path.join(OUTPUT_DIR, directory), exist_ok=True)
     os.makedirs(os.path.join(COVERAGE_DIR, directory), exist_ok=True)
     os.makedirs(os.path.join(VALIDATION_DIR, directory), exist_ok=True)
+
+    # load required manually added dependecies if there are any specified
+    if 'manualDependencies' in config:
+        for manual_dependency in config['manualDependencies']:
+            # create directory for package
+            package_dir = os.path.join(os.path.expanduser('~'), '.fhir', 'packages', manual_dependency['package'])
+            os.makedirs(package_dir, exist_ok=True)
+            # download package
+            package_file = os.path.join(package_dir, 'package.tgz')
+            urllib.request.urlretrieve(manual_dependency['url'], package_file)
+            # extract package
+            with tarfile.open(package_file, "r:gz") as tar:
+                tar.extractall(path=package_dir)
 
     urllib.request.urlretrieve(ig_url, directory + '_package.tgz')
 
