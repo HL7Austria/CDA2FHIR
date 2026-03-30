@@ -130,7 +130,7 @@
     </recordTarget>
     <!-- Verfasser des Dokuments ======================================================================== -->
     <author typeCode="AUT" contextControlCode="OP">
-        <!-- Zeitpunkt der Erstellung -->
+        <!-- Zeitpunkt der Erstellung --> 
         <time value="20230717103415+0200"/>
         <assignedAuthor classCode="ASSIGNED">
             <!-- Identifikation des verfassenden Systemes -->
