@@ -84560,99 +84560,103 @@ def CdaAdressCompilationToFhirAustrianAddress(cda_address, fhir_address):
         fhir_address.type_ = string(value='physical')
     if fhirpath.single(fhirpath_utils.equals([cda_address.use], '==', ['PST'])):
         fhir_address.type_ = string(value='postal')
-    cda_address_item = cda_address
-    if cda_address_item is not None:
-        for cda_postalCode in cda_address_item.postalCode or []:
-            fhir_address.postalCode = string(value=fhirpath.single(fhirpath_utils.get(cda_postalCode,'valueOf_',strip=True)))
-        for cda_city in cda_address_item.city or []:
-            fhir_address.city = string(value=fhirpath.single(fhirpath_utils.get(cda_city,'valueOf_',strip=True)))
-        for cda_state in cda_address_item.state or []:
-            fhir_address.state = string(value=fhirpath.single(fhirpath_utils.get(cda_state,'valueOf_',strip=True)))
-        for cda_country in cda_address_item.country or []:
-            fhir_address.country = string(value=fhirpath.single(fhirpath_utils.get(cda_country,'valueOf_',strip=True)))
-    if cda_address.streetName and cda_address.houseNumber and cda_address.additionalLocator:
-        fhir_address_line = [string(value=v1) for v1 in fhirpath_utils.add(fhirpath_utils.get(cda_address,'streetName','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'houseNumber','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'additionalLocator','valueOf_',strip=True))]
-        for v2 in fhir_address_line:
+    if fhirpath_utils.get(cda_address,'valueOf_',strip=True):
+        for v2 in [string(value=v1) for v1 in fhirpath_utils.get(cda_address,'valueOf_',strip=True)]:
             fhir_address.line.append(v2)
+    if fhirpath_utils.descendants([cda_address]):
         cda_address_item = cda_address
         if cda_address_item is not None:
-            for cda_address_item_streetName in cda_address_item.streetName or []:
-                extension = []
-                for _fhir_address_line in fhir_address_line:
-                    _extension = malac.models.fhir.r4.Extension()
-                    _fhir_address_line.extension.append(_extension)
-                    extension.append(_extension)
-                for _extension in extension:
-                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName'
-                for _extension in extension:
-                    _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_streetName,'valueOf_',strip=True)))
-            for cda_address_item_houseNumber in cda_address_item.houseNumber or []:
-                extension = []
-                for _fhir_address_line in fhir_address_line:
-                    _extension = malac.models.fhir.r4.Extension()
-                    _fhir_address_line.extension.append(_extension)
-                    extension.append(_extension)
-                for _extension in extension:
-                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber'
-                for _extension in extension:
-                    _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_houseNumber,'valueOf_',strip=True)))
-            for cda_address_item_additionalLocator in cda_address_item.additionalLocator or []:
-                if cda_address_item.additionalLocator:
+            for cda_postalCode in cda_address_item.postalCode or []:
+                fhir_address.postalCode = string(value=fhirpath.single(fhirpath_utils.get(cda_postalCode,'valueOf_',strip=True)))
+            for cda_city in cda_address_item.city or []:
+                fhir_address.city = string(value=fhirpath.single(fhirpath_utils.get(cda_city,'valueOf_',strip=True)))
+            for cda_state in cda_address_item.state or []:
+                fhir_address.state = string(value=fhirpath.single(fhirpath_utils.get(cda_state,'valueOf_',strip=True)))
+            for cda_country in cda_address_item.country or []:
+                fhir_address.country = string(value=fhirpath.single(fhirpath_utils.get(cda_country,'valueOf_',strip=True)))
+        if cda_address.streetName and cda_address.houseNumber and cda_address.additionalLocator:
+            fhir_address_line = [string(value=v1) for v1 in fhirpath_utils.add(fhirpath_utils.get(cda_address,'streetName','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'houseNumber','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'additionalLocator','valueOf_',strip=True))]
+            for v2 in fhir_address_line:
+                fhir_address.line.append(v2)
+            cda_address_item = cda_address
+            if cda_address_item is not None:
+                for cda_address_item_streetName in cda_address_item.streetName or []:
                     extension = []
                     for _fhir_address_line in fhir_address_line:
                         _extension = malac.models.fhir.r4.Extension()
                         _fhir_address_line.extension.append(_extension)
                         extension.append(_extension)
                     for _extension in extension:
-                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator'
+                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName'
                     for _extension in extension:
-                        _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_additionalLocator,'valueOf_',strip=True)))
-    if cda_address.streetName and cda_address.houseNumber and not cda_address.additionalLocator:
-        fhir_address_line = [string(value=v1) for v1 in fhirpath_utils.add(fhirpath_utils.get(cda_address,'streetName','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'houseNumber','valueOf_',strip=True))]
-        for v2 in fhir_address_line:
-            fhir_address.line.append(v2)
-        cda_address_item = cda_address
-        if cda_address_item is not None:
-            for cda_address_item_streetName in cda_address_item.streetName or []:
-                extension = []
-                for _fhir_address_line in fhir_address_line:
-                    _extension = malac.models.fhir.r4.Extension()
-                    _fhir_address_line.extension.append(_extension)
-                    extension.append(_extension)
-                for _extension in extension:
-                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName'
-                for _extension in extension:
-                    _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_streetName,'valueOf_',strip=True)))
-            for cda_address_item_houseNumber in cda_address_item.houseNumber or []:
-                extension = []
-                for _fhir_address_line in fhir_address_line:
-                    _extension = malac.models.fhir.r4.Extension()
-                    _fhir_address_line.extension.append(_extension)
-                    extension.append(_extension)
-                for _extension in extension:
-                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber'
-                for _extension in extension:
-                    _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_houseNumber,'valueOf_',strip=True)))
-    if cda_address.streetAddressLine and cda_address.additionalLocator:
-        fhir_address_line = [string(value=v1) for v1 in fhirpath_utils.add(fhirpath_utils.get(cda_address,'streetAddressLine','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'additionalLocator','valueOf_',strip=True))]
-        for v2 in fhir_address_line:
-            fhir_address.line.append(v2)
-        cda_address_item = cda_address
-        if cda_address_item is not None:
-            for cda_address_item_additionalLocator in cda_address_item.additionalLocator or []:
-                if cda_address_item.additionalLocator:
+                        _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_streetName,'valueOf_',strip=True)))
+                for cda_address_item_houseNumber in cda_address_item.houseNumber or []:
                     extension = []
                     for _fhir_address_line in fhir_address_line:
                         _extension = malac.models.fhir.r4.Extension()
                         _fhir_address_line.extension.append(_extension)
                         extension.append(_extension)
                     for _extension in extension:
-                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator'
+                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber'
                     for _extension in extension:
-                        _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_additionalLocator,'valueOf_',strip=True)))
-    if cda_address.streetAddressLine and not cda_address.additionalLocator:
-        for v2 in [string(value=v1) for v1 in fhirpath_utils.get(cda_address,'streetAddressLine','valueOf_',strip=True)]:
-            fhir_address.line.append(v2)
+                        _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_houseNumber,'valueOf_',strip=True)))
+                for cda_address_item_additionalLocator in cda_address_item.additionalLocator or []:
+                    if cda_address_item.additionalLocator:
+                        extension = []
+                        for _fhir_address_line in fhir_address_line:
+                            _extension = malac.models.fhir.r4.Extension()
+                            _fhir_address_line.extension.append(_extension)
+                            extension.append(_extension)
+                        for _extension in extension:
+                            _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator'
+                        for _extension in extension:
+                            _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_additionalLocator,'valueOf_',strip=True)))
+        if cda_address.streetName and cda_address.houseNumber and not cda_address.additionalLocator:
+            fhir_address_line = [string(value=v1) for v1 in fhirpath_utils.add(fhirpath_utils.get(cda_address,'streetName','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'houseNumber','valueOf_',strip=True))]
+            for v2 in fhir_address_line:
+                fhir_address.line.append(v2)
+            cda_address_item = cda_address
+            if cda_address_item is not None:
+                for cda_address_item_streetName in cda_address_item.streetName or []:
+                    extension = []
+                    for _fhir_address_line in fhir_address_line:
+                        _extension = malac.models.fhir.r4.Extension()
+                        _fhir_address_line.extension.append(_extension)
+                        extension.append(_extension)
+                    for _extension in extension:
+                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName'
+                    for _extension in extension:
+                        _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_streetName,'valueOf_',strip=True)))
+                for cda_address_item_houseNumber in cda_address_item.houseNumber or []:
+                    extension = []
+                    for _fhir_address_line in fhir_address_line:
+                        _extension = malac.models.fhir.r4.Extension()
+                        _fhir_address_line.extension.append(_extension)
+                        extension.append(_extension)
+                    for _extension in extension:
+                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber'
+                    for _extension in extension:
+                        _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_houseNumber,'valueOf_',strip=True)))
+        if cda_address.streetAddressLine and cda_address.additionalLocator:
+            fhir_address_line = [string(value=v1) for v1 in fhirpath_utils.add(fhirpath_utils.get(cda_address,'streetAddressLine','valueOf_',strip=True), [' '], fhirpath_utils.get(cda_address,'additionalLocator','valueOf_',strip=True))]
+            for v2 in fhir_address_line:
+                fhir_address.line.append(v2)
+            cda_address_item = cda_address
+            if cda_address_item is not None:
+                for cda_address_item_additionalLocator in cda_address_item.additionalLocator or []:
+                    if cda_address_item.additionalLocator:
+                        extension = []
+                        for _fhir_address_line in fhir_address_line:
+                            _extension = malac.models.fhir.r4.Extension()
+                            _fhir_address_line.extension.append(_extension)
+                            extension.append(_extension)
+                        for _extension in extension:
+                            _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator'
+                        for _extension in extension:
+                            _extension.valueString = string(value=fhirpath.single(fhirpath_utils.get(cda_address_item_additionalLocator,'valueOf_',strip=True)))
+        if cda_address.streetAddressLine and not cda_address.additionalLocator:
+            for v2 in [string(value=v1) for v1 in fhirpath_utils.get(cda_address,'streetAddressLine','valueOf_',strip=True)]:
+                fhir_address.line.append(v2)
 
 def TELContactPoint(src, tgt):
     Any(src, tgt)
