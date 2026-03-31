@@ -2527,7 +2527,7 @@
                                 </manufacturedProduct>
                             </consumable>
                             <author typeCode="AUT" contextControlCode="OP">
-                                <time value="20240315143000+0100"/>
+                                <time nullFlavor="UNK"/>
                                 <assignedAuthor classCode="ASSIGNED">
                                     <id root="1.2.40.0.34.99.9999.1.1" extension="device-001"/>
                                     <code code="508"
@@ -2597,12 +2597,7 @@
                                     <text>
                                         <reference value="#criterion-4"/>
                                     </text>
-                                    <value xsi:type="CD" code="B" codeSystem="1.2.40.0.34.5.183"
-                                        displayName="Auffrischungsimpfung">
-                                        <originalText>
-                                            <reference value="#dosenr-4"/>
-                                        </originalText>
-                                    </value>
+                                    <value nullFlavor="UNK"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
