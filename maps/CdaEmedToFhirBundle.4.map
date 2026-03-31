@@ -236,7 +236,7 @@ group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_supply: 
       cda_supply.quantity -> fhir_medicationDispense.quantity;
       cda_supply.product as cda_product then CdaEmedProductToFhirMedication(cda, cda_product, fhir_composition, fhir_patient, fhir_bundle);
       cda_supply.author as cda_author then CdaEmedAbgabeSupplyAuthorToFhir(cda, cda_author, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
-      //cda_supply.entryRelationship as cda_entryRelationship then CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_entryRelationship, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
+      cda_supply.entryRelationship as cda_entryRelationship then CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_entryRelationship, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
       //cda_supply.reference as cda_supply_reference then CdaEmedAbgabeSupplyReferenceToFhir(cda, cda_supply_reference, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
     };   
 }
@@ -255,18 +255,17 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
 
       // fill FHIR Medication resource with information from CDA product
       cda_product.manufacturedProduct as cda_product_manufacturedProduct then {
-        cda_product_manufacturedProduct.manufacturedMaterial as cda_product_manufacturedMaterial then {
-          
+        cda_product_manufacturedProduct.manufacturedMaterial as cda_product_manufacturedMaterial -> fhir_medication.code = create('CodeableConcept') as fhir_medication_code then {
+
           cda_product_manufacturedMaterial.code as cda_product_manufacturedMaterial_code then {
 
             // PZN aus Hauptcode
             // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code -> Medication.code.coding (PZN)
-            cda_product_manufacturedMaterial_code -> fhir_medication.code = create('CodeableConcept') as fhir_medication_code,
-            fhir_medication_code.coding = create('Coding') as fhir_medication_code_coding then CECoding(cda_product_manufacturedMaterial_code, fhir_medication_code_coding);
+            cda_product_manufacturedMaterial_code where ($this.codeSystem = '1.2.40.0.34.4.16') -> fhir_medication_code.coding = create('Coding') as fhir_medication_code_coding then CECoding(cda_product_manufacturedMaterial_code, fhir_medication_code_coding);
 
             // Zulassungsnummer aus translation
             // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/code/translation -> Medication.code.coding (Zulassungsnummer)
-            cda_product_manufacturedMaterial_code.translation as cda_product_manufacturedMaterial_code_translation ->
+            cda_product_manufacturedMaterial_code.translation as cda_product_manufacturedMaterial_code_translation where ($this.codeSystem = '1.2.40.0.34.4.17')  ->
               fhir_medication_code.coding = create('Coding') as fhir_medication_code_coding_translation then CECoding(cda_product_manufacturedMaterial_code_translation, fhir_medication_code_coding_translation);
           };
 
@@ -393,12 +392,22 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
 group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_composition: Composition, target fhir_medicationRequest: MedicationRequest, target fhir_bundle) {
 }*/
 
-/*
-group CdaEmedAbgabeSupplyReferenceToFhir(source cda: ClinicalDocument, source cda_reference: Reference, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
-}*/
+
+group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source cda_entryRelationship: EntryRelationship, target fhir_composition: Composition, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
+
+  cda_entryRelationship where ($this.typeCode == 'REFR') then {
+    // section/entry/supply/entryRelationship/substanceAdministration -> MedicationRequest
+    cda_entryRelationship.substanceAdministration as cda_entryRelationship_substanceAdministration then {
+      cda_entryRelationship_substanceAdministration.id as cda_entryRelationship_substanceAdministration_id where ($this.root = '1.2.40.0.10.1.4.3.4.2.2') then {
+        cda_entryRelationship_substanceAdministration_id -> fhir_medicationRequest.identifier = create('Identifier') as fhir_medicationRequest_identifier then II(cda_entryRelationship_substanceAdministration_id,fhir_medicationRequest_identifier);
+      };
+    };
+  };
+
+}
 
 /*
-group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source cda_entryRelationship: EntryRelationship, target fhir_composition: Composition, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
+group CdaEmedAbgabeSupplyReferenceToFhir(source cda: ClinicalDocument, source cda_reference: Reference, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
 }*/
 
 /*
