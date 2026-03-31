@@ -2681,13 +2681,13 @@
                         </author>
                         <informant>
                             <relatedEntity classCode="PRS">
-                                <code code="MTH" displayName="mother" codeSystem="2.16.840.1.113883.5.111"/> 
+                                <code code="MTH" displayName="mother" codeSystem="2.16.840.1.113883.5.111"/>
+                                <telecom value="tel:+43.1.3453446.2222"/> 
                                 <relatedPerson>
                                     <name>
                                         <family>Musterfrau</family>
                                         <given>Maria</given>
                                     </name>
-                                    <telecom value="tel:+43.1.3453446.2222"/>
                                 </relatedPerson>
                             </relatedEntity>
                         </informant>
@@ -2702,10 +2702,12 @@
                             </observationMedia>
                         </entry>
                         <component>
-                            <templateId root="1.2.40.0.34.6.0.11.2.8"/>
-                            <title>Sides</title>
-                            <text>sides text</text>
-                            <languageCode code="en"/>
+                            <section>
+                                <templateId root="1.2.40.0.34.6.0.11.2.8"/>
+                                <title>Sides</title>
+                                <text>sides text</text>
+                                <languageCode code="en"/>
+                            </section>
                         </component>
                 </section>
              </component>
