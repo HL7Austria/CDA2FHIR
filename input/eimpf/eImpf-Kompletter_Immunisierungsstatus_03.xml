@@ -865,12 +865,7 @@
                                         <reference value="#criterion-3"/>
                                     </text>
                                     <!-- Dosiskennung -->
-                                    <value xsi:type="CD" code="D3" codeSystem="1.2.40.0.34.5.183"
-                                        displayName="Dosis 3">
-                                        <originalText>
-                                            <reference value="#dosenr-3"/>
-                                        </originalText>
-                                    </value>
+                                    <value nullFlavor="UNK"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
@@ -2245,7 +2240,6 @@
                             </consumable>
                             <!-- "Medizinisch verantwortliche Person oder System": Person oder System, das die Empfehlung generiert -->
                             <author>
-                                <functionCode code="26369006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"/>
                                 <time value="20190617122000+0200"/>
                                 <assignedAuthor classCode="ASSIGNED">
                                     <!-- Die OID des Authors entscheidet, ob es sich um eine ärztliche Impfempfehlung oder um eine automatisch generierte handelt (1.2.40.0.34.6.104 = OID der zentralen Impfanwendung) -->
