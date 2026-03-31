@@ -8102,80 +8102,79 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
   };
 
   // ClinicalDocument/informationRecipient -> Composition.extension
-  // TODO: for ELGA no extension has been defined yet
-  // cda.informationRecipient as cda_informationRecipient then {
+  cda.informationRecipient as cda_informationRecipient then {
 
-  //   // -> PractitionerRole
-  //   cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists()) then {
+    // -> PractitionerRole
+    cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists()) then {
 
-  //       // PractitionerRole creation
-  //       cda_intendedRecipient ->
-  //         fhir_bundle.entry as fhir_bundle_entry,
-  //         fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-  //         fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-  //         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+        // PractitionerRole creation
+        cda_intendedRecipient ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
 
-  //         // Composition extension
-  //         fhir_composition.extension as fhir_composition_informationRecipient_extension,
-  //         fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
-  //         fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
-  //         fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-  //         fhir_composition_informationRecipient_extension_reference.type = 'PractitionerRole',
+          // Composition extension
+          fhir_composition.extension as fhir_composition_informationRecipient_extension,
+          fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+          fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
+          fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_composition_informationRecipient_extension_reference.type = 'PractitionerRole',
           
-  //         // Practitioner creation
-  //         fhir_bundle.entry as fhir_bundle_entry,
-  //         fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
-  //         fhir_practitioner.id = uuid() as fhir_practitioner_id,
-  //         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+          // Practitioner creation
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+          fhir_practitioner.id = uuid() as fhir_practitioner_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
 
-  //         fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner,
-  //         fhir_practitionerRole_practitioner.reference = append('urn:uuid:', fhir_practitioner_id),
-  //         fhir_practitionerRole_practitioner.type = 'Practitioner' then {
-  //           cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
-  //           cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
-  //             cda_informationRecipient_inner.name -> fhir_practitioner.name;
-  //           };
+          fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner,
+          fhir_practitionerRole_practitioner.reference = append('urn:uuid:', fhir_practitioner_id),
+          fhir_practitionerRole_practitioner.type = 'Practitioner' then {
+            cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
+            cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
+              cda_informationRecipient_inner.name -> fhir_practitioner.name;
+            };
 
-  //           // Organization
-  //           cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
-  //             fhir_bundle.entry as fhir_bundle_entry_org,
-  //             fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
-  //             fhir_organization.id = uuid() as fhir_organization_id,
-  //             fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
+            // Organization
+            cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
+              fhir_bundle.entry as fhir_bundle_entry_org,
+              fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
+              fhir_organization.id = uuid() as fhir_organization_id,
+              fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
 
-  //             fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
-  //             fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
-  //             fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
-  //         } "CdaIntendedRecipientToFhirPractitionerRole";
-  //   };
+              fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+              fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+              fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
+          } "CdaIntendedRecipientToFhirPractitionerRole";
+    };
 
-  //   cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists().not()) then {
+    cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists().not()) then {
     
-  //     cda_intendedRecipient ->
-  //       // Create RelatedPerson   
-  //       fhir_bundle.entry as fhir_bundle_entry,
-  //       fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
-  //       fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
-  //       fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
+      cda_intendedRecipient ->
+        // Create RelatedPerson   
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+        fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
         
-  //       // Create Composition.extension
-  //       fhir_composition.extension as fhir_composition_informationRecipient_extension,
-  //       fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
-  //       fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
-  //       fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
-  //       fhir_composition_informationRecipient_extension_reference.type = 'RelatedPerson' then {
-  //         cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_relatedPerson.identifier;
-  //         cda_intendedRecipient -> 
-  //           fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
-  //           fhir_patient.id as fhir_patient_id,
-  //           fhir_relatedPerson_patient_reference.reference = append('urn:uuid:',fhir_patient_id),
-  //           fhir_relatedPerson_patient_reference.type ='Patient' "ReferenceToPatient";
-  //         cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
-  //           cda_informationRecipient_inner.name -> fhir_relatedPerson.name;
-  //         };
-  //       } "CdaIntendedRecipientToFhirRelatedPerson";
-  //   };
-  // };  
+        // Create Composition.extension
+        fhir_composition.extension as fhir_composition_informationRecipient_extension,
+        fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+        fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
+        fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
+        fhir_composition_informationRecipient_extension_reference.type = 'RelatedPerson' then {
+          cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_relatedPerson.identifier;
+          cda_intendedRecipient -> 
+            fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+            fhir_patient.id as fhir_patient_id,
+            fhir_relatedPerson_patient_reference.reference = append('urn:uuid:',fhir_patient_id),
+            fhir_relatedPerson_patient_reference.type ='Patient' "ReferenceToPatient";
+          cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
+            cda_informationRecipient_inner.name -> fhir_relatedPerson.name;
+          };
+        } "CdaIntendedRecipientToFhirRelatedPerson";
+    };
+  };  
 
   // Participant Auftraggeber / Ordering Provider
   // ClinicalDocument/participant[@typeCode='REF'] -> ServiceRequest.requester
