@@ -865,7 +865,7 @@
                                         <reference value="#criterion-3"/>
                                     </text>
                                     <!-- Dosiskennung -->
-                                    <value nullFlavor="UNK"/>
+                                    <value nullFlavor="UNK" xsi:type="CD"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
@@ -2594,7 +2594,7 @@
                                     <text>
                                         <reference value="#criterion-4"/>
                                     </text>
-                                    <value nullFlavor="UNK"/>
+                                    <value nullFlavor="UNK" xsi:type="CD"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
