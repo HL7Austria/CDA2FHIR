@@ -2357,9 +2357,6 @@
                                             <family>DataEnterer-Impfempfehlung-FSME</family>
                                         </name>
                                     </playingEntity>
-                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
-                                        <desc>Praxis DataEnterer-Impfempfehlung-FSME</desc>
-                                    </scopingEntity>
                                 </participantRole>
                             </participant>
                             <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
