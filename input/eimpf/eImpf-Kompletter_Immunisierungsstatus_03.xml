@@ -2240,7 +2240,7 @@
                             </consumable>
                             <!-- "Medizinisch verantwortliche Person oder System": Person oder System, das die Empfehlung generiert -->
                             <author>
-                                <time value="20190617122000+0200"/>
+                                <time nullFlavor="UNK"/>
                                 <assignedAuthor classCode="ASSIGNED">
                                     <!-- Die OID des Authors entscheidet, ob es sich um eine ärztliche Impfempfehlung oder um eine automatisch generierte handelt (1.2.40.0.34.6.104 = OID der zentralen Impfanwendung) -->
                                     <id root="1.2.40.0.34.99.4614.3.3.2" extension="2324999999"/>
