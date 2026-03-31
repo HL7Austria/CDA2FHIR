@@ -2245,16 +2245,24 @@
                             </consumable>
                             <!-- "Medizinisch verantwortliche Person oder System": Person oder System, das die Empfehlung generiert -->
                             <author>
+                                <functionCode code="26369006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"/>
                                 <time value="20190617122000+0200"/>
                                 <assignedAuthor classCode="ASSIGNED">
                                     <!-- Die OID des Authors entscheidet, ob es sich um eine ärztliche Impfempfehlung oder um eine automatisch generierte handelt (1.2.40.0.34.6.104 = OID der zentralen Impfanwendung) -->
                                     <id root="1.2.40.0.34.99.4614.3.3.2" extension="2324999999"/>
+                                    <!-- Adresse der Organisation -->
+                                    <addr>
+                                        <streetName>Spital-Author-Impfempfehlung-Gürtel</streetName>
+                                        <houseNumber>18-20</houseNumber>
+                                        <postalCode>1090</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <!-- Kontaktdaten der Organisation, keine Anzeige im Referenz-Stylesheet: telecom, addr  -->
+                                    <telecom use="WP" value="tel:+43.1.3453446.0"/>
                                     <assignedPerson>
-                                        <name>
-                                            <prefix>Dr.</prefix>
-                                            <given>Inka</given>
-                                            <family>Author-Impfempfehlung</family>
-                                        </name>
+                                        <name nullFlavor="UNK"/>
                                     </assignedPerson>
                                     <representedOrganization>
                                         <!-- ID der Organisation aus dem GDA Index -->
