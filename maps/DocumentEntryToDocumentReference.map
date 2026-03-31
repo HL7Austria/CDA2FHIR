@@ -1,0 +1,287 @@
+/// title = "DocumentEntry to FHIR DocumentReference"
+/// status = "draft"
+/// description = """
+DocumentEntry to FHIR R4 DocumentReference mapping.
+Mirrors the logic of RegistryStoredQueryResponseTransformer.java.
+Source: IHE XDS DocumentEntry (IPF / openehealth)
+Target: HL7 FHIR R4 DocumentReference
+"""
+
+map "http://elga.gv.at/fhir/maps/DocumentEntryToDocumentReference" = DocumentEntryToDocumentReference
+
+uses "http://openehealth.org/ipf/xds/DocumentEntry"  alias DocumentEntry  as source
+uses "http://hl7.org/fhir/StructureDefinition/DocumentReference" alias DocumentReference as target
+
+
+// ============================================================
+// Root group: QueryResponse -> Bundle
+// ============================================================
+
+group QueryResponseToBundle(
+  source src : QueryResponse,
+  target tgt : Bundle
+) {
+  src -> tgt.type = 'searchset' "bundleType";
+
+  src.documentEntries as entry -> tgt.entry as bundleEntry then {
+    entry -> bundleEntry.resource = create('DocumentReference') as docRef
+      then DocumentEntryToDocumentReference(entry, docRef) "mapEntry";
+  } "documentEntries";
+}
+
+
+// ============================================================
+// Main group: DocumentEntry -> DocumentReference
+// ============================================================
+
+group DocumentEntryToDocumentReference(
+  source src : DocumentEntry,
+  target tgt : DocumentReference
+) {
+  // masterIdentifier (mandatory)
+  src.uniqueId as uid -> tgt.masterIdentifier = create('Identifier') as masterId then {
+    uid -> masterId.value = uid "masterIdentifierValue";
+  } "masterIdentifier";
+
+  // identifier (mandatory) – mapped from entryUuid
+  src.entryUuid as euuid -> tgt.identifier = create('Identifier') as id then {
+    euuid -> id.value = euuid "identifierValue";
+  } "identifier";
+
+  // status (mandatory) – AvailabilityStatus -> DocumentReferenceStatus
+  src.availabilityStatus as avs -> tgt.status = translate(avs,
+    'http://elga.gv.at/fhir/ConceptMap/AvailabilityStatusToDocRefStatus',
+    'code') "status";
+
+  // type – DocumentEntryType -> CodeableConcept
+  src.type as t where t.exists() -> tgt.type = create('CodeableConcept') as typeCC then
+    DocumentEntryTypeToCodeableConcept(t, typeCC) "type";
+
+  // category – classCode -> CodeableConcept
+  src.classCode as cc where cc.exists() -> tgt.category = create('CodeableConcept') as catCC then
+    CodeToCodeableConcept(cc, catCC) "category";
+
+  // subject – patientId
+  src.patientId as pid where pid.id.exists() -> tgt.subject = create('Reference') as subRef then {
+    pid.id as pidVal -> subRef.identifier = create('Identifier') as subId then {
+      pidVal -> subId.value = pidVal "subjectIdValue";
+    } "subjectIdentifier";
+  } "subject";
+
+  // author (0..*)
+  src.authors as author -> tgt.author = create('Reference') as authorRef
+    then AuthorToReference(author, authorRef) "authors";
+
+  // authenticator (legalAuthenticator)
+  src.legalAuthenticator as auth where auth.exists() -> tgt.authenticator = create('Reference') as authRef
+    then PersonToReference(auth, authRef) "authenticator";
+
+  // description – comments
+  src.comments as comments where comments.value.exists() -> tgt.description = comments.value "description";
+
+  // securityLabel – confidentialityCodes
+  src.confidentialityCodes as confCode -> tgt.securityLabel = create('CodeableConcept') as labelCC then
+    CodeToCodeableConcept(confCode, labelCC) "securityLabel";
+
+  // content (attachment + format)
+  src -> tgt.content = create('DocumentReferenceContentComponent') as content
+    then DocumentEntryToContent(src, content) "content";
+
+  // context (period, facilityType, practiceSetting, sourcePatientInfo, related, event)
+  src -> tgt.context = create('DocumentReferenceContextComponent') as ctx
+    then DocumentEntryToContext(src, ctx) "context";
+}
+
+
+// ============================================================
+// content component: attachment + format
+// ============================================================
+
+group DocumentEntryToContent(
+  source src : DocumentEntry,
+  target tgt : DocumentReferenceContentComponent
+) {
+  // attachment
+  src -> tgt.attachment = create('Attachment') as att
+    then DocumentEntryToAttachment(src, att) "attachment";
+
+  // format – formatCode -> Coding
+  src.formatCode as fc where fc.exists() -> tgt.format = create('Coding') as coding
+    then CodeToCoding(fc, coding) "format";
+}
+
+
+// ============================================================
+// attachment
+// ============================================================
+
+group DocumentEntryToAttachment(
+  source src : DocumentEntry,
+  target tgt : Attachment
+) {
+  src.mimeType   as mt where mt.exists() -> tgt.contentType = mt "mimeType";
+  src.languageCode as lc where lc.exists() -> tgt.language   = lc "language";
+
+  // url is built from XCA locator fields; the mapping engine is expected to
+  // call a custom resolver. Here we map the constituent identifiers so a
+  // post-processor (equivalent to buildAttachmentUrl()) can assemble the URL.
+  src.entryUuid          as euuid  -> tgt.url = euuid  "attachmentUrlFromEntryUuid";
+
+  src.size as sz where sz.exists() -> tgt.size   = sz "size";
+  src.hash as h  where h.exists()  -> tgt.hash   = h  "hash";
+
+  src.title as ttl where ttl.value.exists() -> tgt.title    = ttl.value "title";
+
+  src.creationTime as ct where ct.dateTime.exists() -> tgt.creation = ct.dateTime "creation";
+}
+
+
+// ============================================================
+// context component
+// ============================================================
+
+group DocumentEntryToContext(
+  source src : DocumentEntry,
+  target tgt : DocumentReferenceContextComponent
+) {
+  // event – eventCodeList
+  src.eventCodeList as evtCode -> tgt.event = create('CodeableConcept') as evtCC
+    then CodeToCodeableConcept(evtCode, evtCC) "event";
+
+  // period – serviceStartTime / serviceStopTime (both required)
+  src.serviceStartTime as start where start.dateTime.exists() ->
+    tgt.period = create('Period') as period then {
+      start.dateTime -> period.start = start.dateTime "periodStart";
+      src.serviceStopTime as stop where stop.dateTime.exists() ->
+        period.end = stop.dateTime "periodEnd";
+  } "period";
+
+  // facilityType – healthcareFacilityTypeCode
+  src.healthcareFacilityTypeCode as ftc where ftc.exists() ->
+    tgt.facilityType = create('CodeableConcept') as ftCC
+    then CodeToCodeableConcept(ftc, ftCC) "facilityType";
+
+  // practiceSetting – practiceSettingCode
+  src.practiceSettingCode as psc where psc.exists() ->
+    tgt.practiceSetting = create('CodeableConcept') as psCC
+    then CodeToCodeableConcept(psc, psCC) "practiceSetting";
+
+  // sourcePatientInfo
+  src.sourcePatientId as spid where spid.id.exists() ->
+    tgt.sourcePatientInfo = create('Reference') as spRef then {
+      spid.id as spidVal -> spRef.identifier = create('Identifier') as spId then {
+        spidVal -> spId.value = spidVal "sourcePatientIdValue";
+      } "sourcePatientIdentifier";
+  } "sourcePatientInfo";
+
+  // related – referenceIdList
+  src.referenceIdList as relRef where relRef.id.exists() ->
+    tgt.related = create('Reference') as relR then {
+      relRef.id as relId -> relR.identifier = create('Identifier') as relId2 then {
+        relId -> relId2.value = relId "relatedIdValue";
+      } "relatedIdentifier";
+  } "related";
+}
+
+
+// ============================================================
+// Author -> Reference
+// ============================================================
+
+group AuthorToReference(
+  source src : Author,
+  target tgt : Reference
+) {
+  // role -> reference type
+  src.authorRole as roles where roles.first().id.exists() -> tgt.type = roles.first().id "authorRole";
+
+  // authorPerson id
+  src.authorPerson as person where person.exists() -> tgt then {
+    person.id as personId where personId.exists() ->
+      tgt.identifier = create('Identifier') as authId then {
+        personId.id as idVal where idVal.exists() -> authId.value = idVal "authorIdValue";
+        personId.assigningAuthority as aa where aa.universalId.exists() ->
+          authId.assigner = create('Reference') as aaRef then {
+            aa.universalId as aaid -> aaRef.identifier = create('Identifier') as aaId then {
+              aaid -> aaId.value = aaid "authorAAValue";
+            } "authorAAIdentifier";
+        } "authorAssigner";
+    } "authorIdentifier";
+
+    // display name
+    person.name as pname where pname.exists() ->
+      tgt.display = (%pname.prefix + ' ' + %pname.givenName + ' ' + %pname.familyName + ' ' + %pname.suffix).trim() "authorDisplay";
+  } "authorPerson";
+}
+
+
+// ============================================================
+// Person (legalAuthenticator) -> Reference
+// ============================================================
+
+group PersonToReference(
+  source src : Person,
+  target tgt : Reference
+) {
+  src.id as pid where pid.id.exists() and pid.assigningAuthority.universalId.exists() ->
+    tgt.identifier = create('Identifier') as authId then {
+      pid.id as idVal -> authId.value = idVal "personIdValue";
+      pid.assigningAuthority as aa ->
+        authId.assigner = create('Reference') as aaRef then {
+          aa.universalId as aaid -> aaRef.identifier = create('Identifier') as aaId then {
+            aaid -> aaId.value = aaid "personAAValue";
+          } "personAAIdentifier";
+      } "personAssigner";
+  } "personIdentifier";
+
+  src.name as pname where pname.exists() ->
+    tgt.display = (%pname.prefix + ' ' + %pname.givenName + ' ' + %pname.familyName + ' ' + %pname.suffix).trim() "personDisplay";
+}
+
+
+// ============================================================
+// Code -> CodeableConcept  (via Coding)
+// ============================================================
+
+group CodeToCodeableConcept(
+  source src : Code,
+  target tgt : CodeableConcept
+) {
+  src -> tgt.coding = create('Coding') as coding
+    then CodeToCoding(src, coding) "codeableCoding";
+}
+
+
+// ============================================================
+// Code -> Coding
+// ============================================================
+
+group CodeToCoding(
+  source src : Code,
+  target tgt : Coding
+) {
+  src.schemeName   as sys  where sys.exists()  -> tgt.system  = sys  "codingSystem";
+  src.code         as code where code.exists() -> tgt.code    = code "codingCode";
+  src.displayName  as dn   where dn.value.exists() -> tgt.display = dn.value "codingDisplay";
+}
+
+
+// ============================================================
+// DocumentEntryType -> CodeableConcept
+// Mirrors CdaFhirMappingUtils.convertDocumentEntryTypeToCodeable()
+// ============================================================
+
+group DocumentEntryTypeToCodeableConcept(
+  source src : DocumentEntryType,
+  target tgt : CodeableConcept
+) {
+  src where src = 'STABLE' -> tgt.coding = create('Coding') as c then {
+    src.uuid -> c.system  = src.uuid "stableSystem";
+    src      -> c.display = 'stable' "stableDisplay";
+  } "stableType";
+
+  src where src = 'ON_DEMAND' -> tgt.coding = create('Coding') as c then {
+    src.uuid -> c.system  = src.uuid "onDemandSystem";
+    src      -> c.display = 'on-demand' "onDemandDisplay";
+  } "onDemandType";
+}
