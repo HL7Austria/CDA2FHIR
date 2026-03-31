@@ -2701,14 +2701,6 @@
                                 </value>
                             </observationMedia>
                         </entry>
-                        <component>
-                            <section>
-                                <templateId root="1.2.40.0.34.6.0.11.2.8"/>
-                                <title>Sides</title>
-                                <text>sides text</text>
-                                <languageCode code="en"/>
-                            </section>
-                        </component>
                 </section>
              </component>
             <!-- Probeninformation (Specimen Section) -->
