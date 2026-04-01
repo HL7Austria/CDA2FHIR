@@ -38,11 +38,9 @@ logging.info(f"Validating {directory}/{basename} ...")
 xml_log  = open(f"{VALIDATION_DIR}/{directory}/{basename}.val.xml.log",  "w")
 json_log = open(f"{VALIDATION_DIR}/{directory}/{basename}.val.json.log", "w")
 
-xml_proc  = subprocess.Popen(validator_cmd("xml"),  stdout=xml_log,  stderr=subprocess.STDOUT)
-json_proc = subprocess.Popen(validator_cmd("json"), stdout=json_log, stderr=subprocess.STDOUT)
+xml_proc  = subprocess.run(validator_cmd("xml"),  stdout=xml_log,  stderr=subprocess.STDOUT)
+json_proc = subprocess.run(validator_cmd("json"), stdout=json_log, stderr=subprocess.STDOUT)
 
-xml_proc.wait()
-json_proc.wait()
 
 xml_log.close()
 json_log.close()
