@@ -19,7 +19,6 @@ jobs:
       - name: Update pip
         run: |
           python -m pip install --upgrade pip
-          pip install coverage
 
       - name: Install MaLaC-HD with CDA model
         run: pip install -r python-maps/requirements.txt
@@ -66,6 +65,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
 
+      - name: Install MaLaC-HD with CDA model
+        run: pip install -r python-maps/requirements.txt
+
       - name: Download MaLaC-HD output
         uses: actions/download-artifact@v4
         with:
@@ -97,6 +99,10 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install coverage
+
+      - name: Install MaLaC-HD with CDA model
+        run: pip install -r python-maps/requirements.txt
+        
       - name: Run coverage analysis
         run: python scripts/coverage.py
 
