@@ -158,12 +158,6 @@ jobs:
           name: fhir-package-cache
           path: ~/.fhir/packages/
       
-
-
-
-
-
-
   validate:
     runs-on: ubuntu-latest
     needs: [prepare]
@@ -189,8 +183,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: igs
-          path: | 
-            igs/
+          path: igs/
 
       - name: Download FHIR package cache
         uses: actions/download-artifact@v4
@@ -198,13 +191,17 @@ jobs:
           name: fhir-package-cache
           path: ~/.fhir/packages/
 
-      - name: Validate ${{ matrix.directory }}/${{ matrix.basename }}
-        run: python scripts/validate.py --directory ${{ matrix.directory }} --basename ${{ matrix.basename }}
+      - name: Validate ${{ matrix.directory }}/${{ matrix.basename }} (${{ matrix.fmt }})
+        run: |
+          python scripts/validate.py \
+            --directory ${{ matrix.directory }} \
+            --basename ${{ matrix.basename }} \
+            --fmt ${{ matrix.fmt }}
 
       - name: Upload validation results
         uses: actions/upload-artifact@v4
         with:
-          name: validation-results-${{ matrix.directory }}-${{ matrix.basename }}
+          name: validation-results-${{ matrix.directory }}-${{ matrix.basename }}-${{ matrix.fmt }}
           path: validation/${{ matrix.directory }}/
 
   collect:

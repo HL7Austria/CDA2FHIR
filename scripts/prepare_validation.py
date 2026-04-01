@@ -32,13 +32,14 @@ for config in config_json:
             with tarfile.open(package_file, "r:gz") as tar:
                 tar.extractall(path=package_dir)
 
-    # One matrix entry per file
     for filepath in glob.glob(os.path.join(OUTPUT_DIR, directory, "*.fhir.xml")):
-        basename = os.path.splitext(os.path.splitext(os.path.basename(filepath))[0])[0]  # strip .fhir.xml
-        matrix_entries.append({
-            "directory": directory,
-            "basename": basename
-        })
+        basename = os.path.splitext(os.path.splitext(os.path.basename(filepath))[0])[0]
+        for fmt in ["xml", "json"]:
+            matrix_entries.append({
+                "directory": directory,
+                "basename": basename,
+                "fmt": fmt
+            })
 
 matrix = json.dumps({"include": matrix_entries})
 with open(os.environ["GITHUB_OUTPUT"], "a") as f:
