@@ -151,7 +151,13 @@ jobs:
           name: igs
           path: |
             igs/
-            ~/.fhir/packages/
+
+      - name: Upload FHIR package cache
+        uses: actions/upload-artifact@v4
+        with:
+          name: fhir-package-cache
+          path: ~/.fhir/packages/
+      
 
 
 
@@ -185,7 +191,12 @@ jobs:
           name: igs
           path: | 
             igs/
-            ~/.fhir/packages/
+            
+      - name: Download FHIR package cache
+        uses: actions/download-artifact@v4
+        with:
+          name: fhir-package-cache
+          path: ~/.fhir/packages/
 
       - name: Validate ${{ matrix.directory }}/${{ matrix.basename }}
         run: python scripts/validate.py --directory ${{ matrix.directory }} --basename ${{ matrix.basename }}
