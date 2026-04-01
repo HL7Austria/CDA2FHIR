@@ -250,3 +250,8 @@ jobs:
           chmod 744 check_validation_result.sh
           ./check_validation_result.sh || exit_code=$?
           exit $exit_code
+      - name: Upload validation summary
+        uses: actions/upload-artifact@v4
+        with: 
+          name: validation-summary
+          path: final_validation_check.log
