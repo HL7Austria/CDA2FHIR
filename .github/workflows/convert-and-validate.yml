@@ -72,7 +72,7 @@ jobs:
           name: malac-hd-output
           path: python-maps/
 
-      - name: Convert test files and generate coverage
+      - name: Convert test files
         run: python scripts/convert.py
 
       - name: Upload converted files

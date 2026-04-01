@@ -2,6 +2,7 @@ import os
 import glob
 import subprocess
 import json
+import logging
 
 INPUT_DIR = "input"
 OUTPUT_DIR = "output"
@@ -31,3 +32,10 @@ for config in config_json:
 
         xml_proc.wait()
         json_proc.wait()
+
+        if xml_proc.returncode != 0:
+            logging.error(f"XML conversion failed for {basename} (exit {xml_proc.returncode})")
+        if json_proc.returncode != 0:
+            logging.error(f"JSON conversion failed for {basename} (exit {json_proc.returncode})")
+
+        logging.info(f"Done {basename}")
