@@ -191,7 +191,7 @@ jobs:
           name: igs
           path: | 
             igs/
-            
+
       - name: Download FHIR package cache
         uses: actions/download-artifact@v4
         with:
@@ -207,43 +207,54 @@ jobs:
           name: validation-results-${{ matrix.directory }}-${{ matrix.basename }}
           path: validation/${{ matrix.directory }}/
 
-  # upload:
-  #   runs-on: ubuntu-latest
-  #   needs: [validate, convert]             
-  #   steps:
-  #     - name: Download coverage report
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: coverage-report
-  #         path: coverage/
+  collect:
+    runs-on: ubuntu-latest
+    needs: [validate, coverage]
+    if: always()
+    steps:
+      - name: Download combined coverage report
+        uses: actions/download-artifact@v4
+        with:
+          name: combined-coverage-report
+          path: artifacts/coverage/
 
-  #     - name: Download FHIR test files
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: fhir-test-files
-  #         path: output/
+      - name: Download FHIR test files
+        uses: actions/download-artifact@v4
+        with:
+          name: fhir-test-files
+          path: artifacts/output/
 
-  #     - name: Download validation results
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: validation-results
-  #         path: validation/
+      - name: Download MaLaC-HD output
+        uses: actions/download-artifact@v4
+        with:
+          name: malac-hd-output
+          path: artifacts/python-maps/
 
-  #     - name: Download MaLaC-HD output
-  #       uses: actions/download-artifact@v4
-  #       with:
-  #         name: malac-hd-output
-  #         path: python-maps/
+      - name: Download all validation results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: validation-results-*
+          merge-multiple: false
+          path: artifacts/validation-raw/
 
-  #     - name: Upload all artifacts
-  #       uses: actions/upload-artifact@v4
-  #       with:
-  #         name: all-artifacts
-  #         path: |
-  #           coverage/
-  #           output/
-  #           validation/
-  #           python-maps/CdaToFhirBundle.4.py
+      - name: Restructure validation results
+        run: |
+          mkdir -p artifacts/validation
+          for dir in artifacts/validation-raw/*/; do
+            # artifact name pattern: validation-results-{directory}-{basename}
+            folder_name=$(basename "$dir")
+            # extract the directory part (e.g. "lab", "eimpf", "emed")
+            category=$(echo "$folder_name" | sed 's/^validation-results-//' | cut -d'-' -f1)
+            mkdir -p "artifacts/validation/$category"
+            cp -r "$dir"* "artifacts/validation/$category/" 2>/dev/null || true
+          done
+          rm -rf artifacts/validation-raw/
+
+      - name: Upload all artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: all-artifacts
+          path: artifacts/
 
   validatejobs:
     runs-on: ubuntu-latest
