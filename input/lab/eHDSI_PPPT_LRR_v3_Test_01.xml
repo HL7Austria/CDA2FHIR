@@ -77,102 +77,31 @@
     <recordTarget>
         <patientRole>
             <!-- Identifikation des Patienten im lokalen System -->
-            <id root="1.2.40.0.34.99.4613.3.2" extension="121212" assigningAuthorityName="Amadeus Spital"/>
+            <id root="1.2.40.0.34.99.4613.3.2" extension="73232" assigningAuthorityName="Amadeus Spital"/>
             <!-- Sozialversicherungsnummer des Patienten -->
-            <id root="1.2.40.0.10.1.4.3.1" extension="1111241261" assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <id root="1.2.40.0.10.1.4.3.1" extension="6932281524" assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <!-- bPK -->
+            <id root="1.2.40.0.10.2.1.1.149" extension="/7dV7XrWsFuaFbGGZ3G3mMowHnI=" assigningAuthorityName="Österreichische Stammzahlenregisterbehörde"/>
             <!-- Adresse des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
             <addr use="HP">
-                <streetAddressLine>Musterstraße 13a</streetAddressLine>
-                <postalCode>7000</postalCode>
-                <city>Eisenstadt</city>
-                <state>Burgenland</state>
+                <streetName>Harleshaeuserstr.</streetName>
+                <houseNumber>30</houseNumber>
+                <postalCode>9853</postalCode>
+                <city>Hinterschiffl</city>
                 <country>AUT</country>
             </addr>
-            <!-- Kontaktdaten des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-            <telecom use="H" value="tel:+43.2682.40400"/>
-            <telecom use="MC" value="tel:+43.664.1234567"/>
-            <telecom value="mailto:musterfrau@provider.at"/>
             <patient>
                 <!-- Name des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <name>
-                    <prefix qualifier="AC">Dr.</prefix>
-                    <given>Maria</given>
-                    <given>Johanna</given>
-                    <family>Musterfrau</family>
-                    <family qualifier="BR">VorDerHeirat</family>
-                    <suffix qualifier="AC">BSc</suffix>
+                    <prefix qualifier="AC">Dr.med.dent.</prefix>
+                    <given>Ludwiga</given>
+                    <given>Benedikt</given>
+                    <family>AGIWGerhardt ELGATest</family>
                 </name>
                 <!-- Geschlecht des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <administrativeGenderCode code="F" displayName="Female" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
                 <!-- Geburtsdatum des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <birthTime value="19611224165534+0200"/>
-                <!-- <birthTime value="19611224"/> -->
-                <sdtc:deceasedInd value="true"/>
-                <!-- <sdtc:deceasedTime value="19611224165534+0200"/> -->
-                <!-- Familienstand des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <maritalStatusCode code="M" displayName="Married" codeSystem="2.16.840.1.113883.5.2" codeSystemName="HL7:MaritalStatus"/>
-                <!-- Religionszugehörigkeit des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <religiousAffiliationCode code="101" codeSystem="2.16.840.1.113883.2.16.1.4.1" codeSystemName="HL7.AT:ReligionAustria" displayName="Römisch-Katholisch"/>
-                <guardian>
-                    <addr>
-                        <streetAddressLine>Guardianstraße 1</streetAddressLine>
-                        <postalCode>8011</postalCode>
-                        <city>Graz</city>
-                        <state>Steiermark</state>
-                        <country>AUT</country>
-                    </addr>
-                    <telecom value="tel:+43.1234.5678"/>
-                    <guardianPerson>
-                        <name>Guardian Person 1</name>
-                    </guardianPerson>
-                </guardian>
-                <guardian>
-                    <addr>
-                        <streetAddressLine>Guardianstraße 2</streetAddressLine>
-                        <postalCode>8011</postalCode>
-                        <city>Graz</city>
-                        <state>Steiermark</state>
-                        <country>AUT</country>
-                    </addr>
-                    <telecom value="tel:+43.1234.5678"/>
-                    <guardianPerson>
-                        <name>
-                            <given>Peter</given>
-                            <family>Guardian 2</family>
-                        </name>
-                    </guardianPerson>
-                </guardian>
-                <guardian>
-                    <addr>
-                        <streetAddressLine>Guardianstraße 3</streetAddressLine>
-                        <postalCode>8011</postalCode>
-                        <city>Graz</city>
-                        <state>Steiermark</state>
-                        <country>AUT</country>
-                    </addr>
-                    <telecom value="tel:+43.1234.5678"/>
-                    <guardianOrganization>
-                        <name>Guardian 3 Organization</name>
-                    </guardianOrganization>
-                </guardian>
-                <!-- Geburtsort des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
-                <birthplace>
-                    <place>
-                        <addr>
-                            <streetAddressLine>Musterstraße 23b</streetAddressLine>
-                            <postalCode>8011</postalCode>
-                            <city>Graz</city>
-                            <state>Steiermark</state>
-                            <country>AUT</country>
-                        </addr>
-                    </place>
-                </birthplace>
-                <languageCommunication>
-                    <languageCode code="de"/>
-                    <modeCode code="ESP" codeSystem="2.16.840.1.113883.5.60" displayName="Expressed spoken"/>
-                    <proficiencyLevelCode code="F" codeSystem="2.16.840.1.113883.5.61" displayName="Fair"/>
-                    <preferenceInd value="true"/>
-                </languageCommunication>
+                <birthTime value="19241228"/>
             </patient>
         </patientRole>
     </recordTarget>
@@ -217,7 +146,6 @@
                     <city>Wien</city>
                     <state>Wien</state>
                     <country>AUT</country>
-                    <additionalLocator>Tür 23</additionalLocator>
                 </addr>
             </representedOrganization>
         </assignedAuthor>
@@ -344,7 +272,7 @@
     <informationRecipient typeCode="TRC">
         <intendedRecipient>
             <!-- Identifikation des beabsichtigten sekundären Empfängers aus dem GDA-Index (siehe Allgemeiner Implementierungsleitfaden) -->
-            <id root="1.2.40.0.34.99.5678" extension="1234" assigningAuthorityName="GDA Index"/>
+            <id nullFlavor="UNK"/>
             <!-- Personendaten des beabsichtigten sekundären Empfängers (siehe Allgemeiner Implementierungsleitfaden) -->
             <informationRecipient>
                 <name>
@@ -353,6 +281,27 @@
                     <family>Empfänger Sekundär</family>
                 </name>
             </informationRecipient>
+            <!-- Organisation, der der beabsichtigte primäre Empfänger angehört (siehe Allgemeiner Implementierungsleitfaden) -->
+            <receivedOrganization>
+                <!-- Identifikation der Organisation des beabsichtigten sekundären Empfängers aus dem GDA-Index -->
+                <id root="1.2.40.0.34.99.5678" assigningAuthorityName="GDA Index"/>
+                <!-- Name der Organisation des beabsichtigten sekundären Empfängers -->
+                <name>Ordination Dr. Sekundär</name>
+                <!-- Kontaktdaten der Organisation des beabsichtigten sekundären Empfängers -->
+                <telecom value="tel:0512.1234567"/>
+                <telecom value="fax:0512.1234567.11"/>
+                <telecom value="mailto:office@ordination-sekundaer.at"/>
+                <telecom value="http://www.ordination-sekundaer.at"/>
+                <telecom value="me:12345678792"/>
+                <!-- Adresse der Organisation des beabsichtigten sekundären Empfängers -->
+                <addr>
+                    <streetName>Sekundärstraße</streetName>
+                    <houseNumber>22</houseNumber>
+                    <postalCode>6020</postalCode>
+                    <city>Innsbruck</city>
+                    <country>AUT</country>
+                </addr>
+            </receivedOrganization>
         </intendedRecipient>
     </informationRecipient>
 
@@ -575,92 +524,10 @@
     </participant>
 
     <!-- Auskunftsberechtigte Person (siehe Allgemeiner Implementierungsleitfaden) -->
-    <participant typeCode="IND">
-        <templateId root="1.2.40.0.34.6.0.11.1.27"/>
-        <time>
-            <low value="20200601063500+0200"/>
-            <high value="20210601063500+0200"/>
-        </time>
-        <associatedEntity classCode="ECON">
-            <!-- Code SELF (Patient ist selbst der Versicherungsnehmer) -->
-            <code code="FTH" codeSystem="2.16.840.1.113883.5.111" codeSystemName="HL7:RoleCode"/>
-            <addr>
-                <streetName>Wiedner Hauptstraße</streetName>
-                <houseNumber>84-86</houseNumber>
-                <postalCode>1051</postalCode>
-                <city>Wien</city>
-                <state>Wien</state>
-                <country>AUT</country>
-            </addr>
-            <telecom value="tel:01.54654.0"/>
-            <telecom value="fax:01.54654.385"/>
-            <associatedPerson>
-                <name>
-                    <prefix qualifier="AC">Dr.</prefix>
-                    <given>Herbert</given>
-                    <family>Mustermann</family>
-                </name>
-            </associatedPerson>
-            <!-- Versicherungsgesellschaft -->
-            <scopingOrganization>
-                <id root="1.2.40.0.10.1.4.3.1" extension="1111241249" assigningAuthorityName="Österreichische Sozialversicherung"/>
-                <name>Sozialversicherung der gew. Wirtschaft</name>
-                <telecom value="tel:01.54654.0"/>
-                <telecom value="fax:01.54654.385"/>
-                <telecom value="http://esv-sva.sozvers.at"/>
-                <addr>
-                    <streetName>Wiedner Hauptstraße</streetName>
-                    <houseNumber>84-86</houseNumber>
-                    <postalCode>1051</postalCode>
-                    <city>Wien</city>
-                    <state>Wien</state>
-                    <country>AUT</country>
-                </addr>
-            </scopingOrganization>
-        </associatedEntity>
-    </participant>
+    <!-- Nicht angewandt in diesem Demo-Dokument -->
 
     <!-- Angehörige (siehe Allgemeiner Implementierungsleitfaden) -->
-    <participant typeCode="IND">
-        <templateId root="1.2.40.0.34.6.0.11.1.25"/>
-        <associatedEntity classCode="PRS">
-            <!-- Code SELF (Patient ist selbst der Versicherungsnehmer) -->
-            <code code="FTH" codeSystem="2.16.840.1.113883.5.111" codeSystemName="HL7:RoleCode"/>
-            <addr>
-                <streetName>Wiedner Hauptstraße</streetName>
-                <houseNumber>84-86</houseNumber>
-                <postalCode>1051</postalCode>
-                <city>Wien</city>
-                <state>Wien</state>
-                <country>AUT</country>
-            </addr>
-            <telecom value="tel:01.54654.0"/>
-            <telecom value="fax:01.54654.385"/>
-            <associatedPerson>
-                <name>
-                    <prefix qualifier="AC">Dr.</prefix>
-                    <given>Herbert</given>
-                    <family>Mustermann</family>
-                </name>
-            </associatedPerson>
-            <!-- Versicherungsgesellschaft -->
-            <scopingOrganization>
-                <id root="1.2.40.0.10.1.4.3.1" extension="1111241249" assigningAuthorityName="Österreichische Sozialversicherung"/>
-                <name>Sozialversicherung der gew. Wirtschaft</name>
-                <telecom value="tel:01.54654.0"/>
-                <telecom value="fax:01.54654.385"/>
-                <telecom value="http://esv-sva.sozvers.at"/>
-                <addr>
-                    <streetName>Wiedner Hauptstraße</streetName>
-                    <houseNumber>84-86</houseNumber>
-                    <postalCode>1051</postalCode>
-                    <city>Wien</city>
-                    <state>Wien</state>
-                    <country>AUT</country>
-                </addr>
-            </scopingOrganization>
-        </associatedEntity>
-    </participant>
+    <!-- Nicht angewandt in diesem Demo-Dokument -->
 
     <!-- Versicherter/Versicherung (siehe Allgemeiner Implementierungsleitfaden) -->
     <participant typeCode="HLD">
@@ -689,66 +556,10 @@
     </participant>
 
     <!-- Betreuungsorganisation (siehe Allgemeiner Implementierungsleitfaden) -->
-    <participant typeCode="IND">
-        <templateId root="1.2.40.0.34.6.0.11.1.29"/>
-        <associatedEntity classCode="CAREGIVER">
-            <scopingOrganization>
-                <id root="1.2.40.0.999.1.2.3" extension="1345134523"/>
-                <name>Betreuungsorganisation GmbH</name>
-                <telecom value="tel:01.1234.0"/>
-                <telecom value="fax:01.1234.5678"/>
-                <telecom value="http://betreuungsorganisation.at"/>
-                <addr>
-                    <streetName>Betreuungsstraße</streetName>
-                    <houseNumber>84-86</houseNumber>
-                    <postalCode>1051</postalCode>
-                    <city>Wien</city>
-                    <state>Wien</state>
-                    <country>AUT</country>
-                </addr>
-            </scopingOrganization>
-        </associatedEntity>
-    </participant>
+    <!-- Nicht angewandt in diesem Demo-Dokument -->
 
     <!-- Weitere Behandler (siehe Allgemeiner Implementierungsleitfaden) -->
-    <participant typeCode="CON">
-        <templateId root="1.2.40.0.34.6.0.11.1.28"/>
-        <functionCode code="160" codeSystem="1.2.40.0.34.5.2" displayName="Turnusärztin/Turnusarzt"/>
-        <associatedEntity classCode="PROV">
-            <addr>
-                <streetName>Weitere Behandlerstraße</streetName>
-                <houseNumber>84-86</houseNumber>
-                <postalCode>1051</postalCode>
-                <city>Wien</city>
-                <state>Wien</state>
-                <country>AUT</country>
-            </addr>
-            <telecom value="tel:01.1234.0"/>
-            <telecom value="fax:01.1234.5678"/>
-            <associatedPerson>
-                <name>
-                    <prefix qualifier="AC">Dr.</prefix>
-                    <given>Weiterer</given>
-                    <family>Behandler</family>
-                </name>
-            </associatedPerson>
-            <scopingOrganization>
-                <id root="1.2.40.0.999.1.2.3" extension="1345134523"/>
-                <name>Weitere Behandler GmbH</name>
-                <telecom value="tel:01.1234.0"/>
-                <telecom value="fax:01.1234.5678"/>
-                <telecom value="http://betreuungsorganisation.at"/>
-                <addr>
-                    <streetName>Weitere Behandlerstraße</streetName>
-                    <houseNumber>84-86</houseNumber>
-                    <postalCode>1051</postalCode>
-                    <city>Wien</city>
-                    <state>Wien</state>
-                    <country>AUT</country>
-                </addr>
-            </scopingOrganization>
-        </associatedEntity>
-    </participant>
+    <!-- Nicht angewandt in diesem Demo-Dokument -->
 
     <!-- Order / Zuweisung und Auftragsmanagement -->
     <inFulfillmentOf typeCode="FLFS">
@@ -795,7 +606,7 @@
                     <assignedPerson>
                         <name>
                             <prefix qualifier="AC">Dr.</prefix>
-                            <family>Humpel - documentationOfPerformer</family>
+                            <family>Humpel</family>
                             <given>Florian</given>
                         </name>
                     </assignedPerson>
@@ -2564,60 +2375,6 @@
                 </section>
             </component>
 
-            <!-- Angeforderte Untersuchung (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund) -->
-            <component>
-                <section>
-                    <!-- templateId für Angeforderte Untersuchungen -->
-                    <templateId root="1.2.40.0.34.6.0.11.2.15"/>
-                    <!-- Code der Section -->
-                    <code code="400999005" codeSystem="2.16.840.1.113883.6.96" displayName="Procedure requested (situation)"/>
-                    <!-- Titel der Section -->
-                    <title>Angeforderte Untersuchungen</title>
-                    <!-- CDA Level 2 -->
-                    <text>Großes Blutbild</text>
-                    <!-- CDA Level 3 -->
-                    <entry typeCode="DRIV">
-                        <procedure classCode="PROC" moodCode="RQO">
-                            <!-- templateId für Angeforderte Untersuchung Entry -->
-                            <templateId root="1.2.40.0.34.6.0.11.3.169"/>
-                            <!-- Interne ID -->
-                            <id root="1.2.40.0.34.99.4613.11.3" extension="4711" assigningAuthorityName="Amadeus Spital"/>
-                            <code nullFlavor="OTH">
-                                <translation code="33882-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Collection date of Specimen"/>
-                            </code>
-                            <!-- Datum der Anforderung -->
-                            <effectiveTime value="20251212"/>
-                        </procedure>
-                    </entry>
-                    <entry typeCode="DRIV">
-                        <procedure classCode="PROC" moodCode="RQO">
-                            <!-- templateId für Angeforderte Untersuchung Entry -->
-                            <templateId root="1.2.40.0.34.6.0.11.3.169"/>
-                            <!-- Interne ID -->
-                            <id root="1.2.40.0.34.99.4613.11.3" extension="4711" assigningAuthorityName="Amadeus Spital"/>
-                            <code nullFlavor="OTH">
-                                <translation code="26464-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukozyten"/>
-                            </code>
-                            <!-- Datum der Anforderung -->
-                            <effectiveTime value="20251212"/>
-                        </procedure>
-                    </entry>
-                    <entry typeCode="DRIV">
-                        <procedure classCode="PROC" moodCode="RQO">
-                            <!-- templateId für Angeforderte Untersuchung Entry -->
-                            <templateId root="1.2.40.0.34.6.0.11.3.169"/>
-                            <!-- Interne ID -->
-                            <id root="1.2.40.0.34.99.4613.11.3" extension="4711" assigningAuthorityName="Amadeus Spital"/>
-                            <code nullFlavor="OTH">
-                                <translation code="26515-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten"/>
-                            </code>
-                            <!-- Datum der Anforderung -->
-                            <effectiveTime value="20251212"/>
-                        </procedure>
-                    </entry>
-                </section>
-            </component>
-
             <!-- Probeninformation (Specimen Section) -->
             <component typeCode="COMP">
                 <section classCode="DOCSECT">
@@ -2993,84 +2750,6 @@
                         <act classCode="ACT" moodCode="EVN">
                             <code code="300" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Hämatologie"/>
                             <statusCode code="completed"/>
-                            <entryRelationship typeCode="COMP">
-                                <!-- Notification Organizer -->
-                                <organizer classCode="CLUSTER" moodCode="EVN">
-                                    <templateId root="1.2.40.0.34.6.0.11.3.165"/>
-                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.1"/>
-                                    
-                                    <statusCode code="completed"/>
-                                    
-                                    <!-- ============================== -->
-                                    <!-- Notifiable Condition           -->
-                                    <!-- ============================== -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="COND" moodCode="EVN">
-                                            <templateId root="1.2.40.0.34.6.0.11.3.166"/>
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.1.1"/>
-                                            
-                                            <id root="2.16.840.1.113883.2.16.1.99.3.1" extension="ERR-1-1"/>
-                                            
-                                            <code code="170516003"
-                                                codeSystem="2.16.840.1.113883.6.96"
-                                                codeSystemName="SNOMED CT"
-                                                displayName="Notification of Disease">
-                                                <qualifier>
-                                                    <name code="246087005"
-                                                        codeSystem="2.16.840.1.113883.6.96"
-                                                        codeSystemName="SNOMED CT"
-                                                        displayName="Source of Specimen"/>
-                                                    <value code="116154003"
-                                                        codeSystem="2.16.840.1.113883.6.96"
-                                                        codeSystemName="SNOMED CT"
-                                                        displayName="Patient"/>
-                                                </qualifier>
-                                            </code>
-                                            
-                                            <statusCode code="completed"/>
-                                            
-                                            <value xsi:type="CE"
-                                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                                code="SP015"
-                                                codeSystem="1.2.40.0.34.5.45"
-                                                codeSystemName="ELGA_SignificantPathogens"
-                                                displayName="Escherichia coli, sonstige darmpathogene Stämme"/>
-                                        </observation>
-                                    </component>
-                                    
-                                    <!-- ============================== -->
-                                    <!-- Case Identification            -->
-                                    <!-- ============================== -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="CASE" moodCode="EVN">
-                                            <templateId root="1.2.40.0.34.6.0.11.3.170"/>
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.1.2"/>
-                                            
-                                            <!-- EMS Fall-ID -->
-                                            <id root="1.2.40.0.34.3.1.1" extension="Beispiel-EMS-Fall-ID"/>
-                                            <!-- weitere lokale ID -->
-                                            <id root="1.2.3.999" extension="--example only 1 --"/>
-                                            <id root="1.2.3.999" extension="--example only 2 --"/>
-                                            <id root="1.2.3.999" extension="--example only 3 --"/>
-                                            <code code="416341003"
-                                                codeSystem="2.16.840.1.113883.6.96"
-                                                codeSystemName="SNOMED CT"
-                                                displayName="Case Management Started"/>
-                                            
-                                            <statusCode code="completed"/>
-                                            
-                                            <effectiveTime value="20200725145409+0100"/>
-                                            
-                                            <value xsi:type="CD"
-                                                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                                                code="A00"
-                                                codeSystem="1.2.40.0.34.5.171"
-                                                displayName="Cholera"/>
-                                        </observation>
-                                    </component>
-                                    
-                                </organizer>
-                            </entryRelationship>
                             <!-- Befundgruppe "Blutbild" -->
                             <entryRelationship typeCode="COMP">
                                 <organizer classCode="BATTERY" moodCode="EVN">
@@ -3126,10 +2805,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value xsi:type="RTO">
-                                                <numerator value="1" xsi:type="INT"/>
-                                                <denominator value="128" xsi:type="INT"/>
-                                            </value>
+                                            <value unit="10*9/L" value="165" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3138,7 +2814,7 @@
                                                         <reference value="#OBSREF-1-2"/>
                                                     </text>
                                                     <value xsi:type="IVL_PQ">
-                                                        <low value="120" unit="10*9/L"/>
+                                                        <low value="150" unit="10*9/L"/>
                                                         <high value="360" unit="10*9/L"/>
                                                     </value>
                                                     <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
@@ -3160,7 +2836,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value value="5" xsi:type="INT"/>
+                                            <value unit="10*12/L" value="5.39" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3191,10 +2867,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value xsi:type="IVL_INT">
-                                                <low value="10"/>
-                                                <high value="20"/>
-                                            </value>
+                                            <value unit="g/dL" value="16.0" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3225,7 +2898,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601063500+0200"/>
-                                            <value value="true" xsi:type="BL"/>
+                                            <value unit="%" value="49.7" xsi:type="PQ"/>
                                             <interpretationCode code="H" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="High"/>
                                             <!-- Validierende Person (siehe spezieller Leitfaden: Labor- und Mikrobiologiebefund) -->
                                             <participant typeCode="AUTHEN">
@@ -3235,12 +2908,7 @@
                                                 <participantRole>
                                                     <!-- Identifikation des Laboratory Results Validators des Dokuments -->
                                                     <id root="1.2.40.0.34.99.4613.3.3" extension="7777" assigningAuthorityName="Amadeus Spital"/>
-                                                    <addr>
-                                                        <streetAddressLine>Laborplatz 1</streetAddressLine>
-                                                        <city>Wien</city>
-                                                        <postalCode>1210</postalCode>
-                                                        <country>AUT</country>
-                                                    </addr>
+                                                    <addr nullFlavor="UNK"/>
                                                     <telecom use="WP" value="tel:+43.1.3453446.7777"/>
                                                     <playingEntity>
                                                         <name>
@@ -3279,7 +2947,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value value="false" xsi:type="BL"/>
+                                            <value unit="pg" value="29.7" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3341,7 +3009,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="CV" code="30428-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="MCV"/>
+                                            <value unit="g/dL" value="32.2" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -3373,7 +3041,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="CD" code="260354000" codeSystem="2.16.840.1.113883.6.96" displayName="Moderate number (qualifier value)"/>
+                                            <value unit="%" value="7" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -5115,7 +4783,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="CD" code="11152-6" codeSystem="2.16.840.1.113883.6.1" displayName="Eosinophils/​100 cells in Bone marrow" codeSystemName="LOINC"/>
+                                            <value unit="%" value="4" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -5149,41 +4817,6 @@
                                         </act>
                                     </component>
                                 </organizer>
-                            </entryRelationship>
-                            <!-- (Single) Laboratory Observation -->
-                            <entryRelationship typeCode="COMP">
-                                    
-                                    <observation classCode="OBS" moodCode="EVN">
-                                        <!-- templateId für Laboratory Observation Entry -->
-                                        <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                        <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                        <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                        <id extension="OBS-1-2-single" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                        <code code="26515-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Thrombozyten">
-                                            <translation code="16378004" codeSystem="2.16.840.1.113883.6.96" displayName="Platelet (cell structure)"/>
-                                        </code>
-                                        <text>
-                                            <reference value="#OBS-1-2"/>
-                                        </text>
-                                        <statusCode code="completed"/>
-                                        <effectiveTime value="20210601063500+0200"/>
-                                        <value unit="10*9/L" value="165" xsi:type="PQ"/>
-                                        <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                        <!-- Referenzbereich -->
-                                        <referenceRange typeCode="REFV">
-                                            <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                <text>
-                                                    <reference value="#OBSREF-1-2"/>
-                                                </text>
-                                                <value xsi:type="IVL_PQ">
-                                                    <low value="10" unit="10*9/L"/>
-                                                    <high value="20" unit="10*9/L"/>
-                                                </value>
-                                                <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            </observationRange>
-                                        </referenceRange>
-                                    </observation>  
-                                
                             </entryRelationship>
                             <!-- Eingebettetes Objekt Entry -->
                             <entryRelationship typeCode="COMP">
@@ -6949,52 +6582,6 @@
                         <act classCode="ACT" moodCode="EVN">
                             <code code="400" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Gerinnung/Hämostaseologie"/>
                             <statusCode code="completed"/>
-                            <performer typeCode="PRF">
-                                                <!-- templateId für Performer - Laboratory -->
-                                                <templateId root="1.2.40.0.34.6.0.11.9.24"/>
-                                                <!-- templateId für IHE PalM TF3 Rev.10, 6.3.2.20 Laboratory Performer -->
-                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
-                                                <time value="20210601130100+0200"/>
-                                                <assignedEntity>
-                                                    <!-- Identifikation des Performers der Analyse -->
-                                                    <id root="1.2.40.0.34.99.111.0.2" extension="55146"/>
-                                                    <!-- Code für externes Labor -->
-                                                    <code code="E" codeSystem="2.16.840.1.113883.2.16.1.4.9" codeSystemName="HL7.at.Laborkennzeichnung" displayName="EXTERN"/>
-                                                    <!-- Adresse des Performers der Analyse -->
-                                                    <addr>
-                                                        <streetAddressLine>Laborplatz 1</streetAddressLine>
-                                                        <city>Wien</city>
-                                                        <postalCode>1210</postalCode>
-                                                        <country>AUT</country>
-                                                    </addr>
-                                                    <!-- Kontaktdaten des Performers -->
-                                                    <telecom use="WP" value="tel:+43.1.12345678"/>
-                                                    <!-- Personendaten des Performers -->
-                                                    <assignedPerson>
-                                                        <name>
-                                                            <prefix qualifier="AC">Dr.</prefix>
-                                                            <given>Larissa</given>
-                                                            <family>LAB-DATA-PROC-ENTRY-PERFORMER</family>
-                                                        </name>
-                                                    </assignedPerson>
-                                                    <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
-                                                    <representedOrganization>
-                                                        <!-- ID der Organisation aus dem GDA Index -->
-                                                        <id root="1.2.40.0.34.99.111" assigningAuthorityName="GDA Index"/>
-                                                        <!-- Name der Organisation -->
-                                                        <name>Zentrallabor</name>
-                                                        <!-- Kontaktdaten der Organisation -->
-                                                        <telecom use="WP" value="tel:+43.1.12345678"/>
-                                                        <!-- Adresse der Organisation -->
-                                                        <addr>
-                                                            <streetAddressLine>Laborpatz 1</streetAddressLine>
-                                                            <city>Wien</city>
-                                                            <postalCode>1210</postalCode>
-                                                            <country>AUT</country>
-                                                        </addr>
-                                                    </representedOrganization>
-                                                </assignedEntity>
-                                            </performer>
                             <!-- Befundgruppe "Hämostaseologie Globaltest" -->
                             <entryRelationship typeCode="COMP">
                                 <organizer classCode="BATTERY" moodCode="EVN">
@@ -7019,10 +6606,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="RTO_PQ_PQ">
-                                                <numerator value="1" unit="mg/dl" xsi:type="PQ"/>
-                                                <denominator value="128" unit="mg/dl" xsi:type="PQ"/>
-                                            </value>
+                                            <value unit="%" value="116" xsi:type="PQ"/>
                                             <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
@@ -7053,7 +6637,7 @@
                                             </text>
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="IVL_INT" value="5"/>
+                                            <value xsi:type="PQ" value="1.1" unit="1"/>
                                             <interpretationCode code="L" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Low"/>
                                             <!-- Kommentar zur Analyse -->
                                             <entryRelationship typeCode="COMP">
@@ -7191,52 +6775,6 @@
                                     <!-- Code der Befundgruppe -->
                                     <code code="04150" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Einzelfaktoranalysen"/>
                                     <statusCode code="completed"/>
-                                    <performer typeCode="PRF">
-                                                <!-- templateId für Performer - Laboratory -->
-                                                <templateId root="1.2.40.0.34.6.0.11.9.24"/>
-                                                <!-- templateId für IHE PalM TF3 Rev.10, 6.3.2.20 Laboratory Performer -->
-                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
-                                                <time value="20210601130100+0200"/>
-                                                <assignedEntity>
-                                                    <!-- Identifikation des Performers der Analyse -->
-                                                    <id root="1.2.40.0.34.99.111.0.2" extension="55146"/>
-                                                    <!-- Code für externes Labor -->
-                                                    <code code="E" codeSystem="2.16.840.1.113883.2.16.1.4.9" codeSystemName="HL7.at.Laborkennzeichnung" displayName="EXTERN"/>
-                                                    <!-- Adresse des Performers der Analyse -->
-                                                    <addr>
-                                                        <streetAddressLine>Laborplatz 1</streetAddressLine>
-                                                        <city>Wien</city>
-                                                        <postalCode>1210</postalCode>
-                                                        <country>AUT</country>
-                                                    </addr>
-                                                    <!-- Kontaktdaten des Performers -->
-                                                    <telecom use="WP" value="tel:+43.1.12345678"/>
-                                                    <!-- Personendaten des Performers -->
-                                                    <assignedPerson>
-                                                        <name>
-                                                            <prefix qualifier="AC">Dr.</prefix>
-                                                            <given>Larissa</given>
-                                                            <family>ORGANIZER-LEVEL-PERFORMER</family>
-                                                        </name>
-                                                    </assignedPerson>
-                                                    <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
-                                                    <representedOrganization>
-                                                        <!-- ID der Organisation aus dem GDA Index -->
-                                                        <id root="1.2.40.0.34.99.111" assigningAuthorityName="GDA Index"/>
-                                                        <!-- Name der Organisation -->
-                                                        <name>Zentrallabor</name>
-                                                        <!-- Kontaktdaten der Organisation -->
-                                                        <telecom use="WP" value="tel:+43.1.12345678"/>
-                                                        <!-- Adresse der Organisation -->
-                                                        <addr>
-                                                            <streetAddressLine>Laborpatz 1</streetAddressLine>
-                                                            <city>Wien</city>
-                                                            <postalCode>1210</postalCode>
-                                                            <country>AUT</country>
-                                                        </addr>
-                                                    </representedOrganization>
-                                                </assignedEntity>
-                                            </performer>
                                     <!-- Laboratory Observation Entry -->
                                     <component typeCode="COMP">
                                         <observation classCode="OBS" moodCode="EVN">
@@ -7279,7 +6817,7 @@
                                                         <name>
                                                             <prefix qualifier="AC">Dr.</prefix>
                                                             <given>Larissa</given>
-                                                            <family>OBSERVATION-LEVEL-PERFORMER-1</family>
+                                                            <family>Laborleiter</family>
                                                         </name>
                                                     </assignedPerson>
                                                     <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
@@ -7337,7 +6875,7 @@
                                                 <templateId root="1.2.40.0.34.6.0.11.9.24"/>
                                                 <!-- templateId für IHE PalM TF3 Rev.10, 6.3.2.20 Laboratory Performer -->
                                                 <templateId root="1.3.6.1.4.1.19376.1.3.3.1.7"/>
-                                                <time value="20250601130100+0200"/>
+                                                <time value="20210601130100+0200"/>
                                                 <assignedEntity>
                                                     <!-- Identifikation des Performers der Analyse -->
                                                     <id root="1.2.40.0.34.99.111.0.2" extension="55146"/>
@@ -7357,7 +6895,7 @@
                                                         <name>
                                                             <prefix qualifier="AC">Dr.</prefix>
                                                             <given>Larissa</given>
-                                                            <family>OBSERVATION-LEVEL-PERFORMER-2</family>
+                                                            <family>Laborleiter</family>
                                                         </name>
                                                     </assignedPerson>
                                                     <!-- Organisation, in deren Auftrag der Performer die Analyse durchgeführt hat -->
@@ -10566,855 +10104,6 @@
                                                 RRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFF
                                                 FAH/2Q== </value>
                                         </observationMedia>
-                                    </component>
-                                </organizer>
-                            </entryRelationship>
-                        </act>
-                    </entry>
-                </section>
-            </component>
-
-            <!--- Laboratory Specialty Section (Befundbereich "Hormone/Vitamine/Tumormarker") -->
-            <component typeCode="COMP">
-                <section classCode="DOCSECT">
-                    <!-- templateId für Laboratory Specialty Section -->
-                    <templateId root="1.2.40.0.34.6.0.11.2.102"/>
-                    <code code="600" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Hormone/Vitamine/Tumormarker"/>
-                    <title>Hormone/Vitamine/Tumormarker</title>
-                    <!-- CDA Level 2 -->
-                    <text>
-                        <!-- Befundgruppe "Hormone" -->
-                        <paragraph styleCode="xELGA_h3">Hormone</paragraph>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th styleCode="xELGA_colw:40">Analyse</th>
-                                    <th>Ergebnis</th>
-                                    <th>Einheit</th>
-                                    <th>Referenzbereiche</th>
-                                    <th styleCode="xELGA_colw:10">Interpretation</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ID="OBS-4-1">
-                                    <td>TSH</td>
-                                    <td>1.00</td>
-                                    <td>µU/mL</td>
-                                    <td ID="OBSREF-4-1">0.49-4.67</td>
-                                    <td/>
-                                </tr>
-                                <tr ID="OBS-4-2" styleCode="xELGA_red">
-                                    <td>T4</td>
-                                    <td>1.00</td>
-                                    <td>ng/mL</td>
-                                    <td ID="OBSREF-4-2">57.92-154.44</td>
-                                    <td>--</td>
-                                </tr>
-                                <tr ID="OBS-4-3">
-                                    <td>Freies T4</td>
-                                    <td>1.00</td>
-                                    <td>ng/dL</td>
-                                    <td ID="OBSREF-4-3">0.71-1.85</td>
-                                    <td/>
-                                </tr>
-                                <tr ID="OBS-4-4">
-                                    <td>T3</td>
-                                    <td>1.00</td>
-                                    <td>ng/mL</td>
-                                    <td ID="OBSREF-4-4">0.45-1.37</td>
-                                    <td/>
-                                </tr>
-                                <tr ID="OBS-4-5" styleCode="xELGA_red">
-                                    <td>Freies T3</td>
-                                    <td>1.00</td>
-                                    <td>pg/mL</td>
-                                    <td ID="OBSREF-4-5">1.45-3.48</td>
-                                    <td>-</td>
-                                </tr>
-                                <tr ID="OBS-4-6">
-                                    <td>Prolaktin</td>
-                                    <td>Wert folgt</td>
-                                    <td>ng/mL</td>
-                                    <td ID="OBSREF-4-6">0.33-27.33</td>
-                                    <td/>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <!-- Befundgruppe "Vitamine" -->
-                        <paragraph styleCode="xELGA_h3">Vitamine</paragraph>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th styleCode="xELGA_colw:40">Analyse</th>
-                                    <th>Ergebnis</th>
-                                    <th>Einheit</th>
-                                    <th>Referenzbereiche</th>
-                                    <th styleCode="xELGA_colw:10">Interpretation</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        <footnote ID="fn2">
-                                            <sup>2)</sup>Referenzwerte sind NICHT alters- u.
-                                            geschlechtsabhängig</footnote>
-                                    </td>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                <tr ID="OBS-5-1">
-                                    <td>Folsäure</td>
-                                    <td>7.3</td>
-                                    <td>ng/mL</td>
-                                    <td ID="OBSREF-5-1">4.6-18.7<sup>2)</sup>
-                                    </td>
-                                    <td/>
-                                </tr>
-                                <tr ID="OBS-5-2">
-                                    <td>Vitamin B12</td>
-                                    <td>366</td>
-                                    <td>pmol/L</td>
-                                    <td ID="OBSREF-5-2">141-489<sup>2)</sup>
-                                    </td>
-                                    <td/>
-                                </tr>
-                                <tr ID="OBS-5-3">
-                                    <td>Vitamin B15</td>
-                                    <td>390</td>
-                                    <td>pmol/L</td>
-                                    <td ID="OBSREF-5-3">290-490<sup>2)</sup></td>
-                                    <td/>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </text>
-                    <!-- CDA Level 3 -->
-                    <!-- ANMERKUNG: Der Beispielbefund ist auszugsweise CDA Level 3 codiert. -->
-                    <entry typeCode="DRIV">
-                        <!-- templateId für Laboratory Report Data Processing Entry -->
-                        <templateId root="1.2.40.0.34.6.0.11.3.25"/>
-                        <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.2 Laboratory Report Data Processing Entry -->
-                        <templateId root="1.3.6.1.4.1.19376.1.3.1"/>
-                        <act classCode="ACT" moodCode="EVN">
-                            <code code="600" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Hormone/Vitamine/Tumormarker"/>
-                            <statusCode code="completed"/>
-                            <!-- Befundgruppe "Hormone" -->
-                            <entryRelationship typeCode="COMP">
-                                <organizer classCode="BATTERY" moodCode="EVN">
-                                    <!-- templateId für Laboratory Battery Organizer -->
-                                    <templateId root="1.2.40.0.34.6.0.11.3.26"/>
-                                    <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.12 Laboratory Battery Organizer -->
-                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.4"/>
-                                    <!-- Code der Befundgruppe -->
-                                    <code code="06330" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Hormone"/>
-                                    <statusCode code="completed"/>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-1" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="3016-3" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="TSH"/>
-                                            <text>
-                                                <reference value="#OBS-4-1"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="u[IU]/mL" value="1.00" xsi:type="PQ"/>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-4-1"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="0.49" unit="u[IU]/mL"/>
-                                                        <high value="4.67" unit="u[IU]/mL"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-2" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="3026-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="T4"/>
-                                            <text>
-                                                <reference value="#OBS-4-2"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="ng/mL" value="1.00" xsi:type="PQ"/>
-                                            <interpretationCode code="LL" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Low Alert"/>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-4-2"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="57.92" unit="ng/mL"/>
-                                                        <high value="154.44" unit="ng/mL"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-3" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="3024-7" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Freies T4"/>
-                                            <text>
-                                                <reference value="#OBS-4-3"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="ng/dL" value="1.00" xsi:type="PQ"/>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-4-3"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="0.71" unit="ng/dL"/>
-                                                        <high value="1.85" unit="ng/dL"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-4" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="3053-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="T3"/>
-                                            <text>
-                                                <reference value="#OBS-4-4"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="ng/mL" value="1.00" xsi:type="PQ"/>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-4-4"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="0.45" unit="ng/mL"/>
-                                                        <high value="1.37" unit="ng/mL"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-5" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="3051-0" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Freies T3"/>
-                                            <text>
-                                                <reference value="#OBS-4-5"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="pg/mL" value="1.00" xsi:type="PQ"/>
-                                            <interpretationCode code="L" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Low"/>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-4-5"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="1.45" unit="pg/mL"/>
-                                                        <high value="3.48" unit="pg/mL"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-6" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="20568-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Prolaktin"/>
-                                            <text>
-                                                <reference value="#OBS-4-6"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime nullFlavor="UNK"/>
-                                            <!-- Analyse noch in Arbeit ("Wert folgt") -->
-                                            <value xsi:type="CD" code="255599008" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Incomplete (qualifier value)"/>
-                                        </observation>
-                                    </component>
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-4-7" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="2668-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Noradrenal.Urinexkr."/>
-                                            <text>
-                                                <reference value="#OBS-4-6"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime nullFlavor="UNK"/>
-                                            <!-- Analyse nicht ausgeführt, weil "Insufficient Sample" -->
-                                            <value xsi:type="CD" code="281268007" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Insufficient sample (finding)"/>
-                                        </observation>
-                                    </component>
-                                </organizer>
-                            </entryRelationship>
-
-                            <!-- Befundgruppe "Vitamine" -->
-                            <entryRelationship typeCode="COMP">
-                                <organizer classCode="BATTERY" moodCode="EVN">
-                                    <!-- templateId für Laboratory Battery Organizer -->
-                                    <templateId root="1.2.40.0.34.6.0.11.3.26"/>
-                                    <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.12 Laboratory Battery Organizer -->
-                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.4"/>
-                                    <!-- Code der Befundgruppe -->
-                                    <code code="06340" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Vitamine"/>
-                                    <statusCode code="completed"/>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-5-1" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="2284-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Folsäure"/>
-                                            <text>
-                                                <reference value="#OBS-5-1"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="ng/mL" value="7.3" xsi:type="PQ"/>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Kommentar zur Analyse -->
-                                            <entryRelationship typeCode="COMP">
-                                                <act classCode="ACT" moodCode="EVN">
-                                                    <!-- templateId für Annotation Comment -->
-                                                    <templateId root="1.2.40.0.34.6.0.11.3.11"/>
-                                                    <!-- templateId für HL7 CCD Comment -->
-                                                    <templateId root="2.16.840.1.113883.10.20.1.40"/>
-                                                    <!-- templateId für IHE PCC Comments -->
-                                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
-                                                    <code code="48767-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Annotation comment"/>
-                                                    <text>
-                                                        <reference value="#fn2"/>
-                                                    </text>
-                                                    <statusCode code="completed"/>
-                                                </act>
-                                            </entryRelationship>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-5-1"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="4.6" unit="ng/mL"/>
-                                                        <high value="18.7" unit="ng/mL"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-5-2" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="2132-9" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Vitamin B12"/>
-                                            <text>
-                                                <reference value="#OBS-5-2"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="pmol/L" value="366" xsi:type="PQ"/>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Kommentar zur Analyse -->
-                                            <entryRelationship typeCode="COMP">
-                                                <act classCode="ACT" moodCode="EVN">
-                                                    <!-- templateId für Annotation Comment -->
-                                                    <templateId root="1.2.40.0.34.6.0.11.3.11"/>
-                                                    <!-- templateId für HL7 CCD Comment -->
-                                                    <templateId root="2.16.840.1.113883.10.20.1.40"/>
-                                                    <!-- templateId für IHE PCC Comments -->
-                                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
-                                                    <code code="48767-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Annotation comment"/>
-                                                    <text>
-                                                        <reference value="#fn2"/>
-                                                    </text>
-                                                    <statusCode code="completed"/>
-                                                </act>
-                                            </entryRelationship>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-5-2"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="141" unit="pmol/L"/>
-                                                        <high value="489" unit="pmol/L"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-5-3" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <!-- Analyse, für die kein LOINC existiert -->
-                                            <code nullFlavor="OTH">
-                                                <originalText>Vitamin B15</originalText>
-                                                <translation code="VB15" displayName="Vitamin B15" codeSystem="1.2.40.0.34.99.107" codeSystemName="LaborparameterAmadeusSpital"/>
-                                            </code>
-                                            <text>
-                                                <reference value="#OBS-5-3"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="pmol/L" value="390" xsi:type="PQ"/>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Kommentar zur Analyse -->
-                                            <entryRelationship typeCode="COMP">
-                                                <act classCode="ACT" moodCode="EVN">
-                                                    <!-- templateId für Annotation Comment -->
-                                                    <templateId root="1.2.40.0.34.6.0.11.3.11"/>
-                                                    <!-- templateId für HL7 CCD Comment -->
-                                                    <templateId root="2.16.840.1.113883.10.20.1.40"/>
-                                                    <!-- templateId für IHE PCC Comments -->
-                                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
-                                                    <code code="48767-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Annotation comment"/>
-                                                    <text>
-                                                        <reference value="#fn2"/>
-                                                    </text>
-                                                    <statusCode code="completed"/>
-                                                </act>
-                                            </entryRelationship>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-5-3"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low value="290" unit="pmol/L"/>
-                                                        <high value="490" unit="pmol/L"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                </organizer>
-                            </entryRelationship>
-                        </act>
-                    </entry>
-                </section>
-            </component>
-
-            <!--- Laboratory Specialty Section (Befundbereich "Allergiediagnostik") -->
-            <component typeCode="COMP">
-                <section classCode="DOCSECT">
-                    <!-- templateId für Laboratory Specialty Section -->
-                    <templateId root="1.2.40.0.34.6.0.11.2.102"/>
-                    <code code="1800" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Allergiediagnostik"/>
-                    <title>Allergiediagnostik</title>
-                    <!-- CDA Level 2 -->
-                    <text>
-                        <!-- Befundgruppe "Globalmarker" -->
-                        <paragraph styleCode="xELGA_h3">Globalmarker</paragraph>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th styleCode="xELGA_colw:70">Analyse</th>
-                                    <th>Ergebnis</th>
-                                    <th>Interpretation</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        Die "erweiterten Analyseinformationen" wurden direkt unter die Analysenbezeichnungen geschrieben.<br/>(Hier kann sonst ein Kommentar zu den Globalmarkern stehen.)
-                                    </td>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                <tr ID="OBS-6-1">
-                                    <td>sx1 Inhalatives Screening<br /><content styleCode="italics">Lieschgras, Roggen, Birke, Beifuß, Dermatophagoides pteronyssinus, Katzenschuppen, Hundeschuppen, Cladosporium herbarum</content></td>
-                                    <td>negativ</td>
-                                    <td/>
-                                </tr>
-                                <tr ID="OBS-6-2" styleCode="xELGA_red">
-                                    <td>mx1 Schimmelpilzemix 1<br/><content styleCode="italics">Alternaria alternata, Aspergillus fumigatus, Cladosporium herbarum, Penicillium notatum</content></td>
-                                    <td>positiv</td>
-                                    <td>A</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <!-- Befundgruppe "Inhalationsallergene IgE" -->
-                        <paragraph styleCode="xELGA_h3">Inhalationsallergene IgE</paragraph>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th styleCode="xELGA_colw:40">Analyse</th>
-                                    <th>Ergebnis</th>
-                                    <th>Einheit</th>
-                                    <th>Referenzbereich</th>
-                                    <th>Interpretation</th>
-                                </tr>
-                            </thead>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        Drei Optionen der Befunddarstellung der Allergiediagnostik: 1) quantitativ, 2) mit RAST-Klasse und 3) kombiniert (quantitativ + RAST-Interpretation)
-                                    </td>
-                                </tr>
-                            </tfoot>
-                            <tbody>
-                                <tr ID="OBS-7-1">
-                                    <td>Penicillum notatum (Pinselschimmel)</td>
-                                    <td>&lt;0.35</td>
-                                    <td>kU/L</td>
-                                    <td ID="OBSREF-6-1">&lt;0.35</td>
-                                    <td></td>
-                                </tr>
-                                <tr ID="OBS-7-2">
-                                    <td>Cladosporium herbarum IgE RAST</td>
-                                    <td>0</td>
-                                    <td>RAST</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <tr ID="OBS-7-3" styleCode="xELGA_red">
-                                    <td>Alternaria alternata (Alternaria tenuis) IgE</td>
-                                    <td>5.18</td>
-                                    <td>kU/L</td>
-                                    <td>&lt;0.35</td>
-                                    <td>RAST 3</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </text>
-                    <!-- CDA Level 3 -->
-                    <entry typeCode="DRIV">
-                        <!-- templateId für Laboratory Report Data Processing Entry -->
-                        <templateId root="1.2.40.0.34.6.0.11.3.25"/>
-                        <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.2 Laboratory Report Data Processing Entry -->
-                        <templateId root="1.3.6.1.4.1.19376.1.3.1"/>
-                        <act classCode="ACT" moodCode="EVN">
-                            <code code="1800" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Allergiediagnostik"/>
-                            <statusCode code="completed"/>
-                            <!-- Befundgruppe "Globalmarker" -->
-                            <entryRelationship typeCode="COMP">
-                                <organizer classCode="BATTERY" moodCode="EVN">
-                                    <!-- templateId für Laboratory Battery Organizer -->
-                                    <templateId root="1.2.40.0.34.6.0.11.3.26"/>
-                                    <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.12 Laboratory Battery Organizer -->
-                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.4"/>
-                                    <!-- Code der Befundgruppe -->
-                                    <code code="12010" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Globalmarker"/>
-                                    <statusCode code="completed"/>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-6-1" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="37989-1" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Inhalant Allergen Mix 8 (Mugwort+Common silver birch+Cat dander+C herbarum+Dermatophagoides pteronyssinus+Dog dander+Timothy grass+Rye) IgE Ab [Presence] in Serum by Multidisk"/>
-                                            <text>
-                                                <reference value="#OBS-6-1"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="CD" code="260415000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Not detected (qualifier value)"/>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-6-2" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="23800-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Mold Allergen Mix 1 (Alternaria alternata+Aspergillus fumigatus+Cladosporium herbarum+Penicillium notatum) IgE Ab [Presence] in Serum by Multidisk"/>
-                                            <text>
-                                                <reference value="#OBS-6-2"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="CD" code="260373001" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Detected (qualifier value)"/>
-                                            <interpretationCode code="A" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Abnormal"/>
-                                        </observation>
-                                    </component>
-                                </organizer>
-                            </entryRelationship>
-
-                            <!-- Befundgruppe "Inhalationsallergene IgE" -->
-                            <entryRelationship typeCode="COMP">
-                                <organizer classCode="BATTERY" moodCode="EVN">
-                                    <!-- templateId für Laboratory Battery Organizer -->
-                                    <templateId root="1.2.40.0.34.6.0.11.3.26"/>
-                                    <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.12 Laboratory Battery Organizer -->
-                                    <templateId root="1.3.6.1.4.1.19376.1.3.1.4"/>
-                                    <!-- Code der Befundgruppe -->
-                                    <code code="12020" codeSystem="1.2.40.0.34.5.11" codeSystemName="ELGA_LaborparameterErgaenzung" displayName="Inhalationsallergene IgE"/>
-                                    <statusCode code="completed"/>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-7-1" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="6212-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Penicillium notatum IgE Ab [Units/volume] in Serum"/>
-                                            <text>
-                                                <reference value="#OBS-7-1"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="IVL_PQ">
-                                                <low unit="kU/L" value="0"/>
-                                                <high unit="kU/L" value="0.35"/>
-                                            </value>
-                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-6-1"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low unit="kU/L" value="0"/>
-                                                        <high unit="kU/L" value="0.35"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-7-2" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="15642-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Cladosporium herbarum IgE Ab RAST class [Presence] in Serum"/>
-                                            <text>
-                                                <reference value="#OBS-7-2"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value unit="{RAST-Kl}" value="0" xsi:type="PQ"/>
-                                        </observation>
-                                    </component>
-                                    <!-- Laboratory Observation Entry -->
-                                    <component typeCode="COMP">
-                                        <observation classCode="OBS" moodCode="EVN">
-                                            <!-- templateId für Laboratory Observation Entry -->
-                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
-                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
-                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
-                                            <id extension="OBS-7-3" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
-                                            <code code="6020-2" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alternaria alternata IgE Ab [Units/volume] in Serum"/>
-                                            <text>
-                                                <reference value="#OBS-7-3"/>
-                                            </text>
-                                            <statusCode code="completed"/>
-                                            <effectiveTime value="20210601130100+0200"/>
-                                            <value xsi:type="INT" value="5"/>
-                                            <interpretationCode code="RAST3" codeSystemName="RAST-Klassen" codeSystem="1.2.40.0.34.5.104" displayName="3.50  17.49  kU/l (high level of allergen specific IgE)"/>
-                                            <participant
-                                                xmlns="urn:hl7-org:v3"
-                                                typeCode="AUTHEN"
-                                                contextControlCode="OP">
-                                                <!-- IHE PaLM TF3 Rev.10 – Laboratory Results Validator -->
-                                                <templateId root="1.3.6.1.4.1.19376.1.3.3.1.5"/>
-                                                <!-- Validation time -->
-                                                <time>
-                                                    <low value="20251217103000"/>
-                                                </time>
-                                                <participantRole classCode="ROL">
-                                                    <!-- Mandatory ID -->
-                                                    <id root="2.16.840.1.113883.3.72.5.9.1" extension="VAL-123456"/>
-                                                    
-                                                    <!-- Address (choice: addr OR addr@nullFlavor) -->
-                                                    <addr>
-                                                        <streetAddressLine>Musterstraße 1</streetAddressLine>
-                                                        <city>Wien</city>
-                                                        <postalCode>1010</postalCode>
-                                                        <country>AT</country>
-                                                    </addr>
-                                                    
-                                                    <!-- At least one telecom -->
-                                                    <telecom value="tel:+4318122025"/>
-                                                    <telecom value="mailto:validator@example.org"/>
-                                                    
-                                                    <playingEntity
-                                                        classCode="ENT"
-                                                        determinerCode="INSTANCE">
-                                                        
-                                                        <!-- Mandatory person name -->
-                                                        <name>
-                                                            <given>Anna</given>
-                                                            <family>Validiererin</family>
-                                                            <prefix>Dr.</prefix>
-                                                        </name>
-                                                        
-                                                    </playingEntity>
-                                                </participantRole>
-                                            </participant>
-                                            <entryRelationship typeCode="COMP">
-                                            <act classCode="ACT" moodCode="EVN">
-                                                
-                                                <!-- ELGA Comment Entry -->
-                                                <templateId root="1.2.40.0.34.6.0.11.3.11"/>
-                                                
-                                                <!-- HL7 CCD Comment -->
-                                                <templateId root="2.16.840.1.113883.10.20.1.40"/>
-                                                
-                                                <!-- IHE PCC Comments -->
-                                                <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.2"/>
-                                                
-                                                <!-- Optional ID -->
-                                                <id root="2.16.840.1.113883.3.72.5.9.1"
-                                                    extension="COMMENT-0001"/>
-                                                
-                                                <!-- Fixed LOINC code for Annotation Comment -->
-                                                <code code="48767-8"
-                                                      codeSystem="2.16.840.1.113883.6.1"
-                                                      codeSystemName="LOINC"
-                                                      displayName="Annotation comment"/>
-                                                
-                                                <!-- Narrative text reference -->
-                                                <text>
-                                                    <reference value="#commentRef-1"/>
-                                                </text>
-                                                
-                                                <!-- Status is always completed -->
-                                                <statusCode code="completed"/>
-                                                
-                                                <author>
-                                                    <!-- Funktionscode (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                    <functionCode code="OA" codeSystem="1.2.40.0.34.99.4613.10.1" codeSystemName="Amadeus Spital - Funktionscodes" displayName="Diensthabender Oberarzt"/>
-                                                    <!-- Zeitpunkt der Erstellung (z.B. des Diktats) (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                    <time value="20210601130100+0200"/>
-                                                    <assignedAuthor>
-                                                        <!-- Identifikation des Verfassers des Dokuments im lokalen System (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                        <id root="1.2.40.0.34.99.4613.3.3" extension="1111" assigningAuthorityName="Amadeus Spital"/>
-                                                        <!-- Fachrichtung des Verfassers des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                        <code code="124" codeSystem="1.2.40.0.34.5.160" codeSystemName="ELGA_Fachaerzte" displayName="Fachärztin/Facharzt für Medizinische und Chemische Labordiagnostik"/>
-                                                        <!-- Kontaktdaten des Verfassers des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                        <telecom use="WP" value="tel:+43.1.3453446.1111"/>
-                                                        <!-- Personendaten des Verfassers des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                        <assignedPerson>
-                                                            <name>
-                                                                <prefix>Dr.</prefix>
-                                                                <family>Kommentatorin</family>
-                                                                <given>Kornelia</given>
-                                                            </name>
-                                                        </assignedPerson>
-                                                        <!--  Organisation, in deren Auftrag der Verfasser des Dokuments die Dokumentation verfasst hat (siehe Allgemeiner Implementierungsleitfaden) -->
-                                                        <representedOrganization>
-                                                            <!-- ID der Organisation aus dem GDA Index -->
-                                                            <id root="1.2.40.0.34.99.4613" assigningAuthorityName="GDA Index"/>
-                                                            <!-- Name der Organisation -->
-                                                            <name>Amadeus Spital - Labor</name>
-                                                            <!-- Kontaktdaten der Organisation -->
-                                                            <telecom value="tel:+43.1.3453446.0"/>
-                                                            <telecom value="fax:+43.1.3453446.4674"/>
-                                                            <telecom value="mailto:info@amadeusspital.at"/>
-                                                            <telecom value="http://www.amadeusspital.at"/>
-                                                            <!-- Adresse der Organisation -->
-                                                            <addr>
-                                                                <streetName>Währinger Gürtel</streetName>
-                                                                <houseNumber>18-20</houseNumber>
-                                                                <postalCode>1090</postalCode>
-                                                                <city>Wien</city>
-                                                                <state>Wien</state>
-                                                                <country>AUT</country>
-                                                            </addr>
-                                                        </representedOrganization>
-                                                    </assignedAuthor>
-                                                </author>
-                                                
-            
-                                            </act>
-                                                
-                                            </entryRelationship>
-                                            
-                                            
-                                            
-                                            <!-- Referenzbereich -->
-                                            <referenceRange typeCode="REFV">
-                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
-                                                    <text>
-                                                        <reference value="#OBSREF-6-1"/>
-                                                    </text>
-                                                    <value xsi:type="IVL_PQ">
-                                                        <low unit="kU/L" value="0"/>
-                                                        <high unit="kU/L" value="0.35"/>
-                                                    </value>
-                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
-                                                </observationRange>
-                                            </referenceRange>
-                                        </observation>
                                     </component>
                                 </organizer>
                             </entryRelationship>
