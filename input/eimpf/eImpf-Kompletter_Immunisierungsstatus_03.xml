@@ -791,7 +791,6 @@
                                 <!-- Nachtragende Person: Person oder Gerät Überträgt die Daten aus einem Papierimpfpass oder einer anderen Dokumentation in den e-Impfpass -->
                                 <templateId root="1.2.40.0.34.6.0.11.9.14"/>
                                 <!-- Datum der Eintragung -->
-                                <time value="20171212151500+0200"/>
                                 <participantRole classCode="ROL">
                                     <id root="1.2.40.0.34.99.4613"
                                         assigningAuthorityName="GDA Index"/>
