@@ -61,7 +61,9 @@ group CdaEmedToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pat
   cda ->   
     // at least on Bundle level the profile is to be set
     fhir_bundle.meta as fhir_bundle_meta,
-    fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
+    fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle',
+    fhir_patient.meta as fhir_patient_meta,
+    fhir_patient_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-patient'
     then {
       // map the CDA header
       cda then CdaEmedHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEmedHeaderToFhirComposition";
@@ -220,11 +222,15 @@ group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_supply: 
     // create MedicationDispense
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('MedicationDispense') as fhir_medicationDispense,
+    fhir_medicationDispense.meta as fhir_medicationDispense_meta,
+    fhir_medicationDispense_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-medicationdispense',
     fhir_medicationDispense.id = uuid() as fhir_medicationDispense_id,
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medicationDispense_id),
     // create MedicationRequest
     fhir_bundle.entry as fhir_bundle_entry2,
     fhir_bundle_entry2.resource = create ('MedicationRequest') as fhir_medicationRequest,
+    fhir_medicationRequest.meta as fhir_medicationRequest_meta,
+    fhir_medicationRequest_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-medicationrequest',
     fhir_medicationRequest.id = uuid() as fhir_medicationRequest_id,
     fhir_bundle_entry2.fullUrl = append('urn:uuid:', fhir_medicationRequest_id),
     // link MedicationRequest to MedicationDispense via authorizingPrescription
@@ -236,7 +242,7 @@ group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_supply: 
       cda_supply.quantity -> fhir_medicationDispense.quantity;
       cda_supply.product as cda_product then CdaEmedProductToFhirMedication(cda, cda_product, fhir_composition, fhir_patient, fhir_bundle);
       cda_supply.author as cda_author then CdaEmedAbgabeSupplyAuthorToFhir(cda, cda_author, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
-      cda_supply.entryRelationship as cda_entryRelationship then CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_entryRelationship, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
+      //cda_supply.entryRelationship as cda_entryRelationship then CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_entryRelationship, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
       //cda_supply.reference as cda_supply_reference then CdaEmedAbgabeSupplyReferenceToFhir(cda, cda_supply_reference, fhir_composition, fhir_medicationDispense, fhir_medicationRequest, fhir_bundle);
     };   
 }
@@ -247,6 +253,8 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
     // create FHIR Medication resource for the supplied product
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('Medication') as fhir_medication,
+    fhir_medication.meta as fhir_medication_meta,
+    fhir_medication_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-medication',
     fhir_medication.id = uuid() as fhir_medication_id,
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medication_id),
     fhir_composition.section = create('Reference') as fhir_composition_section_reference,
@@ -276,7 +284,7 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
           // ns2 XML Namespace currently not supported
           // ClinicalDocument/component/structuredBody/section/entry/supply/product/manufacturedProduct/manufacturedMaterial/formCode -> Medication.form
           /*cda_product_manufacturedMaterial.ns2:formCode as cda_product_manufacturedMaterial_formCode -> 
-            fhir_medication.form as fhir_medication_form,
+            fhir_medication.form = create('CodeableConcept') as fhir_medication_form,
             fhir_medication_form.coding = create('Coding') as fhir_medication_form_coding then {
               fhir_medication_form_coding.system = 'https://termgit.elga.gv.at/CodeSystem/medikationdarreichungsform';
               fhir_medication_form_coding.code = cda_product_manufacturedMaterial_formCode.code;
@@ -353,11 +361,16 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
   // Author is Person -> map to PractitionerRole and Practitioner
   cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedPerson.exists()) then {
 
-      // create PractitionerRole
+      // Time of dispensation of medication
+      cda_author.time -> fhir_medicationDispense.whenHandedOver;
+
+      // create FHIR PractitionerRole resource for the assignedAuthor
       cda_author_assignedAuthor -> fhir_bundle.entry as fhir_bundle_entry,
       fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.meta as fhir_practitionerRole_meta,
+      fhir_practitionerRole_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-practitionerrole',
       fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+      //fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
       // link PractitionerRole to MedicationDispense
       fhir_medicationDispense.performer as fhir_medicationDispense_performer,
       fhir_medicationDispense_performer.actor =  = create('Reference') as fhir_medicationDispense_performer_reference,
@@ -366,6 +379,8 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
       // create Practitioner
       fhir_bundle.entry as fhir_bundle_entry2,
       fhir_bundle_entry2.resource = create('Practitioner') as fhir_practitioner,
+      fhir_practitioner.meta as fhir_practitioner_meta,
+      fhir_practitioner_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-practitioner',
       fhir_practitioner.id = uuid() as fhir_practitioner_id,
       fhir_bundle_entry2.fullUrl = append('urn:uuid:', fhir_practitioner_id),
       // link Practitioner to PractitionerRole
@@ -380,6 +395,8 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
       // create FHIR Device resource for the assignedAuthor
       cda_author_assignedAuthor -> fhir_bundle.entry as fhir_bundle_entry,
       fhir_bundle_entry.resource = create('Device') as fhir_device,
+      fhir_device.meta as fhir_device_meta,
+      fhir_device_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-device',
       fhir_device.id = uuid() as fhir_device_id,
       fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
       fhir_composition.author = create('Reference') as fhir_composition_author_reference,
@@ -395,7 +412,8 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
 
 group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source cda_entryRelationship: EntryRelationship, target fhir_composition: Composition, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
 
-  cda_entryRelationship where ($this.typeCode == 'REFR') then {
+  // Verordnung zu Abgabe -> map to MedicationRequest
+  cda_entryRelationship where ($this.typeCode = 'REFR') then {
     // section/entry/supply/entryRelationship/substanceAdministration -> MedicationRequest
     cda_entryRelationship.substanceAdministration as cda_entryRelationship_substanceAdministration then {
       cda_entryRelationship_substanceAdministration.id as cda_entryRelationship_substanceAdministration_id where ($this.root = '1.2.40.0.10.1.4.3.4.2.2') then {
@@ -403,6 +421,57 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
       };
     };
   };
+
+  // Zusatzinformationen für den Patienten -> map to MedicationDispense.dosageInstruction
+  /*cda_entryRelationship where ($this.typeCode = 'SUBJ') then {
+    // section/entry/supply/entryRelationship/act/text/@value (code PINSTRUCT) -> MedicationDispense.dosageInstruction.patientInstruction
+    cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'PINSTRUCT') then {
+        cda_entryRelationship_act.text as cda_entryRelationship_act_text then {
+          cda_entryRelationship_act_text.reference as cda_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
+          fhir_medicationDispense_dosageInstruction.patientInstruction as fhir_medicationDispense_dosageInstruction_patientInstruction then {
+          cda_entryRelationship_act_reference.value as cda_entryRelationship_act_reference_value then {
+            
+            cda.component as cda_component then {
+              cda_component.structuredBody as cda_structuredBody then {
+                cda_structuredBody.component as cda_structuredBody_component then {
+                  cda_structuredBody_component.section as cda_section then {
+                    cda_section.text as cda_section_text then {
+
+                      // section/text -> Narrative.div
+                      cda_section_text -> 
+                      // Create Narrative (same datatype as in Composition.section.text)
+                      create('Narrative') as fhir_narrative,
+                      // section/text -> Narrative.div
+                      fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                                  
+                      // Create string
+                      create('string') as fhir_string,
+                      // Convert test_div to a FHIR string
+                      fhir_string = (fhir_narrative_div),
+              
+                      // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
+                      create('string') as fhir_substring_01,
+                      // cda_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                      // fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)))),
+              
+                      // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                      create('string') as fhir_substring_02,
+                      fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+              
+                      // Create a substring from the start till the first occurrence of < character
+                      fhir_medicationDispense_dosageInstruction_patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    //cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {}
+  };*/
 
 }
 
