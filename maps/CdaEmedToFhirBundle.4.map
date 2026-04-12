@@ -324,7 +324,7 @@ group CdaEmedProductToFhirMedication(source cda: ClinicalDocument, source cda_pr
     };
 }
 
-group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_author: Author, target fhir_composition: Composition, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
+group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_author: Author, target fhir_composition: Composition, target fhir_medication: Medication, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
     
 
   // Author is Person -> map to PractitionerRole and Practitioner
