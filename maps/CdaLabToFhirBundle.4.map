@@ -8953,6 +8953,11 @@ group CdaLabOrganizerToFhirObservationWithSpecimen(source cda: ClinicalDocument,
 }
 
 group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  cda_laboratory_observation ->
+    fhir_observation.meta as fhir_observation_meta,
+    fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
+    "FhirObservationProfile";
+
   // observation.id
   cda_laboratory_observation.id -> fhir_observation.identifier;
 
