@@ -5,6 +5,16 @@ map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-type
 // CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
 // FHIR: http://hl7.org/fhir/r4/
 
+conceptmap "v3-NullFlavor-2-data-absent-reason" {
+  prefix s = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix t = "http://terminology.hl7.org/CodeSystem/data-absent-reason"
+
+  s: "UNK" == t: "unknown"
+  s: "NAV" == t: "temp-unknown"
+  s: "NA" == t: "not-applicable"
+  s: "OTH" == t: "unknown" // mapping not perfect
+  s: "MSK" == t: "masked"
+}
 
 // TODO review mapping
 // based on BlackTusk
@@ -22,8 +32,8 @@ conceptmap "ELGA2FHIRAddressUse" {
 
   s:"TMP" == t:"temp" // temporary address -> use = temp; type = both
 
-  s:"PHYS" == t:"home" // physical visit address -> use = home; type = physical
-  s:"PST" == t:"home" // billing address -> use = home; type = postal
+  // s:"PHYS" // NOT MAPPED physical visit address
+  // s:"PST" // NOT MAPPED billing address
 }
 
 // TODO review mapping
@@ -70,11 +80,8 @@ conceptmap "ELGAEntityNameUseFHIRNameUse" {
 }
 
 // TODO review mapping
-// TODO add TITLE to name-part-qualifier
+// TODO see https://github.com/HL7Austria/CDA2FHIR/issues/163
 // As soon as 'TITLE' is part of FHIR name-part-qualifier this conceptmap is obsolete.
-//
-// TODO full ConceptMap is required as https://termgit.elga.gv.at/ValueSet-elga-entitynamepartqualifier.html contains concepts from ONE code system
-//                      however, https://hl7.org/fhir/extensions/ValueSet-name-part-qualifier.html (see https://hl7.org/fhir/extensions/StructureDefinition-iso21090-EN-qualifier.html) contains concepts from TWO code systems
 conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2"
@@ -88,16 +95,14 @@ conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   s:"NB" == t:"NB"
   s:"PR" == t:"PR"
   s:"SP" == t:"SP"
-  // s:"TITLE" == t:"TITLE" currently not supported
-  s:"VV" == t:"VV"
+  // s:"TITLE" == t:"TITLE"
+  s:"VV" == s:"VV"
 }
 
 conceptmap "OIDtoURI" {
   prefix s = "http://cda.oid"
   prefix t = "http://fhir.system"
 
-  // TODO see how Matchbox AND MaLaC can be supported
-  // unmapped for s = provided
   // entries based on https://github.com/hapifhir/org.hl7.fhir.core/blob/b590cb3fedbb0791702c637e76fefdae2cba2f78/org.hl7.fhir.utilities/src/main/java/org/hl7/fhir/utilities/OIDUtils.java#L43
   // lines have been commented out where they're not supposed to be relevant for AT
   s:"2.16.840.1.113883.6.96" == t:"http://snomed.info/sct"
@@ -106,11 +111,11 @@ conceptmap "OIDtoURI" {
   s:"2.16.840.1.113883.6.3" == t:"http://hl7.org/fhir/sid/icd-10"
   // s:"2.16.840.1.113883.6.42" == t:"http://hl7.org/fhir/sid/icd-9"
   // s:"2.16.840.1.113883.6.104" == t:"http://hl7.org/fhir/sid/icd-9"
-  // s:"2.16.840.1.113883.6.103" == t:"http://hl7.org/fhir/sid/icd-9" // TODO confirm this
+  // s:"2.16.840.1.113883.6.103" == t:"http://hl7.org/fhir/sid/icd-9"
   s:"2.16.840.1.113883.6.73" == t:"http://www.whocc.no/atc"
   // s:"2.16.840.1.113883.3.26.1.1" == t:"http://ncimeta.nci.nih.gov"
   // s:"2.16.840.1.113883.3.26.1.1.1" == t:"http://ncimeta.nci.nih.gov"
-  // s:"2.16.840.1.113883.6.88" == t:"http://www.nlm.nih.gov/research/umls/rxnorm" // TODO confirm this
+  // s:"2.16.840.1.113883.6.88" == t:"http://www.nlm.nih.gov/research/umls/rxnorm"
   // s:"2.16.840.1.113883.6.59" == t:"http://hl7.org/fhir/sid/cvx"
   // s:"2.16.840.1.113883.12.292" == t:"http://hl7.org/fhir/sid/cvx"
   // s:"2.16.840.1.113883.6.12" == t:"http://www.ama-assn.org/go/cpt"
@@ -531,20 +536,39 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
   // TODO deal with OIDs which are not part of the map (e.g. certain identifiers, GDA-IDs, etc.)
   // src.root as r where src.extension.exists()
   //    -> tgt.system = translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
-  src.root as r where src.extension.exists()
-     -> tgt.system = translate(r, '#OIDtoURI', 'code') "root1";
+  
+  // OIDs with extension
+  // see https://hl7.org/fhir/R4/datatypes.html#oid
+  src.root as r where (src.root.matches('[0-2](\\.(0|[1-9][0-9]*))+') and src.extension.exists()) -> 
+    tgt.system = translate(r, '#OIDtoURI', 'code') then {
+      src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
+    } "oidwithextension";
+
+  // OIDs without extension
+  src.root as r where (src.root.matches('[0-2](\\.(0|[1-9][0-9]*))+') and src.extension.empty()) -> 
+    tgt.system = 'urn:ietf:rfc:3986',  
+    tgt.value = append('urn:oid:', r), 
+    tgt.assigner as a,  a.display = 'Bundesministerium für Gesundheit' 
+    "oidwithextension";
 
   // testing if it is possible to use translate in where
   // src.root as r where (translate('#OIDtoURI', r)) ->
   //   tgt.system = translate(r, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri') "root1";
 
-  src.root as r where src.extension.empty()
-        and src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}')
-     -> tgt.system = 'urn:ietf:rfc:3986', tgt.value = ('urn:uuid:' + r.lower()) "rootuuid";
-  src.root as r where src.extension.empty() and src.root.contains('.')
-     ->  tgt.system = 'urn:ietf:rfc:3986',  tgt.value = append('urn:oid:', r) "rootoid";
+  // UUID with extension
+  src.root as r where (src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}') and src.extension.exists()) -> 
+    tgt.system = ('urn:uuid:' + r.lower()) then {
+      src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
+    } "uuidwithextension";
+
+  // UUID without extension
+  src.root as r where (src.root.matches('[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}') and src.extension.empty()) -> 
+    tgt.system = 'urn:ietf:rfc:3986', 
+    tgt.value = ('urn:uuid:' + r.lower()) then {
+      src.assigningAuthorityName as assigningAuthorityName -> tgt.assigner as a,  a.display = assigningAuthorityName;
+    } "uuidwithoutextension";
+
   src.extension as e -> tgt.value = e;
-  src.assigningAuthorityName as s ->  tgt.assigner as a,  a.display = s;
   // there's no equivalent for displayable in FHIR - and it probably will never matter, but if it does, it might map to Identifier.use.
   src.displayable as displayable -> tgt.extension as ext then {
     displayable -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/extension-displayable' "url";
@@ -656,9 +680,7 @@ group CECoding(source src : CE, target tgt : Coding) extends Any <<types>> {
   // src.codeSystem as system -> tgt.system = translate(system, 'http://hl7.org/fhir/ConceptMap/special-oid2uri', 'uri');
   src.codeSystem as system -> tgt.system = translate(system, '#OIDtoURI', 'code');
 
-  // TODO for testing purposes (validation with java validator), no displayNames will be mapped
-    //      later the NCPeH will have to translate them
-  // src.displayName as display -> tgt.display = cast(display, 'string');
+  src.displayName as display -> tgt.display = cast(display, 'string');
 }
 
 group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> {
@@ -666,14 +688,24 @@ group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> 
 }
 
 group CECodeableConcept(source src : CE, target tgt : CodeableConcept) extends Any <<types>> {
-  src.originalText -> tgt.text;
+  // TODO deal with references
+  // src.originalText as src_originalText -> tgt.text = (src_originalText.xmlText);
+  
   src where ($this.nullFlavor.exists().not()) ->
     tgt.coding as coding
     // in order to be able to capture the primary code in case there are translations
     // 2025-07-28 CDA2FHIR AG decided to not use "userSelected" - in FHIR all codes are equal
     // coding.userSelected = true
     then CECoding(src, coding) "code";
-  src where ($this.nullFlavor.exists()) -> tgt.extension as tgt_extension then CdaNullFlavorToFhirNullFlavor(src, tgt_extension) "nullFlavor";
+  
+  // based on https://hl7.eu/fhir/base-r5/missing-data.html
+  src where ($this.nullFlavor.exists()) then {
+    src.nullFlavor as src_nullFlavor -> 
+      tgt.coding as tgt_coding,
+      tgt_coding.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason',
+      tgt_coding.code = translate(cda_manufacturedMaterial_code_nullFlavor, '#v3-NullFlavor-2-data-absent-reason', 'code') "nullFlavor";
+  } "nullFlavor";
+
   src.translation as translation -> tgt.coding as coding then CDCoding(translation, coding);
 }
 
@@ -715,7 +747,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix then {
         // name.prefix.qualifier
         cda_name_item_prefix where cda_name_item_prefix.qualifier.exists() then {
-          cda_name_item_prefix.qualifier as qualifier ->
+          cda_name_item_prefix.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_prefix.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
             extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -729,7 +761,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
         // name.given.qualifier
         cda_name_item_given where cda_name_item_given.qualifier.exists() then {
-          cda_name_item_given.qualifier as qualifier ->
+          cda_name_item_given.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_given.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
             extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -743,7 +775,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
         // name.family.qualifier
         cda_name_item_family where cda_name_item_family.qualifier.exists() then {
-          cda_name_item_family.qualifier as qualifier ->
+          cda_name_item_family.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_family.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
             extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -757,7 +789,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
         // name.suffix.qualifier
         cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() then {
-          cda_name_item_suffix.qualifier as qualifier ->
+          cda_name_item_suffix.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_suffix.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
             extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -778,7 +810,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
           fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
             // name.family.qualifier
             cda_name_item_family where cda_name_item_family.qualifier.exists() then {
-              cda_name_item_family.qualifier as qualifier ->
+              cda_name_item_family.qualifier as qualifier where ($this != 'TITLE') ->
                 fhir_humanName_family.extension as extension,
                 extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
                 extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -799,7 +831,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix then {
               // name.prefix.qualifier
               cda_name_item_prefix where cda_name_item_prefix.qualifier.exists() then {
-                cda_name_item_prefix.qualifier as qualifier ->
+                cda_name_item_prefix.qualifier as qualifier  where ($this != 'TITLE') ->
                   fhir_humanName_prefix.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
                   extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -813,7 +845,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
               // name.given.qualifier
               cda_name_item_given where cda_name_item_given.qualifier.exists() then {
-                cda_name_item_given.qualifier as qualifier ->
+                cda_name_item_given.qualifier as qualifier where ($this != 'TITLE') ->
                   fhir_humanName_given.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
                   extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -827,7 +859,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
               // name.suffix.qualifier
               cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() then {
-                cda_name_item_suffix.qualifier as qualifier ->
+                cda_name_item_suffix.qualifier as qualifier where ($this != 'TITLE') ->
                   fhir_humanName_suffix.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
                   extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
@@ -864,71 +896,47 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   //   "FhirAddressAtCoreAddressProfile";
 
   // addr.use
-  cda_address.use as cda_use ->
-    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') then {
-      cda_use where (cda_use != 'PHYS' and cda_use != 'PST') -> fhir_address.type = 'both' "CdaAddressUseToFhirAddressTypeBoth";
-      cda_use where (cda_use = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
-      cda_use where (cda_use = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePostal";
-    } "CdaAddressUseToFhirAddressUseAndType";
+  cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
+    fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
+  
+  cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
 
-  cda_address.item as cda_address_item then {
-    // addr.postalCode
-    cda_address_item.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.xmlText);
-    // addr.city
-    cda_address_item.city as cda_city -> fhir_address.city = (cda_city.xmlText);
-    // addr.state
-    cda_address_item.state as cda_state -> fhir_address.state = (cda_state.xmlText);
-    // addr.country
-    cda_address_item.country as cda_country -> fhir_address.country = (cda_country.xmlText);
-  } "CdaAddressItemSimple";
+  cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
 
-  // addr.streetName and addr.houseNumber and addr.additionalLocator
-  cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists()) ->
-    fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line then {
-      cda_address.item as cda_address_item then {
-        // extension for streetName
-        cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
-          extension.value = (cda_address_item_streetName.xmlText)
-          "CdaAdressToFhirStreetNameExtension";
+  // in case NO children elements are being used for address
+  cda_address where ($this.xmlText.exists()) then {
+    cda_address -> fhir_address.line = (cda_address.xmlText);
+  }
 
-        // extension for houseNumber
-        cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
-          extension.value = (cda_address_item_houseNumber.xmlText)
-          "CdaAdressToFhirHouseNumberExtension";
+  // in case children elements are being used for address
+  cda_address where ($this.descendants().exists()) then {
+    cda_address.item as cda_address_item then {
+      // addr.postalCode
+      cda_address_item.postalCode as cda_postalCode -> fhir_address.postalCode = (cda_postalCode.xmlText);
+      // addr.city
+      cda_address_item.city as cda_city -> fhir_address.city = (cda_city.xmlText);
+      // addr.state
+      cda_address_item.state as cda_state -> fhir_address.state = (cda_state.xmlText);
+      // addr.country
+      cda_address_item.country as cda_country -> fhir_address.country = (cda_country.xmlText);
+    } "CdaAddressItemSimple";
 
-        // extension for additionalLocator
-        cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
-          extension.value = (cda_address_item_additionalLocator.xmlText)
-          "CdaAdressToFhirAdditionalLocatorExtension";
-      } "CdaAddressItemWithAdditionalLocator";
-    } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
-
-  // addr.streetName and addr.houseNumber and NOT addr.additionalLocator
-  cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists().not()) ->
-    fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText) as fhir_address_line then {
-      cda_address.item as cda_address_item then {
-        // extension for streetName
-        cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
-          extension.value = (cda_address_item_streetName.xmlText)
-          "CdaAdressToFhirStreetNameExtension";
-
-        // extension for houseNumber
-        cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
-          extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
-          extension.value = (cda_address_item_houseNumber.xmlText)
-          "CdaAdressToFhirHouseNumberExtension";
-      } "CdaAddressItemWithoutAdditionalLocator";
-    } "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
-
-    // addr.streetAddressLine and additionalLocator
-    cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists()) ->
-      fhir_address.line = (cda_address.item.streetAddressLine.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line
-      then {
+    // addr.streetName and addr.houseNumber and addr.additionalLocator
+    cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists()) ->
+      fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line then {
         cda_address.item as cda_address_item then {
+          // extension for streetName
+          cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
+            extension.value = (cda_address_item_streetName.xmlText)
+            "CdaAdressToFhirStreetNameExtension";
+
+          // extension for houseNumber
+          cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
+            extension.value = (cda_address_item_houseNumber.xmlText)
+            "CdaAdressToFhirHouseNumberExtension";
+
           // extension for additionalLocator
           cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
@@ -937,10 +945,42 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
         } "CdaAddressItemWithAdditionalLocator";
       } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
 
-    // addr.streetAddressLine and NOT additionalLocator
-    cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists().not()) ->
-      fhir_address.line = (cda_address.item.streetAddressLine.xmlText)
-      "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+    // addr.streetName and addr.houseNumber and NOT addr.additionalLocator
+    cda_address where (cda_address.item.streetName.exists() and cda_address.item.houseNumber.exists() and cda_address.item.additionalLocator.exists().not()) ->
+      fhir_address.line = (cda_address.item.streetName.xmlText + ' ' + cda_address.item.houseNumber.xmlText) as fhir_address_line then {
+        cda_address.item as cda_address_item then {
+          // extension for streetName
+          cda_address_item.streetName as cda_address_item_streetName -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-streetName',
+            extension.value = (cda_address_item_streetName.xmlText)
+            "CdaAdressToFhirStreetNameExtension";
+
+          // extension for houseNumber
+          cda_address_item.houseNumber as cda_address_item_houseNumber -> fhir_address_line.extension as extension,
+            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-houseNumber',
+            extension.value = (cda_address_item_houseNumber.xmlText)
+            "CdaAdressToFhirHouseNumberExtension";
+        } "CdaAddressItemWithoutAdditionalLocator";
+      } "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+
+      // addr.streetAddressLine and additionalLocator
+      cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists()) ->
+        fhir_address.line = (cda_address.item.streetAddressLine.xmlText + ' ' + cda_address.item.additionalLocator.xmlText) as fhir_address_line
+        then {
+          cda_address.item as cda_address_item then {
+            // extension for additionalLocator
+            cda_address_item.additionalLocator as cda_address_item_additionalLocator where (cda_address_item.additionalLocator.exists()) -> fhir_address_line.extension as extension,
+              extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-ADXP-additionalLocator',
+              extension.value = (cda_address_item_additionalLocator.xmlText)
+              "CdaAdressToFhirAdditionalLocatorExtension";
+          } "CdaAddressItemWithAdditionalLocator";
+        } "CdaAddressStreetNameAndHouseNumberWithAdditionalLocatorToFhirAddressLine";
+
+      // addr.streetAddressLine and NOT additionalLocator
+      cda_address where (cda_address.item.streetAddressLine.exists() and cda_address.item.additionalLocator.exists().not()) ->
+        fhir_address.line = (cda_address.item.streetAddressLine.xmlText)
+        "CdaAddressStreetNameAndHouseNumberWithoutAdditionalLocatorToFhirAddressLine";
+  };
 }
 
 // source: https://art-decor.org/mediawiki/index.php?title=DTr1_TEL.AT
@@ -1097,12 +1137,11 @@ group RTORatio(source src: RTO, target tgt: Ratio) extends Any <<types>> {
   src.denominator: PQ as src_denominator -> tgt.denominator as tgt_denominator then PQQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorPQToFhirQuantity";
 }
 
-group CdaNullFlavorToFhirNullFlavor(source src : ANY, target tgt : Extension) extends Any <<types>> {
+// based on https://hl7.eu/fhir/base-r5/missing-data.html
+group CdaNullFlavorToFhirDataAbsentReason(source src: ANY, target tgt: Extension) extends Any <<types>> {
   src.nullFlavor as cda_nullFlavor then {
-    cda_nullFlavor -> tgt.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-nullFlavor' "url";
+    cda_nullFlavor -> tgt.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason' "url";
 
-    cda_nullFlavor -> tgt.value = create('code') as fhir_extension_code,
-      fhir_extension_code.value = (cda_nullFlavor)
-      "code";
-  } "CdaNullFlavorToFhirNullFlavor";
+    cda_nullFlavor -> tgt.value = translate(cda_nullFlavor, '#v3-NullFlavor-2-data-absent-reason', 'code') "code";
+  } "CdaNullFlavorToFhirDataAbsentReason";
 }

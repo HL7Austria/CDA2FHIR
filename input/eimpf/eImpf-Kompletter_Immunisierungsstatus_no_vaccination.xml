@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="eimpf-stylesheet_v1.0.xsl"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:pharm="urn:ihe:pharm" xmlns:sdtc="urn:hl7-org:sdtc" xmlns:ips="urn:hl7-org:ips"
+    xmlns:hl7at="urn:hl7-at:v3">
+    <!--
+		=======================================================================
+		*** CDA Demo-Dokument "Kompletter Immunisierungsstatus" ***
+            Enthält die Sektionen:
+            * Impfungen
+            * Impfrelevante Erkrankungen
+            * Antikörperbestimmung
+            * Indikationsgruppen
+            * Impfempfehlungen
+
+		basierend auf den Standard:
+		CDA Implementierungsleitfäden - HL7 Implementation Guide for CDA® R2: e-Impfpass, Version 2.0.0
+		Dies ist ein Beispielbefund. Bei den Inhalten handelt es sich um synthetische Mustertexte und keinesfalls um personenbezogene Echtdaten oder realistische Befunde.
+		Autoren:
+			Stefan Sabutsch, ELGA GmbH
+			Oliver Kuttin, ELGA GmbH
+			Andrea Klostermann, ELGA GmbH
+		    Gabriel Kleinoscheg, ELGA GmbH
+		Dokumentrevision:  2.0.0
+		Datum: 			10.08.2023
+		Die Kommentare in diesem CDA Dokument dienen lediglich der Orientierungshilfe und sind nicht
+		Bestandteil einer konkreten Implementierung!
+		=======================================================================
+	-->
+    <!-- ***********************************************************************************************************************************************
+			Administrative Daten "CDA Header"
+    ************************************************************************************************************************************************ -->
+    <!-- Hoheitsbereich des Dokuments -->
+    <realmCode code="AT"/>
+    <!-- Dokumentformat CDA R2 -->
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <!-- Template ID für eHealth Austria Dokumente -->
+    <templateId root="1.2.40.0.34.6.0.11.0.1"/>
+    <!-- TemplateId für den Implementierungsleitfaden e-Impfpass v2 (OID Knoten). Dient als informative Referenz.-->
+    <templateId root="1.2.40.0.34.7.19.2"/>
+    <!-- Template spezieller Implementierungsleitfaden ELGA e-Impfpass - Kompletter Immunisierungsstatus -->
+    <templateId root="1.2.40.0.34.6.0.11.0.4"/>
+    <!-- Immunization Content (IC) Content Module, IHE PCC Technical Framework Revision 11.0 - November 11, 2016. Dient als informative Referenz. -->
+    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.18.1.2"/>
+    <!-- Weltweit eindeutige Dokumenten-Id des CDA-Dokuments -->
+    <id root="1.2.40.0.34.99.4613.3.1" extension="2"/>
+    <!-- Dokumentenklasse -->
+    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1" displayName="HISTORY OF IMMUNIZATIONS">
+        <!-- Dokumenttyp Kompletter Immunisierungsstatus Trasnslation -->
+        <translation code="82593-5" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"
+            displayName="Immunization summary report"/>
+    </code>
+    <!-- Titel des Dokuments -->
+    <title>Immunisierungsstatus - Zusammenfassung</title>
+    <!-- Terminologiedatum (siehe Allgemeiner Implementierungsleitfaden) -->
+    <hl7at:terminologyDate value="20230717"/>
+    <!-- formatCode (siehe Allgemeiner Implementierungsleitfaden) -->
+    <hl7at:formatCode code="urn:hl7-at:eImpf:2.0.0+20230717" codeSystem="1.2.40.0.34.5.37"
+        displayName="HL7 Austria e-Impfpass 2.0.0+20230717"/>
+    <!-- Fachliche Zuordnung des Dokuments (siehe Allgemeiner Implementierungsleitfaden) -->
+    <hl7at:practiceSettingCode code="F001" displayName="Allgemeinmedizin"
+        codeSystem="1.2.40.0.34.5.12" codeSystemName="ELGA_PracticeSetting"/>
+    <!-- Erstellungsdatum des Dokuments -->
+    <effectiveTime value="20230717103415+0200"/>
+    <!-- Vertraulichkeitscode -->
+    <confidentialityCode code="N" displayName="normal" codeSystem="2.16.840.1.113883.5.25"
+        codeSystemName="HL7:Confidentiality"/>
+    <!-- Sprachcode des Dokuments -->
+    <languageCode code="de-AT"/>
+    <!-- Versionierung des Dokuments  -->
+    <setId root="1.2.40.0.34.3.9.114.12" extension="4567"/>
+    <versionNumber value="24"/>
+    <!-- Teilnehmende Parteien ========================================================== -->
+    <!-- Patient ======================================================================== -->
+    <recordTarget typeCode="RCT" contextControlCode="OP">
+        <patientRole classCode="PAT">
+            <!-- IDs des Patienten -->
+            <!-- Identifikation des Patienten im lokalen System, im Fall der Dokumentenklasse "Kompletter Immunisierungsstatus" das bPK-GH des Patienten-->
+            <id root="1.2.40.0.10.2.1.1.149" extension="GH:b64EncodedbPKValue"
+                assigningAuthorityName="Österreichische Stammzahlenregisterbehörde"/>
+            <!-- Sozialversicherungsnummer des Patienten -->
+            <id root="1.2.40.0.10.1.4.3.1" extension="1111241261"
+                assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <!-- bPK-GH des Patienten -->
+            <id root="1.2.40.0.10.2.1.1.149" extension="GH:b64encodedbPKValue"/>
+            <!-- Adresse des Patienten -->
+            <addr use="H">
+                <streetAddressLine>Bürgerstraße 13a</streetAddressLine>
+                <postalCode>7000</postalCode>
+                <city>Eisenstadt</city>
+                <state>Burgenland</state>
+                <country>AUT</country>
+            </addr>
+            <!-- Kontaktdaten des Patienten-->
+            <telecom use="H" value="tel:+43.2682.40400"/>
+            <telecom use="MC" value="tel:+43.664.1234567"/>
+            <telecom value="mailto:johannes@buerger.at"/>
+            <patient>
+                <!-- Name des Patienten -->
+                <name>
+                    <given>Johannes</given>
+                    <family>Bürger</family>
+                </name>
+                <!-- Geschlecht des Patienten -->
+                <administrativeGenderCode code="M" displayName="Male"
+                    codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
+                <!-- Geburtsdatum des Patienten -->
+                <birthTime value="20121224"/>
+                <!-- Gesetzlicher Vertreter -->
+                <guardian classCode="GUARD">
+                    <addr use="WP">
+                        <streetAddressLine>GesetzlicherVertreter-StraßeWP 13a</streetAddressLine>
+                        <postalCode>1010</postalCode>
+                        <city>Wien</city>
+                        <state>Wien</state>
+                        <country>AUT</country>
+                    </addr>
+                    <telecom use="H" value="tel:+43.2682.40400"/>
+                    <telecom use="MC" value="tel:+43.664.1234567"/>
+                    <telecom value="mailto:Josef@GesetzlicherVertreter.at"/>
+                    <guardianPerson>
+                        <name>
+                            <given>Josef</given>
+                            <family>GesetzlicherVertreter</family>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+                <birthplace>
+					<place>
+						<addr use="PST">Graz</addr> 
+					</place>
+				</birthplace>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <!-- Verfasser des Dokuments ======================================================================== -->
+    <author typeCode="AUT" contextControlCode="OP">
+        <!-- Zeitpunkt der Erstellung -->
+        <time value="20230717103415+0200"/>
+        <assignedAuthor classCode="ASSIGNED">
+            <!-- Identifikation des verfassenden Systemes -->
+            <id root="1.2.40.0.34.6.104"/>
+            <assignedAuthoringDevice classCode="DEV" determinerCode="INSTANCE">
+                <manufacturerModelName>Zentrale Anwendung e-Impfpass
+                    (author/manufacturerModelName)</manufacturerModelName>
+                <softwareName>Zentrale Anwendung e-Impfpass (author/softwareName)</softwareName>
+            </assignedAuthoringDevice>
+            <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                <!-- ID der Organisation aus dem GDA Index -->
+                <id root="1.2.40.0.34.6.104"/>
+                <name>Zentrale Anwendung e-Impfpass (author/representedOrganization)</name>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <!-- Verwahrer des Dokuments ======================================================================== -->
+    <custodian typeCode="CST">
+        <assignedCustodian classCode="ASSIGNED">
+            <representedCustodianOrganization classCode="ORG" determinerCode="INSTANCE">
+                <!-- ID der Organisation aus dem GDA Index -->
+                <id root="1.2.40.0.34.3.99.1"/>
+                <name>Zentrale Anwendung e-Impfpass (custodian)</name>
+                <telecom value="tel:+43.123.45678-0"/>
+                <addr>
+                    <streetName>Stubenring</streetName>
+                    <houseNumber>1</houseNumber>
+                    <postalCode>1010</postalCode>
+                    <city>Wien</city>
+                    <state>Wien</state>
+                    <country>AUT</country>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <!-- Komponente für die Gesundheitsdienstleistung ========================================================================  -->
+    <documentationOf typeCode="DOC">
+        <serviceEvent classCode="ACT" moodCode="EVN">
+            <code code="41000179103" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT"
+                displayName="Immunization record (record artifact)"/>
+            <effectiveTime>
+                <low value="20160617121500+0200"/>
+                <high value="20230601120523+0200"/>
+            </effectiveTime>
+        </serviceEvent>
+    </documentationOf>
+    <!-- ***********************************************************************************************************************************************
+			Medizinische Daten "CDA Body"
+    ************************************************************************************************************************************************ -->
+    <component>
+        <structuredBody>
+            <component>
+                <!-- Sektion Impfungen - kodiert -->
+                <section classCode="DOCSECT" moodCode="EVN">
+                    <templateId root="1.2.40.0.34.6.0.11.2.1"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.6"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.23"/>
+                    <id root="1.2.40.0.34.99.4613.3.4" extension="1"/>
+                    <code code="11369-6" codeSystem="2.16.840.1.113883.6.1"
+                        displayName="HISTORY OF IMMUNIZATIONS"/>
+                    <title>Impfungen</title>
+                    <text>
+                        <paragraph ID="sbdm-1">Keine Impfungen.</paragraph>
+                    </text>
+                    <!-- Impfung FSME1 -->
+                    <entry typeCode="DRIV">
+                        <substanceAdministration moodCode="EVN" negationInd="false"
+                            classCode="SBADM">
+                            <templateId root="1.2.40.0.34.6.0.11.3.28"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.12"/>
+                            <id root="1.2.40.0.34.99.4613.3.5" extension="1"/>
+                            <code code="90351000119108" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Vaccination not done (situation)"/>
+                            <text>
+                                <reference value="#sbdm-1"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <effectiveTime nullFlavor="UNK"/>
+                            <routeCode nullFlavor="NA"/>
+                            <approachSiteCode nullFlavor="NA"/>
+                            <consumable typeCode="CSM">
+                                <manufacturedProduct xmlns:pharm="urn:ihe:pharm"
+                                    classCode="MANU">
+                                    <templateId root="1.2.40.0.34.6.0.11.9.31"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <code nullFlavor="NA"/>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>

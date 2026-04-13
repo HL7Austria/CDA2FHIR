@@ -53,128 +53,50 @@ def transform(source_path, target_path):
     print('+++++++ Transformation from '+source_path+' to '+target_path+' ended  +++++++')
 
 def CdaToFhirBundle(cda, fhir_bundle):
-    fhir_bundle.id = string(value=str(uuid.uuid4()))
-    fhir_bundle.type_ = string(value='document')
-    if fhir_bundle.meta is None:
-        fhir_bundle.meta = malac.models.fhir.r4.Meta()
-    fhir_bundle_meta = fhir_bundle.meta
-    fhir_bundle_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'))
     if cda.id is not None:
         fhir_bundle.identifier = malac.models.fhir.r4.Identifier()
         II(cda.id, fhir_bundle.identifier)
-    if cda.effectiveTime is not None:
-        fhir_bundle.timestamp = malac.models.fhir.r4.instant()
-        TSInstant(cda.effectiveTime, fhir_bundle.timestamp)
+    fhir_bundle.id = string(value=str(uuid.uuid4()))
+    fhir_bundle.type_ = string(value='document')
+    fhir_bundle.timestamp = malac.models.fhir.r4.instant(value=one_timestamp)
     fhir_bundle_entry_1 = malac.models.fhir.r4.Bundle_Entry()
     fhir_bundle.entry.append(fhir_bundle_entry_1)
     fhir_composition = malac.models.fhir.r4.Composition()
     fhir_bundle_entry_1.resource = malac.models.fhir.r4.ResourceContainer(Composition=fhir_composition)
-    fhir_composition_uuid = string(value=str(uuid.uuid4()))
-    fhir_composition.id = fhir_composition_uuid
-    fhir_bundle_entry_1.fullUrl = uri(value=('urn:uuid:' + fhir_composition_uuid.value))
-    fhir_bundle_entry_4 = malac.models.fhir.r4.Bundle_Entry()
-    fhir_bundle.entry.append(fhir_bundle_entry_4)
-    fhir_diagnosticReport = malac.models.fhir.r4.DiagnosticReport()
-    fhir_bundle_entry_4.resource = malac.models.fhir.r4.ResourceContainer(DiagnosticReport=fhir_diagnosticReport)
-    fhir_diagnosticReport_id = string(value=str(uuid.uuid4()))
-    fhir_diagnosticReport.id = fhir_diagnosticReport_id
-    fhir_bundle_entry_4.fullUrl = uri(value=('urn:uuid:' + fhir_diagnosticReport_id.value))
+    fhir_composition_id = string(value=str(uuid.uuid4()))
+    fhir_composition.id = fhir_composition_id
+    fhir_bundle_entry_1.fullUrl = uri(value=('urn:uuid:' + fhir_composition_id.value))
     fhir_bundle_entry_2 = malac.models.fhir.r4.Bundle_Entry()
     fhir_bundle.entry.append(fhir_bundle_entry_2)
     fhir_patient = malac.models.fhir.r4.Patient()
     fhir_bundle_entry_2.resource = malac.models.fhir.r4.ResourceContainer(Patient=fhir_patient)
-    fhir_patient_uuid = string(value=str(uuid.uuid4()))
-    fhir_patient.id = fhir_patient_uuid
-    fhir_bundle_entry_2.fullUrl = uri(value=('urn:uuid:' + fhir_patient_uuid.value))
-    fhir_bundle_entry_5 = malac.models.fhir.r4.Bundle_Entry()
-    fhir_bundle.entry.append(fhir_bundle_entry_5)
-    fhir_serviceRequest = malac.models.fhir.r4.ServiceRequest()
-    fhir_bundle_entry_5.resource = malac.models.fhir.r4.ResourceContainer(ServiceRequest=fhir_serviceRequest)
-    fhir_serviceRequest_id = string(value=str(uuid.uuid4()))
-    fhir_serviceRequest.id = fhir_serviceRequest_id
-    fhir_bundle_entry_5.fullUrl = uri(value=('urn:uuid:' + fhir_serviceRequest_id.value))
-    if fhir_serviceRequest.meta is None:
-        fhir_serviceRequest.meta = malac.models.fhir.r4.Meta()
-    fhir_serviceRequest_meta = fhir_serviceRequest.meta
-    fhir_serviceRequest_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu'))
-    fhir_composition_extenstion_01 = malac.models.fhir.r4.Extension()
-    fhir_composition.extension.append(fhir_composition_extenstion_01)
-    fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition'
-    fhir_diagnosticReport_composition_reference = malac.models.fhir.r4.Reference()
-    fhir_composition_extenstion_01.valueReference = fhir_diagnosticReport_composition_reference
-    fhir_diagnosticReport_composition_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
-    fhir_diagnosticReport_composition_reference.type_ = uri(value='ServiceRequest')
+    fhir_patient_id = string(value=str(uuid.uuid4()))
+    fhir_patient.id = fhir_patient_id
+    fhir_bundle_entry_2.fullUrl = uri(value=('urn:uuid:' + fhir_patient_id.value))
     fhir_composition_subject_reference = malac.models.fhir.r4.Reference()
     fhir_composition.subject = fhir_composition_subject_reference
-    fhir_composition_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_uuid.value))
+    fhir_composition_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
     fhir_composition_subject_reference.type_ = uri(value='Patient')
-    fhir_composition_extenstion_02 = malac.models.fhir.r4.Extension()
-    fhir_composition.extension.append(fhir_composition_extenstion_02)
-    fhir_composition_extenstion_02.url = 'http://hl7.eu/fhir/laboratory/StructureDefinition/composition-diagnosticReportReference'
-    fhir_composition_diagnosticReport_reference = malac.models.fhir.r4.Reference()
-    fhir_composition_extenstion_02.valueReference = fhir_composition_diagnosticReport_reference
-    fhir_composition_diagnosticReport_reference.reference = string(value=('urn:uuid:' + fhir_diagnosticReport_id.value))
-    fhir_composition_diagnosticReport_reference.type_ = uri(value='DiagnosticReport')
-    fhir_diagnosticReport_extension = malac.models.fhir.r4.Extension()
-    fhir_diagnosticReport.extension.append(fhir_diagnosticReport_extension)
-    fhir_diagnosticReport_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-DiagnosticReport.composition'
-    fhir_diagnosticReport_composition_reference = malac.models.fhir.r4.Reference()
-    fhir_diagnosticReport_extension.valueReference = fhir_diagnosticReport_composition_reference
-    fhir_diagnosticReport_composition_reference.reference = string(value=('urn:uuid:' + fhir_composition_uuid.value))
-    fhir_diagnosticReport_composition_reference.type_ = uri(value='Composition')
-    fhir_diagnosticReport_basedOn_reference = malac.models.fhir.r4.Reference()
-    fhir_diagnosticReport.basedOn.append(fhir_diagnosticReport_basedOn_reference)
-    fhir_diagnosticReport_basedOn_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
-    fhir_diagnosticReport_basedOn_reference.type_ = uri(value='ServiceRequest')
-    fhir_diagnosticReport_subject_reference = malac.models.fhir.r4.Reference()
-    fhir_diagnosticReport.subject = fhir_diagnosticReport_subject_reference
-    fhir_diagnosticReport_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_uuid.value))
-    fhir_diagnosticReport_subject_reference.type_ = uri(value='Patient')
-    fhir_serviceRequest_subject_reference = malac.models.fhir.r4.Reference()
-    fhir_serviceRequest.subject = fhir_serviceRequest_subject_reference
-    fhir_serviceRequest_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_uuid.value))
-    fhir_serviceRequest_subject_reference.type_ = uri(value='Patient')
-    CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle)
-    CdaHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport)
-    cda_component = cda.component
-    if cda_component is not None:
-        cda_structuredBody = cda_component.structuredBody
-        if cda_structuredBody is not None:
-            CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle)
-
-def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle):
-    if fhir_composition.meta is None:
-        fhir_composition.meta = malac.models.fhir.r4.Meta()
-    fhir_composition_meta = fhir_composition.meta
-    fhir_composition_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu'))
     cda_code = cda.code
     if cda_code is not None:
         code_code = cda_code.code
         if code_code is not None:
-            fhir_composition_category = malac.models.fhir.r4.CodeableConcept()
-            fhir_composition.category.append(fhir_composition_category)
-            fhir_composition_category.coding.append(translate_single('cda-clinicaldocument-code-2-fhir-composition-type', code=(code_code if isinstance(code_code, str) else code_code.value), out_type='Coding'))
-    cda_code = cda.code
-    if cda_code is not None:
-        for translation in cda_code.translation or []:
-            fhir_composition.type_ = malac.models.fhir.r4.CodeableConcept()
-            CDCodeableConcept(translation, fhir_composition.type_)
-        if not cda_code.translation:
-            type_coding = malac.models.fhir.r4.CodeableConcept()
-            fhir_composition.type_ = type_coding
-            coding_coding = malac.models.fhir.r4.Coding()
-            type_coding.coding.append(coding_coding)
-            coding_coding.system = uri(value='http://loinc.org')
-            coding_coding.code = string(value='11502-2')
+            if code_code == '11502-2' or code_code == '18725-2':
+                CdaLabToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle)
+        code_code = cda_code.code
+        if code_code is not None:
+            if code_code == '11369-6':
+                CdaEimpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle)
+
+def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle):
     cda_title = cda.title
     if cda_title is not None:
         fhir_composition.title = string(value=fhirpath.single(fhirpath_utils.get(cda_title,'valueOf_',strip=True)))
     cda_statusCode = cda.statusCode
     if cda_statusCode is not None:
-        if fhirpath_utils.get(cda,'sdtcStatusCode'):
-            cda_code = cda_statusCode.code
-            if cda_code is not None:
-                fhir_composition.status = string(value=translate_single('cda-sdtc-statuscode-2-fhir-composition-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
+        cda_code = cda_statusCode.code
+        if cda_code is not None:
+            fhir_composition.status = string(value=translate_single('cda-sdtc-statuscode-2-fhir-composition-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
     if not fhirpath_utils.get(cda,'sdtcStatusCode'):
         fhir_composition.status = string(value='final')
     cda_terminologyDate = cda.terminologyDate
@@ -208,6 +130,8 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             fhir_composition.extension.append(fhir_composition_extenstion)
             fhir_composition_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/composition-clinicaldocument-versionNumber'
             fhir_composition_extenstion.valueString = string(value=str(getattr(cda_versionNumber_value, 'value', cda_versionNumber_value if cda_versionNumber_value is not None else '')))
+
+def CdaHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle):
     for cda_recordTarget in cda.recordTarget or []:
         cda_patientRole = cda_recordTarget.patientRole
         if cda_patientRole is not None:
@@ -240,31 +164,6 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             fhir_composition_author_reference.reference = string(value=('urn:uuid:' + fhir_device_id.value))
             fhir_composition_author_reference.type_ = uri(value='Device')
             CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle)
-    cda_dataEnterer = cda.dataEnterer
-    if cda_dataEnterer is not None:
-        cda_assignedEntity = cda_dataEnterer.assignedEntity
-        if cda_assignedEntity is not None:
-            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-            fhir_bundle.entry.append(fhir_bundle_entry)
-            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-            fhir_practitionerRole.id = fhir_practitionerRole_id
-            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            fhir_diagnosticReport_performer = malac.models.fhir.r4.Reference()
-            fhir_diagnosticReport.performer.append(fhir_diagnosticReport_performer)
-            fhir_diagnosticReport_performer.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            fhir_diagnosticReport_performer.type_ = uri(value='PractitionerRole')
-            performer_function_extension = malac.models.fhir.r4.Extension()
-            fhir_diagnosticReport_performer.extension.append(performer_function_extension)
-            performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction'
-            performer_function_codeableConcept = malac.models.fhir.r4.CodeableConcept()
-            performer_function_extension.valueCodeableConcept = performer_function_codeableConcept
-            performer_function_coding = malac.models.fhir.r4.Coding()
-            performer_function_codeableConcept.coding.append(performer_function_coding)
-            performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
-            performer_function_coding.code = string(value='ENT')
-            CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle)
     cda_custodian = cda.custodian
     if cda_custodian is not None:
         cda_assignedCustodian = cda_custodian.assignedCustodian
@@ -294,91 +193,6 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                 if cda_representedCustodianOrganization.addr is not None:
                     fhir_custodian_organization.address.append(malac.models.fhir.r4.Address())
                     CdaAdressCompilationToFhirAustrianAddress(cda_representedCustodianOrganization.addr, fhir_custodian_organization.address[-1])
-    for cda_informationRecipient in cda.informationRecipient or []:
-        cda_intendedRecipient = cda_informationRecipient.intendedRecipient
-        if cda_intendedRecipient is not None:
-            if cda_intendedRecipient.receivedOrganization is not None:
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-                fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-                fhir_practitionerRole.id = fhir_practitionerRole_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                fhir_composition_informationRecipient_extension = malac.models.fhir.r4.Extension()
-                fhir_composition.extension.append(fhir_composition_informationRecipient_extension)
-                fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient'
-                fhir_composition_informationRecipient_extension_reference = malac.models.fhir.r4.Reference()
-                fhir_composition_informationRecipient_extension.valueReference = fhir_composition_informationRecipient_extension_reference
-                fhir_composition_informationRecipient_extension_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                fhir_composition_informationRecipient_extension_reference.type_ = uri(value='PractitionerRole')
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_practitioner = malac.models.fhir.r4.Practitioner()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Practitioner=fhir_practitioner)
-                fhir_practitioner_id = string(value=str(uuid.uuid4()))
-                fhir_practitioner.id = fhir_practitioner_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
-                fhir_practitionerRole_practitioner = malac.models.fhir.r4.Reference()
-                fhir_practitionerRole.practitioner = fhir_practitionerRole_practitioner
-                fhir_practitionerRole_practitioner.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
-                fhir_practitionerRole_practitioner.type_ = uri(value='Practitioner')
-                for id__ in cda_intendedRecipient.id or []:
-                    if id__.nullFlavor is None:
-                        fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
-                        II(id__, fhir_practitioner.identifier[-1])
-                cda_informationRecipient_inner = cda_intendedRecipient.informationRecipient
-                if cda_informationRecipient_inner is not None:
-                    for name in cda_informationRecipient_inner.name or []:
-                        fhir_practitioner.name.append(malac.models.fhir.r4.HumanName())
-                        CdaPersonNameCompilationToFhirHumanName(name, fhir_practitioner.name[-1])
-                cda_receivedOrganization = cda_intendedRecipient.receivedOrganization
-                if cda_receivedOrganization is not None:
-                    fhir_bundle_entry_org = malac.models.fhir.r4.Bundle_Entry()
-                    fhir_bundle.entry.append(fhir_bundle_entry_org)
-                    fhir_organization = malac.models.fhir.r4.Organization()
-                    fhir_bundle_entry_org.resource = malac.models.fhir.r4.ResourceContainer(Organization=fhir_organization)
-                    fhir_organization_id = string(value=str(uuid.uuid4()))
-                    fhir_organization.id = fhir_organization_id
-                    fhir_bundle_entry_org.fullUrl = uri(value=('urn:uuid:' + fhir_organization_id.value))
-                    fhir_practitionerRole_organization = malac.models.fhir.r4.Reference()
-                    fhir_practitionerRole.organization = fhir_practitionerRole_organization
-                    fhir_practitionerRole_organization.reference = string(value=('urn:uuid:' + fhir_organization_id.value))
-                    fhir_practitionerRole_organization.type_ = uri(value='Organization')
-                    CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization)
-        cda_intendedRecipient = cda_informationRecipient.intendedRecipient
-        if cda_intendedRecipient is not None:
-            if cda_intendedRecipient.receivedOrganization is None:
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_relatedPerson = malac.models.fhir.r4.RelatedPerson()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(RelatedPerson=fhir_relatedPerson)
-                fhir_relatedPerson_id = string(value=str(uuid.uuid4()))
-                fhir_relatedPerson.id = fhir_relatedPerson_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_relatedPerson_id.value))
-                fhir_composition_informationRecipient_extension = malac.models.fhir.r4.Extension()
-                fhir_composition.extension.append(fhir_composition_informationRecipient_extension)
-                fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient'
-                fhir_composition_informationRecipient_extension_reference = malac.models.fhir.r4.Reference()
-                fhir_composition_informationRecipient_extension.valueReference = fhir_composition_informationRecipient_extension_reference
-                fhir_composition_informationRecipient_extension_reference.reference = string(value=('urn:uuid:' + fhir_relatedPerson_id.value))
-                fhir_composition_informationRecipient_extension_reference.type_ = uri(value='RelatedPerson')
-                for id___ in cda_intendedRecipient.id or []:
-                    if id___.nullFlavor is None:
-                        fhir_relatedPerson.identifier.append(malac.models.fhir.r4.Identifier())
-                        II(id___, fhir_relatedPerson.identifier[-1])
-                fhir_relatedPerson_patient_reference = malac.models.fhir.r4.Reference()
-                fhir_relatedPerson.patient = fhir_relatedPerson_patient_reference
-                if fhir_patient.id is None:
-                    fhir_patient.id = malac.models.fhir.r4.string()
-                fhir_patient_id = fhir_patient.id
-                fhir_relatedPerson_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
-                fhir_relatedPerson_patient_reference.type_ = uri(value='Patient')
-                cda_informationRecipient_inner = cda_intendedRecipient.informationRecipient
-                if cda_informationRecipient_inner is not None:
-                    for name_ in cda_informationRecipient_inner.name or []:
-                        fhir_relatedPerson.name.append(malac.models.fhir.r4.HumanName())
-                        CdaPersonNameCompilationToFhirHumanName(name_, fhir_relatedPerson.name[-1])
     for cda_legalAuthenticator in cda.legalAuthenticator or []:
         fhir_composition_attester = malac.models.fhir.r4.Composition_Attester()
         fhir_composition.attester.append(fhir_composition_attester)
@@ -423,56 +237,6 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
             fhir_composition_attester_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
             fhir_composition_attester_reference.type_ = uri(value='PractitionerRole')
             CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle)
-    for cda_orderingProvider in cda.participant or []:
-        if cda_orderingProvider.typeCode == 'REF' and cda_orderingProvider.nullFlavor is None:
-            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-            fhir_bundle.entry.append(fhir_bundle_entry)
-            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-            fhir_practitionerRole.id = fhir_practitionerRole_id
-            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            fhir_serviceRequest_requester_reference = malac.models.fhir.r4.Reference()
-            fhir_serviceRequest.requester = fhir_serviceRequest_requester_reference
-            fhir_serviceRequest_requester_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            fhir_serviceRequest_requester_reference.type_ = uri(value='PractitionerRole')
-            cda_orderingProvider_time = cda_orderingProvider.time
-            if cda_orderingProvider_time is not None:
-                if cda_orderingProvider_time.nullFlavor is None:
-                    v = cda_orderingProvider_time.value
-                    if v is not None:
-                        fhir_serviceRequest.authoredOn = dateTime(value=dateutil.parse(v).isoformat())
-            cda_associatedEntity = cda_orderingProvider.associatedEntity
-            if cda_associatedEntity is not None:
-                CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
-    for cda_participant in cda.participant or []:
-        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_participant,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.1.20' or v1.root == '1.2.40.0.34.11.1.1.1')]):
-            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-            fhir_bundle.entry.append(fhir_bundle_entry)
-            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-            fhir_practitionerRole.id = fhir_practitionerRole_id
-            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            if cda_participant.functionCode is not None:
-                fhir_practitionerRole.specialty.append(malac.models.fhir.r4.CodeableConcept())
-                transform_default(cda_participant.functionCode, fhir_practitionerRole.specialty[-1])
-            cda_associatedEntity = cda_participant.associatedEntity
-            if cda_associatedEntity is not None:
-                fhir_diagnosticReport_performer = malac.models.fhir.r4.Reference()
-                fhir_diagnosticReport.performer.append(fhir_diagnosticReport_performer)
-                fhir_diagnosticReport_performer.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                fhir_diagnosticReport_performer.type_ = uri(value='PractitionerRole')
-                performer_function_extension = malac.models.fhir.r4.Extension()
-                fhir_diagnosticReport_performer.extension.append(performer_function_extension)
-                performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction'
-                performer_function_codeableConcept = malac.models.fhir.r4.CodeableConcept()
-                performer_function_extension.valueCodeableConcept = performer_function_codeableConcept
-                performer_function_coding = malac.models.fhir.r4.Coding()
-                performer_function_codeableConcept.coding.append(performer_function_coding)
-                performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
-                performer_function_coding.code = string(value='CALLBCK')
-                CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
     for cda_generalPractitioner in cda.participant or []:
         if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_generalPractitioner,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.1.23' or v1.root == '1.2.40.0.34.11.1.1.3')]):
             fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -555,9 +319,9 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                         TELContactPoint(telecom_, fhir_patient_contact.telecom[-1])
                 cda_associatedPerson = cda_associatedEntity.associatedPerson
                 if cda_associatedPerson is not None:
-                    for name__ in cda_associatedPerson.name or []:
+                    for name in cda_associatedPerson.name or []:
                         fhir_patient_contact.name = malac.models.fhir.r4.HumanName()
-                        CdaPersonNameCompilationToFhirHumanName(name__, fhir_patient_contact.name)
+                        CdaPersonNameCompilationToFhirHumanName(name, fhir_patient_contact.name)
                 cda_scopingOrganization = cda_associatedEntity.scopingOrganization
                 if cda_scopingOrganization is not None:
                     fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -635,9 +399,9 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                         TELContactPoint(telecom__, fhir_patient_contact.telecom[-1])
                 cda_associatedPerson = cda_associatedEntity.associatedPerson
                 if cda_associatedPerson is not None:
-                    for name___ in cda_associatedPerson.name or []:
+                    for name_ in cda_associatedPerson.name or []:
                         fhir_patient_contact.name = malac.models.fhir.r4.HumanName()
-                        CdaPersonNameCompilationToFhirHumanName(name___, fhir_patient_contact.name)
+                        CdaPersonNameCompilationToFhirHumanName(name_, fhir_patient_contact.name)
                 cda_scopingOrganization = cda_associatedEntity.scopingOrganization
                 if cda_scopingOrganization is not None:
                     fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -674,10 +438,10 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                 IVLTSPeriod(cda_participant.time, fhir_coverage.period)
             cda_associatedEntity = cda_participant.associatedEntity
             if cda_associatedEntity is not None:
-                for id____ in cda_associatedEntity.id or []:
-                    if id____.nullFlavor is None:
+                for id__ in cda_associatedEntity.id or []:
+                    if id__.nullFlavor is None:
                         fhir_coverage.identifier.append(malac.models.fhir.r4.Identifier())
-                        II(id____, fhir_coverage.identifier[-1])
+                        II(id__, fhir_coverage.identifier[-1])
                 cda_associatedEntity_code = cda_associatedEntity.code
                 if cda_associatedEntity_code is not None:
                     if cda_associatedEntity_code.code == 'SELF':
@@ -703,9 +467,9 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                         fhir_coverage.policyHolder = fhir_coverage_policyHolder_reference
                         fhir_coverage_policyHolder_reference.reference = string(value=('urn:uuid:' + fhir_relatedPerson_id.value))
                         fhir_coverage_policyHolder_reference.type_ = uri(value='RelatedPerson')
-                        for id_____ in cda_associatedEntity.id or []:
+                        for id___ in cda_associatedEntity.id or []:
                             fhir_relatedPerson.identifier.append(malac.models.fhir.r4.Identifier())
-                            II(id_____, fhir_relatedPerson.identifier[-1])
+                            II(id___, fhir_relatedPerson.identifier[-1])
                         for addr__ in cda_associatedEntity.addr or []:
                             if addr__.nullFlavor is None:
                                 fhir_relatedPerson.address.append(malac.models.fhir.r4.Address())
@@ -716,9 +480,9 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                                 TELContactPoint(telecom___, fhir_relatedPerson.telecom[-1])
                         cda_associatedPerson = cda_associatedEntity.associatedPerson
                         if cda_associatedPerson is not None:
-                            for name____ in cda_associatedPerson.name or []:
+                            for name__ in cda_associatedPerson.name or []:
                                 fhir_relatedPerson.name.append(malac.models.fhir.r4.HumanName())
-                                CdaPersonNameCompilationToFhirHumanName(name____, fhir_relatedPerson.name[-1])
+                                CdaPersonNameCompilationToFhirHumanName(name__, fhir_relatedPerson.name[-1])
                 cda_scopingOrganization = cda_associatedEntity.scopingOrganization
                 if cda_scopingOrganization is not None:
                     fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -801,14 +565,6 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                         fhir_practitionerRole.specialty.append(malac.models.fhir.r4.CodeableConcept())
                         transform_default(cda_participant_practitioner.functionCode, fhir_practitionerRole.specialty[-1])
                     CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
-    for cda_inFulFillmentOf in cda.inFulfillmentOf or []:
-        cda_inFulFillmentOf_order = cda_inFulFillmentOf.order
-        if cda_inFulFillmentOf_order is not None:
-            for id______ in cda_inFulFillmentOf_order.id or []:
-                fhir_serviceRequest.identifier.append(malac.models.fhir.r4.Identifier())
-                II(id______, fhir_serviceRequest.identifier[-1])
-            fhir_serviceRequest.status = string(value='completed')
-            fhir_serviceRequest.intent = string(value='order')
     for cda_documentationOf in cda.documentationOf or []:
         cda_documentationOf_serviceEvent = cda_documentationOf.serviceEvent
         if cda_documentationOf_serviceEvent is not None:
@@ -819,7 +575,7 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                 if serviceEvent_id_root is not None:
                     fhir_composition_event_extension = malac.models.fhir.r4.Extension()
                     fhir_composition_event.extension.append(fhir_composition_event_extension)
-                    fhir_composition_event_extension.url = 'https://fhir.hl7.at/elga/lab/r4/StructureDefinition/at-lab-ext-composition-eventId'
+                    fhir_composition_event_extension.url = 'https://fhir.hl7.at/core/r4/StructureDefinition/at-core-ext-composition-eventId'
                     fhir_composition_event_extension_oid = malac.models.fhir.r4.oid()
                     fhir_composition_event_extension.valueOid = fhir_composition_event_extension_oid
                     fhir_composition_event_extension_oid.value = 'urn:oid:' + serviceEvent_id_root
@@ -839,73 +595,8 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnos
                 fhir_target_identifier = malac.models.fhir.r4.Identifier()
                 fhir_composition_relatesTo.targetIdentifier = fhir_target_identifier
                 II(cda_parentDocument_id, fhir_target_identifier)
-    cda_componentOf = cda.componentOf
-    if cda_componentOf is not None:
-        cda_encompassingEncounter = cda_componentOf.encompassingEncounter
-        if cda_encompassingEncounter is not None:
-            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-            fhir_bundle.entry.append(fhir_bundle_entry)
-            fhir_encounter = malac.models.fhir.r4.Encounter()
-            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Encounter=fhir_encounter)
-            fhir_encounter_id = string(value=str(uuid.uuid4()))
-            fhir_encounter.id = fhir_encounter_id
-            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_encounter_id.value))
-            fhir_composition_encounter_reference = malac.models.fhir.r4.Reference()
-            fhir_composition.encounter = fhir_composition_encounter_reference
-            fhir_composition_encounter_reference.reference = string(value=('urn:uuid:' + fhir_encounter_id.value))
-            fhir_composition_encounter_reference.type_ = uri(value='Encounter')
-            fhir_diagnosticReport_encounter_reference = malac.models.fhir.r4.Reference()
-            fhir_diagnosticReport.encounter = fhir_diagnosticReport_encounter_reference
-            fhir_diagnosticReport_encounter_reference.reference = string(value=('urn:uuid:' + fhir_encounter_id.value))
-            fhir_diagnosticReport_encounter_reference.type_ = uri(value='Encounter')
-            CdaEncompassingEncounterToFhirEncounter(cda_encompassingEncounter, fhir_encounter, fhir_bundle)
-
-def CdaHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport):
-    if fhir_diagnosticReport.meta is None:
-        fhir_diagnosticReport.meta = malac.models.fhir.r4.Meta()
-    fhir_diagnosticReport_meta = fhir_diagnosticReport.meta
-    fhir_diagnosticReport_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu'))
-    cda_code = cda.code
-    if cda_code is not None:
-        code_code = cda_code.code
-        if code_code is not None:
-            fhir_diagnosticReport_category = malac.models.fhir.r4.CodeableConcept()
-            fhir_diagnosticReport.category.append(fhir_diagnosticReport_category)
-            fhir_diagnosticReport_category.coding.append(translate_single('cda-clinicaldocument-code-2-fhir-composition-type', code=(code_code if isinstance(code_code, str) else code_code.value), out_type='Coding'))
-    cda_code = cda.code
-    if cda_code is not None:
-        for translation in cda_code.translation or []:
-            fhir_diagnosticReport.code = malac.models.fhir.r4.CodeableConcept()
-            CDCodeableConcept(translation, fhir_diagnosticReport.code)
-        if not cda_code.translation:
-            code_coding = malac.models.fhir.r4.CodeableConcept()
-            fhir_diagnosticReport.code = code_coding
-            coding_coding = malac.models.fhir.r4.Coding()
-            code_coding.coding.append(coding_coding)
-            coding_coding.system = uri(value='http://loinc.org')
-            coding_coding.code = string(value='11502-2')
-    cda_statusCode = cda.statusCode
-    if cda_statusCode is not None:
-        if fhirpath_utils.get(cda,'sdtcStatusCode'):
-            cda_code = cda_statusCode.code
-            if cda_code is not None:
-                fhir_diagnosticReport.status = string(value=translate_single('cda-sdtc-statuscode-2-fhir-diagnosticreport-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
-    if not fhirpath_utils.get(cda,'sdtcStatusCode'):
-        fhir_diagnosticReport.status = string(value='final')
-    cda_effectiveTime = cda.effectiveTime
-    if cda_effectiveTime is not None:
-        fhir_diagnosticReport_effective = malac.models.fhir.r4.dateTime()
-        fhir_diagnosticReport.effectiveDateTime = fhir_diagnosticReport_effective
-        TSDateTime(cda_effectiveTime, fhir_diagnosticReport_effective)
-    if cda.setId is not None:
-        fhir_diagnosticReport.identifier.append(malac.models.fhir.r4.Identifier())
-        II(cda.setId, fhir_diagnosticReport.identifier[-1])
 
 def CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle):
-    if fhir_patient.meta is None:
-        fhir_patient.meta = malac.models.fhir.r4.Meta()
-    fhir_patient_meta = fhir_patient.meta
-    fhir_patient_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu'))
     if len(cda_patientRole.id) > 0:
         cda_patientRole_id = cda_patientRole.id[0]
         fhir_patient_identifier = malac.models.fhir.r4.Identifier()
@@ -919,7 +610,7 @@ def CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle)
         type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
         type_coding.code = string(value='PI')
     for cda_patientRole_id in cda_patientRole.id[1:]:
-        if cda_patientRole_id.nullFlavor is None and cda_patientRole_id.root != '1.2.40.0.10.2.1.1.149':
+        if cda_patientRole_id.nullFlavor is None:
             fhir_patient_identifier = malac.models.fhir.r4.Identifier()
             fhir_patient.identifier.append(fhir_patient_identifier)
             II(cda_patientRole_id, fhir_patient_identifier)
@@ -935,6 +626,18 @@ def CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle)
                 identifier_type.coding.append(type_coding)
                 type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
                 type_coding.code = string(value='SS')
+            if cda_patientRole_id.root == '1.2.40.0.10.2.1.1.149':
+                if fhir_patient_identifier.assigner is None:
+                    fhir_patient_identifier.assigner = malac.models.fhir.r4.Reference()
+                assigner = fhir_patient_identifier.assigner
+                assigner.display = string(value='Bundesministerium für Inneres')
+                if fhir_patient_identifier.type_ is None:
+                    fhir_patient_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
+                identifier_type = fhir_patient_identifier.type_
+                type_coding = malac.models.fhir.r4.Coding()
+                identifier_type.coding.append(type_coding)
+                type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0203')
+                type_coding.code = string(value='NI')
     for addr in cda_patientRole.addr or []:
         fhir_patient.address.append(malac.models.fhir.r4.Address())
         CdaAdressCompilationToFhirAustrianAddress(addr, fhir_patient.address[-1])
@@ -997,7 +700,7 @@ def CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle)
                 fhir_patient_birthDate = fhir_patient.birthDate
                 fhir_patient_birthDate_extension = malac.models.fhir.r4.Extension()
                 fhir_patient_birthDate.extension.append(fhir_patient_birthDate_extension)
-                CdaNullFlavorToFhirNullFlavor(cda_patient_birthTime, fhir_patient_birthDate_extension)
+                CdaNullFlavorToFhirDataAbsentReason(cda_patient_birthTime, fhir_patient_birthDate_extension)
         cda_patient_deceasedInd = cda_patient.deceasedInd
         if cda_patient_deceasedInd is not None:
             if not fhirpath_utils.get(cda_patient,'sdtcDeceasedTime'):
@@ -1185,6 +888,9 @@ def CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author, fhir_practitioner
                 fhir_practitioner_qualification.code = malac.models.fhir.r4.CodeableConcept()
             fhir_practitioner_qualification_code = fhir_practitioner_qualification.code
             CECodeableConcept(cda_author_assignedAuthor_code, fhir_practitioner_qualification_code)
+        for addr in cda_author_assignedAuthor.addr or []:
+            fhir_practitioner.address.append(malac.models.fhir.r4.Address())
+            CdaAdressCompilationToFhirAustrianAddress(addr, fhir_practitioner.address[-1])
         for telecom in cda_author_assignedAuthor.telecom or []:
             fhir_practitioner.telecom.append(malac.models.fhir.r4.ContactPoint())
             TELContactPoint(telecom, fhir_practitioner.telecom[-1])
@@ -1231,10 +937,9 @@ def CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle):
                 fhir_device_deviceName.type_ = string(value='model-name')
             cda_softwareName = cda_assignedAuthoringDevice.softwareName
             if cda_softwareName is not None:
-                fhir_device_deviceName = malac.models.fhir.r4.Device_DeviceName()
-                fhir_device.deviceName.append(fhir_device_deviceName)
-                fhir_device_deviceName.name = string(value=fhirpath.single(fhirpath_utils.get(cda_softwareName,'valueOf_',strip=True)))
-                fhir_device_deviceName.type_ = string(value='other')
+                fhir_device_version = malac.models.fhir.r4.Device_Version()
+                fhir_device.version.append(fhir_device_version)
+                fhir_device_version.value = string(value=fhirpath.single(fhirpath_utils.get(cda_softwareName,'valueOf_',strip=True)))
         cda_representedOrganization = cda_author_assignedAuthor.representedOrganization
         if cda_representedOrganization is not None:
             fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -1302,123 +1007,14 @@ def CdaEncompassingEncounterToFhirEncounter(cda_encompassingEncounter, fhir_enco
                     fhir_organization.type_.append(malac.models.fhir.r4.CodeableConcept())
                     transform_default(cda_healthCareFacility.code, fhir_organization.type_[-1])
 
-def CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle):
+def CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle):
     for cda_component in cda_structuredBody.component or []:
         cda_section = cda_component.section
         if cda_section is not None:
-            if fhirpath.single(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '46239-0' and v1.codeSystem == '2.16.840.1.113883.6.1')], fhirpath_utils.bool_or([v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.114'], [v3 for v3 in fhirpath_utils.get(cda_section,'templateId') if v3.root == '1.2.40.0.34.11.4.2.4']))):
-                if cda_section.text is None:
-                    cda_section.text = malac.models.cda.at_ext.StrucDoc_Text()
-                cda_section_text = cda_section.text
-                fhir_serviceRequest_reasonCode = malac.models.fhir.r4.CodeableConcept()
-                fhir_serviceRequest.reasonCode.append(fhir_serviceRequest_reasonCode)
-                fhir_serviceRequest_reasonCode_coding = malac.models.fhir.r4.Coding()
-                fhir_serviceRequest_reasonCode.coding.append(fhir_serviceRequest_reasonCode_coding)
-                fhir_serviceRequest_reasonCode_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-                fhir_serviceRequest_reasonCode_coding.code = string(value='OTH')
-                fhir_serviceRequest_reasonCode.text = string(value=str(cda_section_text))
-        cda_section = cda_component.section
-        if cda_section is not None:
-            if fhirpath.single(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '400999005' and v1.codeSystem == '2.16.840.1.113883.6.96')], [v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.15'])):
-                cda_section_text = cda_section.text
-                if cda_section_text is not None:
-                    if fhir_serviceRequest.code is None:
-                        fhir_serviceRequest.code = malac.models.fhir.r4.CodeableConcept()
-                    fhir_serviceRequest_code = fhir_serviceRequest.code
-                    fhir_serviceRequest_code.text = string(value=str(cda_section_text))
-                    if len(cda_section.entry) > 0:
-                        cda_section_entry = cda_section.entry[0]
-                        cda_section_entry_procedure = cda_section_entry.procedure
-                        if cda_section_entry_procedure is not None:
-                            cda_section_entry_procedure_code = cda_section_entry_procedure.code
-                            if cda_section_entry_procedure_code is not None:
-                                if cda_section_entry_procedure_code.nullFlavor is None:
-                                    fhir_serviceRequest_code_default_coding = malac.models.fhir.r4.Coding()
-                                    fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_default_coding)
-                                    fhir_serviceRequest_code_default_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-                                    fhir_serviceRequest_code_default_coding.code = string(value='OTH')
-                                    fhir_serviceRequest_code_coding = malac.models.fhir.r4.Coding()
-                                    fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_coding)
-                                    CDCoding(cda_section_entry_procedure_code, fhir_serviceRequest_code_coding)
-                            cda_section_entry_procedure_code = cda_section_entry_procedure.code
-                            if cda_section_entry_procedure_code is not None:
-                                if cda_section_entry_procedure_code.nullFlavor is not None:
-                                    for code_translation in cda_section_entry_procedure_code.translation or []:
-                                        fhir_serviceRequest_code_default_coding = malac.models.fhir.r4.Coding()
-                                        fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_default_coding)
-                                        fhir_serviceRequest_code_default_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-                                        fhir_serviceRequest_code_default_coding.code = string(value='OTH')
-                                        fhir_serviceRequest_code_coding = malac.models.fhir.r4.Coding()
-                                        fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_coding)
-                                        CDCoding(code_translation, fhir_serviceRequest_code_coding)
-                    for cda_section_entry in cda_section.entry[1:]:
-                        cda_section_entry_procedure = cda_section_entry.procedure
-                        if cda_section_entry_procedure is not None:
-                            if cda_section_entry_procedure.code is not None:
-                                if not [v2 for v1 in [cda_section_entry_procedure.code] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
-                                    fhir_serviceRequest.orderDetail.append(malac.models.fhir.r4.CodeableConcept())
-                                    CDCodeableConcept(cda_section_entry_procedure.code, fhir_serviceRequest.orderDetail[-1])
-                            cda_section_entry_procedure_code = cda_section_entry_procedure.code
-                            if cda_section_entry_procedure_code is not None:
-                                if cda_section_entry_procedure_code.nullFlavor is not None:
-                                    for translation in cda_section_entry_procedure_code.translation or []:
-                                        fhir_serviceRequest.orderDetail.append(malac.models.fhir.r4.CodeableConcept())
-                                        CDCodeableConcept(translation, fhir_serviceRequest.orderDetail[-1])
-        cda_section = cda_component.section
-        if cda_section is not None:
-            if fhirpath.single(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '400999005' and v1.codeSystem == '2.16.840.1.113883.6.96')], [v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.112'])):
-                if cda_section.text is None:
-                    cda_section.text = malac.models.cda.at_ext.StrucDoc_Text()
-                cda_section_text = cda_section.text
-                if fhir_serviceRequest.code is None:
-                    fhir_serviceRequest.code = malac.models.fhir.r4.CodeableConcept()
-                fhir_serviceRequest_code = fhir_serviceRequest.code
-                fhir_serviceRequest_code_coding = malac.models.fhir.r4.Coding()
-                fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_coding)
-                fhir_serviceRequest_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-                fhir_serviceRequest_code_coding.code = string(value='OTH')
-                fhir_serviceRequest_code.text = string(value=str(cda_section_text))
-        cda_section = cda_component.section
-        if cda_section is not None:
-            if fhirpath.single(fhirpath_utils.bool_or([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == 'BRIEFT' and v1.codeSystem == '1.2.40.0.34.5.40')], fhirpath_utils.bool_and([v2 for v2 in fhirpath_utils.get(cda_section,'code') if (v2.code == '10164-2' and v2.codeSystem == '2.16.840.1.113883.6.1')], [v3 for v3 in fhirpath_utils.get(cda_section,'templateId') if v3.root == '1.2.40.0.34.6.0.11.2.111']), [v4 for v4 in fhirpath_utils.get(cda_section,'code') if (v4.code == '20' and v4.codeSystem == '1.2.40.0.34.5.11')], fhirpath_utils.bool_and([v5 for v5 in fhirpath_utils.get(cda_section,'code') if (v5.code == 'ABBEM' and v5.codeSystem == '1.2.40.0.34.5.40')], [v6 for v6 in fhirpath_utils.get(cda_section,'templateId') if v6.root == '1.2.40.0.34.6.0.11.2.70']))):
+            if fhirpath.single(fhirpath_utils.bool_or([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == 'BRIEFT' and v1.codeSystem == '1.2.40.0.34.5.40')], [v2 for v2 in fhirpath_utils.get(cda_section,'code') if (v2.code == 'ABBEM' and v2.codeSystem == '1.2.40.0.34.5.40')])):
                 fhir_section = malac.models.fhir.r4.Composition_Section()
                 fhir_composition.section.append(fhir_section)
                 CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
-        cda_section = cda_component.section
-        if cda_section is not None:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == 'BEIL' and v1.codeSystem == '1.2.40.0.34.5.40')]):
-                CdaBeilagenSectionToFhirDiagnosticReportMedia(cda_section, fhir_diagnosticReport, fhir_bundle, fhir_patient)
-    if len([v1 for v1 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v1,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) == 1:
-        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-        fhir_bundle.entry.append(fhir_bundle_entry)
-        fhir_specimen = malac.models.fhir.r4.Specimen()
-        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Specimen=fhir_specimen)
-        fhir_specimen_uuid = string(value=str(uuid.uuid4()))
-        fhir_specimen.id = fhir_specimen_uuid
-        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_uuid.value))
-        for cda_component in cda_structuredBody.component or []:
-            cda_section = cda_component.section
-            if cda_section is not None:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '10' and v1.codeSystem == '1.2.40.0.34.5.11')]):
-                    CdaSpecimenSectionToFhirSpecimenWithSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_specimen, fhir_bundle, fhir_serviceRequest)
-            cda_section = cda_component.section
-            if cda_section is not None:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.2.102' or v1.root == '1.3.6.1.4.1.19376.1.3.3.2.1')]):
-                    fhir_section = malac.models.fhir.r4.Composition_Section()
-                    fhir_composition.section.append(fhir_section)
-                    CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_specimen, fhir_serviceRequest)
-    if len([v1 for v1 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v1,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) == 0 or len([v2 for v2 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v2,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) > 1:
-        for cda_component in cda_structuredBody.component or []:
-            cda_section = cda_component.section
-            if cda_section is not None:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '10' and v1.codeSystem == '1.2.40.0.34.5.11')]):
-                    CdaSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
-            cda_section = cda_component.section
-            if cda_section is not None:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.2.102' or v1.root == '1.3.6.1.4.1.19376.1.3.3.2.1')]):
-                    fhir_section = malac.models.fhir.r4.Composition_Section()
-                    fhir_composition.section.append(fhir_section)
-                    CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
 
 def CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
     CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
@@ -1429,882 +1025,6 @@ def CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
     fhir_section_code.coding.append(fhir_section_coding)
     fhir_section_coding.code = string(value='48767-8')
     fhir_section_coding.system = uri(value='http://loinc.org')
-
-def CdaSpecimenSectionToFhirSpecimenWithSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_specimen, fhir_bundle, fhir_serviceRequest):
-    for cda_section_entry in cda_section.entry or []:
-        cda_act = cda_section_entry.act
-        if cda_act is not None:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_act,'code') if v1.code == '10']):
-                for cda_entryRelationship in cda_act.entryRelationship or []:
-                    cda_procedure = cda_entryRelationship.procedure
-                    if cda_procedure is not None:
-                        CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
-
-def CdaSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
-    for cda_section_entry in cda_section.entry or []:
-        cda_act = cda_section_entry.act
-        if cda_act is not None:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_act,'code') if v1.code == '10']):
-                for cda_entryRelationship in cda_act.entryRelationship or []:
-                    cda_procedure = cda_entryRelationship.procedure
-                    if cda_procedure is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_specimen = malac.models.fhir.r4.Specimen()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Specimen=fhir_specimen)
-                        fhir_specimen_id = string(value=str(uuid.uuid4()))
-                        fhir_specimen.id = fhir_specimen_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_id.value))
-                        CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
-
-def CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
-    if fhir_specimen.meta is None:
-        fhir_specimen.meta = malac.models.fhir.r4.Meta()
-    fhir_specimen_meta = fhir_specimen.meta
-    fhir_specimen_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Specimen-lab-myhealtheu'))
-    fhir_specimen_patient_reference = malac.models.fhir.r4.Reference()
-    fhir_specimen.subject = fhir_specimen_patient_reference
-    if fhir_patient.id is None:
-        fhir_patient.id = malac.models.fhir.r4.string()
-    fhir_patient_id = fhir_patient.id
-    fhir_specimen_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
-    fhir_specimen_patient_reference.type_ = uri(value='Patient')
-    fhir_diagnosticReport_specimen_reference = malac.models.fhir.r4.Reference()
-    fhir_diagnosticReport.specimen.append(fhir_diagnosticReport_specimen_reference)
-    if fhir_specimen.id is None:
-        fhir_specimen.id = malac.models.fhir.r4.string()
-    fhir_specimen_id = fhir_specimen.id
-    fhir_diagnosticReport_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
-    fhir_diagnosticReport_specimen_reference.type_ = uri(value='Specimen')
-    fhir_specimen_request_reference = malac.models.fhir.r4.Reference()
-    fhir_specimen.request.append(fhir_specimen_request_reference)
-    if fhir_serviceRequest.id is None:
-        fhir_serviceRequest.id = malac.models.fhir.r4.string()
-    fhir_serviceRequest_id = fhir_serviceRequest.id
-    fhir_specimen_request_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
-    fhir_specimen_request_reference.type_ = uri(value='ServiceRequest')
-    fhir_serviceRequest_specimen_reference = malac.models.fhir.r4.Reference()
-    fhir_serviceRequest.specimen.append(fhir_serviceRequest_specimen_reference)
-    fhir_serviceRequest_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
-    fhir_serviceRequest_specimen_reference.type_ = uri(value='Specimen')
-    if fhir_specimen.collection is None:
-        fhir_specimen.collection = malac.models.fhir.r4.Specimen_Collection()
-    fhir_specimen_collection = fhir_specimen.collection
-    cda_effectiveTime = cda_procedure.effectiveTime
-    if cda_effectiveTime is not None:
-        if cda_effectiveTime.value is not None:
-            fhir_specimen_collection_collected = malac.models.fhir.r4.dateTime()
-            fhir_specimen_collection.collectedDateTime = fhir_specimen_collection_collected
-            TSDateTime(cda_effectiveTime, fhir_specimen_collection_collected)
-    cda_effectiveTime = cda_procedure.effectiveTime
-    if cda_effectiveTime is not None:
-        if cda_effectiveTime.low is not None or cda_effectiveTime.high is not None:
-            fhir_specimen_collection_collected = malac.models.fhir.r4.Period()
-            fhir_specimen_collection.collectedPeriod = fhir_specimen_collection_collected
-            IVLTSPeriod(cda_effectiveTime, fhir_specimen_collection_collected)
-    for targetSiteCode in cda_procedure.targetSiteCode or []:
-        fhir_specimen_collection.bodySite = malac.models.fhir.r4.CodeableConcept()
-        CDCodeableConcept(targetSiteCode, fhir_specimen_collection.bodySite)
-    if fhir_specimen_collection.bodySite is None:
-        fhir_specimen_collection.bodySite = malac.models.fhir.r4.CodeableConcept()
-    fhir_specimen_collection_bodySite = fhir_specimen_collection.bodySite
-    fhir_specimen_collection_bodySite_coding = malac.models.fhir.r4.Coding()
-    fhir_specimen_collection_bodySite.coding.append(fhir_specimen_collection_bodySite_coding)
-    fhir_specimen_collection_bodySite_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-    fhir_specimen_collection_bodySite_coding.code = string(value='OTH')
-    for cda_procedure_performer in cda_procedure.performer or []:
-        cda_procedure_performer_assignedEntity = cda_procedure_performer.assignedEntity
-        if cda_procedure_performer_assignedEntity is not None:
-            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-            fhir_bundle.entry.append(fhir_bundle_entry)
-            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-            fhir_practitionerRole.id = fhir_practitionerRole_id
-            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            fhir_specimen_collection_collector_reference = malac.models.fhir.r4.Reference()
-            fhir_specimen_collection.collector = fhir_specimen_collection_collector_reference
-            fhir_specimen_collection_collector_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-            fhir_specimen_collection_collector_reference.type_ = uri(value='PractitionerRole')
-            CdaAssignedEntityToFhirPractitionerRole(cda_procedure_performer_assignedEntity, fhir_practitionerRole, fhir_bundle)
-    for cda_participant in cda_procedure.participant or []:
-        cda_participantRole = cda_participant.participantRole
-        if cda_participantRole is not None:
-            cda_playingEntity = cda_participantRole.playingEntity
-            if cda_playingEntity is not None:
-                for id_ in cda_participantRole.id or []:
-                    fhir_specimen.identifier.append(malac.models.fhir.r4.Identifier())
-                    II(id_, fhir_specimen.identifier[-1])
-                if cda_playingEntity.code is not None:
-                    fhir_specimen.type_ = malac.models.fhir.r4.CodeableConcept()
-                    transform_default(cda_playingEntity.code, fhir_specimen.type_)
-                if fhir_specimen.type_ is None:
-                    fhir_specimen.type_ = malac.models.fhir.r4.CodeableConcept()
-                fhir_specimen_type = fhir_specimen.type_
-                fhir_specimen_type_coding = malac.models.fhir.r4.Coding()
-                fhir_specimen_type.coding.append(fhir_specimen_type_coding)
-                fhir_specimen_type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-                fhir_specimen_type_coding.code = string(value='OTH')
-    for cda_entryRelationship in cda_procedure.entryRelationship or []:
-        cda_act = cda_entryRelationship.act
-        if cda_act is not None:
-            cda_effectiveTime = cda_act.effectiveTime
-            if cda_effectiveTime is not None:
-                if cda_effectiveTime.value is not None:
-                    fhir_specimen_receivedTime = malac.models.fhir.r4.dateTime()
-                    fhir_specimen.receivedTime = fhir_specimen_receivedTime
-                    TSDateTime(cda_effectiveTime, fhir_specimen_receivedTime)
-
-def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_specimen, fhir_serviceRequest):
-    CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
-    for cda_section_entry in cda_section.entry or []:
-        cda_act = cda_section_entry.act
-        if cda_act is not None:
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'procedure','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.2']):
-                    cda_procedure = cda_entryRelationship.procedure
-                    if cda_procedure is not None:
-                        CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1']):
-                    cda_notification_organizer = cda_entryRelationship.organizer
-                    if cda_notification_organizer is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_battery_observation = malac.models.fhir.r4.Observation()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
-                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
-                        fhir_battery_observation.id = fhir_battery_observation_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
-                        fhir_section.entry.append(fhir_section_entry_reference)
-                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference.type_ = uri(value='Observation')
-                        CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
-                        for cda_component in cda_notification_organizer.component or []:
-                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1']):
-                                cda_observation = cda_component.observation
-                                if cda_observation is not None:
-                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                                    fhir_bundle.entry.append(fhir_bundle_entry)
-                                    fhir_observation = malac.models.fhir.r4.Observation()
-                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
-                                    fhir_observation_id = string(value=str(uuid.uuid4()))
-                                    fhir_observation.id = fhir_observation_id
-                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
-                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
-                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
-                                    CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
-                        for cda_component in cda_notification_organizer.component or []:
-                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.170']):
-                                cda_observation = cda_component.observation
-                                if cda_observation is not None:
-                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                                    fhir_bundle.entry.append(fhir_bundle_entry)
-                                    fhir_observation = malac.models.fhir.r4.Observation()
-                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
-                                    fhir_observation_id = string(value=str(uuid.uuid4()))
-                                    fhir_observation.id = fhir_observation_id
-                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
-                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
-                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
-                                    CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
-                    cda_laboratory_observation = cda_entryRelationship.observation
-                    if cda_laboratory_observation is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_observation = malac.models.fhir.r4.Observation()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
-                        fhir_observation_id = string(value=str(uuid.uuid4()))
-                        fhir_observation.id = fhir_observation_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
-                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
-                        fhir_section.entry.append(fhir_section_entry_reference)
-                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
-                        fhir_section_entry_reference.type_ = uri(value='Observation')
-                        for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
-                            if cda_laboratory_observation.performer:
-                                CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
-                        if not fhirpath_utils.get(cda_entryRelationship.observation,'performer'):
-                            CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
-                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.4']):
-                    cda_laboratory_battery_organizer = cda_entryRelationship.organizer
-                    if cda_laboratory_battery_organizer is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_battery_observation = malac.models.fhir.r4.Observation()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
-                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
-                        fhir_battery_observation.id = fhir_battery_observation_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
-                        fhir_section.entry.append(fhir_section_entry_reference)
-                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference.type_ = uri(value='Observation')
-                        for cda_laboratory_battery_organizer_performer in cda_laboratory_battery_organizer.performer:
-                            if cda_laboratory_battery_organizer.performer:
-                                CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
-                        if not fhirpath_utils.get(cda_entryRelationship.organizer,'performer'):
-                            CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaOrganizerToFhirObservationWithSpecimen(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_specimen)
-                        for cda_component in cda_laboratory_battery_organizer.component or []:
-                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
-                                cda_laboratory_observation = cda_component.observation
-                                if cda_laboratory_observation is not None:
-                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                                    fhir_bundle.entry.append(fhir_bundle_entry)
-                                    fhir_laboratory_observation = malac.models.fhir.r4.Observation()
-                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_laboratory_observation)
-                                    fhir_laboratory_observation_id = string(value=str(uuid.uuid4()))
-                                    fhir_laboratory_observation.id = fhir_laboratory_observation_id
-                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
-                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
-                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
-                                    for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
-                                        if cda_laboratory_observation.performer:
-                                            CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
-                                    if not fhirpath_utils.get(cda_component.observation,'performer'):
-                                        CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_specimen)
-
-def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
-    CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
-    for cda_section_entry in cda_section.entry or []:
-        cda_act = cda_section_entry.act
-        if cda_act is not None:
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'procedure','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.2']):
-                    cda_procedure = cda_entryRelationship.procedure
-                    if cda_procedure is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_specimen = malac.models.fhir.r4.Specimen()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Specimen=fhir_specimen)
-                        fhir_specimen_id = string(value=str(uuid.uuid4()))
-                        fhir_specimen.id = fhir_specimen_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_id.value))
-                        CdaSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1']):
-                    cda_notification_organizer = cda_entryRelationship.organizer
-                    if cda_notification_organizer is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_battery_observation = malac.models.fhir.r4.Observation()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
-                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
-                        fhir_battery_observation.id = fhir_battery_observation_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
-                        fhir_section.entry.append(fhir_section_entry_reference)
-                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference.type_ = uri(value='Observation')
-                        CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
-                        for cda_component in cda_notification_organizer.component or []:
-                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1']):
-                                cda_observation = cda_component.observation
-                                if cda_observation is not None:
-                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                                    fhir_bundle.entry.append(fhir_bundle_entry)
-                                    fhir_observation = malac.models.fhir.r4.Observation()
-                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
-                                    fhir_observation_id = string(value=str(uuid.uuid4()))
-                                    fhir_observation.id = fhir_observation_id
-                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
-                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
-                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
-                                    CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
-                        for cda_component in cda_notification_organizer.component or []:
-                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.170']):
-                                cda_observation = cda_component.observation
-                                if cda_observation is not None:
-                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                                    fhir_bundle.entry.append(fhir_bundle_entry)
-                                    fhir_observation = malac.models.fhir.r4.Observation()
-                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
-                                    fhir_observation_id = string(value=str(uuid.uuid4()))
-                                    fhir_observation.id = fhir_observation_id
-                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
-                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
-                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
-                                    CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
-                    cda_laboratory_observation = cda_entryRelationship.observation
-                    if cda_laboratory_observation is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_observation = malac.models.fhir.r4.Observation()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
-                        fhir_observation_id = string(value=str(uuid.uuid4()))
-                        fhir_observation.id = fhir_observation_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
-                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
-                        fhir_section.entry.append(fhir_section_entry_reference)
-                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
-                        fhir_section_entry_reference.type_ = uri(value='Observation')
-                        for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
-                            if cda_laboratory_observation.performer:
-                                CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
-                        if not fhirpath_utils.get(cda_entryRelationship.observation,'performer'):
-                            CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
-                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
-            for cda_entryRelationship in cda_act.entryRelationship or []:
-                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.4']):
-                    cda_laboratory_battery_organizer = cda_entryRelationship.organizer
-                    if cda_laboratory_battery_organizer is not None:
-                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                        fhir_bundle.entry.append(fhir_bundle_entry)
-                        fhir_battery_observation = malac.models.fhir.r4.Observation()
-                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
-                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
-                        fhir_battery_observation.id = fhir_battery_observation_id
-                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
-                        fhir_section.entry.append(fhir_section_entry_reference)
-                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
-                        fhir_section_entry_reference.type_ = uri(value='Observation')
-                        for cda_laboratory_battery_organizer_performer in cda_laboratory_battery_organizer.performer:
-                            if cda_laboratory_battery_organizer.performer:
-                                CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
-                        if not fhirpath_utils.get(cda_entryRelationship.organizer,'performer'):
-                            CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaOrganizerToFhirObservation(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient)
-                        for cda_component in cda_laboratory_battery_organizer.component or []:
-                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
-                                cda_laboratory_observation = cda_component.observation
-                                if cda_laboratory_observation is not None:
-                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                                    fhir_bundle.entry.append(fhir_bundle_entry)
-                                    fhir_laboratory_observation = malac.models.fhir.r4.Observation()
-                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_laboratory_observation)
-                                    fhir_laboratory_observation_id = string(value=str(uuid.uuid4()))
-                                    fhir_laboratory_observation.id = fhir_laboratory_observation_id
-                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
-                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
-                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
-                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
-                                    for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
-                                        if cda_laboratory_observation.performer:
-                                            CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
-                                    if not fhirpath_utils.get(cda_component.observation,'performer'):
-                                        CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle)
-
-def CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle):
-    for cda_act_performer in cda_act.performer:
-        if cda_act.performer:
-            CdaPerformerToFhirObservationPerformer(cda_act_performer, fhir_observation, fhir_bundle)
-    if not cda_act.performer:
-        if fhirpath_utils.get(next(iter(cda.documentationOf or []), None),'serviceEvent','performer'):
-            if len(cda.documentationOf) > 0:
-                cda_documentationOf = cda.documentationOf[0]
-                cda_documentationOf_serviceEvent = cda_documentationOf.serviceEvent
-                if cda_documentationOf_serviceEvent is not None:
-                    for cda_documentationOf_serviceEvent_performer in cda_documentationOf_serviceEvent.performer:
-                        CdaPerformerToFhirObservationPerformer(cda_documentationOf_serviceEvent_performer, fhir_observation, fhir_bundle)
-        if not fhirpath_utils.get(next(iter(cda.documentationOf or []), None),'serviceEvent','performer'):
-            if len(cda.author) > 0:
-                cda_author = cda.author[0]
-                if fhirpath_utils.get(cda_author,'assignedAuthor','assignedPerson'):
-                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                    fhir_bundle.entry.append(fhir_bundle_entry)
-                    fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-                    fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-                    fhir_practitionerRole.id = fhir_practitionerRole_id
-                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                    fhir_observation_performer_reference = malac.models.fhir.r4.Reference()
-                    fhir_observation.performer.append(fhir_observation_performer_reference)
-                    fhir_observation_performer_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                    fhir_observation_performer_reference.type_ = uri(value='PractitionerRole')
-                    if cda_author.time is not None:
-                        fhir_observation.issued = malac.models.fhir.r4.instant()
-                        TSInstant(cda_author.time, fhir_observation.issued)
-                    CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle)
-
-def CdaPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_organizer, fhir_observation, fhir_bundle):
-    for cda_laboratory_organizer_performer in cda_laboratory_organizer.performer:
-        if cda_laboratory_organizer.performer:
-            CdaPerformerToFhirObservationPerformer(cda_laboratory_organizer_performer, fhir_observation, fhir_bundle)
-    if not cda_laboratory_organizer.performer:
-        CdaPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
-
-def CdaBeilagenSectionToFhirDiagnosticReportMedia(cda_section, fhir_diagnosticReport, fhir_bundle, fhir_patient):
-    fhir_bundle_entry_01 = malac.models.fhir.r4.Bundle_Entry()
-    fhir_bundle.entry.append(fhir_bundle_entry_01)
-    fhir_media = malac.models.fhir.r4.Media()
-    fhir_bundle_entry_01.resource = malac.models.fhir.r4.ResourceContainer(Media=fhir_media)
-    fhir_media_id = string(value=str(uuid.uuid4()))
-    fhir_media.id = fhir_media_id
-    fhir_bundle_entry_01.fullUrl = uri(value=('urn:uuid:' + fhir_media_id.value))
-    fhir_diagnosticReport_media = malac.models.fhir.r4.DiagnosticReport_Media()
-    fhir_diagnosticReport.media.append(fhir_diagnosticReport_media)
-    fhir_diagnosticReport_media_link_reference = malac.models.fhir.r4.Reference()
-    fhir_diagnosticReport_media.link = fhir_diagnosticReport_media_link_reference
-    fhir_diagnosticReport_media_link_reference.reference = string(value=('urn:uuid:' + fhir_media_id.value))
-    fhir_diagnosticReport_media_link_reference.type_ = uri(value='Media')
-    for cda_section_entry in cda_section.entry or []:
-        cda_observationMedia = cda_section_entry.observationMedia
-        if cda_observationMedia is not None:
-            cda_observationMedia_ID = cda_observationMedia.ID
-            if cda_observationMedia_ID is not None:
-                fhir_media_identifier = malac.models.fhir.r4.Identifier()
-                fhir_media.identifier.append(fhir_media_identifier)
-                fhir_media_identifier.value = string(value=cda_observationMedia_ID)
-            fhir_media.status = string(value='completed')
-            cda_observationMedia_value = cda_observationMedia.value
-            if cda_observationMedia_value is not None:
-                if fhir_media.content is None:
-                    fhir_media.content = malac.models.fhir.r4.Attachment()
-                fhir_media_content = fhir_media.content
-                cda_mediaType = cda_observationMedia_value.mediaType
-                if cda_mediaType is not None:
-                    fhir_media_content.contentType = string(value=cda_mediaType)
-                fhir_media_content.data = base64Binary(value=re.sub("[^a-zA-Z0-9+/=]{1,}","",fhirpath.single(fhirpath_utils.get(cda_observationMedia_value,'valueOf_',strip=True))))
-
-def CdaOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient):
-    if fhir_observation.meta is None:
-        fhir_observation.meta = malac.models.fhir.r4.Meta()
-    fhir_observation_meta = fhir_observation.meta
-    fhir_observation_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'))
-    fhir_category = malac.models.fhir.r4.CodeableConcept()
-    fhir_observation.category.append(fhir_category)
-    fhir_category_coding = malac.models.fhir.r4.Coding()
-    fhir_category.coding.append(fhir_category_coding)
-    fhir_category_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/observation-category')
-    fhir_category_coding.code = string(value='laboratory')
-    fhir_observation_subject_reference = malac.models.fhir.r4.Reference()
-    fhir_observation.subject = fhir_observation_subject_reference
-    if fhir_patient.id is None:
-        fhir_patient.id = malac.models.fhir.r4.string()
-    fhir_patient_id = fhir_patient.id
-    fhir_observation_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
-    if cda_organizer.code is not None:
-        fhir_observation.category.append(malac.models.fhir.r4.CodeableConcept())
-        CDCodeableConcept(cda_organizer.code, fhir_observation.category[-1])
-    if cda_organizer.code is not None:
-        fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
-        CDCodeableConcept(cda_organizer.code, fhir_observation.code)
-    if fhirpath.single(fhirpath_utils.equals([v2 for v1 in [cda_organizer.code] for v2 in fhirpath_utils.get(v1,'codeSystem')], '!=', ['2.16.840.1.113883.6.1'])):
-        if fhir_observation.code is None:
-            fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
-        fhir_observation_code = fhir_observation.code
-        fhir_observation_code_coding = malac.models.fhir.r4.Coding()
-        fhir_observation_code.coding.append(fhir_observation_code_coding)
-        fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-        fhir_observation_code_coding.code = string(value='OTH')
-    if cda_organizer.code is None:
-        if fhir_observation.code is None:
-            fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
-        fhir_observation_code = fhir_observation.code
-        fhir_observation_code_coding = malac.models.fhir.r4.Coding()
-        fhir_observation_code.coding.append(fhir_observation_code_coding)
-        fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-        fhir_observation_code_coding.code = string(value='OTH')
-    organizer_statusCode = cda_organizer.statusCode
-    if organizer_statusCode is not None:
-        cda_code = organizer_statusCode.code
-        if cda_code is not None:
-            fhir_observation.status = string(value=translate_single('act-status-2-observation-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
-    cda_effectiveTime = cda_organizer.effectiveTime
-    if cda_effectiveTime is not None:
-        fhir_observation_effective = malac.models.fhir.r4.dateTime()
-        fhir_observation.effectiveDateTime = fhir_observation_effective
-        fhir_observation_effective_extenstion = malac.models.fhir.r4.Extension()
-        fhir_observation_effective.extension.append(fhir_observation_effective_extenstion)
-        fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
-        fhir_observation_effective_extenstion_code = malac.models.fhir.r4.code()
-        fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
-        fhir_observation_effective_extenstion_code.value = 'not-applicable'
-        TSDateTime(cda_effectiveTime, fhir_observation_effective)
-    if cda_organizer.effectiveTime is None:
-        fhir_observation_effective = malac.models.fhir.r4.dateTime()
-        fhir_observation.effectiveDateTime = fhir_observation_effective
-        fhir_observation_effective_extenstion = malac.models.fhir.r4.Extension()
-        fhir_observation_effective.extension.append(fhir_observation_effective_extenstion)
-        fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
-        fhir_observation_effective_extenstion_code = malac.models.fhir.r4.code()
-        fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
-        fhir_observation_effective_extenstion_code.value = 'not-applicable'
-
-def CdaOrganizerToFhirObservationWithSpecimen(cda, cda_organizer, fhir_observation, fhir_patient, fhir_specimen):
-    CdaOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient)
-    fhir_observation_specimen_reference = malac.models.fhir.r4.Reference()
-    fhir_observation.specimen = fhir_observation_specimen_reference
-    if fhir_specimen.id is None:
-        fhir_specimen.id = malac.models.fhir.r4.string()
-    fhir_specimen_id = fhir_specimen.id
-    fhir_observation_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
-    fhir_observation_specimen_reference.type_ = uri(value='Specimen')
-
-def CdaObservationToFhirObservation(cda_observation, fhir_observation):
-    for id_ in cda_observation.id or []:
-        fhir_observation.identifier.append(malac.models.fhir.r4.Identifier())
-        II(id_, fhir_observation.identifier[-1])
-
-def LaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation):
-    if getattr(mapping_result_coding.code, 'value', None) == 'OTH':
-        cda_code = cda_laboratory_observation.code
-        if cda_code is not None:
-            if fhir_observation.code is None:
-                fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation_code = fhir_observation.code
-            fhir_observation_code_coding = malac.models.fhir.r4.Coding()
-            fhir_observation_code.coding.append(fhir_observation_code_coding)
-            fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-            fhir_observation_code_coding.code = string(value='OTH')
-            CDCodeableConcept(cda_code, fhir_observation_code)
-    if getattr(mapping_result_coding.code, 'value', None) != 'OTH':
-        if cda_laboratory_observation.code is not None:
-            fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
-            CDCodeableConcept(cda_laboratory_observation.code, fhir_observation.code)
-
-def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle):
-    if fhir_observation.meta is None:
-        fhir_observation.meta = malac.models.fhir.r4.Meta()
-    fhir_observation_meta = fhir_observation.meta
-    fhir_observation_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'))
-    for id_ in cda_laboratory_observation.id or []:
-        fhir_observation.identifier.append(malac.models.fhir.r4.Identifier())
-        II(id_, fhir_observation.identifier[-1])
-    fhir_category = malac.models.fhir.r4.CodeableConcept()
-    fhir_observation.category.append(fhir_category)
-    fhir_category_coding = malac.models.fhir.r4.Coding()
-    fhir_category.coding.append(fhir_category_coding)
-    fhir_category_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/observation-category')
-    fhir_category_coding.code = string(value='laboratory')
-    fhir_observation_subject_reference = malac.models.fhir.r4.Reference()
-    fhir_observation.subject = fhir_observation_subject_reference
-    if fhir_patient.id is None:
-        fhir_patient.id = malac.models.fhir.r4.string()
-    fhir_patient_id = fhir_patient.id
-    fhir_observation_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
-    cda_code = cda_laboratory_observation.code
-    if cda_code is not None:
-        if cda_code.nullFlavor is None:
-            cda_code_code = cda_code.code
-            if cda_code_code is not None:
-                mapping_result_coding = translate_single('elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions', code=(cda_code_code if isinstance(cda_code_code, str) else cda_code_code.value), out_type='Coding')
-                LaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation)
-    cda_code = cda_laboratory_observation.code
-    if cda_code is not None:
-        if cda_code.nullFlavor is not None:
-            if fhir_observation.code is None:
-                fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation_code = fhir_observation.code
-            fhir_observation_code_coding = malac.models.fhir.r4.Coding()
-            fhir_observation_code.coding.append(fhir_observation_code_coding)
-            fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-            fhir_observation_code_coding.code = string(value='OTH')
-            for cda_code_translation in cda_code.translation:
-                CDCodeableConcept(cda_code_translation, fhir_observation_code)
-    if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96']))) == [True]]:
-        observation_statusCode = cda_laboratory_observation.statusCode
-        if observation_statusCode is not None:
-            cda_code = observation_statusCode.code
-            if cda_code is not None:
-                fhir_observation.status = string(value=translate_single('act-status-2-observation-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
-    cda_effectiveTime = cda_laboratory_observation.effectiveTime
-    if cda_effectiveTime is not None:
-        fhir_observation_effective = malac.models.fhir.r4.dateTime()
-        fhir_observation.effectiveDateTime = fhir_observation_effective
-        TSDateTime(cda_effectiveTime, fhir_observation_effective)
-    if fhirpath.single([v1 for v1 in [cda_laboratory_observation] if fhirpath_utils.bool_or([v2 for v2 in fhirpath_utils.get(v1,'effectiveTime') if v2.nullFlavor == 'UNK'], [(v1.effectiveTime is None)]) == [True]]):
-        fhir_observation_effective = malac.models.fhir.r4.dateTime()
-        fhir_observation.effectiveDateTime = fhir_observation_effective
-        fhir_observation_effective_extenstion = malac.models.fhir.r4.Extension()
-        fhir_observation_effective.extension.append(fhir_observation_effective_extenstion)
-        fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
-        fhir_observation_effective_extenstion_code = malac.models.fhir.r4.code()
-        fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
-        fhir_observation_effective_extenstion_code.value = 'unknown'
-    if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
-        CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
-    if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'templateId') if (v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1' or v1.root == '1.3.6.1.4.1.19376.1.3.1.1.2')]):
-        CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
-    for cda_laboratory_observation_interpretationCode in cda_laboratory_observation.interpretationCode or []:
-        fhir_observation_interpretation = malac.models.fhir.r4.CodeableConcept()
-        fhir_observation.interpretation.append(fhir_observation_interpretation)
-        fhir_observation_interpretation_coding_01 = malac.models.fhir.r4.Coding()
-        fhir_observation_interpretation.coding.append(fhir_observation_interpretation_coding_01)
-        fhir_observation_interpretation_coding_02 = malac.models.fhir.r4.Coding()
-        fhir_observation_interpretation.coding.append(fhir_observation_interpretation_coding_02)
-        fhir_observation_interpretation_coding_02.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-        fhir_observation_interpretation_coding_02.code = string(value='OTH')
-        CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
-    for cda_participant in cda_laboratory_observation.participant or []:
-        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-        fhir_bundle.entry.append(fhir_bundle_entry)
-        fhir_practitioner = malac.models.fhir.r4.Practitioner()
-        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Practitioner=fhir_practitioner)
-        fhir_practitioner_id = string(value=str(uuid.uuid4()))
-        fhir_practitioner.id = fhir_practitioner_id
-        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
-        fhir_observation_performer_reference = malac.models.fhir.r4.Reference()
-        fhir_observation.performer.append(fhir_observation_performer_reference)
-        fhir_observation_performer_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
-        fhir_observation_performer_reference.type_ = uri(value='Practitioner')
-        performer_function_extension = malac.models.fhir.r4.Extension()
-        fhir_observation_performer_reference.extension.append(performer_function_extension)
-        performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction'
-        performer_function_codeableConcept = malac.models.fhir.r4.CodeableConcept()
-        performer_function_extension.valueCodeableConcept = performer_function_codeableConcept
-        performer_function_coding = malac.models.fhir.r4.Coding()
-        performer_function_codeableConcept.coding.append(performer_function_coding)
-        performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
-        performer_function_coding.code = string(value='AUTHEN')
-        cda_participantRole = cda_participant.participantRole
-        if cda_participantRole is not None:
-            for id__ in cda_participantRole.id or []:
-                fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
-                II(id__, fhir_practitioner.identifier[-1])
-            for addr in cda_participantRole.addr or []:
-                if addr.nullFlavor is None:
-                    fhir_practitioner.address.append(malac.models.fhir.r4.Address())
-                    CdaAdressCompilationToFhirAustrianAddress(addr, fhir_practitioner.address[-1])
-            for telecom in cda_participantRole.telecom or []:
-                if telecom.nullFlavor is None:
-                    fhir_practitioner.telecom.append(malac.models.fhir.r4.ContactPoint())
-                    TELContactPoint(telecom, fhir_practitioner.telecom[-1])
-            cda_playingEntity = cda_participantRole.playingEntity
-            if cda_playingEntity is not None:
-                for name in cda_playingEntity.name or []:
-                    fhir_practitioner.name.append(malac.models.fhir.r4.HumanName())
-                    CdaPersonNameCompilationToFhirHumanName(name, fhir_practitioner.name[-1])
-    for cda_entryRelationship in cda_laboratory_observation.entryRelationship or []:
-        if cda_entryRelationship.act is not None:
-            cda_act = cda_entryRelationship.act
-            if cda_act is not None:
-                fhir_observation_note = malac.models.fhir.r4.Annotation()
-                fhir_observation.note.append(fhir_observation_note)
-                cda_act_text = cda_act.text
-                if cda_act_text is not None:
-                    cda_reference = cda_act_text.reference
-                    if cda_reference is not None:
-                        fhir_observation_note.text = malac.models.fhir.r4.markdown(value=str(fhirpath.single(fhirpath_utils.get(cda_reference,'value'))))
-                for cda_author in cda_act.author or []:
-                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                    fhir_bundle.entry.append(fhir_bundle_entry)
-                    fhir_practitioner = malac.models.fhir.r4.Practitioner()
-                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Practitioner=fhir_practitioner)
-                    fhir_practitioner_id = string(value=str(uuid.uuid4()))
-                    fhir_practitioner.id = fhir_practitioner_id
-                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
-                    fhir_observation_note_authorReference = malac.models.fhir.r4.Reference()
-                    fhir_observation_note.authorReference = fhir_observation_note_authorReference
-                    fhir_observation_note_authorReference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
-                    fhir_observation_note_authorReference.type_ = uri(value='Practitioner')
-                    CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle)
-    for cda_observation_referenceRange in cda_laboratory_observation.referenceRange or []:
-        cda_referenceRange_observationRange = cda_observation_referenceRange.observationRange
-        if cda_referenceRange_observationRange is not None:
-            fhir_observation_referenceRange = malac.models.fhir.r4.Observation_ReferenceRange()
-            fhir_observation.referenceRange.append(fhir_observation_referenceRange)
-            cda_observationRange_value = cda_referenceRange_observationRange.value
-            if cda_observationRange_value is not None:
-                for low in (cda_observationRange_value.low if isinstance(cda_observationRange_value.low, list) else ([] if not cda_observationRange_value.low else [cda_observationRange_value.low])):
-                    if not fhirpath_utils.get(low,'nullFlavor'):
-                        fhir_observation_referenceRange.low = malac.models.fhir.r4.Quantity()
-                        transform_default(low, fhir_observation_referenceRange.low)
-                for high in (cda_observationRange_value.high if isinstance(cda_observationRange_value.high, list) else ([] if not cda_observationRange_value.high else [cda_observationRange_value.high])):
-                    if not fhirpath_utils.get(high,'nullFlavor'):
-                        fhir_observation_referenceRange.high = malac.models.fhir.r4.Quantity()
-                        transform_default(high, fhir_observation_referenceRange.high)
-            if fhir_observation_referenceRange.type_ is None:
-                fhir_observation_referenceRange.type_ = malac.models.fhir.r4.CodeableConcept()
-            fhir_referenceRange_type = fhir_observation_referenceRange.type_
-            fhir_type_coding = malac.models.fhir.r4.Coding()
-            fhir_referenceRange_type.coding.append(fhir_type_coding)
-            fhir_type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/referencerange-meaning')
-            fhir_type_coding.code = string(value='normal')
-
-def CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_specimen):
-    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
-    fhir_observation_specimen_reference = malac.models.fhir.r4.Reference()
-    fhir_observation.specimen = fhir_observation_specimen_reference
-    if fhir_specimen.id is None:
-        fhir_specimen.id = malac.models.fhir.r4.string()
-    fhir_specimen_id = fhir_specimen.id
-    fhir_observation_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
-    fhir_observation_specimen_reference.type_ = uri(value='Specimen')
-
-def CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation):
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.PQ:
-            fhir_observation_value = malac.models.fhir.r4.Quantity()
-            fhir_observation.valueQuantity = fhir_observation_value
-            PQQuantity(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_PQ:
-            if cda_observation_value.value is not None:
-                fhir_observation_value = malac.models.fhir.r4.Quantity()
-                fhir_observation.valueQuantity = fhir_observation_value
-                PQQuantity(cda_observation_value, fhir_observation_value)
-            if cda_observation_value.value is None:
-                fhir_observation_value = malac.models.fhir.r4.Range()
-                fhir_observation.valueRange = fhir_observation_value
-                IVLPQRange(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.INT:
-            fhir_observation_value = malac.models.fhir.r4.Quantity()
-            fhir_observation.valueQuantity = fhir_observation_value
-            INTQuantity(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_INT:
-            if cda_observation_value.value is not None:
-                fhir_observation_value = malac.models.fhir.r4.Quantity()
-                fhir_observation.valueQuantity = fhir_observation_value
-                INTQuantity(cda_observation_value, fhir_observation_value)
-            if cda_observation_value.value is None:
-                fhir_observation_value = malac.models.fhir.r4.Range()
-                fhir_observation.valueRange = fhir_observation_value
-                IVL_INTRange(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.BL:
-            fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation.valueCodeableConcept = fhir_observation_value
-            fhir_observation_value_coding = malac.models.fhir.r4.Coding()
-            fhir_observation_value.coding.append(fhir_observation_value_coding)
-            cda_observation_value_attribute = cda_observation_value.value
-            if cda_observation_value_attribute is not None:
-                if cda_observation_value_attribute:
-                    fhir_observation_value.text = string(value=str(getattr(cda_observation_value_attribute, 'value', cda_observation_value_attribute if cda_observation_value_attribute is not None else '')))
-                    fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
-                    fhir_observation_value_coding.code = string(value='373066001')
-                    fhir_observation_value_coding.display = string(value='Yes')
-            cda_observation_value_attribute = cda_observation_value.value
-            if cda_observation_value_attribute is not None:
-                if not cda_observation_value_attribute:
-                    fhir_observation_value.text = string(value=str(getattr(cda_observation_value_attribute, 'value', cda_observation_value_attribute if cda_observation_value_attribute is not None else '')))
-                    fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
-                    fhir_observation_value_coding.code = string(value='373067005')
-                    fhir_observation_value_coding.display = string(value='No')
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
-            fhir_observation_value = malac.models.fhir.r4.string()
-            fhir_observation.valueString = fhir_observation_value
-            STstring(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.CV:
-            fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation.valueCodeableConcept = fhir_observation_value
-            fhir_observation_value_coding = malac.models.fhir.r4.Coding()
-            fhir_observation_value.coding.append(fhir_observation_value_coding)
-            fhir_observation_value_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-            fhir_observation_value_coding.code = string(value='OTH')
-            CVCodeableConcept(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.TS:
-            fhir_observation_value = malac.models.fhir.r4.dateTime()
-            fhir_observation.valueDateTime = fhir_observation_value
-            TSDateTime(cda_observation_value, fhir_observation_value)
-    if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
-        for cda_observation_value in cda_laboratory_observation.value or []:
-            if type(cda_observation_value) is malac.models.cda.at_ext.CD:
-                if [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260415000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260373001']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260413007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['89292003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['57176003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260354000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260396001'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
-                    if cda_observation_value.code == '260415000' or cda_observation_value.code == '260373001' or cda_observation_value.code == '260413007' or cda_observation_value.code == '89292003':
-                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-                        fhir_observation.valueCodeableConcept = fhir_observation_value
-                        CDCodeableConcept(cda_observation_value, fhir_observation_value)
-                    if cda_observation_value.code == '57176003':
-                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-                        fhir_observation.valueCodeableConcept = fhir_observation_value
-                        fhir_observation_value_coding = malac.models.fhir.r4.Coding()
-                        fhir_observation_value.coding.append(fhir_observation_value_coding)
-                        fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
-                        fhir_observation_value_coding.code = string(value='260348001')
-                    if cda_observation_value.code == '260354000':
-                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-                        fhir_observation.valueCodeableConcept = fhir_observation_value
-                        fhir_observation_value_coding = malac.models.fhir.r4.Coding()
-                        fhir_observation_value.coding.append(fhir_observation_value_coding)
-                        fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
-                        fhir_observation_value_coding.code = string(value='260349009')
-                    if cda_observation_value.code == '260396001':
-                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-                        fhir_observation.valueCodeableConcept = fhir_observation_value
-                        fhir_observation_value_coding = malac.models.fhir.r4.Coding()
-                        fhir_observation_value.coding.append(fhir_observation_value_coding)
-                        fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
-                        fhir_observation_value_coding.code = string(value='260350009')
-                if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260415000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260373001']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260413007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['89292003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['57176003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260354000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260396001'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
-                    fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-                    fhir_observation.valueCodeableConcept = fhir_observation_value
-                    fhir_observation_value_coding = malac.models.fhir.r4.Coding()
-                    fhir_observation_value.coding.append(fhir_observation_value_coding)
-                    fhir_observation_value_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-                    fhir_observation_value_coding.code = string(value='OTH')
-                    CDCodeableConcept(cda_observation_value, fhir_observation_value)
-    if [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
-        for cda_laboratory_observation_value in cda_laboratory_observation.value or []:
-            fhir_observation.status = string(value='cancelled')
-            if fhir_observation.dataAbsentReason is None:
-                fhir_observation.dataAbsentReason = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation_dataAbsentReason = fhir_observation.dataAbsentReason
-            fhir_observation_dataAbsentReason_coding_1 = malac.models.fhir.r4.Coding()
-            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_1)
-            fhir_observation_dataAbsentReason_coding_1.code = string(value='not-performed')
-            fhir_observation_dataAbsentReason_coding_1.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
-            fhir_observation_dataAbsentReason_coding_2 = malac.models.fhir.r4.Coding()
-            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_2)
-            CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2)
-    if [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
-        for cda_laboratory_observation_value in cda_laboratory_observation.value or []:
-            fhir_observation.status = string(value='preliminary')
-            if fhir_observation.dataAbsentReason is None:
-                fhir_observation.dataAbsentReason = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation_dataAbsentReason = fhir_observation.dataAbsentReason
-            fhir_observation_dataAbsentReason_coding_1 = malac.models.fhir.r4.Coding()
-            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_1)
-            fhir_observation_dataAbsentReason_coding_1.code = string(value='temp-unknown')
-            fhir_observation_dataAbsentReason_coding_1.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
-            fhir_observation_dataAbsentReason_coding_2 = malac.models.fhir.r4.Coding()
-            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_2)
-            CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.RTO:
-            fhir_observation_value = malac.models.fhir.r4.Ratio()
-            fhir_observation.valueRatio = fhir_observation_value
-            RTORatio(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.RTO_QTY_QTY:
-            fhir_observation_value = malac.models.fhir.r4.Ratio()
-            fhir_observation.valueRatio = fhir_observation_value
-            RTORatio(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.RTO_PQ_PQ:
-            fhir_observation_value = malac.models.fhir.r4.Ratio()
-            fhir_observation.valueRatio = fhir_observation_value
-            RTORatio(cda_observation_value, fhir_observation_value)
-
-def CdaNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation):
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        for cda_observation_value_code in (cda_observation_value.code if isinstance(cda_observation_value.code, list) else ([] if not cda_observation_value.code else [cda_observation_value.code])):
-            fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
-            fhir_observation.valueCodeableConcept = fhir_observation_value
-            fhir_observation_value.coding.append(translate_single('elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory', code=(cda_observation_value_code if isinstance(cda_observation_value_code, str) else cda_observation_value_code.value), out_type='Coding'))
 
 def CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle):
     fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -2434,17 +1154,44 @@ def CdaPerformerToFhirObservationPerformer(cda_performer, fhir_observation, fhir
         performer_function_extension_value_coding.code = string(value='PPRF')
         CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle)
 
+def CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole, fhir_bundle):
+    cda_participant_role = cda_participant.participantRole
+    if cda_participant_role is not None:
+        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+        fhir_bundle.entry.append(fhir_bundle_entry)
+        fhir_practitioner = malac.models.fhir.r4.Practitioner()
+        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Practitioner=fhir_practitioner)
+        fhir_practitioner_id = string(value=str(uuid.uuid4()))
+        fhir_practitioner.id = fhir_practitioner_id
+        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
+        fhir_practitionerRole_practitioner_reference = malac.models.fhir.r4.Reference()
+        fhir_practitionerRole.practitioner = fhir_practitionerRole_practitioner_reference
+        fhir_practitionerRole_practitioner_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
+        fhir_practitionerRole_practitioner_reference.type_ = uri(value='Practitioner')
+        for id_ in cda_participant_role.id or []:
+            if id_.nullFlavor is None:
+                fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
+                II(id_, fhir_practitioner.identifier[-1])
+        for addr in cda_participant_role.addr or []:
+            fhir_practitioner.address.append(malac.models.fhir.r4.Address())
+            CdaAdressCompilationToFhirAustrianAddress(addr, fhir_practitioner.address[-1])
+        for telecom in cda_participant_role.telecom or []:
+            fhir_practitioner.telecom.append(malac.models.fhir.r4.ContactPoint())
+            TELContactPoint(telecom, fhir_practitioner.telecom[-1])
+        cda_participant_role_playingEntity = cda_participant_role.playingEntity
+        if cda_participant_role_playingEntity is not None:
+            for name in cda_participant_role_playingEntity.name or []:
+                fhir_practitioner.name.append(malac.models.fhir.r4.HumanName())
+                CdaPersonNameCompilationToFhirHumanName(name, fhir_practitioner.name[-1])
+        cda_participant_role_scoping_entity = cda_participant_role.scopingEntity
+        if cda_participant_role_scoping_entity is not None:
+            cda_participant_role_scoping_entity_desc = cda_participant_role_scoping_entity.desc
+            if cda_participant_role_scoping_entity_desc is not None:
+                fhir_practitionerRole_organization_reference = malac.models.fhir.r4.Reference()
+                fhir_practitionerRole.organization = fhir_practitionerRole_organization_reference
+                fhir_practitionerRole_organization_reference.display = string(value=fhirpath.single(fhirpath_utils.get(cda_participant_role_scoping_entity_desc,'valueOf_',strip=True)))
+
 def CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
-    if cda_section.code is not None:
-        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
-        transform_default(cda_section.code, fhir_section.code)
-    if fhir_section.code is None:
-        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
-    fhir_section_code = fhir_section.code
-    fhir_section_code_coding = malac.models.fhir.r4.Coding()
-    fhir_section_code.coding.append(fhir_section_code_coding)
-    fhir_section_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
-    fhir_section_code_coding.code = string(value='OTH')
     cda_section_title = cda_section.title
     if cda_section_title is not None:
         fhir_section.title = string(value=fhirpath.single(fhirpath_utils.get(cda_section_title,'valueOf_',strip=True)))
@@ -2607,37 +1354,6 @@ def translate(url=None, conceptMapVersion=None, code=None, system=None, version=
 conceptMap_as_7dimension_dict = {}
 
 
-conceptMap_as_7dimension_dict["cda-clinicaldocument-code-2-fhir-composition-type"] = {
-    "%": {
-        "%": {
-            "http://loinc.org": {
-                "http://loinc.org": {
-                    "11502-2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://loinc.org",
-                                "code": "26436-6"
-                            },
-                            "source": "cda-clinicaldocument-code-2-fhir-composition-type"
-                        }
-                    ],
-                    "18725-2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://loinc.org",
-                                "code": "18725-2"
-                            },
-                            "source": "cda-clinicaldocument-code-2-fhir-composition-type"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
 conceptMap_as_7dimension_dict["cda-sdtc-statuscode-2-fhir-composition-status"] = {
     "%": {
         "%": {
@@ -2669,41 +1385,10 @@ conceptMap_as_7dimension_dict["cda-sdtc-statuscode-2-fhir-composition-status"] =
     }
 }
 
-conceptMap_as_7dimension_dict["cda-sdtc-statuscode-2-fhir-diagnosticreport-status"] = {
-    "%": {
-        "%": {
-            "http://terminology.hl7.org/CodeSystem/v3-ActStatus": {
-                "http://hl7.org/fhir/diagnostic-report-status": {
-                    "active": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/diagnostic-report-status",
-                                "code": "preliminary"
-                            },
-                            "source": "cda-sdtc-statuscode-2-fhir-diagnosticreport-status"
-                        }
-                    ],
-                    "nullified": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/diagnostic-report-status",
-                                "code": "entered-in-error"
-                            },
-                            "source": "cda-sdtc-statuscode-2-fhir-diagnosticreport-status"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
 conceptMap_as_7dimension_dict["ELGAAdministrativeGenderFHIRGender"] = {
     "%": {
         "%": {
-            "https://termgit.elga.gv.at/CodeSystem/hl7-at-administrativegender-ergaenzung": {
+            "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender": {
                 "http://hl7.org/fhir/administrative-gender": {
                     "F": [
                         {
@@ -2734,7 +1419,11 @@ conceptMap_as_7dimension_dict["ELGAAdministrativeGenderFHIRGender"] = {
                             },
                             "source": "ELGAAdministrativeGenderFHIRGender"
                         }
-                    ],
+                    ]
+                }
+            },
+            "https://termgit.elga.gv.at/CodeSystem/hl7-at-administrativegender-ergaenzung": {
+                "http://hl7.org/fhir/administrative-gender": {
                     "D": [
                         {
                             "relationship": "equivalent",
@@ -2812,6 +1501,4304 @@ conceptMap_as_7dimension_dict["act-status-2-observation-status"] = {
     }
 }
 
+conceptMap_as_7dimension_dict["v3-NullFlavor-2-data-absent-reason"] = {
+    "%": {
+        "%": {
+            "http://terminology.hl7.org/CodeSystem/v3-NullFlavor": {
+                "http://terminology.hl7.org/CodeSystem/data-absent-reason": {
+                    "UNK": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                                "code": "unknown"
+                            },
+                            "source": "v3-NullFlavor-2-data-absent-reason"
+                        }
+                    ],
+                    "NAV": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                                "code": "temp-unknown"
+                            },
+                            "source": "v3-NullFlavor-2-data-absent-reason"
+                        }
+                    ],
+                    "NA": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                                "code": "not-applicable"
+                            },
+                            "source": "v3-NullFlavor-2-data-absent-reason"
+                        }
+                    ],
+                    "OTH": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/data-absent-reason",
+                                "code": "unknown"
+                            },
+                            "source": "v3-NullFlavor-2-data-absent-reason"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["ELGA2FHIRAddressUse"] = {
+    "%": {
+        "%": {
+            "http://terminology.hl7.org/CodeSystem/v3-AddressUse": {
+                "http://hl7.org/fhir/address-use": {
+                    "H": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "home"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ],
+                    "HP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "home"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ],
+                    "HV": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "home"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ],
+                    "WP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "work"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ],
+                    "DIR": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "work"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ],
+                    "PUB": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "work"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ],
+                    "TMP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/address-use",
+                                "code": "temp"
+                            },
+                            "source": "ELGA2FHIRAddressUse"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["ELGATelecomAddressUseFHIRContactPointUse"] = {
+    "%": {
+        "%": {
+            "http://terminology.hl7.org/CodeSystem/v3-AddressUse": {
+                "http://hl7.org/fhir/contact-point-use": {
+                    "H": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "home"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "HP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "home"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "HV": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "home"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "WP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "work"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "AS": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "work"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "EC": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "home"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "MC": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "mobile"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "PG": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "mobile"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ],
+                    "TMP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/contact-point-use",
+                                "code": "temp"
+                            },
+                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["ELGAEntityNameUseFHIRNameUse"] = {
+    "%": {
+        "%": {
+            "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse": {
+                "http://hl7.org/fhir/name-use": {
+                    "ASGN": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "usual"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "C": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "usual"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "I": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "anonymous"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "L": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "official"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "OR": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "official"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "P": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "anonymous"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "A": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "anonymous"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "R": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "anonymous"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "SRCH": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "temp"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "PHON": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "nickname"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "SNDX": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "nickname"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "ABC": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "nickname"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "IDE": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "nickname"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ],
+                    "SYL": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/name-use",
+                                "code": "nickname"
+                            },
+                            "source": "ELGAEntityNameUseFHIRNameUse"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["ELGAEntityNamePartQualifierFHIRNamePartQualifier"] = {
+    "%": {
+        "%": {
+            "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier": {
+                "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2": {
+                    "AC": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "AC"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "AD": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "AD"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "BR": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "BR"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "CL": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "CL"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "IN": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "IN"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "LS": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "LS"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "NB": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "NB"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "PR": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "PR"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ],
+                    "SP": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
+                                "code": "SP"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ]
+                },
+                "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier": {
+                    "VV": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier",
+                                "code": "VV"
+                            },
+                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["OIDtoURI"] = {
+    "%": {
+        "%": {
+            "http://cda.oid": {
+                "http://fhir.system": {
+                    "2.16.840.1.113883.6.96": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://snomed.info/sct"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://loinc.org"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.8": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://unitsofmeasure.org"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://hl7.org/fhir/sid/icd-10"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.73": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://www.whocc.no/atc"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.2.16.1.4.9": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "urn:oid:2.16.840.1.113883.2.16.1.4.9"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.83": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "0.4.0.127.0.16.1.1.2.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ehdsi-edqm-auszug"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.0.3166.1.2.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/iso-3166-alpha-2-code"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.0.3166.1.2.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/iso-3166-1-alpha-3"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.0.5218": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/geschlechtercodes-iso-iec-5218"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.0.639.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/iso-639-2"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.276.0.76.5.547": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/atc-deutsch-wido"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.10.1.4.3.4.3.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-medikationmengenartalternativ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.10.1.4.3.4.3.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationrezeptart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.10.1.4.3.4.3.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationartanwendung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.10.1.4.3.4.3.5": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationdarreichungsform"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.10.1.4.3.4.3.6": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationtherapieart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.10.1.4.3.4.3.7": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationrezeptpflichtstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.10": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-languagecode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.11": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-maritalstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.13": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.14": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/langid-at"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.15": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-participationfunctioncode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.150": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditeventid"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.151": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditeventtype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.152": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditsourcetype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.153": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditroleid"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.154": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditparticipantobjecttype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.155": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditparticipantobjecttyperole"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.156": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditparticipantobjectidtype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.158": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dicom-sopclasses"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.159": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationabgabeart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.16": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-addressuse"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.160": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-actcode-abginfo"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.161": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-actcode-patinfo"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.162": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-wirkstoffe-ages"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.164": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionspflegesitber"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.165": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditeventtype-a-arr"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.166": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-dosisparameter"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.167": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemstatuscode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.168": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-diagnosesicherheit"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.169": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemkataloge"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.17": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-personalrelationship"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.171": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-kulturerregernachweis"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.172": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-laendercodes"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.173": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-humanlanguage"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.174": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-proficiencylevelcode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.175": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-languageabilitymode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.176": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-seitenlokalisation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.177": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergyorintolerancetype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.178": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownallergies"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.179": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownproblems"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.18": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-religiousaffiliation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.180": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergyorintoleranceagent"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.181": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergyreaction"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.182": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-criticalityobservationvalue"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.183": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergystatuscode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.184": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-conditionverificationstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.186": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.187": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-probenmaterial"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.188": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-mikroorganismen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.189": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemseverity"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.19": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-roleclass"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.191": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownmedication"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.192": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknowndevices"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.193": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownprocedures"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.198": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-conditionstatuscode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-nullflavor"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.202": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-expecteddeliverydatemethod"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.203": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-pregnanciessummary"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.204": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-currentsmokingstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.205": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-typeofproblem"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.206": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergietyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.210": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/atcdabbr-noinformationqualifier"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.211": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/atcdabbr-lateralityqualifiercode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.22": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventslabor"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.25": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-urlscheme"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.26": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-rollen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.27": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-entitynameuse"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.29": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-informationrecipienttype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-realmcode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.30": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationtherapieart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.32": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationmengenart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.33": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-noinformation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.34": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-vitalparameterarten"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.35": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemarten"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.36": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-telecomaddressuse"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.360": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsserviceevents"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.39": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-dokumentenklassen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-administrativegender"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.42": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medientyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.43": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventperformer"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.44": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-laborparameter"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.46": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-specimentype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.47": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-laborstruktur"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.48": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsentlassungaerztl"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.49": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsentlassungpflege"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.5": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-actencountercode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.50": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsradiologie"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.52": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-humanactsite"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.53": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-entlassungsmanagementa"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.55": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-mammogramassessment"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.57": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventsentlassbr"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.58": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-significantpathogens"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.59": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-einnahmezeitpunkte"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.6": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-authorspeciality"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.60": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-formatcodezusatz"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.61": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-formatcode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.62": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/appc-modalitaet"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.63": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/appc-lateralitaet"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.64": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/appc-prozeduren"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.65": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/appc-anatomie"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.66": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationartanwendung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.67": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationmengenartalternativ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.68": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationrezeptart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.69": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationfrequenz"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.7": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-confidentiality"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.70": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationdarreichungsform"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.71": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationpharmazeutischeempfehlungstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.72": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-healthcarefacilitytypecode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.74": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationrezeptpflichtstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.75": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-practicesetting"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.86": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-xds-dokumentenklassen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.9": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-insuredassocentity"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.90": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-anti-hcv-immunoassay"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.91": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-anti-hcv-immunoblot-assay"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.92": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-hcv-core-ag-assay"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.10.93": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-hbv-status"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.3.1.10": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-berechtigungen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.3.1.10.20": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-fachrichtung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.3.1.10.30": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-additivfach"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.3.1.10.40": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-spezialdiplom"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.3.1.10.50": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-zertifikate"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.3.1.10.60": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-spezialisierung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.4.16": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/asp-liste"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.4.16.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-impfstoffe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.101": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-parameter"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.102": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-methoden"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.103": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-actcode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.104": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/rast-klassen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.105": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-krankheitsmerkmale"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.106": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-hcv-rna"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.109": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-klinischemanifestation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.11": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.110": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-wurdekrankheitimportiert"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.12": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-practicesetting"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.150": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditeventid"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.151": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditeventtype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.152": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditsourcetype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.153": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditparticipantobjecttype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.154": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditparticipantobjecttyperole"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.155": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditparticipantobjectidtype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.156": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikation-ages-wirkstoffe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.158": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-funktionsrollen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.159": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-e-health-anwendungen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.160": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-fachaerzte"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.161": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-kontakttypen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.162": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-patienten-identifizierungsmethoden"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.165": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditeventtypea-arr"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.171": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2017"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.173": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-specimentype-ergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.175": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/icpc2"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.179": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-ergaenzungsliste"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.180": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-allergietyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.183": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-ergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.184": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2020"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.186": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-historischeimpfstoffe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.187": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-ergaenzungmeldepflichtigekrankheiten"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.190": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-pflegestufen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.191": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-zuordnungsmatrix"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.194": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-sections"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.195": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-concepts"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.196": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-betreuung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.197": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-listeschulen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.198": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-metadaten"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.199": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-formatcodes"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-gtelvogdarollen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.200": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-schemamatrix"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.202": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/dgc-qr"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.203": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/dgc-antibody-test"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.205": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/dgc-ratnamemanufacturer"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.206": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-diagnose-typ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.207": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-diagnose-art"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.208": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-diagnose-statauf"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.209": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-icd-10-2022"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.21": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-serviceeventsentlassbrief"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.211": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-ergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.215": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-lebensmittelallergene"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.216": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-lkf-2023"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.217": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/austrian-designation-use"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.219": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationpackaging"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.221": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationactiveingredient"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.222": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-icd-10-2024"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.223": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-lkf-2024"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.224": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-administrativegender-ergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.28": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-entlassungsmanagementart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-gda-aggregatrollen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.37": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-formatcode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.38.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-modalitaet"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.38.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-lateralitaet"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.38.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-prozeduren"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.38.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-anatomie"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/gda-attribute"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.40": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-sections"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.41": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-formatcodezusatz"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.45": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-significantpathogens"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.49": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-mammogramassessment"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.5": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/gda-org"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.55": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-urlschemeergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.56": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2014"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.58": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-material"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.59": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-janein"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.60": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-analysedetails"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.61": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-antigenh"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.62": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-artmalaria"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.63": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-artquartier"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.64": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-befundart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.65": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-biotyp-biovar"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.66": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-antigeno"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.67": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-tbc-resistenzergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.68": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-quartiercode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.69": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-aviditaet"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.70": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genogruppe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.71": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genotyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.72": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genotyppora-r1"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.73": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genotyppora-r2"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.74": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-durchgefuehrt"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.75": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-tbc-resultat"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.76": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-ergebnis"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.77": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-wowurdekrankheiterworben"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.78": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-nachweisbar"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.79": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-testmethodemic-ipd"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.80": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-testmethodetypingipd"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.81": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-nachweis"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.82": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-multilocsequ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.83": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-monoclonalsub"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.84": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-organ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.85": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-yersinapathogen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.86": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-phagentyp-vtec"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.87": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-phagentyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.88": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-posneg"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.89": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-ribotype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.90": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-serogruppe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.91": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-serotyp-gene-feta"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.92": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-serotyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.93": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-gewinnung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.94": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-tbc-typ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.95": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-orth20probe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.96": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-reiseland"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.97": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-verotoxin-2-subtyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.98": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-verotoxin-1-subtyp"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.99": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-materialmethode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.10": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-historischeimpfstoffe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.11": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfrollen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.13": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-antikoerperbestimmung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.14": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfstoffe"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.15": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-specialsituationindication"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.16": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-materialmethode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.18": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-krankheitsmerkmale"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.19": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-meldepflichtige-krankheiten"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfrelevanteerkrankung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.21": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-taetigkeitsbereich"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.23": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-artderdiagnose"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.24": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-impfstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.25": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-klinischemanifestation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.26": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventstelemonepi"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.27": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-actconsenttype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.29": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-lebensmittelbedingteintoxikationen"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-specialcasevaccination"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.30": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-alcoholconsumption"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.31": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-betreuung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-immunizationtarget"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.49": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-hospitalisierung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.5": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfschema"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.51": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ems-reiseland"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.52": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-pregnancystatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.53": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-antibiogramm"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.54": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-typeoftest"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.55": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-diseaseoragent"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.56": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-vaccine"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.57": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-medicinalproduct"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.58": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-vaccinemarketingauthorizationholder"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.59": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-doses"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.6": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfdosis"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.60": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-resultofthetest"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.62": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-zusatzklassifikation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.63": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-country"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.65": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-ratnamemanufacturer"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.66": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-anamneselabormikrobiologie"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.67": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/lkf-diagnose-art"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.68": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/lkf-diagnose-statauf"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.69": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/lkf-diagnose-typ"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.7": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfgrund"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.74": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-mengenart"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.75": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-lebensmittelallergene"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.76": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/austrian-designation-use"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.77": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-patientidentifier"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.78": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-zusatzklassifikation-impfprogramm"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.79": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-zusatzklassifikation-impfsetting"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.8": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/elga-entitynamepartqualifier"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.81": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-administrativegender-v2"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.83": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-administrativegender-fhir-extension"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.84": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/orphanet-rare-diseases"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.85": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/snomed-rare-diseases"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.86": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-organizationtype"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.6.0.10.87": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-practitionerrole"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.840.10003.5.109": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/iana-mime-type"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.840.10008.2.16.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/dcm"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.840.10008.2.6.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/dicom-sopclasses"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-healthcare-professional-role"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.12": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-route-of-administration"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.16": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-unit"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-doseform"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.24": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-activeingredient"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.3": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-package"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.31": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-confidentiality"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.34": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-administrative-gender"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-country"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.40": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-telecom-address"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.41": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-timing-event"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.56": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-quantity-unit"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.6": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-language"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.61": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-substance"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.3.6.1.4.1.19376.1.9.2.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ihe-pharmaceutical-advice-status-list"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1dd183a6-6d2b-4a9d-8f5d-be09d6bb5a6e": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ehdsi-language"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.1.11.19708": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-actsubstanceadministrationcode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.12.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-administrative-sex"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.12.496": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-consent-type"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.12.497": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-consent-mode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.12.498": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-consent-status"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.12.548": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-signatorys-relationship-to-subject"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.18.108": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v2-0203"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.18.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v2-0001"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.18.320": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v2-0496"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.18.321": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v2-0497"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.18.322": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v2-0498"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.18.355": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v2-0548"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.2.16.1.4.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-religionaustria"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.2.16.1.4.10": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-formatcodes"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.2.9.6.2.7": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/isco"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.3.6905.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ehdsi-substance"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.3.7.1.7": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/sciphox-seitenlokalisation"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.3.7.1.8": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/sciphox-diagnosenzusatz"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.4.642.1.76": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://hl7.org/fhir/event-timing"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.4.642.3.115": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ips-conditionverificationstatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.4.642.3.155": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ips-conditionclinicalstatuscodes"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.1008": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.1052": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-ActSite"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.110": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-RoleClass"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.111": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.1119": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.1150.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/ips-absentorunknowndata"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.129": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-SpecimenType"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.139": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-TimingEvent"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.14": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.143": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-URLScheme"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.25": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.4": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.43": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.45": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.60": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-LanguageAbilityMode"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.61": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-LanguageAbilityProficiency"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.88": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-ParticipationFunction"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.5.90": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.121": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-language-identification"
+                            },
+                            "source": "OIDtoURI"
+                        },
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "urn:ietf:bcp:47"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.24": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/mdc-medicaldevicecommunications"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.254-2005": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/icf"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "2.16.840.1.113883.6.43.1": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-o-3"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
+                    "1.2.40.0.34.5.227": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-maritalstatus-ergaenzung"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["cda-lab-clinicaldocument-code-2-fhir-category"] = {
+    "%": {
+        "%": {
+            "http://loinc.org": {
+                "http://loinc.org": {
+                    "11502-2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://loinc.org",
+                                "code": "26436-6"
+                            },
+                            "source": "cda-lab-clinicaldocument-code-2-fhir-category"
+                        }
+                    ],
+                    "18725-2": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://loinc.org",
+                                "code": "18725-2"
+                            },
+                            "source": "cda-lab-clinicaldocument-code-2-fhir-category"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
+conceptMap_as_7dimension_dict["cda-sdtc-statuscode-2-fhir-diagnosticreport-status"] = {
+    "%": {
+        "%": {
+            "http://terminology.hl7.org/CodeSystem/v3-ActStatus": {
+                "http://hl7.org/fhir/diagnostic-report-status": {
+                    "active": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/diagnostic-report-status",
+                                "code": "preliminary"
+                            },
+                            "source": "cda-sdtc-statuscode-2-fhir-diagnosticreport-status"
+                        }
+                    ],
+                    "nullified": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://hl7.org/fhir/diagnostic-report-status",
+                                "code": "entered-in-error"
+                            },
+                            "source": "cda-sdtc-statuscode-2-fhir-diagnosticreport-status"
+                        }
+                    ]
+                }
+            }
+        }
+    }
+}
+
 conceptMap_as_7dimension_dict["elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory"] = {
     "%": {
         "%": {
@@ -2839,57 +5826,6 @@ conceptMap_as_7dimension_dict["elga-notifiable-condition-case-ident-value-to-eHD
                                 "code": "75953000"
                             },
                             "source": "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
-conceptMap_as_7dimension_dict["elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"] = {
-    "%": {
-        "%": {
-            "https://termgit.elga.gv.at/ValueSet-elga-observationinterpretation.html": {
-                "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory": {
-                    "260415000": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory",
-                                "code": "260415000"
-                            },
-                            "source": "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"
-                        }
-                    ],
-                    "260373001": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory",
-                                "code": "260373001"
-                            },
-                            "source": "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"
-                        }
-                    ],
-                    "260413007": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory",
-                                "code": "260413007"
-                            },
-                            "source": "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"
-                        }
-                    ],
-                    "89292003": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory",
-                                "code": "89292003"
-                            },
-                            "source": "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"
                         }
                     ]
                 }
@@ -81179,4201 +84115,19 @@ conceptMap_as_7dimension_dict["elga-laboratory-observation-code-to-eHDSILabCodeW
     }
 }
 
-conceptMap_as_7dimension_dict["ELGA2FHIRAddressUse"] = {
+conceptMap_as_7dimension_dict["cda-eimpf-clinicaldocument-code-2-fhir-category"] = {
     "%": {
         "%": {
-            "http://terminology.hl7.org/CodeSystem/v3-AddressUse": {
-                "http://hl7.org/fhir/address-use": {
-                    "H": [
+            "http://loinc.org": {
+                "http://loinc.org": {
+                    "11369-6": [
                         {
                             "relationship": "equivalent",
                             "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "home"
+                                "system": "http://loinc.org",
+                                "code": "11369-6"
                             },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "HP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "home"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "HV": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "home"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "WP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "work"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "DIR": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "work"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "PUB": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "work"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "TMP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "temp"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "PHYS": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "home"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ],
-                    "PST": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/address-use",
-                                "code": "home"
-                            },
-                            "source": "ELGA2FHIRAddressUse"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
-conceptMap_as_7dimension_dict["ELGATelecomAddressUseFHIRContactPointUse"] = {
-    "%": {
-        "%": {
-            "http://terminology.hl7.org/CodeSystem/v3-AddressUse": {
-                "http://hl7.org/fhir/contact-point-use": {
-                    "H": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "home"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "HP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "home"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "HV": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "home"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "WP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "work"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "AS": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "work"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "EC": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "home"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "MC": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "mobile"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "PG": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "mobile"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ],
-                    "TMP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/contact-point-use",
-                                "code": "temp"
-                            },
-                            "source": "ELGATelecomAddressUseFHIRContactPointUse"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
-conceptMap_as_7dimension_dict["ELGAEntityNameUseFHIRNameUse"] = {
-    "%": {
-        "%": {
-            "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse": {
-                "http://hl7.org/fhir/name-use": {
-                    "ASGN": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "usual"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "C": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "usual"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "I": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "anonymous"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "L": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "official"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "OR": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "official"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "P": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "anonymous"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "A": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "anonymous"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "R": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "anonymous"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "SRCH": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "temp"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "PHON": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "nickname"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "SNDX": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "nickname"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "ABC": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "nickname"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "IDE": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "nickname"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ],
-                    "SYL": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://hl7.org/fhir/name-use",
-                                "code": "nickname"
-                            },
-                            "source": "ELGAEntityNameUseFHIRNameUse"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
-conceptMap_as_7dimension_dict["ELGAEntityNamePartQualifierFHIRNamePartQualifier"] = {
-    "%": {
-        "%": {
-            "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier": {
-                "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2": {
-                    "AC": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "AC"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "AD": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "AD"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "BR": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "BR"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "CL": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "CL"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "IN": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "IN"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "LS": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "LS"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "NB": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "NB"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "PR": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "PR"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "SP": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "SP"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ],
-                    "VV": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2",
-                                "code": "VV"
-                            },
-                            "source": "ELGAEntityNamePartQualifierFHIRNamePartQualifier"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
-
-conceptMap_as_7dimension_dict["OIDtoURI"] = {
-    "%": {
-        "%": {
-            "http://cda.oid": {
-                "http://fhir.system": {
-                    "2.16.840.1.113883.6.96": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://snomed.info/sct"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://loinc.org"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.8": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://unitsofmeasure.org"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://hl7.org/fhir/sid/icd-10"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.73": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://www.whocc.no/atc"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.2.16.1.4.9": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "urn:oid:2.16.840.1.113883.2.16.1.4.9"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.83": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "0.4.0.127.0.16.1.1.2.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ehdsi-edqm-auszug"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.0.3166.1.2.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/iso-3166-alpha-2-code"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.0.3166.1.2.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/iso-3166-1-alpha-3"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.0.5218": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/geschlechtercodes-iso-iec-5218"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.0.639.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/iso-639-2"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.276.0.76.5.547": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/atc-deutsch-wido"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.10.1.4.3.4.3.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-medikationmengenartalternativ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.10.1.4.3.4.3.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationrezeptart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.10.1.4.3.4.3.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationartanwendung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.10.1.4.3.4.3.5": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationdarreichungsform"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.10.1.4.3.4.3.6": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationtherapieart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.10.1.4.3.4.3.7": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationrezeptpflichtstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.10": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-languagecode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.11": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-maritalstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.13": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.14": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/langid-at"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.15": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-participationfunctioncode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.150": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditeventid"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.151": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditeventtype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.152": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditsourcetype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.153": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditroleid"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.154": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditparticipantobjecttype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.155": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditparticipantobjecttyperole"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.156": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditparticipantobjectidtype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.158": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dicom-sopclasses"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.159": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationabgabeart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.16": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-addressuse"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.160": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-actcode-abginfo"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.161": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-actcode-patinfo"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.162": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-wirkstoffe-ages"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.164": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionspflegesitber"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.165": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-auditeventtype-a-arr"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.166": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-dosisparameter"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.167": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemstatuscode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.168": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-diagnosesicherheit"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.169": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemkataloge"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.17": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-personalrelationship"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.171": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-kulturerregernachweis"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.172": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-laendercodes"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.173": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-humanlanguage"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.174": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-proficiencylevelcode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.175": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-languageabilitymode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.176": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-seitenlokalisation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.177": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergyorintolerancetype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.178": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownallergies"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.179": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownproblems"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.18": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-religiousaffiliation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.180": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergyorintoleranceagent"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.181": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergyreaction"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.182": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-criticalityobservationvalue"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.183": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergystatuscode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.184": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-conditionverificationstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.186": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.187": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-probenmaterial"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.188": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-mikroorganismen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.189": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemseverity"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.19": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-roleclass"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.191": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownmedication"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.192": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknowndevices"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.193": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-absentorunknownprocedures"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.198": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-conditionstatuscode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-nullflavor"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.202": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-expecteddeliverydatemethod"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.203": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-pregnanciessummary"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.204": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-currentsmokingstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.205": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-typeofproblem"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.206": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-allergietyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.210": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/atcdabbr-noinformationqualifier"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.211": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/atcdabbr-lateralityqualifiercode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.22": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventslabor"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.25": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-urlscheme"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.26": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-rollen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.27": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-entitynameuse"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.29": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-informationrecipienttype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-realmcode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.30": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationtherapieart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.32": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationmengenart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.33": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-noinformation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.34": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-vitalparameterarten"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.35": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-problemarten"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.36": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-telecomaddressuse"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.360": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsserviceevents"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.39": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-dokumentenklassen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-administrativegender"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.42": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medientyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.43": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventperformer"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.44": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-laborparameter"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.46": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-specimentype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.47": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-laborstruktur"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.48": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsentlassungaerztl"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.49": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsentlassungpflege"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.5": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-actencountercode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.50": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-sectionsradiologie"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.52": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-humanactsite"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.53": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-entlassungsmanagementa"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.55": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-mammogramassessment"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.57": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventsentlassbr"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.58": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-significantpathogens"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.59": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-einnahmezeitpunkte"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.6": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-authorspeciality"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.60": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-formatcodezusatz"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.61": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-formatcode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.62": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/appc-modalitaet"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.63": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/appc-lateralitaet"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.64": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/appc-prozeduren"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.65": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/appc-anatomie"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.66": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationartanwendung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.67": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationmengenartalternativ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.68": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationrezeptart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.69": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationfrequenz"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.7": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-confidentiality"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.70": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationdarreichungsform"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.71": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationpharmazeutischeempfehlungstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.72": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-healthcarefacilitytypecode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.74": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-medikationrezeptpflichtstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.75": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-practicesetting"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.86": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-xds-dokumentenklassen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.9": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-insuredassocentity"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.90": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-anti-hcv-immunoassay"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.91": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-anti-hcv-immunoblot-assay"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.92": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-hcv-core-ag-assay"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.10.93": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-hbv-status"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.3.1.10": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-berechtigungen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.3.1.10.20": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-fachrichtung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.3.1.10.30": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-additivfach"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.3.1.10.40": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-spezialdiplom"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.3.1.10.50": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-zertifikate"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.3.1.10.60": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/oeaek-spezialisierung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.4.16": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/asp-liste"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.4.16.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-impfstoffe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.101": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-parameter"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.102": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-methoden"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.103": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-actcode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.104": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/rast-klassen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.105": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-krankheitsmerkmale"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.106": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-hcv-rna"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.109": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-klinischemanifestation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.11": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.110": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-wurdekrankheitimportiert"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.12": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-practicesetting"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.150": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditeventid"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.151": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditeventtype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.152": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditsourcetype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.153": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditparticipantobjecttype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.154": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditparticipantobjecttyperole"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.155": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditparticipantobjectidtype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.156": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikation-ages-wirkstoffe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.158": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-funktionsrollen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.159": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-e-health-anwendungen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.160": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-fachaerzte"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.161": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-kontakttypen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.162": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-patienten-identifizierungsmethoden"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.165": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-auditeventtypea-arr"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.171": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2017"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.173": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-specimentype-ergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.175": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/icpc2"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.179": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-ergaenzungsliste"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.180": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-allergietyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.183": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-ergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.184": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2020"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.186": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-historischeimpfstoffe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.187": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-ergaenzungmeldepflichtigekrankheiten"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.190": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-pflegestufen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.191": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-zuordnungsmatrix"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.194": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-sections"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.195": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-concepts"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.196": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-betreuung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.197": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-listeschulen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.198": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-metadaten"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.199": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/exnds-formatcodes"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-gtelvogdarollen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.200": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/eimpf-schemamatrix"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.202": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/dgc-qr"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.203": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/dgc-antibody-test"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.205": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/dgc-ratnamemanufacturer"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.206": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-diagnose-typ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.207": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-diagnose-art"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.208": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-diagnose-statauf"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.209": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-icd-10-2022"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.21": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-serviceeventsentlassbrief"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.211": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/lkf-ergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.215": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-lebensmittelallergene"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.216": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-lkf-2023"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.217": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/austrian-designation-use"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.219": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationpackaging"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.221": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/medikationactiveingredient"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.222": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-icd-10-2024"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.223": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/bmg-lkf-2024"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.224": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-administrativegender-ergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.28": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-entlassungsmanagementart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-gda-aggregatrollen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.37": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-formatcode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.38.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-modalitaet"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.38.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-lateralitaet"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.38.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-prozeduren"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.38.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/appc-anatomie"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/gda-attribute"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.40": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-sections"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.41": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-formatcodezusatz"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.45": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-significantpathogens"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.49": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-mammogramassessment"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.5": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/gda-org"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.55": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/elga-urlschemeergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.56": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2014"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.58": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-material"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.59": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-janein"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.60": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-analysedetails"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.61": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-antigenh"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.62": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-artmalaria"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.63": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-artquartier"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.64": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-befundart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.65": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-biotyp-biovar"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.66": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-antigeno"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.67": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-tbc-resistenzergaenzung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.68": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-quartiercode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.69": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-aviditaet"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.70": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genogruppe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.71": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genotyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.72": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genotyppora-r1"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.73": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-genotyppora-r2"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.74": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-durchgefuehrt"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.75": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-tbc-resultat"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.76": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-ergebnis"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.77": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-wowurdekrankheiterworben"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.78": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-nachweisbar"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.79": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-testmethodemic-ipd"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.80": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-testmethodetypingipd"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.81": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-nachweis"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.82": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-multilocsequ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.83": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-monoclonalsub"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.84": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-organ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.85": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-yersinapathogen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.86": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-phagentyp-vtec"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.87": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-phagentyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.88": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-posneg"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.89": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-ribotype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.90": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-serogruppe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.91": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-serotyp-gene-feta"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.92": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-serotyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.93": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-gewinnung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.94": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-tbc-typ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.95": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-orth20probe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.96": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-reiseland"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.97": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-verotoxin-2-subtyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.98": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-verotoxin-1-subtyp"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.99": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ems-materialmethode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.10": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-historischeimpfstoffe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.11": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfrollen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.13": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-antikoerperbestimmung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.14": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfstoffe"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.15": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-specialsituationindication"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.16": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-materialmethode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.18": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-krankheitsmerkmale"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.19": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-meldepflichtige-krankheiten"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfrelevanteerkrankung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.21": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-taetigkeitsbereich"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.23": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-artderdiagnose"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.24": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-impfstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.25": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-klinischemanifestation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.26": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-serviceeventstelemonepi"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.27": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-actconsenttype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.29": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-lebensmittelbedingteintoxikationen"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-specialcasevaccination"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.30": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-alcoholconsumption"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.31": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-betreuung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-immunizationtarget"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.49": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-hospitalisierung"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.5": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfschema"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.51": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ems-reiseland"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.52": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-pregnancystatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.53": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-antibiogramm"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.54": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-typeoftest"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.55": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-diseaseoragent"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.56": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-vaccine"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.57": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-medicinalproduct"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.58": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-vaccinemarketingauthorizationholder"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.59": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-doses"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.6": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfdosis"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.60": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-resultofthetest"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.62": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-zusatzklassifikation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.63": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-country"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.65": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/dgc-ratnamemanufacturer"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.66": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-anamneselabormikrobiologie"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.67": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/lkf-diagnose-art"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.68": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/lkf-diagnose-statauf"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.69": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/lkf-diagnose-typ"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.7": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-impfgrund"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.74": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-mengenart"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.75": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-lebensmittelallergene"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.76": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/austrian-designation-use"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.77": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-patientidentifier"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.78": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-zusatzklassifikation-impfprogramm"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.79": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/eimpf-zusatzklassifikation-impfsetting"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.8": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/elga-entitynamepartqualifier"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.81": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-administrativegender-v2"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.83": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-administrativegender-fhir-extension"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.84": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/orphanet-rare-diseases"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.85": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/snomed-rare-diseases"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.86": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-organizationtype"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.6.0.10.87": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/hl7-at-practitionerrole"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.840.10003.5.109": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/iana-mime-type"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.840.10008.2.16.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/dcm"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.840.10008.2.6.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/dicom-sopclasses"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-healthcare-professional-role"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.12": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-route-of-administration"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.16": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-unit"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-doseform"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.24": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-activeingredient"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.3": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-package"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.31": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-confidentiality"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.34": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-administrative-gender"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-country"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.40": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-telecom-address"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.41": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-timing-event"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.56": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-quantity-unit"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.6": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-language"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.12559.11.10.1.3.1.42.61": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-substance"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.3.6.1.4.1.19376.1.9.2.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ihe-pharmaceutical-advice-status-list"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1dd183a6-6d2b-4a9d-8f5d-be09d6bb5a6e": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ehdsi-language"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.1.11.19708": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/ValueSet/ehdsi-actsubstanceadministrationcode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.12.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-administrative-sex"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.12.496": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-consent-type"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.12.497": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-consent-mode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.12.498": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-consent-status"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.12.548": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-signatorys-relationship-to-subject"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.18.108": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v2-0203"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.18.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v2-0001"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.18.320": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v2-0496"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.18.321": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v2-0497"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.18.322": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v2-0498"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.18.355": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v2-0548"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.2.16.1.4.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-religionaustria"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.2.16.1.4.10": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-formatcodes"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.2.9.6.2.7": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/isco"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.3.6905.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ehdsi-substance"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.3.7.1.7": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/sciphox-seitenlokalisation"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.3.7.1.8": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/sciphox-diagnosenzusatz"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.4.642.1.76": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://hl7.org/fhir/event-timing"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.4.642.3.115": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ips-conditionverificationstatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.4.642.3.155": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ips-conditionclinicalstatuscodes"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.1008": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.1052": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-ActSite"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.110": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-RoleClass"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.111": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-RoleCode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.1119": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.1150.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/ips-absentorunknowndata"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.129": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-SpecimenType"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.139": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-TimingEvent"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.14": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.143": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-URLScheme"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.2": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.25": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-Confidentiality"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.4": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-ActCode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.43": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.45": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.60": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-LanguageAbilityMode"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.61": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-LanguageAbilityProficiency"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.88": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-ParticipationFunction"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.5.90": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "http://terminology.hl7.org/CodeSystem/v3-ParticipationType"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.121": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-language-identification"
-                            },
-                            "source": "OIDtoURI"
-                        },
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "urn:ietf:bcp:47"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.24": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/mdc-medicaldevicecommunications"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.254-2005": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/icf"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "2.16.840.1.113883.6.43.1": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/icd-o-3"
-                            },
-                            "source": "OIDtoURI"
-                        }
-                    ],
-                    "1.2.40.0.34.5.227": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://fhir.system",
-                                "code": "https://termgit.elga.gv.at/CodeSystem/hl7-at-maritalstatus-ergaenzung"
-                            },
-                            "source": "OIDtoURI"
+                            "source": "cda-eimpf-clinicaldocument-code-2-fhir-category"
                         }
                     ]
                 }
@@ -85387,25 +84141,35 @@ def II(src, tgt):
     if r is not None:
         if src.extension is not None:
             tgt.system = string(value=translate_single('OIDtoURI', code=(r if isinstance(r, str) else r.value), out_type='code'))
+            assigningAuthorityName = src.assigningAuthorityName
+            if assigningAuthorityName is not None:
+                if tgt.assigner is None:
+                    tgt.assigner = malac.models.fhir.r4.Reference()
+                a = tgt.assigner
+                a.display = string(value=assigningAuthorityName)
     r = src.root
     if r is not None:
         if fhirpath.single(fhirpath_utils.bool_and([(src.extension is None)], [v2 for v1 in fhirpath_utils.get(src,'root') for v2 in fhirpath_utils.matches(v1, ['[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'])])):
             tgt.system = uri(value='urn:ietf:rfc:3986')
             tgt.value = string(value=fhirpath.single(fhirpath_utils.add(['urn:uuid:'], fhirpath_utils.lower(r))))
+            assigningAuthorityName = src.assigningAuthorityName
+            if assigningAuthorityName is not None:
+                if tgt.assigner is None:
+                    tgt.assigner = malac.models.fhir.r4.Reference()
+                a = tgt.assigner
+                a.display = string(value=assigningAuthorityName)
     r = src.root
     if r is not None:
         if fhirpath.single(fhirpath_utils.bool_and([(src.extension is None)], [v2 for v1 in fhirpath_utils.get(src,'root') for v2 in fhirpath_utils.contains(v1, ['.'])])):
             tgt.system = uri(value='urn:ietf:rfc:3986')
             tgt.value = string(value=('urn:oid:' + r))
+            if tgt.assigner is None:
+                tgt.assigner = malac.models.fhir.r4.Reference()
+            a = tgt.assigner
+            a.display = string(value='Bundesministerium für Gesundheit')
     e = src.extension
     if e is not None:
         tgt.value = string(value=e)
-    s = src.assigningAuthorityName
-    if s is not None:
-        if tgt.assigner is None:
-            tgt.assigner = malac.models.fhir.r4.Reference()
-        a = tgt.assigner
-        a.display = string(value=s)
     displayable = src.displayable
     if displayable is not None:
         ext = malac.models.fhir.r4.Extension()
@@ -85540,17 +84304,17 @@ def CDCoding(src, tgt):
 
 def CECodeableConcept(src, tgt):
     Any(src, tgt)
-    if src.originalText is not None:
-        tgt.text = malac.models.fhir.r4.string()
-        EDstring(src.originalText, tgt.text)
     if src.nullFlavor is None:
         coding = malac.models.fhir.r4.Coding()
         tgt.coding.append(coding)
         CECoding(src, coding)
     if src.nullFlavor is not None:
-        tgt_extension = malac.models.fhir.r4.Extension()
-        tgt.extension.append(tgt_extension)
-        CdaNullFlavorToFhirNullFlavor(src, tgt_extension)
+        src_nullFlavor = src.nullFlavor
+        if src_nullFlavor is not None:
+            tgt_coding = malac.models.fhir.r4.Coding()
+            tgt.coding.append(tgt_coding)
+            tgt_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
+            tgt_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(cda_manufacturedMaterial_code_nullFlavor if isinstance(cda_manufacturedMaterial_code_nullFlavor, str) else cda_manufacturedMaterial_code_nullFlavor.value), out_type='code'))
     for translation in src.translation or []:
         coding = malac.models.fhir.r4.Coding()
         tgt.coding.append(coding)
@@ -85582,15 +84346,16 @@ def CdaPersonNameCompilationToFhirHumanName(cda_name, fhir_humanName):
             if cda_name_item_prefix.qualifier is not None:
                 qualifier = cda_name_item_prefix.qualifier
                 if qualifier is not None:
-                    extension = []
-                    for _fhir_humanName_prefix in fhir_humanName_prefix:
-                        _extension = malac.models.fhir.r4.Extension()
-                        _fhir_humanName_prefix.extension.append(_extension)
-                        extension.append(_extension)
-                    for _extension in extension:
-                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                    for _extension in extension:
-                        _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                    if qualifier != 'TITLE':
+                        extension = []
+                        for _fhir_humanName_prefix in fhir_humanName_prefix:
+                            _extension = malac.models.fhir.r4.Extension()
+                            _fhir_humanName_prefix.extension.append(_extension)
+                            extension.append(_extension)
+                        for _extension in extension:
+                            _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                        for _extension in extension:
+                            _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
         for cda_name_item_given in cda_name_item.given or []:
             fhir_humanName_given = [string(value=v1) for v1 in fhirpath_utils.get(cda_name_item_given,'valueOf_',strip=True)]
             for v2 in fhir_humanName_given:
@@ -85598,30 +84363,32 @@ def CdaPersonNameCompilationToFhirHumanName(cda_name, fhir_humanName):
             if cda_name_item_given.qualifier is not None:
                 qualifier = cda_name_item_given.qualifier
                 if qualifier is not None:
-                    extension = []
-                    for _fhir_humanName_given in fhir_humanName_given:
-                        _extension = malac.models.fhir.r4.Extension()
-                        _fhir_humanName_given.extension.append(_extension)
-                        extension.append(_extension)
-                    for _extension in extension:
-                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                    for _extension in extension:
-                        _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                    if qualifier != 'TITLE':
+                        extension = []
+                        for _fhir_humanName_given in fhir_humanName_given:
+                            _extension = malac.models.fhir.r4.Extension()
+                            _fhir_humanName_given.extension.append(_extension)
+                            extension.append(_extension)
+                        for _extension in extension:
+                            _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                        for _extension in extension:
+                            _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
         for cda_name_item_family in cda_name_item.family or []:
             fhir_humanName_family = string(value=fhirpath.single(fhirpath_utils.get(cda_name_item_family,'valueOf_',strip=True)))
             fhir_humanName.family = fhir_humanName_family
             if cda_name_item_family.qualifier is not None:
                 qualifier = cda_name_item_family.qualifier
                 if qualifier is not None:
-                    if fhir_humanName_family is not None:
-                        extension = malac.models.fhir.r4.Extension()
-                        fhir_humanName_family.extension.append(extension)
-                    else:
-                        extension = None
-                    if extension is not None:
-                        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                    if extension is not None:
-                        extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                    if qualifier != 'TITLE':
+                        if fhir_humanName_family is not None:
+                            extension = malac.models.fhir.r4.Extension()
+                            fhir_humanName_family.extension.append(extension)
+                        else:
+                            extension = None
+                        if extension is not None:
+                            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                        if extension is not None:
+                            extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
         for cda_name_item_suffix in cda_name_item.suffix or []:
             fhir_humanName_suffix = [string(value=v1) for v1 in fhirpath_utils.get(cda_name_item_suffix,'valueOf_',strip=True)]
             for v2 in fhir_humanName_suffix:
@@ -85629,15 +84396,16 @@ def CdaPersonNameCompilationToFhirHumanName(cda_name, fhir_humanName):
             if cda_name_item_suffix.qualifier is not None:
                 qualifier = cda_name_item_suffix.qualifier
                 if qualifier is not None:
-                    extension = []
-                    for _fhir_humanName_suffix in fhir_humanName_suffix:
-                        _extension = malac.models.fhir.r4.Extension()
-                        _fhir_humanName_suffix.extension.append(_extension)
-                        extension.append(_extension)
-                    for _extension in extension:
-                        _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                    for _extension in extension:
-                        _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                    if qualifier != 'TITLE':
+                        extension = []
+                        for _fhir_humanName_suffix in fhir_humanName_suffix:
+                            _extension = malac.models.fhir.r4.Extension()
+                            _fhir_humanName_suffix.extension.append(_extension)
+                            extension.append(_extension)
+                        for _extension in extension:
+                            _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                        for _extension in extension:
+                            _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
 
 def CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient):
     cda_name_item = cda_patient_name
@@ -85650,15 +84418,16 @@ def CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient):
             if cda_name_item_family.qualifier is not None:
                 qualifier = cda_name_item_family.qualifier
                 if qualifier is not None:
-                    if fhir_humanName_family is not None:
-                        extension = malac.models.fhir.r4.Extension()
-                        fhir_humanName_family.extension.append(extension)
-                    else:
-                        extension = None
-                    if extension is not None:
-                        extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                    if extension is not None:
-                        extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                    if qualifier != 'TITLE':
+                        if fhir_humanName_family is not None:
+                            extension = malac.models.fhir.r4.Extension()
+                            fhir_humanName_family.extension.append(extension)
+                        else:
+                            extension = None
+                        if extension is not None:
+                            extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                        if extension is not None:
+                            extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
             cda_name_item = cda_patient_name
             if cda_name_item is not None:
                 cda_name_item_use = cda_name_item.use
@@ -85674,15 +84443,16 @@ def CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient):
                     if cda_name_item_prefix.qualifier is not None:
                         qualifier = cda_name_item_prefix.qualifier
                         if qualifier is not None:
-                            extension = []
-                            for _fhir_humanName_prefix in fhir_humanName_prefix:
-                                _extension = malac.models.fhir.r4.Extension()
-                                _fhir_humanName_prefix.extension.append(_extension)
-                                extension.append(_extension)
-                            for _extension in extension:
-                                _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                            for _extension in extension:
-                                _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                            if qualifier != 'TITLE':
+                                extension = []
+                                for _fhir_humanName_prefix in fhir_humanName_prefix:
+                                    _extension = malac.models.fhir.r4.Extension()
+                                    _fhir_humanName_prefix.extension.append(_extension)
+                                    extension.append(_extension)
+                                for _extension in extension:
+                                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                                for _extension in extension:
+                                    _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
                 for cda_name_item_given in cda_name_item.given or []:
                     fhir_humanName_given = [string(value=v1) for v1 in fhirpath_utils.get(cda_name_item_given,'valueOf_',strip=True)]
                     for v2 in fhir_humanName_given:
@@ -85690,15 +84460,16 @@ def CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient):
                     if cda_name_item_given.qualifier is not None:
                         qualifier = cda_name_item_given.qualifier
                         if qualifier is not None:
-                            extension = []
-                            for _fhir_humanName_given in fhir_humanName_given:
-                                _extension = malac.models.fhir.r4.Extension()
-                                _fhir_humanName_given.extension.append(_extension)
-                                extension.append(_extension)
-                            for _extension in extension:
-                                _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                            for _extension in extension:
-                                _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                            if qualifier != 'TITLE':
+                                extension = []
+                                for _fhir_humanName_given in fhir_humanName_given:
+                                    _extension = malac.models.fhir.r4.Extension()
+                                    _fhir_humanName_given.extension.append(_extension)
+                                    extension.append(_extension)
+                                for _extension in extension:
+                                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                                for _extension in extension:
+                                    _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
                 for cda_name_item_suffix in cda_name_item.suffix or []:
                     fhir_humanName_suffix = [string(value=v1) for v1 in fhirpath_utils.get(cda_name_item_suffix,'valueOf_',strip=True)]
                     for v2 in fhir_humanName_suffix:
@@ -85706,15 +84477,16 @@ def CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient):
                     if cda_name_item_suffix.qualifier is not None:
                         qualifier = cda_name_item_suffix.qualifier
                         if qualifier is not None:
-                            extension = []
-                            for _fhir_humanName_suffix in fhir_humanName_suffix:
-                                _extension = malac.models.fhir.r4.Extension()
-                                _fhir_humanName_suffix.extension.append(_extension)
-                                extension.append(_extension)
-                            for _extension in extension:
-                                _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
-                            for _extension in extension:
-                                _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
+                            if qualifier != 'TITLE':
+                                extension = []
+                                for _fhir_humanName_suffix in fhir_humanName_suffix:
+                                    _extension = malac.models.fhir.r4.Extension()
+                                    _fhir_humanName_suffix.extension.append(_extension)
+                                    extension.append(_extension)
+                                for _extension in extension:
+                                    _extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier'
+                                for _extension in extension:
+                                    _extension.valueCode = string(value=translate_single('ELGAEntityNamePartQualifierFHIRNamePartQualifier', code=(qualifier if isinstance(qualifier, str) else qualifier.value), out_type='code'))
 
 def CdaOrganizationCompilationToFhirOrganization(cda_organization, fhir_organization):
     for id_ in cda_organization.id or []:
@@ -85735,13 +84507,12 @@ def CdaAdressCompilationToFhirAustrianAddress(cda_address, fhir_address):
     Any(cda_address, fhir_address)
     cda_use = cda_address.use
     if cda_use is not None:
-        fhir_address.use = string(value=translate_single('ELGA2FHIRAddressUse', code=(cda_use if isinstance(cda_use, str) else cda_use.value), out_type='code'))
         if cda_use != 'PHYS' and cda_use != 'PST':
-            fhir_address.type_ = string(value='both')
-        if cda_use == 'PHYS':
-            fhir_address.type_ = string(value='physical')
-        if cda_use == 'PST':
-            fhir_address.type_ = string(value='postal')
+            fhir_address.use = string(value=translate_single('ELGA2FHIRAddressUse', code=(cda_use if isinstance(cda_use, str) else cda_use.value), out_type='code'))
+    if fhirpath.single(fhirpath_utils.equals([cda_address.use], '==', ['PHYS'])):
+        fhir_address.type_ = string(value='physical')
+    if fhirpath.single(fhirpath_utils.equals([cda_address.use], '==', ['PST'])):
+        fhir_address.type_ = string(value='postal')
     cda_address_item = cda_address
     if cda_address_item is not None:
         for cda_postalCode in cda_address_item.postalCode or []:
@@ -86066,17 +84837,1777 @@ def RTORatio(src, tgt):
             tgt_denominator = tgt.denominator
             PQQuantity(src_denominator, tgt_denominator)
 
-def CdaNullFlavorToFhirNullFlavor(src, tgt):
+def CdaNullFlavorToFhirDataAbsentReason(src, tgt):
     Any(src, tgt)
     cda_nullFlavor = src.nullFlavor
     if cda_nullFlavor is not None:
-        tgt.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-nullFlavor'
-        fhir_extension_code = malac.models.fhir.r4.code()
-        tgt.valueCode = fhir_extension_code
-        fhir_extension_code.value = str(cda_nullFlavor)
+        tgt.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
+        tgt.valueCode = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(cda_nullFlavor if isinstance(cda_nullFlavor, str) else cda_nullFlavor.value), out_type='code'))
 
 def Any(src, tgt):
     pass
+
+def CdaLabToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle):
+    fhir_bundle_entry_1 = malac.models.fhir.r4.Bundle_Entry()
+    fhir_bundle.entry.append(fhir_bundle_entry_1)
+    fhir_diagnosticReport = malac.models.fhir.r4.DiagnosticReport()
+    fhir_bundle_entry_1.resource = malac.models.fhir.r4.ResourceContainer(DiagnosticReport=fhir_diagnosticReport)
+    fhir_diagnosticReport_id = string(value=str(uuid.uuid4()))
+    fhir_diagnosticReport.id = fhir_diagnosticReport_id
+    fhir_bundle_entry_1.fullUrl = uri(value=('urn:uuid:' + fhir_diagnosticReport_id.value))
+    fhir_bundle_entry_2 = malac.models.fhir.r4.Bundle_Entry()
+    fhir_bundle.entry.append(fhir_bundle_entry_2)
+    fhir_serviceRequest = malac.models.fhir.r4.ServiceRequest()
+    fhir_bundle_entry_2.resource = malac.models.fhir.r4.ResourceContainer(ServiceRequest=fhir_serviceRequest)
+    fhir_serviceRequest_id = string(value=str(uuid.uuid4()))
+    fhir_serviceRequest.id = fhir_serviceRequest_id
+    fhir_bundle_entry_2.fullUrl = uri(value=('urn:uuid:' + fhir_serviceRequest_id.value))
+    if fhir_composition.id is None:
+        fhir_composition.id = malac.models.fhir.r4.string()
+    fhir_composition_id = fhir_composition.id
+    fhir_diagnosticReport_extension = malac.models.fhir.r4.Extension()
+    fhir_diagnosticReport.extension.append(fhir_diagnosticReport_extension)
+    fhir_diagnosticReport_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-DiagnosticReport.composition'
+    fhir_diagnosticReport_composition_reference = malac.models.fhir.r4.Reference()
+    fhir_diagnosticReport_extension.valueReference = fhir_diagnosticReport_composition_reference
+    fhir_diagnosticReport_composition_reference.reference = string(value=('urn:uuid:' + fhir_composition_id.value))
+    fhir_diagnosticReport_composition_reference.type_ = uri(value='Composition')
+    fhir_diagnosticReport_basedOn_reference = malac.models.fhir.r4.Reference()
+    fhir_diagnosticReport.basedOn.append(fhir_diagnosticReport_basedOn_reference)
+    fhir_diagnosticReport_basedOn_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
+    fhir_diagnosticReport_basedOn_reference.type_ = uri(value='ServiceRequest')
+    if fhir_patient.id is None:
+        fhir_patient.id = malac.models.fhir.r4.string()
+    fhir_patient_id = fhir_patient.id
+    fhir_diagnosticReport_subject_reference = malac.models.fhir.r4.Reference()
+    fhir_diagnosticReport.subject = fhir_diagnosticReport_subject_reference
+    fhir_diagnosticReport_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+    fhir_diagnosticReport_subject_reference.type_ = uri(value='Patient')
+    fhir_serviceRequest_subject_reference = malac.models.fhir.r4.Reference()
+    fhir_serviceRequest.subject = fhir_serviceRequest_subject_reference
+    fhir_serviceRequest_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+    fhir_serviceRequest_subject_reference.type_ = uri(value='Patient')
+    CdaLabHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle)
+    CdaLabHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport)
+    CdaLabHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_diagnosticReport, fhir_serviceRequest)
+    cda_component = cda.component
+    if cda_component is not None:
+        cda_structuredBody = cda_component.structuredBody
+        if cda_structuredBody is not None:
+            CdaLabBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle)
+
+def CdaLabHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle):
+    CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle)
+    cda_code = cda.code
+    if cda_code is not None:
+        code_code = cda_code.code
+        if code_code is not None:
+            fhir_composition_category = malac.models.fhir.r4.CodeableConcept()
+            fhir_composition.category.append(fhir_composition_category)
+            fhir_composition_category.coding.append(translate_single('cda-lab-clinicaldocument-code-2-fhir-category', code=(code_code if isinstance(code_code, str) else code_code.value), out_type='Coding'))
+    cda_code = cda.code
+    if cda_code is not None:
+        for translation in cda_code.translation or []:
+            fhir_composition.type_ = malac.models.fhir.r4.CodeableConcept()
+            CDCodeableConcept(translation, fhir_composition.type_)
+        if not cda_code.translation:
+            type_coding = malac.models.fhir.r4.CodeableConcept()
+            fhir_composition.type_ = type_coding
+            coding_coding = malac.models.fhir.r4.Coding()
+            type_coding.coding.append(coding_coding)
+            coding_coding.system = uri(value='http://loinc.org')
+            coding_coding.code = string(value='11502-2')
+
+def CdaLabHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport):
+    cda_code = cda.code
+    if cda_code is not None:
+        code_code = cda_code.code
+        if code_code is not None:
+            fhir_diagnosticReport_category = malac.models.fhir.r4.CodeableConcept()
+            fhir_diagnosticReport.category.append(fhir_diagnosticReport_category)
+            fhir_diagnosticReport_category.coding.append(translate_single('cda-lab-clinicaldocument-code-2-fhir-category', code=(code_code if isinstance(code_code, str) else code_code.value), out_type='Coding'))
+    cda_code = cda.code
+    if cda_code is not None:
+        for translation in cda_code.translation or []:
+            fhir_diagnosticReport.code = malac.models.fhir.r4.CodeableConcept()
+            CDCodeableConcept(translation, fhir_diagnosticReport.code)
+        if not cda_code.translation:
+            code_coding = malac.models.fhir.r4.CodeableConcept()
+            fhir_diagnosticReport.code = code_coding
+            coding_coding = malac.models.fhir.r4.Coding()
+            code_coding.coding.append(coding_coding)
+            coding_coding.system = uri(value='http://loinc.org')
+            coding_coding.code = string(value='11502-2')
+    cda_statusCode = cda.statusCode
+    if cda_statusCode is not None:
+        if fhirpath_utils.get(cda,'sdtcStatusCode'):
+            cda_code = cda_statusCode.code
+            if cda_code is not None:
+                fhir_diagnosticReport.status = string(value=translate_single('cda-sdtc-statuscode-2-fhir-diagnosticreport-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
+    if not fhirpath_utils.get(cda,'sdtcStatusCode'):
+        fhir_diagnosticReport.status = string(value='final')
+    if cda.practiceSettingCode is not None:
+        fhir_diagnosticReport.category.append(malac.models.fhir.r4.CodeableConcept())
+        CDCodeableConcept(cda.practiceSettingCode, fhir_diagnosticReport.category[-1])
+    cda_effectiveTime = cda.effectiveTime
+    if cda_effectiveTime is not None:
+        fhir_diagnosticReport_effective = malac.models.fhir.r4.dateTime()
+        fhir_diagnosticReport.effectiveDateTime = fhir_diagnosticReport_effective
+        TSDateTime(cda_effectiveTime, fhir_diagnosticReport_effective)
+    if cda.setId is not None:
+        fhir_diagnosticReport.identifier.append(malac.models.fhir.r4.Identifier())
+        II(cda.setId, fhir_diagnosticReport.identifier[-1])
+
+def CdaLabHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_diagnosticReport, fhir_serviceRequest):
+    CdaHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle)
+    cda_dataEnterer = cda.dataEnterer
+    if cda_dataEnterer is not None:
+        cda_assignedEntity = cda_dataEnterer.assignedEntity
+        if cda_assignedEntity is not None:
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_diagnosticReport_performer = malac.models.fhir.r4.Reference()
+            fhir_diagnosticReport.performer.append(fhir_diagnosticReport_performer)
+            fhir_diagnosticReport_performer.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_diagnosticReport_performer.type_ = uri(value='PractitionerRole')
+            performer_function_extension = malac.models.fhir.r4.Extension()
+            fhir_diagnosticReport_performer.extension.append(performer_function_extension)
+            performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction'
+            performer_function_codeableConcept = malac.models.fhir.r4.CodeableConcept()
+            performer_function_extension.valueCodeableConcept = performer_function_codeableConcept
+            performer_function_coding = malac.models.fhir.r4.Coding()
+            performer_function_codeableConcept.coding.append(performer_function_coding)
+            performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
+            performer_function_coding.code = string(value='ENT')
+            CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_orderingProvider in cda.participant or []:
+        if cda_orderingProvider.typeCode == 'REF' and cda_orderingProvider.nullFlavor is None:
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_serviceRequest_requester_reference = malac.models.fhir.r4.Reference()
+            fhir_serviceRequest.requester = fhir_serviceRequest_requester_reference
+            fhir_serviceRequest_requester_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_serviceRequest_requester_reference.type_ = uri(value='PractitionerRole')
+            cda_orderingProvider_time = cda_orderingProvider.time
+            if cda_orderingProvider_time is not None:
+                if cda_orderingProvider_time.nullFlavor is None:
+                    v = cda_orderingProvider_time.value
+                    if v is not None:
+                        fhir_serviceRequest.authoredOn = dateTime(value=dateutil.parse(v).isoformat())
+            cda_associatedEntity = cda_orderingProvider.associatedEntity
+            if cda_associatedEntity is not None:
+                CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_participant in cda.participant or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_participant,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.1.20' or v1.root == '1.2.40.0.34.11.1.1.1')]):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            if cda_participant.functionCode is not None:
+                fhir_practitionerRole.specialty.append(malac.models.fhir.r4.CodeableConcept())
+                transform_default(cda_participant.functionCode, fhir_practitionerRole.specialty[-1])
+            cda_associatedEntity = cda_participant.associatedEntity
+            if cda_associatedEntity is not None:
+                fhir_diagnosticReport_performer = malac.models.fhir.r4.Reference()
+                fhir_diagnosticReport.performer.append(fhir_diagnosticReport_performer)
+                fhir_diagnosticReport_performer.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+                fhir_diagnosticReport_performer.type_ = uri(value='PractitionerRole')
+                performer_function_extension = malac.models.fhir.r4.Extension()
+                fhir_diagnosticReport_performer.extension.append(performer_function_extension)
+                performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction'
+                performer_function_codeableConcept = malac.models.fhir.r4.CodeableConcept()
+                performer_function_extension.valueCodeableConcept = performer_function_codeableConcept
+                performer_function_coding = malac.models.fhir.r4.Coding()
+                performer_function_codeableConcept.coding.append(performer_function_coding)
+                performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
+                performer_function_coding.code = string(value='CALLBCK')
+                CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_inFulFillmentOf in cda.inFulfillmentOf or []:
+        cda_inFulFillmentOf_order = cda_inFulFillmentOf.order
+        if cda_inFulFillmentOf_order is not None:
+            for id_ in cda_inFulFillmentOf_order.id or []:
+                fhir_serviceRequest.identifier.append(malac.models.fhir.r4.Identifier())
+                II(id_, fhir_serviceRequest.identifier[-1])
+            fhir_serviceRequest.status = string(value='completed')
+            fhir_serviceRequest.intent = string(value='order')
+    cda_componentOf = cda.componentOf
+    if cda_componentOf is not None:
+        cda_encompassingEncounter = cda_componentOf.encompassingEncounter
+        if cda_encompassingEncounter is not None:
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_encounter = malac.models.fhir.r4.Encounter()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Encounter=fhir_encounter)
+            fhir_encounter_id = string(value=str(uuid.uuid4()))
+            fhir_encounter.id = fhir_encounter_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_encounter_id.value))
+            fhir_composition_encounter_reference = malac.models.fhir.r4.Reference()
+            fhir_composition.encounter = fhir_composition_encounter_reference
+            fhir_composition_encounter_reference.reference = string(value=('urn:uuid:' + fhir_encounter_id.value))
+            fhir_composition_encounter_reference.type_ = uri(value='Encounter')
+            fhir_diagnosticReport_encounter_reference = malac.models.fhir.r4.Reference()
+            fhir_diagnosticReport.encounter = fhir_diagnosticReport_encounter_reference
+            fhir_diagnosticReport_encounter_reference.reference = string(value=('urn:uuid:' + fhir_encounter_id.value))
+            fhir_diagnosticReport_encounter_reference.type_ = uri(value='Encounter')
+            CdaEncompassingEncounterToFhirEncounter(cda_encompassingEncounter, fhir_encounter, fhir_bundle)
+
+def CdaLabBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_serviceRequest, fhir_bundle):
+    CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle)
+    for cda_component in cda_structuredBody.component or []:
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '46239-0' and v1.codeSystem == '2.16.840.1.113883.6.1')], fhirpath_utils.bool_or([v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.114'], [v3 for v3 in fhirpath_utils.get(cda_section,'templateId') if v3.root == '1.2.40.0.34.11.4.2.4']))):
+                if cda_section.text is None:
+                    cda_section.text = malac.models.cda.at_ext.StrucDoc_Text()
+                cda_section_text = cda_section.text
+                fhir_serviceRequest_reasonCode = malac.models.fhir.r4.CodeableConcept()
+                fhir_serviceRequest.reasonCode.append(fhir_serviceRequest_reasonCode)
+                fhir_serviceRequest_reasonCode_coding = malac.models.fhir.r4.Coding()
+                fhir_serviceRequest_reasonCode.coding.append(fhir_serviceRequest_reasonCode_coding)
+                fhir_serviceRequest_reasonCode_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                fhir_serviceRequest_reasonCode_coding.code = string(value='OTH')
+                fhir_serviceRequest_reasonCode.text = string(value=str(cda_section_text))
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '400999005' and v1.codeSystem == '2.16.840.1.113883.6.96')], [v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.15'])):
+                cda_section_text = cda_section.text
+                if cda_section_text is not None:
+                    if fhir_serviceRequest.code is None:
+                        fhir_serviceRequest.code = malac.models.fhir.r4.CodeableConcept()
+                    fhir_serviceRequest_code = fhir_serviceRequest.code
+                    fhir_serviceRequest_code.text = string(value=str(cda_section_text))
+                    if len(cda_section.entry) > 0:
+                        cda_section_entry = cda_section.entry[0]
+                        cda_section_entry_procedure = cda_section_entry.procedure
+                        if cda_section_entry_procedure is not None:
+                            cda_section_entry_procedure_code = cda_section_entry_procedure.code
+                            if cda_section_entry_procedure_code is not None:
+                                if cda_section_entry_procedure_code.nullFlavor is None:
+                                    fhir_serviceRequest_code_default_coding = malac.models.fhir.r4.Coding()
+                                    fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_default_coding)
+                                    fhir_serviceRequest_code_default_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                                    fhir_serviceRequest_code_default_coding.code = string(value='OTH')
+                                    fhir_serviceRequest_code_coding = malac.models.fhir.r4.Coding()
+                                    fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_coding)
+                                    CDCoding(cda_section_entry_procedure_code, fhir_serviceRequest_code_coding)
+                            cda_section_entry_procedure_code = cda_section_entry_procedure.code
+                            if cda_section_entry_procedure_code is not None:
+                                if cda_section_entry_procedure_code.nullFlavor is not None:
+                                    for code_translation in cda_section_entry_procedure_code.translation or []:
+                                        fhir_serviceRequest_code_default_coding = malac.models.fhir.r4.Coding()
+                                        fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_default_coding)
+                                        fhir_serviceRequest_code_default_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                                        fhir_serviceRequest_code_default_coding.code = string(value='OTH')
+                                        fhir_serviceRequest_code_coding = malac.models.fhir.r4.Coding()
+                                        fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_coding)
+                                        CDCoding(code_translation, fhir_serviceRequest_code_coding)
+                    for cda_section_entry in cda_section.entry[1:]:
+                        cda_section_entry_procedure = cda_section_entry.procedure
+                        if cda_section_entry_procedure is not None:
+                            if cda_section_entry_procedure.code is not None:
+                                if not [v2 for v1 in [cda_section_entry_procedure.code] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                                    fhir_serviceRequest.orderDetail.append(malac.models.fhir.r4.CodeableConcept())
+                                    CDCodeableConcept(cda_section_entry_procedure.code, fhir_serviceRequest.orderDetail[-1])
+                            cda_section_entry_procedure_code = cda_section_entry_procedure.code
+                            if cda_section_entry_procedure_code is not None:
+                                if cda_section_entry_procedure_code.nullFlavor is not None:
+                                    for translation in cda_section_entry_procedure_code.translation or []:
+                                        fhir_serviceRequest.orderDetail.append(malac.models.fhir.r4.CodeableConcept())
+                                        CDCodeableConcept(translation, fhir_serviceRequest.orderDetail[-1])
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '400999005' and v1.codeSystem == '2.16.840.1.113883.6.96')], [v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.112'])):
+                if cda_section.text is None:
+                    cda_section.text = malac.models.cda.at_ext.StrucDoc_Text()
+                cda_section_text = cda_section.text
+                if fhir_serviceRequest.code is None:
+                    fhir_serviceRequest.code = malac.models.fhir.r4.CodeableConcept()
+                fhir_serviceRequest_code = fhir_serviceRequest.code
+                fhir_serviceRequest_code_coding = malac.models.fhir.r4.Coding()
+                fhir_serviceRequest_code.coding.append(fhir_serviceRequest_code_coding)
+                fhir_serviceRequest_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                fhir_serviceRequest_code_coding.code = string(value='OTH')
+                fhir_serviceRequest_code.text = string(value=str(cda_section_text))
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single(fhirpath_utils.bool_or(fhirpath_utils.bool_and([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '10164-2' and v1.codeSystem == '2.16.840.1.113883.6.1')], [v2 for v2 in fhirpath_utils.get(cda_section,'templateId') if v2.root == '1.2.40.0.34.6.0.11.2.111']), [v3 for v3 in fhirpath_utils.get(cda_section,'code') if (v3.code == '20' and v3.codeSystem == '1.2.40.0.34.5.11')])):
+                fhir_section = malac.models.fhir.r4.Composition_Section()
+                fhir_composition.section.append(fhir_section)
+                CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == 'BEIL' and v1.codeSystem == '1.2.40.0.34.5.40')]):
+                CdaLabBeilagenSectionToFhirDiagnosticReportMedia(cda_section, fhir_diagnosticReport, fhir_bundle, fhir_patient)
+    if len([v1 for v1 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v1,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) == 1:
+        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+        fhir_bundle.entry.append(fhir_bundle_entry)
+        fhir_specimen = malac.models.fhir.r4.Specimen()
+        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Specimen=fhir_specimen)
+        fhir_specimen_uuid = string(value=str(uuid.uuid4()))
+        fhir_specimen.id = fhir_specimen_uuid
+        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_uuid.value))
+        for cda_component in cda_structuredBody.component or []:
+            cda_section = cda_component.section
+            if cda_section is not None:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '10' and v1.codeSystem == '1.2.40.0.34.5.11')]):
+                    CdaLabSpecimenSectionToFhirSpecimenWithSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_specimen, fhir_bundle, fhir_serviceRequest)
+            cda_section = cda_component.section
+            if cda_section is not None:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.2.102' or v1.root == '1.3.6.1.4.1.19376.1.3.3.2.1')]):
+                    fhir_section = malac.models.fhir.r4.Composition_Section()
+                    fhir_composition.section.append(fhir_section)
+                    CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_specimen, fhir_serviceRequest)
+    if len([v1 for v1 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v1,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) == 0 or len([v2 for v2 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v2,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) > 1:
+        for cda_component in cda_structuredBody.component or []:
+            cda_section = cda_component.section
+            if cda_section is not None:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '10' and v1.codeSystem == '1.2.40.0.34.5.11')]):
+                    CdaLabSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
+            cda_section = cda_component.section
+            if cda_section is not None:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.2.102' or v1.root == '1.3.6.1.4.1.19376.1.3.3.2.1')]):
+                    fhir_section = malac.models.fhir.r4.Composition_Section()
+                    fhir_composition.section.append(fhir_section)
+                    CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
+
+def CdaLabSpecimenSectionToFhirSpecimenWithSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_specimen, fhir_bundle, fhir_serviceRequest):
+    for cda_section_entry in cda_section.entry or []:
+        cda_act = cda_section_entry.act
+        if cda_act is not None:
+            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_act,'code') if v1.code == '10']):
+                for cda_entryRelationship in cda_act.entryRelationship or []:
+                    cda_procedure = cda_entryRelationship.procedure
+                    if cda_procedure is not None:
+                        CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
+
+def CdaLabSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
+    for cda_section_entry in cda_section.entry or []:
+        cda_act = cda_section_entry.act
+        if cda_act is not None:
+            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_act,'code') if v1.code == '10']):
+                for cda_entryRelationship in cda_act.entryRelationship or []:
+                    cda_procedure = cda_entryRelationship.procedure
+                    if cda_procedure is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_specimen = malac.models.fhir.r4.Specimen()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Specimen=fhir_specimen)
+                        fhir_specimen_id = string(value=str(uuid.uuid4()))
+                        fhir_specimen.id = fhir_specimen_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_id.value))
+                        CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
+
+def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_specimen, fhir_serviceRequest):
+    CdaLabSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+    for cda_section_entry in cda_section.entry or []:
+        cda_act = cda_section_entry.act
+        if cda_act is not None:
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'procedure','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.2']):
+                    cda_procedure = cda_entryRelationship.procedure
+                    if cda_procedure is not None:
+                        CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1']):
+                    cda_notification_organizer = cda_entryRelationship.organizer
+                    if cda_notification_organizer is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_battery_observation = malac.models.fhir.r4.Observation()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
+                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
+                        fhir_battery_observation.id = fhir_battery_observation_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                        fhir_section.entry.append(fhir_section_entry_reference)
+                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference.type_ = uri(value='Observation')
+                        CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
+                        CdaLabOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
+                        for cda_component in cda_notification_organizer.component or []:
+                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1']):
+                                cda_observation = cda_component.observation
+                                if cda_observation is not None:
+                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                                    fhir_bundle.entry.append(fhir_bundle_entry)
+                                    fhir_observation = malac.models.fhir.r4.Observation()
+                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
+                                    fhir_observation_id = string(value=str(uuid.uuid4()))
+                                    fhir_observation.id = fhir_observation_id
+                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
+                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
+                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
+                                    CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+                        for cda_component in cda_notification_organizer.component or []:
+                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.170']):
+                                cda_observation = cda_component.observation
+                                if cda_observation is not None:
+                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                                    fhir_bundle.entry.append(fhir_bundle_entry)
+                                    fhir_observation = malac.models.fhir.r4.Observation()
+                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
+                                    fhir_observation_id = string(value=str(uuid.uuid4()))
+                                    fhir_observation.id = fhir_observation_id
+                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
+                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
+                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
+                                    CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
+                    cda_laboratory_observation = cda_entryRelationship.observation
+                    if cda_laboratory_observation is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_observation = malac.models.fhir.r4.Observation()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
+                        fhir_observation_id = string(value=str(uuid.uuid4()))
+                        fhir_observation.id = fhir_observation_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
+                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                        fhir_section.entry.append(fhir_section_entry_reference)
+                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                        fhir_section_entry_reference.type_ = uri(value='Observation')
+                        for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
+                            if cda_laboratory_observation.performer:
+                                CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
+                        if not fhirpath_utils.get(cda_entryRelationship.observation,'performer'):
+                            CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
+                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.4']):
+                    cda_laboratory_battery_organizer = cda_entryRelationship.organizer
+                    if cda_laboratory_battery_organizer is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_battery_observation = malac.models.fhir.r4.Observation()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
+                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
+                        fhir_battery_observation.id = fhir_battery_observation_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                        fhir_section.entry.append(fhir_section_entry_reference)
+                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference.type_ = uri(value='Observation')
+                        for cda_laboratory_battery_organizer_performer in cda_laboratory_battery_organizer.performer:
+                            if cda_laboratory_battery_organizer.performer:
+                                CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
+                        if not fhirpath_utils.get(cda_entryRelationship.organizer,'performer'):
+                            CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
+                        CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_specimen)
+                        for cda_component in cda_laboratory_battery_organizer.component or []:
+                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
+                                cda_laboratory_observation = cda_component.observation
+                                if cda_laboratory_observation is not None:
+                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                                    fhir_bundle.entry.append(fhir_bundle_entry)
+                                    fhir_laboratory_observation = malac.models.fhir.r4.Observation()
+                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_laboratory_observation)
+                                    fhir_laboratory_observation_id = string(value=str(uuid.uuid4()))
+                                    fhir_laboratory_observation.id = fhir_laboratory_observation_id
+                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
+                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
+                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
+                                    for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
+                                        if cda_laboratory_observation.performer:
+                                            CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
+                                    if not fhirpath_utils.get(cda_component.observation,'performer'):
+                                        CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_specimen)
+
+def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
+    CdaLabSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+    for cda_section_entry in cda_section.entry or []:
+        cda_act = cda_section_entry.act
+        if cda_act is not None:
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'procedure','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.2']):
+                    cda_procedure = cda_entryRelationship.procedure
+                    if cda_procedure is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_specimen = malac.models.fhir.r4.Specimen()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Specimen=fhir_specimen)
+                        fhir_specimen_id = string(value=str(uuid.uuid4()))
+                        fhir_specimen.id = fhir_specimen_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_id.value))
+                        CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1']):
+                    cda_notification_organizer = cda_entryRelationship.organizer
+                    if cda_notification_organizer is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_battery_observation = malac.models.fhir.r4.Observation()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
+                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
+                        fhir_battery_observation.id = fhir_battery_observation_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                        fhir_section.entry.append(fhir_section_entry_reference)
+                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference.type_ = uri(value='Observation')
+                        CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
+                        CdaLabOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
+                        for cda_component in cda_notification_organizer.component or []:
+                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1']):
+                                cda_observation = cda_component.observation
+                                if cda_observation is not None:
+                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                                    fhir_bundle.entry.append(fhir_bundle_entry)
+                                    fhir_observation = malac.models.fhir.r4.Observation()
+                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
+                                    fhir_observation_id = string(value=str(uuid.uuid4()))
+                                    fhir_observation.id = fhir_observation_id
+                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
+                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
+                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
+                                    CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+                        for cda_component in cda_notification_organizer.component or []:
+                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.170']):
+                                cda_observation = cda_component.observation
+                                if cda_observation is not None:
+                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                                    fhir_bundle.entry.append(fhir_bundle_entry)
+                                    fhir_observation = malac.models.fhir.r4.Observation()
+                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
+                                    fhir_observation_id = string(value=str(uuid.uuid4()))
+                                    fhir_observation.id = fhir_observation_id
+                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
+                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
+                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
+                                    CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
+                    cda_laboratory_observation = cda_entryRelationship.observation
+                    if cda_laboratory_observation is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_observation = malac.models.fhir.r4.Observation()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_observation)
+                        fhir_observation_id = string(value=str(uuid.uuid4()))
+                        fhir_observation.id = fhir_observation_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_observation_id.value))
+                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                        fhir_section.entry.append(fhir_section_entry_reference)
+                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                        fhir_section_entry_reference.type_ = uri(value='Observation')
+                        for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
+                            if cda_laboratory_observation.performer:
+                                CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
+                        if not fhirpath_utils.get(cda_entryRelationship.observation,'performer'):
+                            CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
+                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
+            for cda_entryRelationship in cda_act.entryRelationship or []:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.4']):
+                    cda_laboratory_battery_organizer = cda_entryRelationship.organizer
+                    if cda_laboratory_battery_organizer is not None:
+                        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                        fhir_bundle.entry.append(fhir_bundle_entry)
+                        fhir_battery_observation = malac.models.fhir.r4.Observation()
+                        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_battery_observation)
+                        fhir_battery_observation_id = string(value=str(uuid.uuid4()))
+                        fhir_battery_observation.id = fhir_battery_observation_id
+                        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                        fhir_section.entry.append(fhir_section_entry_reference)
+                        fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_section_entry_reference.type_ = uri(value='Observation')
+                        for cda_laboratory_battery_organizer_performer in cda_laboratory_battery_organizer.performer:
+                            if cda_laboratory_battery_organizer.performer:
+                                CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
+                        if not fhirpath_utils.get(cda_entryRelationship.organizer,'performer'):
+                            CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
+                        CdaLabOrganizerToFhirObservation(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient)
+                        for cda_component in cda_laboratory_battery_organizer.component or []:
+                            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
+                                cda_laboratory_observation = cda_component.observation
+                                if cda_laboratory_observation is not None:
+                                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                                    fhir_bundle.entry.append(fhir_bundle_entry)
+                                    fhir_laboratory_observation = malac.models.fhir.r4.Observation()
+                                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Observation=fhir_laboratory_observation)
+                                    fhir_laboratory_observation_id = string(value=str(uuid.uuid4()))
+                                    fhir_laboratory_observation.id = fhir_laboratory_observation_id
+                                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference = malac.models.fhir.r4.Reference()
+                                    fhir_battery_observation.hasMember.append(fhir_battery_observation_hasMember_reference)
+                                    fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_laboratory_observation_id.value))
+                                    fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
+                                    for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
+                                        if cda_laboratory_observation.performer:
+                                            CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
+                                    if not fhirpath_utils.get(cda_component.observation,'performer'):
+                                        CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle)
+
+def CdaLabBeilagenSectionToFhirDiagnosticReportMedia(cda_section, fhir_diagnosticReport, fhir_bundle, fhir_patient):
+    fhir_bundle_entry_01 = malac.models.fhir.r4.Bundle_Entry()
+    fhir_bundle.entry.append(fhir_bundle_entry_01)
+    fhir_media = malac.models.fhir.r4.Media()
+    fhir_bundle_entry_01.resource = malac.models.fhir.r4.ResourceContainer(Media=fhir_media)
+    fhir_media_id = string(value=str(uuid.uuid4()))
+    fhir_media.id = fhir_media_id
+    fhir_bundle_entry_01.fullUrl = uri(value=('urn:uuid:' + fhir_media_id.value))
+    fhir_diagnosticReport_media = malac.models.fhir.r4.DiagnosticReport_Media()
+    fhir_diagnosticReport.media.append(fhir_diagnosticReport_media)
+    fhir_diagnosticReport_media_link_reference = malac.models.fhir.r4.Reference()
+    fhir_diagnosticReport_media.link = fhir_diagnosticReport_media_link_reference
+    fhir_diagnosticReport_media_link_reference.reference = string(value=('urn:uuid:' + fhir_media_id.value))
+    fhir_diagnosticReport_media_link_reference.type_ = uri(value='Media')
+    for cda_section_entry in cda_section.entry or []:
+        cda_observationMedia = cda_section_entry.observationMedia
+        if cda_observationMedia is not None:
+            cda_observationMedia_ID = cda_observationMedia.ID
+            if cda_observationMedia_ID is not None:
+                fhir_media_identifier = malac.models.fhir.r4.Identifier()
+                fhir_media.identifier.append(fhir_media_identifier)
+                fhir_media_identifier.value = string(value=cda_observationMedia_ID)
+            fhir_media.status = string(value='completed')
+            cda_observationMedia_value = cda_observationMedia.value
+            if cda_observationMedia_value is not None:
+                if fhir_media.content is None:
+                    fhir_media.content = malac.models.fhir.r4.Attachment()
+                fhir_media_content = fhir_media.content
+                cda_mediaType = cda_observationMedia_value.mediaType
+                if cda_mediaType is not None:
+                    fhir_media_content.contentType = string(value=cda_mediaType)
+                fhir_media_content.data = base64Binary(value=re.sub("[^a-zA-Z0-9+/=]{1,}","",fhirpath.single(fhirpath_utils.get(cda_observationMedia_value,'valueOf_',strip=True))))
+
+def CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
+    fhir_specimen_patient_reference = malac.models.fhir.r4.Reference()
+    fhir_specimen.subject = fhir_specimen_patient_reference
+    if fhir_patient.id is None:
+        fhir_patient.id = malac.models.fhir.r4.string()
+    fhir_patient_id = fhir_patient.id
+    fhir_specimen_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+    fhir_specimen_patient_reference.type_ = uri(value='Patient')
+    fhir_diagnosticReport_specimen_reference = malac.models.fhir.r4.Reference()
+    fhir_diagnosticReport.specimen.append(fhir_diagnosticReport_specimen_reference)
+    if fhir_specimen.id is None:
+        fhir_specimen.id = malac.models.fhir.r4.string()
+    fhir_specimen_id = fhir_specimen.id
+    fhir_diagnosticReport_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
+    fhir_diagnosticReport_specimen_reference.type_ = uri(value='Specimen')
+    fhir_specimen_request_reference = malac.models.fhir.r4.Reference()
+    fhir_specimen.request.append(fhir_specimen_request_reference)
+    if fhir_serviceRequest.id is None:
+        fhir_serviceRequest.id = malac.models.fhir.r4.string()
+    fhir_serviceRequest_id = fhir_serviceRequest.id
+    fhir_specimen_request_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
+    fhir_specimen_request_reference.type_ = uri(value='ServiceRequest')
+    fhir_serviceRequest_specimen_reference = malac.models.fhir.r4.Reference()
+    fhir_serviceRequest.specimen.append(fhir_serviceRequest_specimen_reference)
+    fhir_serviceRequest_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
+    fhir_serviceRequest_specimen_reference.type_ = uri(value='Specimen')
+    if fhir_specimen.collection is None:
+        fhir_specimen.collection = malac.models.fhir.r4.Specimen_Collection()
+    fhir_specimen_collection = fhir_specimen.collection
+    cda_effectiveTime = cda_procedure.effectiveTime
+    if cda_effectiveTime is not None:
+        if cda_effectiveTime.value is not None:
+            fhir_specimen_collection_collected = malac.models.fhir.r4.dateTime()
+            fhir_specimen_collection.collectedDateTime = fhir_specimen_collection_collected
+            TSDateTime(cda_effectiveTime, fhir_specimen_collection_collected)
+    cda_effectiveTime = cda_procedure.effectiveTime
+    if cda_effectiveTime is not None:
+        if cda_effectiveTime.low is not None or cda_effectiveTime.high is not None:
+            fhir_specimen_collection_collected = malac.models.fhir.r4.Period()
+            fhir_specimen_collection.collectedPeriod = fhir_specimen_collection_collected
+            IVLTSPeriod(cda_effectiveTime, fhir_specimen_collection_collected)
+    for targetSiteCode in cda_procedure.targetSiteCode or []:
+        fhir_specimen_collection.bodySite = malac.models.fhir.r4.CodeableConcept()
+        CDCodeableConcept(targetSiteCode, fhir_specimen_collection.bodySite)
+    if fhir_specimen_collection.bodySite is None:
+        fhir_specimen_collection.bodySite = malac.models.fhir.r4.CodeableConcept()
+    fhir_specimen_collection_bodySite = fhir_specimen_collection.bodySite
+    fhir_specimen_collection_bodySite_coding = malac.models.fhir.r4.Coding()
+    fhir_specimen_collection_bodySite.coding.append(fhir_specimen_collection_bodySite_coding)
+    fhir_specimen_collection_bodySite_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+    fhir_specimen_collection_bodySite_coding.code = string(value='OTH')
+    for cda_procedure_performer in cda_procedure.performer or []:
+        cda_procedure_performer_assignedEntity = cda_procedure_performer.assignedEntity
+        if cda_procedure_performer_assignedEntity is not None:
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_specimen_collection_collector_reference = malac.models.fhir.r4.Reference()
+            fhir_specimen_collection.collector = fhir_specimen_collection_collector_reference
+            fhir_specimen_collection_collector_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_specimen_collection_collector_reference.type_ = uri(value='PractitionerRole')
+            CdaAssignedEntityToFhirPractitionerRole(cda_procedure_performer_assignedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_participant in cda_procedure.participant or []:
+        cda_participantRole = cda_participant.participantRole
+        if cda_participantRole is not None:
+            cda_playingEntity = cda_participantRole.playingEntity
+            if cda_playingEntity is not None:
+                for id_ in cda_participantRole.id or []:
+                    fhir_specimen.identifier.append(malac.models.fhir.r4.Identifier())
+                    II(id_, fhir_specimen.identifier[-1])
+                if cda_playingEntity.code is not None:
+                    fhir_specimen.type_ = malac.models.fhir.r4.CodeableConcept()
+                    transform_default(cda_playingEntity.code, fhir_specimen.type_)
+                if fhir_specimen.type_ is None:
+                    fhir_specimen.type_ = malac.models.fhir.r4.CodeableConcept()
+                fhir_specimen_type = fhir_specimen.type_
+                fhir_specimen_type_coding = malac.models.fhir.r4.Coding()
+                fhir_specimen_type.coding.append(fhir_specimen_type_coding)
+                fhir_specimen_type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                fhir_specimen_type_coding.code = string(value='OTH')
+    for cda_entryRelationship in cda_procedure.entryRelationship or []:
+        cda_act = cda_entryRelationship.act
+        if cda_act is not None:
+            cda_effectiveTime = cda_act.effectiveTime
+            if cda_effectiveTime is not None:
+                if cda_effectiveTime.value is not None:
+                    fhir_specimen_receivedTime = malac.models.fhir.r4.dateTime()
+                    fhir_specimen.receivedTime = fhir_specimen_receivedTime
+                    TSDateTime(cda_effectiveTime, fhir_specimen_receivedTime)
+
+def CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient):
+    fhir_category = malac.models.fhir.r4.CodeableConcept()
+    fhir_observation.category.append(fhir_category)
+    fhir_category_coding = malac.models.fhir.r4.Coding()
+    fhir_category.coding.append(fhir_category_coding)
+    fhir_category_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/observation-category')
+    fhir_category_coding.code = string(value='laboratory')
+    fhir_observation_subject_reference = malac.models.fhir.r4.Reference()
+    fhir_observation.subject = fhir_observation_subject_reference
+    if fhir_patient.id is None:
+        fhir_patient.id = malac.models.fhir.r4.string()
+    fhir_patient_id = fhir_patient.id
+    fhir_observation_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+    if cda_organizer.code is not None:
+        fhir_observation.category.append(malac.models.fhir.r4.CodeableConcept())
+        CDCodeableConcept(cda_organizer.code, fhir_observation.category[-1])
+    if cda_organizer.code is not None:
+        fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
+        CDCodeableConcept(cda_organizer.code, fhir_observation.code)
+    if fhirpath.single(fhirpath_utils.equals([v2 for v1 in [cda_organizer.code] for v2 in fhirpath_utils.get(v1,'codeSystem')], '!=', ['2.16.840.1.113883.6.1'])):
+        if fhir_observation.code is None:
+            fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
+        fhir_observation_code = fhir_observation.code
+        fhir_observation_code_coding = malac.models.fhir.r4.Coding()
+        fhir_observation_code.coding.append(fhir_observation_code_coding)
+        fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+        fhir_observation_code_coding.code = string(value='OTH')
+    if cda_organizer.code is None:
+        if fhir_observation.code is None:
+            fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
+        fhir_observation_code = fhir_observation.code
+        fhir_observation_code_coding = malac.models.fhir.r4.Coding()
+        fhir_observation_code.coding.append(fhir_observation_code_coding)
+        fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+        fhir_observation_code_coding.code = string(value='OTH')
+    organizer_statusCode = cda_organizer.statusCode
+    if organizer_statusCode is not None:
+        cda_code = organizer_statusCode.code
+        if cda_code is not None:
+            fhir_observation.status = string(value=translate_single('act-status-2-observation-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
+    cda_effectiveTime = cda_organizer.effectiveTime
+    if cda_effectiveTime is not None:
+        fhir_observation_effective = malac.models.fhir.r4.dateTime()
+        fhir_observation.effectiveDateTime = fhir_observation_effective
+        fhir_observation_effective_extenstion = malac.models.fhir.r4.Extension()
+        fhir_observation_effective.extension.append(fhir_observation_effective_extenstion)
+        fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
+        fhir_observation_effective_extenstion_code = malac.models.fhir.r4.code()
+        fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
+        fhir_observation_effective_extenstion_code.value = 'not-applicable'
+        TSDateTime(cda_effectiveTime, fhir_observation_effective)
+    if cda_organizer.effectiveTime is None:
+        fhir_observation_effective = malac.models.fhir.r4.dateTime()
+        fhir_observation.effectiveDateTime = fhir_observation_effective
+        fhir_observation_effective_extenstion = malac.models.fhir.r4.Extension()
+        fhir_observation_effective.extension.append(fhir_observation_effective_extenstion)
+        fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
+        fhir_observation_effective_extenstion_code = malac.models.fhir.r4.code()
+        fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
+        fhir_observation_effective_extenstion_code.value = 'not-applicable'
+
+def CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_organizer, fhir_observation, fhir_patient, fhir_specimen):
+    CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient)
+    fhir_observation_specimen_reference = malac.models.fhir.r4.Reference()
+    fhir_observation.specimen = fhir_observation_specimen_reference
+    if fhir_specimen.id is None:
+        fhir_specimen.id = malac.models.fhir.r4.string()
+    fhir_specimen_id = fhir_specimen.id
+    fhir_observation_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
+    fhir_observation_specimen_reference.type_ = uri(value='Specimen')
+
+def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle):
+    for id_ in cda_laboratory_observation.id or []:
+        fhir_observation.identifier.append(malac.models.fhir.r4.Identifier())
+        II(id_, fhir_observation.identifier[-1])
+    fhir_category = malac.models.fhir.r4.CodeableConcept()
+    fhir_observation.category.append(fhir_category)
+    fhir_category_coding = malac.models.fhir.r4.Coding()
+    fhir_category.coding.append(fhir_category_coding)
+    fhir_category_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/observation-category')
+    fhir_category_coding.code = string(value='laboratory')
+    fhir_observation_subject_reference = malac.models.fhir.r4.Reference()
+    fhir_observation.subject = fhir_observation_subject_reference
+    if fhir_patient.id is None:
+        fhir_patient.id = malac.models.fhir.r4.string()
+    fhir_patient_id = fhir_patient.id
+    fhir_observation_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+    cda_code = cda_laboratory_observation.code
+    if cda_code is not None:
+        if cda_code.nullFlavor is None:
+            cda_code_code = cda_code.code
+            if cda_code_code is not None:
+                mapping_result_coding = translate_single('elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions', code=(cda_code_code if isinstance(cda_code_code, str) else cda_code_code.value), out_type='Coding')
+                CdaLaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation)
+    cda_code = cda_laboratory_observation.code
+    if cda_code is not None:
+        if cda_code.nullFlavor is not None:
+            if fhir_observation.code is None:
+                fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation_code = fhir_observation.code
+            fhir_observation_code_coding = malac.models.fhir.r4.Coding()
+            fhir_observation_code.coding.append(fhir_observation_code_coding)
+            fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+            fhir_observation_code_coding.code = string(value='OTH')
+            for cda_code_translation in cda_code.translation:
+                CDCodeableConcept(cda_code_translation, fhir_observation_code)
+    if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96']))) == [True]]:
+        observation_statusCode = cda_laboratory_observation.statusCode
+        if observation_statusCode is not None:
+            cda_code = observation_statusCode.code
+            if cda_code is not None:
+                fhir_observation.status = string(value=translate_single('act-status-2-observation-status', code=(cda_code if isinstance(cda_code, str) else cda_code.value), out_type='code'))
+    cda_effectiveTime = cda_laboratory_observation.effectiveTime
+    if cda_effectiveTime is not None:
+        fhir_observation_effective = malac.models.fhir.r4.dateTime()
+        fhir_observation.effectiveDateTime = fhir_observation_effective
+        TSDateTime(cda_effectiveTime, fhir_observation_effective)
+    if fhirpath.single([v1 for v1 in [cda_laboratory_observation] if fhirpath_utils.bool_or([v2 for v2 in fhirpath_utils.get(v1,'effectiveTime') if v2.nullFlavor == 'UNK'], [(v1.effectiveTime is None)]) == [True]]):
+        fhir_observation_effective = malac.models.fhir.r4.dateTime()
+        fhir_observation.effectiveDateTime = fhir_observation_effective
+        fhir_observation_effective_extenstion = malac.models.fhir.r4.Extension()
+        fhir_observation_effective.extension.append(fhir_observation_effective_extenstion)
+        fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason'
+        fhir_observation_effective_extenstion_code = malac.models.fhir.r4.code()
+        fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
+        fhir_observation_effective_extenstion_code.value = 'unknown'
+    if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
+        CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'templateId') if (v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1' or v1.root == '1.3.6.1.4.1.19376.1.3.1.1.2')]):
+        CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
+    for cda_laboratory_observation_interpretationCode in cda_laboratory_observation.interpretationCode or []:
+        fhir_observation_interpretation = malac.models.fhir.r4.CodeableConcept()
+        fhir_observation.interpretation.append(fhir_observation_interpretation)
+        fhir_observation_interpretation_coding_01 = malac.models.fhir.r4.Coding()
+        fhir_observation_interpretation.coding.append(fhir_observation_interpretation_coding_01)
+        fhir_observation_interpretation_coding_02 = malac.models.fhir.r4.Coding()
+        fhir_observation_interpretation.coding.append(fhir_observation_interpretation_coding_02)
+        fhir_observation_interpretation_coding_02.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+        fhir_observation_interpretation_coding_02.code = string(value='OTH')
+        CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
+    for cda_participant in cda_laboratory_observation.participant or []:
+        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+        fhir_bundle.entry.append(fhir_bundle_entry)
+        fhir_practitioner = malac.models.fhir.r4.Practitioner()
+        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Practitioner=fhir_practitioner)
+        fhir_practitioner_id = string(value=str(uuid.uuid4()))
+        fhir_practitioner.id = fhir_practitioner_id
+        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
+        fhir_observation_performer_reference = malac.models.fhir.r4.Reference()
+        fhir_observation.performer.append(fhir_observation_performer_reference)
+        fhir_observation_performer_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
+        fhir_observation_performer_reference.type_ = uri(value='Practitioner')
+        performer_function_extension = malac.models.fhir.r4.Extension()
+        fhir_observation_performer_reference.extension.append(performer_function_extension)
+        performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction'
+        performer_function_codeableConcept = malac.models.fhir.r4.CodeableConcept()
+        performer_function_extension.valueCodeableConcept = performer_function_codeableConcept
+        performer_function_coding = malac.models.fhir.r4.Coding()
+        performer_function_codeableConcept.coding.append(performer_function_coding)
+        performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
+        performer_function_coding.code = string(value='AUTHEN')
+        cda_participantRole = cda_participant.participantRole
+        if cda_participantRole is not None:
+            for id__ in cda_participantRole.id or []:
+                fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
+                II(id__, fhir_practitioner.identifier[-1])
+            for addr in cda_participantRole.addr or []:
+                if addr.nullFlavor is None:
+                    fhir_practitioner.address.append(malac.models.fhir.r4.Address())
+                    CdaAdressCompilationToFhirAustrianAddress(addr, fhir_practitioner.address[-1])
+            for telecom in cda_participantRole.telecom or []:
+                if telecom.nullFlavor is None:
+                    fhir_practitioner.telecom.append(malac.models.fhir.r4.ContactPoint())
+                    TELContactPoint(telecom, fhir_practitioner.telecom[-1])
+            cda_playingEntity = cda_participantRole.playingEntity
+            if cda_playingEntity is not None:
+                for name in cda_playingEntity.name or []:
+                    fhir_practitioner.name.append(malac.models.fhir.r4.HumanName())
+                    CdaPersonNameCompilationToFhirHumanName(name, fhir_practitioner.name[-1])
+    for cda_entryRelationship in cda_laboratory_observation.entryRelationship or []:
+        if cda_entryRelationship.act is not None:
+            cda_act = cda_entryRelationship.act
+            if cda_act is not None:
+                fhir_observation_note = malac.models.fhir.r4.Annotation()
+                fhir_observation.note.append(fhir_observation_note)
+                cda_act_text = cda_act.text
+                if cda_act_text is not None:
+                    cda_reference = cda_act_text.reference
+                    if cda_reference is not None:
+                        fhir_observation_note.text = malac.models.fhir.r4.markdown(value=str(fhirpath.single(fhirpath_utils.get(cda_reference,'value'))))
+                for cda_author in cda_act.author or []:
+                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                    fhir_bundle.entry.append(fhir_bundle_entry)
+                    fhir_practitioner = malac.models.fhir.r4.Practitioner()
+                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Practitioner=fhir_practitioner)
+                    fhir_practitioner_id = string(value=str(uuid.uuid4()))
+                    fhir_practitioner.id = fhir_practitioner_id
+                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
+                    fhir_observation_note_authorReference = malac.models.fhir.r4.Reference()
+                    fhir_observation_note.authorReference = fhir_observation_note_authorReference
+                    fhir_observation_note_authorReference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
+                    fhir_observation_note_authorReference.type_ = uri(value='Practitioner')
+                    CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle)
+    for cda_observation_referenceRange in cda_laboratory_observation.referenceRange or []:
+        cda_referenceRange_observationRange = cda_observation_referenceRange.observationRange
+        if cda_referenceRange_observationRange is not None:
+            fhir_observation_referenceRange = malac.models.fhir.r4.Observation_ReferenceRange()
+            fhir_observation.referenceRange.append(fhir_observation_referenceRange)
+            cda_observationRange_value = cda_referenceRange_observationRange.value
+            if cda_observationRange_value is not None:
+                for low in (cda_observationRange_value.low if isinstance(cda_observationRange_value.low, list) else ([] if not cda_observationRange_value.low else [cda_observationRange_value.low])):
+                    if not fhirpath_utils.get(low,'nullFlavor'):
+                        fhir_observation_referenceRange.low = malac.models.fhir.r4.Quantity()
+                        transform_default(low, fhir_observation_referenceRange.low)
+                for high in (cda_observationRange_value.high if isinstance(cda_observationRange_value.high, list) else ([] if not cda_observationRange_value.high else [cda_observationRange_value.high])):
+                    if not fhirpath_utils.get(high,'nullFlavor'):
+                        fhir_observation_referenceRange.high = malac.models.fhir.r4.Quantity()
+                        transform_default(high, fhir_observation_referenceRange.high)
+            if fhir_observation_referenceRange.type_ is None:
+                fhir_observation_referenceRange.type_ = malac.models.fhir.r4.CodeableConcept()
+            fhir_referenceRange_type = fhir_observation_referenceRange.type_
+            fhir_type_coding = malac.models.fhir.r4.Coding()
+            fhir_referenceRange_type.coding.append(fhir_type_coding)
+            fhir_type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/referencerange-meaning')
+            fhir_type_coding.code = string(value='normal')
+
+def CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_specimen):
+    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
+    fhir_observation_specimen_reference = malac.models.fhir.r4.Reference()
+    fhir_observation.specimen = fhir_observation_specimen_reference
+    if fhir_specimen.id is None:
+        fhir_specimen.id = malac.models.fhir.r4.string()
+    fhir_specimen_id = fhir_specimen.id
+    fhir_observation_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
+    fhir_observation_specimen_reference.type_ = uri(value='Specimen')
+
+def CdaLaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation):
+    if getattr(mapping_result_coding.code, 'value', None) == 'OTH':
+        cda_code = cda_laboratory_observation.code
+        if cda_code is not None:
+            if fhir_observation.code is None:
+                fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation_code = fhir_observation.code
+            fhir_observation_code_coding = malac.models.fhir.r4.Coding()
+            fhir_observation_code.coding.append(fhir_observation_code_coding)
+            fhir_observation_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+            fhir_observation_code_coding.code = string(value='OTH')
+            CDCodeableConcept(cda_code, fhir_observation_code)
+    if getattr(mapping_result_coding.code, 'value', None) != 'OTH':
+        if cda_laboratory_observation.code is not None:
+            fhir_observation.code = malac.models.fhir.r4.CodeableConcept()
+            CDCodeableConcept(cda_laboratory_observation.code, fhir_observation.code)
+
+def CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation):
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.PQ:
+            fhir_observation_value = malac.models.fhir.r4.Quantity()
+            fhir_observation.valueQuantity = fhir_observation_value
+            PQQuantity(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_PQ:
+            if cda_observation_value.value is not None:
+                fhir_observation_value = malac.models.fhir.r4.Quantity()
+                fhir_observation.valueQuantity = fhir_observation_value
+                PQQuantity(cda_observation_value, fhir_observation_value)
+            if cda_observation_value.value is None:
+                fhir_observation_value = malac.models.fhir.r4.Range()
+                fhir_observation.valueRange = fhir_observation_value
+                IVLPQRange(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.INT:
+            fhir_observation_value = malac.models.fhir.r4.Quantity()
+            fhir_observation.valueQuantity = fhir_observation_value
+            INTQuantity(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.TS:
+            fhir_observation_value = malac.models.fhir.r4.dateTime()
+            fhir_observation.valueDateTime = fhir_observation_value
+            TSDateTime(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.CV:
+            fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation.valueCodeableConcept = fhir_observation_value
+            fhir_observation_value_coding = malac.models.fhir.r4.Coding()
+            fhir_observation_value.coding.append(fhir_observation_value_coding)
+            fhir_observation_value_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+            fhir_observation_value_coding.code = string(value='OTH')
+            CVCodeableConcept(cda_observation_value, fhir_observation_value)
+    if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
+        for cda_observation_value in cda_laboratory_observation.value or []:
+            if type(cda_observation_value) is malac.models.cda.at_ext.CD:
+                if [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260415000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260373001']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260413007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['89292003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['57176003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260354000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260396001'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
+                    if cda_observation_value.code == '260415000' or cda_observation_value.code == '260373001' or cda_observation_value.code == '260413007' or cda_observation_value.code == '89292003':
+                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+                        fhir_observation.valueCodeableConcept = fhir_observation_value
+                        CDCodeableConcept(cda_observation_value, fhir_observation_value)
+                    if cda_observation_value.code == '57176003':
+                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+                        fhir_observation.valueCodeableConcept = fhir_observation_value
+                        fhir_observation_value_coding = malac.models.fhir.r4.Coding()
+                        fhir_observation_value.coding.append(fhir_observation_value_coding)
+                        fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
+                        fhir_observation_value_coding.code = string(value='260348001')
+                    if cda_observation_value.code == '260354000':
+                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+                        fhir_observation.valueCodeableConcept = fhir_observation_value
+                        fhir_observation_value_coding = malac.models.fhir.r4.Coding()
+                        fhir_observation_value.coding.append(fhir_observation_value_coding)
+                        fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
+                        fhir_observation_value_coding.code = string(value='260349009')
+                    if cda_observation_value.code == '260396001':
+                        fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+                        fhir_observation.valueCodeableConcept = fhir_observation_value
+                        fhir_observation_value_coding = malac.models.fhir.r4.Coding()
+                        fhir_observation_value.coding.append(fhir_observation_value_coding)
+                        fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
+                        fhir_observation_value_coding.code = string(value='260350009')
+                if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260415000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260373001']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260413007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['89292003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['57176003']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260354000']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['260396001'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
+                    fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+                    fhir_observation.valueCodeableConcept = fhir_observation_value
+                    fhir_observation_value_coding = malac.models.fhir.r4.Coding()
+                    fhir_observation_value.coding.append(fhir_observation_value_coding)
+                    fhir_observation_value_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+                    fhir_observation_value_coding.code = string(value='OTH')
+                    CDCodeableConcept(cda_observation_value, fhir_observation_value)
+    if [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
+        for cda_laboratory_observation_value in cda_laboratory_observation.value or []:
+            fhir_observation.status = string(value='cancelled')
+            if fhir_observation.dataAbsentReason is None:
+                fhir_observation.dataAbsentReason = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation_dataAbsentReason = fhir_observation.dataAbsentReason
+            fhir_observation_dataAbsentReason_coding_1 = malac.models.fhir.r4.Coding()
+            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_1)
+            fhir_observation_dataAbsentReason_coding_1.code = string(value='not-performed')
+            fhir_observation_dataAbsentReason_coding_1.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
+            fhir_observation_dataAbsentReason_coding_2 = malac.models.fhir.r4.Coding()
+            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_2)
+            CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2)
+    if [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
+        for cda_laboratory_observation_value in cda_laboratory_observation.value or []:
+            fhir_observation.status = string(value='preliminary')
+            if fhir_observation.dataAbsentReason is None:
+                fhir_observation.dataAbsentReason = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation_dataAbsentReason = fhir_observation.dataAbsentReason
+            fhir_observation_dataAbsentReason_coding_1 = malac.models.fhir.r4.Coding()
+            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_1)
+            fhir_observation_dataAbsentReason_coding_1.code = string(value='temp-unknown')
+            fhir_observation_dataAbsentReason_coding_1.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
+            fhir_observation_dataAbsentReason_coding_2 = malac.models.fhir.r4.Coding()
+            fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_2)
+            CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
+            fhir_observation_value = malac.models.fhir.r4.string()
+            fhir_observation.valueString = fhir_observation_value
+            STstring(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_INT:
+            if cda_observation_value.value is not None:
+                fhir_observation_value = malac.models.fhir.r4.Quantity()
+                fhir_observation.valueQuantity = fhir_observation_value
+                INTQuantity(cda_observation_value, fhir_observation_value)
+            if cda_observation_value.value is None:
+                fhir_observation_value = malac.models.fhir.r4.Range()
+                fhir_observation.valueRange = fhir_observation_value
+                IVL_INTRange(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.RTO:
+            fhir_observation_value = malac.models.fhir.r4.Ratio()
+            fhir_observation.valueRatio = fhir_observation_value
+            RTORatio(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.RTO_QTY_QTY:
+            fhir_observation_value = malac.models.fhir.r4.Ratio()
+            fhir_observation.valueRatio = fhir_observation_value
+            RTORatio(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.RTO_PQ_PQ:
+            fhir_observation_value = malac.models.fhir.r4.Ratio()
+            fhir_observation.valueRatio = fhir_observation_value
+            RTORatio(cda_observation_value, fhir_observation_value)
+
+def CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation):
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        for cda_observation_value_code in (cda_observation_value.code if isinstance(cda_observation_value.code, list) else ([] if not cda_observation_value.code else [cda_observation_value.code])):
+            fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation.valueCodeableConcept = fhir_observation_value
+            fhir_observation_value.coding.append(translate_single('elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory', code=(cda_observation_value_code if isinstance(cda_observation_value_code, str) else cda_observation_value_code.value), out_type='Coding'))
+
+def CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle):
+    for cda_act_performer in cda_act.performer:
+        if cda_act.performer:
+            CdaPerformerToFhirObservationPerformer(cda_act_performer, fhir_observation, fhir_bundle)
+    if not cda_act.performer:
+        if fhirpath_utils.get(next(iter(cda.documentationOf or []), None),'serviceEvent','performer'):
+            if len(cda.documentationOf) > 0:
+                cda_documentationOf = cda.documentationOf[0]
+                cda_documentationOf_serviceEvent = cda_documentationOf.serviceEvent
+                if cda_documentationOf_serviceEvent is not None:
+                    for cda_documentationOf_serviceEvent_performer in cda_documentationOf_serviceEvent.performer:
+                        CdaPerformerToFhirObservationPerformer(cda_documentationOf_serviceEvent_performer, fhir_observation, fhir_bundle)
+        if not fhirpath_utils.get(next(iter(cda.documentationOf or []), None),'serviceEvent','performer'):
+            if len(cda.author) > 0:
+                cda_author = cda.author[0]
+                if fhirpath_utils.get(cda_author,'assignedAuthor','assignedPerson'):
+                    fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                    fhir_bundle.entry.append(fhir_bundle_entry)
+                    fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+                    fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+                    fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+                    fhir_practitionerRole.id = fhir_practitionerRole_id
+                    fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+                    fhir_observation_performer_reference = malac.models.fhir.r4.Reference()
+                    fhir_observation.performer.append(fhir_observation_performer_reference)
+                    fhir_observation_performer_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+                    fhir_observation_performer_reference.type_ = uri(value='PractitionerRole')
+                    if cda_author.time is not None:
+                        fhir_observation.issued = malac.models.fhir.r4.instant()
+                        TSInstant(cda_author.time, fhir_observation.issued)
+                    CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle)
+
+def CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_organizer, fhir_observation, fhir_bundle):
+    for cda_laboratory_organizer_performer in cda_laboratory_organizer.performer:
+        if cda_laboratory_organizer.performer:
+            CdaPerformerToFhirObservationPerformer(cda_laboratory_organizer_performer, fhir_observation, fhir_bundle)
+    if not cda_laboratory_organizer.performer:
+        CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
+
+def CdaLabSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
+    CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+    if cda_section.code is not None:
+        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
+        transform_default(cda_section.code, fhir_section.code)
+    if fhir_section.code is None:
+        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
+    fhir_section_code = fhir_section.code
+    fhir_section_code_coding = malac.models.fhir.r4.Coding()
+    fhir_section_code.coding.append(fhir_section_code_coding)
+    fhir_section_code_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
+    fhir_section_code_coding.code = string(value='OTH')
+
+def CdaEimpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle):
+    if fhir_bundle.meta is None:
+        fhir_bundle.meta = malac.models.fhir.r4.Meta()
+    fhir_bundle_meta = fhir_bundle.meta
+    fhir_bundle_meta.profile.append(string(value='https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'))
+    CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle)
+    CdaEimpfHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle)
+    cda_component = cda.component
+    if cda_component is not None:
+        cda_structuredBody = cda_component.structuredBody
+        if cda_structuredBody is not None:
+            CdaEimpfBodyToFhir(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle)
+
+def CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle):
+    CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle)
+    cda_code = cda.code
+    if cda_code is not None:
+        code_code = cda_code.code
+        if code_code is not None:
+            fhir_composition_category = malac.models.fhir.r4.CodeableConcept()
+            fhir_composition.category.append(fhir_composition_category)
+            fhir_composition_category.coding.append(translate_single('cda-eimpf-clinicaldocument-code-2-fhir-category', code=(code_code if isinstance(code_code, str) else code_code.value), out_type='Coding'))
+    cda_code = cda.code
+    if cda_code is not None:
+        if fhir_composition.type_ is None:
+            fhir_composition.type_ = malac.models.fhir.r4.CodeableConcept()
+        fhir_composition_type = fhir_composition.type_
+        fhir_composition_type_coding = malac.models.fhir.r4.Coding()
+        fhir_composition_type.coding.append(fhir_composition_type_coding)
+        fhir_composition_type_coding.system = uri(value='http://loinc.org')
+        fhir_composition_type_coding.code = string(value='60591-5')
+        for cda_code_translation in cda_code.translation:
+            CECodeableConcept(cda_code_translation, fhir_composition_type)
+
+def CdaEimpfHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle):
+    CdaHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle)
+
+def CdaEimpfBodyToFhir(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle):
+    fhir_composition_problems_section = malac.models.fhir.r4.Composition_Section()
+    fhir_composition.section.append(fhir_composition_problems_section)
+    fhir_composition_problems_section.title = string(value='Gesundheitsprobleme und Risiken (Problems)')
+    if fhir_composition_problems_section.code is None:
+        fhir_composition_problems_section.code = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_problems_section_code = fhir_composition_problems_section.code
+    fhir_composition_problems_section_code_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_problems_section_code.coding.append(fhir_composition_problems_section_code_coding)
+    fhir_composition_problems_section_code_coding.system = uri(value='http://loinc.org')
+    fhir_composition_problems_section_code_coding.code = string(value='11450-4')
+    if fhir_composition_problems_section.emptyReason is None:
+        fhir_composition_problems_section.emptyReason = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_problems_section_emptyReason = fhir_composition_problems_section.emptyReason
+    fhir_composition_problems_section_emptyReason_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_problems_section_emptyReason.coding.append(fhir_composition_problems_section_emptyReason_coding)
+    fhir_composition_problems_section_emptyReason_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/list-empty-reason')
+    fhir_composition_problems_section_emptyReason_coding.code = string(value='unavailable')
+    if fhir_composition_problems_section.text is None:
+        fhir_composition_problems_section.text = malac.models.fhir.r4.Narrative()
+    fhir_composition_problems_section_text = fhir_composition_problems_section.text
+    fhir_composition_problems_section_text.status = string(value='empty')
+    fhir_composition_problems_section_text.div = utils.builddiv(malac.models.fhir.r4, 'Kein Text für diese Section vorhanden.')
+    fhir_composition_allergies_section = malac.models.fhir.r4.Composition_Section()
+    fhir_composition.section.append(fhir_composition_allergies_section)
+    fhir_composition_allergies_section.title = string(value='Allergien und Intoleranzen (Allergies and Intolerances)')
+    if fhir_composition_allergies_section.code is None:
+        fhir_composition_allergies_section.code = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_allergies_section_code = fhir_composition_allergies_section.code
+    fhir_composition_allergies_section_code_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_allergies_section_code.coding.append(fhir_composition_allergies_section_code_coding)
+    fhir_composition_allergies_section_code_coding.system = uri(value='http://loinc.org')
+    fhir_composition_allergies_section_code_coding.code = string(value='48765-2')
+    if fhir_composition_allergies_section.emptyReason is None:
+        fhir_composition_allergies_section.emptyReason = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_allergies_section_emptyReason = fhir_composition_allergies_section.emptyReason
+    fhir_composition_allergies_section_emptyReason_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_allergies_section_emptyReason.coding.append(fhir_composition_allergies_section_emptyReason_coding)
+    fhir_composition_allergies_section_emptyReason_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/list-empty-reason')
+    fhir_composition_allergies_section_emptyReason_coding.code = string(value='unavailable')
+    if fhir_composition_allergies_section.text is None:
+        fhir_composition_allergies_section.text = malac.models.fhir.r4.Narrative()
+    fhir_composition_allergies_section_text = fhir_composition_allergies_section.text
+    fhir_composition_allergies_section_text.status = string(value='empty')
+    fhir_composition_allergies_section_text.div = utils.builddiv(malac.models.fhir.r4, 'Kein Text für diese Section vorhanden.')
+    fhir_composition_medications_section = malac.models.fhir.r4.Composition_Section()
+    fhir_composition.section.append(fhir_composition_medications_section)
+    fhir_composition_medications_section.title = string(value='Medikationsliste (Medication Summary)')
+    if fhir_composition_medications_section.code is None:
+        fhir_composition_medications_section.code = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_medications_section_code = fhir_composition_medications_section.code
+    fhir_composition_medications_section_code_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_medications_section_code.coding.append(fhir_composition_medications_section_code_coding)
+    fhir_composition_medications_section_code_coding.system = uri(value='http://loinc.org')
+    fhir_composition_medications_section_code_coding.code = string(value='10160-0')
+    if fhir_composition_medications_section.emptyReason is None:
+        fhir_composition_medications_section.emptyReason = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_medications_section_emptyReason = fhir_composition_medications_section.emptyReason
+    fhir_composition_medications_section_emptyReason_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_medications_section_emptyReason.coding.append(fhir_composition_medications_section_emptyReason_coding)
+    fhir_composition_medications_section_emptyReason_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/list-empty-reason')
+    fhir_composition_medications_section_emptyReason_coding.code = string(value='unavailable')
+    if fhir_composition_medications_section.text is None:
+        fhir_composition_medications_section.text = malac.models.fhir.r4.Narrative()
+    fhir_composition_medications_section_text = fhir_composition_medications_section.text
+    fhir_composition_medications_section_text.status = string(value='empty')
+    fhir_composition_medications_section_text.div = utils.builddiv(malac.models.fhir.r4, 'Kein Text für diese Section vorhanden.')
+    fhir_composition_procedures_section = malac.models.fhir.r4.Composition_Section()
+    fhir_composition.section.append(fhir_composition_procedures_section)
+    fhir_composition_procedures_section.title = string(value='Eingriffe und Therapien (History of Procedures)')
+    if fhir_composition_procedures_section.code is None:
+        fhir_composition_procedures_section.code = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_procedures_section_code = fhir_composition_procedures_section.code
+    fhir_composition_procedures_section_code_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_procedures_section_code.coding.append(fhir_composition_procedures_section_code_coding)
+    fhir_composition_procedures_section_code_coding.system = uri(value='http://loinc.org')
+    fhir_composition_procedures_section_code_coding.code = string(value='47519-4')
+    if fhir_composition_procedures_section.emptyReason is None:
+        fhir_composition_procedures_section.emptyReason = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_procedures_section_emptyReason = fhir_composition_procedures_section.emptyReason
+    fhir_composition_procedures_section_emptyReason_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_procedures_section_emptyReason.coding.append(fhir_composition_procedures_section_emptyReason_coding)
+    fhir_composition_procedures_section_emptyReason_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/list-empty-reason')
+    fhir_composition_procedures_section_emptyReason_coding.code = string(value='unavailable')
+    if fhir_composition_procedures_section.text is None:
+        fhir_composition_procedures_section.text = malac.models.fhir.r4.Narrative()
+    fhir_composition_procedures_section_text = fhir_composition_procedures_section.text
+    fhir_composition_procedures_section_text.status = string(value='empty')
+    fhir_composition_procedures_section_text.div = utils.builddiv(malac.models.fhir.r4, 'Kein Text für diese Section vorhanden.')
+    fhir_composition_devices_section = malac.models.fhir.r4.Composition_Section()
+    fhir_composition.section.append(fhir_composition_devices_section)
+    fhir_composition_devices_section.title = string(value='Implantate, medizinische Geräte (Medical Devices)')
+    if fhir_composition_devices_section.code is None:
+        fhir_composition_devices_section.code = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_devices_section_code = fhir_composition_devices_section.code
+    fhir_composition_devices_section_code_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_devices_section_code.coding.append(fhir_composition_devices_section_code_coding)
+    fhir_composition_devices_section_code_coding.system = uri(value='http://loinc.org')
+    fhir_composition_devices_section_code_coding.code = string(value='46264-8')
+    if fhir_composition_devices_section.emptyReason is None:
+        fhir_composition_devices_section.emptyReason = malac.models.fhir.r4.CodeableConcept()
+    fhir_composition_devices_section_emptyReason = fhir_composition_devices_section.emptyReason
+    fhir_composition_devices_section_emptyReason_coding = malac.models.fhir.r4.Coding()
+    fhir_composition_devices_section_emptyReason.coding.append(fhir_composition_devices_section_emptyReason_coding)
+    fhir_composition_devices_section_emptyReason_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/list-empty-reason')
+    fhir_composition_devices_section_emptyReason_coding.code = string(value='unavailable')
+    if fhir_composition_devices_section.text is None:
+        fhir_composition_devices_section.text = malac.models.fhir.r4.Narrative()
+    fhir_composition_devices_section_text = fhir_composition_devices_section.text
+    fhir_composition_devices_section_text.status = string(value='empty')
+    fhir_composition_devices_section_text.div = utils.builddiv(malac.models.fhir.r4, 'Kein Text für diese Section vorhanden.')
+    for cda_component in cda_structuredBody.component or []:
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '11369-6' and v1.codeSystem == '2.16.840.1.113883.6.1')]):
+                fhir_section = malac.models.fhir.r4.Composition_Section()
+                fhir_composition.section.append(fhir_section)
+                CdaEimpfImpfungenKodiertToFhirSection(cda_section, fhir_section, fhir_patient, fhir_bundle)
+        cda_section = cda_component.section
+        if cda_section is not None:
+            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == '18776-5' and v1.codeSystem == '2.16.840.1.113883.6.1')]):
+                fhir_section = malac.models.fhir.r4.Composition_Section()
+                fhir_composition.section.append(fhir_section)
+                CdaEimpfImpfempfehlungKodiertToFhirSection(cda_section, fhir_section, fhir_patient, fhir_bundle)
+
+def CdaEimpfImpfungenKodiertToFhirSection(cda_section, fhir_section, fhir_patient, fhir_bundle):
+    CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+    if cda_section.code is not None:
+        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
+        transform_default(cda_section.code, fhir_section.code)
+    fhir_section.title = string(value='Impfungen (Immunizations)')
+    for cda_section_entry in cda_section.entry or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section_entry,'substanceAdministration','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.1']):
+            cda_section_entry_substanceAdministration = cda_section_entry.substanceAdministration
+            if cda_section_entry_substanceAdministration is not None:
+                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                fhir_bundle.entry.append(fhir_bundle_entry)
+                fhir_immunization = malac.models.fhir.r4.Immunization()
+                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Immunization=fhir_immunization)
+                fhir_immunization_id = string(value=str(uuid.uuid4()))
+                fhir_immunization.id = fhir_immunization_id
+                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_immunization_id.value))
+                fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+                fhir_section.entry.append(fhir_section_entry_reference)
+                fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_immunization_id.value))
+                fhir_section_entry_reference.type_ = uri(value='Immunization')
+                if fhir_patient.id is None:
+                    fhir_patient.id = malac.models.fhir.r4.string()
+                fhir_patient_id = fhir_patient.id
+                fhir_immunization_patient_reference = malac.models.fhir.r4.Reference()
+                fhir_immunization.patient = fhir_immunization_patient_reference
+                fhir_immunization_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+                fhir_immunization_patient_reference.type_ = uri(value='Patient')
+                CdaEimpfSubstanceAdministrationToFhirImmunization(cda_section_entry_substanceAdministration, fhir_immunization, fhir_bundle)
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section_entry,'substanceAdministration','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.28']):
+            if fhir_section.emptyReason is None:
+                fhir_section.emptyReason = malac.models.fhir.r4.CodeableConcept()
+            fhir_section_emptyReason = fhir_section.emptyReason
+            fhir_section_emptyReason_coding = malac.models.fhir.r4.Coding()
+            fhir_section_emptyReason.coding.append(fhir_section_emptyReason_coding)
+            fhir_section_emptyReason_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/list-empty-reason')
+            fhir_section_emptyReason_coding.code = string(value='nilknown')
+            fhir_section_emptyReason_coding.display = string(value='Nil Known')
+
+def CdaEimpfImpfempfehlungKodiertToFhirSection(cda_section, fhir_section, fhir_patient, fhir_bundle):
+    CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+    if cda_section.code is not None:
+        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
+        transform_default(cda_section.code, fhir_section.code)
+    fhir_section.title = string(value='Behandlungsplan (Plan of Care)')
+    for cda_section_entry in cda_section.entry or []:
+        cda_section_entry_substanceAdministration = cda_section_entry.substanceAdministration
+        if cda_section_entry_substanceAdministration is not None:
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_immunizationRecommendation = malac.models.fhir.r4.ImmunizationRecommendation()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(ImmunizationRecommendation=fhir_immunizationRecommendation)
+            fhir_immunizationRecommendation_id = string(value=str(uuid.uuid4()))
+            fhir_immunizationRecommendation.id = fhir_immunizationRecommendation_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_section_entry_reference = malac.models.fhir.r4.Reference()
+            fhir_section.entry.append(fhir_section_entry_reference)
+            fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_section_entry_reference.type_ = uri(value='ImmunizationRecommendation')
+            if fhir_patient.id is None:
+                fhir_patient.id = malac.models.fhir.r4.string()
+            fhir_patient_id = fhir_patient.id
+            fhir_immunizationRecommendation_patient_reference = malac.models.fhir.r4.Reference()
+            fhir_immunizationRecommendation.patient = fhir_immunizationRecommendation_patient_reference
+            fhir_immunizationRecommendation_patient_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
+            fhir_immunizationRecommendation_patient_reference.type_ = uri(value='Patient')
+            CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_section_entry_substanceAdministration, fhir_immunizationRecommendation, fhir_bundle)
+
+def CdaEimpfSubstanceAdministrationToFhirImmunization(cda_substanceAdministration, fhir_immunization, fhir_bundle):
+    for id_ in cda_substanceAdministration.id or []:
+        fhir_immunization.identifier.append(malac.models.fhir.r4.Identifier())
+        II(id_, fhir_immunization.identifier[-1])
+    if cda_substanceAdministration.statusCode is not None:
+        fhir_immunization.status = malac.models.fhir.r4.ImmunizationStatusCodes()
+        transform_default(cda_substanceAdministration.statusCode, fhir_immunization.status, malac.models.fhir.r4.code)
+    for cda_substanceAdministration_effectiveTime in cda_substanceAdministration.effectiveTime or []:
+        fhir_immunization_occurrence = malac.models.fhir.r4.dateTime()
+        fhir_immunization.occurrenceDateTime = fhir_immunization_occurrence
+        TSDateTime(cda_substanceAdministration_effectiveTime, fhir_immunization_occurrence)
+    if cda_substanceAdministration.routeCode is not None:
+        if not [v2 for v1 in [cda_substanceAdministration.routeCode] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+            fhir_immunization.route = malac.models.fhir.r4.CodeableConcept()
+            transform_default(cda_substanceAdministration.routeCode, fhir_immunization.route)
+    cda_substanceAdministration_doseQuantity = cda_substanceAdministration.doseQuantity
+    if cda_substanceAdministration_doseQuantity is not None:
+        if cda_substanceAdministration_doseQuantity.nullFlavor is None:
+            if fhir_immunization.doseQuantity is None:
+                fhir_immunization.doseQuantity = malac.models.fhir.r4.Quantity()
+            fhir_immunization_doseQuantity = fhir_immunization.doseQuantity
+            PQQuantity(cda_substanceAdministration_doseQuantity, fhir_immunization_doseQuantity)
+    cda_consumable = cda_substanceAdministration.consumable
+    if cda_consumable is not None:
+        cda_manufacturedProduct = cda_consumable.manufacturedProduct
+        if cda_manufacturedProduct is not None:
+            cda_manufacturedMaterial = cda_manufacturedProduct.manufacturedMaterial
+            if cda_manufacturedMaterial is not None:
+                if fhir_immunization.vaccineCode is None:
+                    fhir_immunization.vaccineCode = malac.models.fhir.r4.CodeableConcept()
+                fhir_immunization_vaccineCode = fhir_immunization.vaccineCode
+                CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunization_vaccineCode)
+                if cda_manufacturedMaterial.lotNumberText is not None:
+                    if not [v2 for v1 in [cda_manufacturedMaterial.lotNumberText] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                        fhir_immunization.lotNumber = malac.models.fhir.r4.string()
+                        transform_default(cda_manufacturedMaterial.lotNumberText, fhir_immunization.lotNumber)
+            cda_manufacturerOrganization = cda_manufacturedProduct.manufacturerOrganization
+            if cda_manufacturerOrganization is not None:
+                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+                fhir_bundle.entry.append(fhir_bundle_entry)
+                fhir_organization = malac.models.fhir.r4.Organization()
+                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Organization=fhir_organization)
+                fhir_organization_id = string(value=str(uuid.uuid4()))
+                fhir_organization.id = fhir_organization_id
+                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_organization_id.value))
+                fhir_immunization_organization_reference = malac.models.fhir.r4.Reference()
+                fhir_immunization.manufacturer = fhir_immunization_organization_reference
+                fhir_immunization_organization_reference.reference = string(value=('urn:uuid:' + fhir_organization_id.value))
+                fhir_immunization_organization_reference.type_ = uri(value='Organization')
+                CdaOrganizationCompilationToFhirOrganization(cda_manufacturerOrganization, fhir_organization)
+    for cda_substanceAdministration_performer in cda_substanceAdministration.performer or []:
+        cda_substanceAdministration_performer_assignedEntity = cda_substanceAdministration_performer.assignedEntity
+        if cda_substanceAdministration_performer_assignedEntity is not None:
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_immunization_performer = malac.models.fhir.r4.Immunization_Performer()
+            fhir_immunization.performer.append(fhir_immunization_performer)
+            if fhir_immunization_performer.function is None:
+                fhir_immunization_performer.function = malac.models.fhir.r4.CodeableConcept()
+            fhir_immunization_performer_function = fhir_immunization_performer.function
+            fhir_immunization_performer_function_coding = malac.models.fhir.r4.Coding()
+            fhir_immunization_performer_function.coding.append(fhir_immunization_performer_function_coding)
+            fhir_immunization_performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v2-0443')
+            fhir_immunization_performer_function_coding.code = string(value='AP')
+            fhir_immunization_performer_actor_reference = malac.models.fhir.r4.Reference()
+            fhir_immunization_performer.actor = fhir_immunization_performer_actor_reference
+            fhir_immunization_performer_actor_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            fhir_immunization_performer_actor_reference.type_ = uri(value='PractitionerRole')
+            CdaAssignedEntityToFhirPractitionerRole(cda_substanceAdministration_performer_assignedEntity, fhir_practitionerRole, fhir_bundle)
+    for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
+        fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+        fhir_bundle.entry.append(fhir_bundle_entry)
+        fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+        fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+        fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+        fhir_practitionerRole.id = fhir_practitionerRole_id
+        fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+        fhir_immunization_performer = malac.models.fhir.r4.Immunization_Performer()
+        fhir_immunization.performer.append(fhir_immunization_performer)
+        if fhir_immunization_performer.function is None:
+            fhir_immunization_performer.function = malac.models.fhir.r4.CodeableConcept()
+        fhir_immunization_performer_function = fhir_immunization_performer.function
+        fhir_immunization_performer_function_coding = malac.models.fhir.r4.Coding()
+        fhir_immunization_performer_function.coding.append(fhir_immunization_performer_function_coding)
+        fhir_immunization_performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
+        fhir_immunization_performer_function_coding.code = string(value='AUT')
+        fhir_immunization_performer_actor_reference = malac.models.fhir.r4.Reference()
+        fhir_immunization_performer.actor = fhir_immunization_performer_actor_reference
+        fhir_immunization_performer_actor_reference.reference = string(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+        fhir_immunization_performer_actor_reference.type_ = uri(value='PractitionerRole')
+        CdaAuthorToFhirPractitionerRole(cda_substanceAdministration_author, fhir_practitionerRole, fhir_bundle)
+    for cda_participant in cda_substanceAdministration.participant or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_participant,'templateId') if v1.root == '1.2.40.0.34.6.0.11.9.14']):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitioner_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitioner_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
+            fhir_immunization_performer = malac.models.fhir.r4.Immunization_Performer()
+            fhir_immunization.performer.append(fhir_immunization_performer)
+            fhir_immunization_performer_function = malac.models.fhir.r4.CodeableConcept()
+            fhir_immunization_performer.function = fhir_immunization_performer_function
+            fhir_immunization_performer_function_coding = malac.models.fhir.r4.Coding()
+            fhir_immunization_performer_function.coding.append(fhir_immunization_performer_function_coding)
+            fhir_immunization_performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
+            fhir_immunization_performer_function_coding.code = string(value='TRANS')
+            fhir_immunization_performer_actor_reference = malac.models.fhir.r4.Reference()
+            fhir_immunization_performer.actor = fhir_immunization_performer_actor_reference
+            fhir_immunization_performer_actor_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
+            fhir_immunization_performer_actor_reference.type_ = uri(value='PractitionerRole')
+            CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole, fhir_bundle)
+    for cda_participant in cda_substanceAdministration.participant or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_participant,'templateId') if v1.root == '1.2.40.0.34.6.0.11.9.47']):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitioner_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitioner_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_practitioner_id.value))
+            fhir_immunization_performer = malac.models.fhir.r4.Immunization_Performer()
+            fhir_immunization.performer.append(fhir_immunization_performer)
+            fhir_immunization_performer_function = malac.models.fhir.r4.CodeableConcept()
+            fhir_immunization_performer.function = fhir_immunization_performer_function
+            fhir_immunization_performer_function_coding = malac.models.fhir.r4.Coding()
+            fhir_immunization_performer_function.coding.append(fhir_immunization_performer_function_coding)
+            fhir_immunization_performer_function_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-ParticipationType')
+            fhir_immunization_performer_function_coding.code = string(value='ENT')
+            fhir_immunization_performer_actor_reference = malac.models.fhir.r4.Reference()
+            fhir_immunization_performer.actor = fhir_immunization_performer_actor_reference
+            fhir_immunization_performer_actor_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
+            fhir_immunization_performer_actor_reference.type_ = uri(value='PractitionerRole')
+            CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole, fhir_bundle)
+    fhir_immunization_protocolApplied = malac.models.fhir.r4.Immunization_ProtocolApplied()
+    fhir_immunization.protocolApplied.append(fhir_immunization_protocolApplied)
+    for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.2']):
+            cda_observation = cda_substanceAdministration_entryRelationship.observation
+            if cda_observation is not None:
+                if cda_observation.code is not None:
+                    fhir_immunization_protocolApplied.targetDisease.append(malac.models.fhir.r4.CodeableConcept())
+                    CDCodeableConcept(cda_observation.code, fhir_immunization_protocolApplied.targetDisease[-1])
+    for cda_substanceAdministration_precondition in cda_substanceAdministration.precondition or []:
+        cda_criterion = cda_substanceAdministration_precondition.criterion
+        if cda_criterion is not None:
+            cda_criterion_code = cda_criterion.code
+            if cda_criterion_code is not None:
+                if cda_criterion_code.nullFlavor is None:
+                    cda_criterion_code_code = cda_criterion_code.code
+                    if cda_criterion_code_code is not None:
+                        fhir_immunization_protocolApplied_series = string(value=str(getattr(cda_criterion_code_code, 'value', cda_criterion_code_code if cda_criterion_code_code is not None else '')))
+                        fhir_immunization_protocolApplied.series = fhir_immunization_protocolApplied_series
+                        fhir_immunization_protocolApplied_series_extension = malac.models.fhir.r4.Extension()
+                        fhir_immunization_protocolApplied_series.extension.append(fhir_immunization_protocolApplied_series_extension)
+                        fhir_immunization_protocolApplied_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                        fhir_coding = malac.models.fhir.r4.Coding()
+                        fhir_immunization_protocolApplied_series_extension.valueCoding = fhir_coding
+                        CECoding(cda_criterion_code, fhir_coding)
+            cda_criterion_value = cda_criterion.value
+            if cda_criterion_value is not None:
+                if cda_criterion_value.nullFlavor is None:
+                    for cda_criterion_value_code in (cda_criterion_value.code if isinstance(cda_criterion_value.code, list) else ([] if not cda_criterion_value.code else [cda_criterion_value.code])):
+                        fhir_immunization_protocolApplied_doseNumber = string(value=str(getattr(cda_criterion_value_code, 'value', cda_criterion_value_code if cda_criterion_value_code is not None else '')))
+                        fhir_immunization_protocolApplied.doseNumberString = fhir_immunization_protocolApplied_doseNumber
+                        fhir_immunization_protocolApplied_doseNumber_extension = malac.models.fhir.r4.Extension()
+                        fhir_immunization_protocolApplied_doseNumber.extension.append(fhir_immunization_protocolApplied_doseNumber_extension)
+                        fhir_immunization_protocolApplied_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                        fhir_coding = malac.models.fhir.r4.Coding()
+                        fhir_immunization_protocolApplied_doseNumber_extension.valueCoding = fhir_coding
+                        CECoding(cda_criterion_value, fhir_coding)
+            cda_criterion_value = cda_criterion.value
+            if cda_criterion_value is not None:
+                if cda_criterion_value.nullFlavor is not None:
+                    fhir_immunization_protocolApplied_doseNumber = malac.models.fhir.r4.string()
+                    fhir_immunization_protocolApplied.doseNumberString = fhir_immunization_protocolApplied_doseNumber
+                    fhir_immunization_protocolApplied_doseNumber_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunization_protocolApplied_doseNumber.extension.append(fhir_immunization_protocolApplied_doseNumber_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunization_protocolApplied_doseNumber_extension)
+    for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.168']):
+            cda_observation = cda_substanceAdministration_entryRelationship.observation
+            if cda_observation is not None:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_observation,'code') if v1.code == '46224007']):
+                    for cda_observation_value in cda_observation.value or []:
+                        for cda_observation_value_code in (cda_observation_value.code if isinstance(cda_observation_value.code, list) else ([] if not cda_observation_value.code else [cda_observation_value.code])):
+                            if fhir_immunization.location is None:
+                                fhir_immunization.location = malac.models.fhir.r4.Reference()
+                            fhir_immunization_location = fhir_immunization.location
+                            fhir_immunization_location_display = string(value=str(getattr(cda_observation_value_code, 'value', cda_observation_value_code if cda_observation_value_code is not None else '')))
+                            fhir_immunization_location.display = fhir_immunization_location_display
+                            fhir_immunization_location_display_extension = malac.models.fhir.r4.Extension()
+                            fhir_immunization_location_display.extension.append(fhir_immunization_location_display_extension)
+                            fhir_immunization_location_display_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                            fhir_coding = malac.models.fhir.r4.Coding()
+                            fhir_immunization_location_display_extension.valueCoding = fhir_coding
+                            CDCoding(cda_observation_value, fhir_coding)
+            cda_observation = cda_substanceAdministration_entryRelationship.observation
+            if cda_observation is not None:
+                if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_observation,'code') if v1.code == 'IS009']):
+                    for value in cda_observation.value or []:
+                        if type(value) is malac.models.cda.at_ext.CD:
+                            fhir_immunization.fundingSource = malac.models.fhir.r4.CodeableConcept()
+                            CDCodeableConcept(value, fhir_immunization.fundingSource)
+
+def CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_substanceAdministration, fhir_immunizationRecommendation, fhir_bundle):
+    for id_ in cda_substanceAdministration.id or []:
+        fhir_immunizationRecommendation.identifier.append(malac.models.fhir.r4.Identifier())
+        II(id_, fhir_immunizationRecommendation.identifier[-1])
+    fhir_immunizationRecommendation_recommendation = malac.models.fhir.r4.ImmunizationRecommendation_Recommendation()
+    fhir_immunizationRecommendation.recommendation.append(fhir_immunizationRecommendation_recommendation)
+    if cda_substanceAdministration.code is not None:
+        fhir_immunizationRecommendation_recommendation.forecastStatus = malac.models.fhir.r4.CodeableConcept()
+        CDCodeableConcept(cda_substanceAdministration.code, fhir_immunizationRecommendation_recommendation.forecastStatus)
+    for cda_substanceAdministration_effectiveTime in cda_substanceAdministration.effectiveTime or []:
+        for cda_effectiveTime_low in (cda_substanceAdministration_effectiveTime.low if isinstance(cda_substanceAdministration_effectiveTime.low, list) else ([] if not cda_substanceAdministration_effectiveTime.low else [cda_substanceAdministration_effectiveTime.low])):
+            if fhirpath_utils.get(cda_effectiveTime_low,'value'):
+                fhir_recommendation_dateCriterion = malac.models.fhir.r4.ImmunizationRecommendation_DateCriterion()
+                fhir_immunizationRecommendation_recommendation.dateCriterion.append(fhir_recommendation_dateCriterion)
+                if fhir_recommendation_dateCriterion.code is None:
+                    fhir_recommendation_dateCriterion.code = malac.models.fhir.r4.CodeableConcept()
+                fhir_recommendation_dateCriterion_code = fhir_recommendation_dateCriterion.code
+                fhir_dateCriterion_code_coding = malac.models.fhir.r4.Coding()
+                fhir_recommendation_dateCriterion_code.coding.append(fhir_dateCriterion_code_coding)
+                fhir_dateCriterion_code_coding.system = uri(value='http://loinc.org')
+                fhir_dateCriterion_code_coding.code = string(value='30981-5')
+                if fhir_recommendation_dateCriterion.value is None:
+                    fhir_recommendation_dateCriterion.value = malac.models.fhir.r4.dateTime()
+                fhir_dateCriterion_value = fhir_recommendation_dateCriterion.value
+                TSDateTime(cda_effectiveTime_low, fhir_dateCriterion_value)
+        for cda_effectiveTime_high in (cda_substanceAdministration_effectiveTime.high if isinstance(cda_substanceAdministration_effectiveTime.high, list) else ([] if not cda_substanceAdministration_effectiveTime.high else [cda_substanceAdministration_effectiveTime.high])):
+            if fhirpath_utils.get(cda_effectiveTime_high,'value'):
+                fhir_recommendation_dateCriterion = malac.models.fhir.r4.ImmunizationRecommendation_DateCriterion()
+                fhir_immunizationRecommendation_recommendation.dateCriterion.append(fhir_recommendation_dateCriterion)
+                if fhir_recommendation_dateCriterion.code is None:
+                    fhir_recommendation_dateCriterion.code = malac.models.fhir.r4.CodeableConcept()
+                fhir_recommendation_dateCriterion_code = fhir_recommendation_dateCriterion.code
+                fhir_dateCriterion_code_coding = malac.models.fhir.r4.Coding()
+                fhir_recommendation_dateCriterion_code.coding.append(fhir_dateCriterion_code_coding)
+                fhir_dateCriterion_code_coding.system = uri(value='http://loinc.org')
+                fhir_dateCriterion_code_coding.code = string(value='59777-3')
+                if fhir_recommendation_dateCriterion.value is None:
+                    fhir_recommendation_dateCriterion.value = malac.models.fhir.r4.dateTime()
+                fhir_dateCriterion_value = fhir_recommendation_dateCriterion.value
+                TSDateTime(cda_effectiveTime_high, fhir_dateCriterion_value)
+    cda_consumable = cda_substanceAdministration.consumable
+    if cda_consumable is not None:
+        cda_manufacturedProduct = cda_consumable.manufacturedProduct
+        if cda_manufacturedProduct is not None:
+            cda_manufacturedMaterial = cda_manufacturedProduct.manufacturedMaterial
+            if cda_manufacturedMaterial is not None:
+                cda_substanceAdministration_negationInd = cda_substanceAdministration.negationInd
+                if cda_substanceAdministration_negationInd is not None:
+                    if not cda_substanceAdministration_negationInd:
+                        fhir_immunizationRecommendation_recommendation_vaccineCode = malac.models.fhir.r4.CodeableConcept()
+                        fhir_immunizationRecommendation_recommendation.vaccineCode.append(fhir_immunizationRecommendation_recommendation_vaccineCode)
+                        CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_vaccineCode)
+                cda_substanceAdministration_negationInd = cda_substanceAdministration.negationInd
+                if cda_substanceAdministration_negationInd is not None:
+                    if cda_substanceAdministration_negationInd:
+                        fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode = malac.models.fhir.r4.CodeableConcept()
+                        fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode.append(fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode)
+                        CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode)
+        for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
+            if cda_substanceAdministration_author.time is not None:
+                if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
+                    TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
+            cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
+            if cda_substanceAdministration_author_time is not None:
+                if cda_substanceAdministration_author_time.nullFlavor is not None:
+                    if fhir_immunizationRecommendation.date is None:
+                        fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
+                    fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
+                    fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
+        for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.2']):
+                cda_observation = cda_substanceAdministration_entryRelationship.observation
+                if cda_observation is not None:
+                    if cda_observation.code is not None:
+                        fhir_immunizationRecommendation_recommendation.targetDisease = malac.models.fhir.r4.CodeableConcept()
+                        CDCodeableConcept(cda_observation.code, fhir_immunizationRecommendation_recommendation.targetDisease)
+        for cda_substanceAdministration_precondition in cda_substanceAdministration.precondition or []:
+            cda_criterion = cda_substanceAdministration_precondition.criterion
+            if cda_criterion is not None:
+                cda_criterion_code = cda_criterion.code
+                if cda_criterion_code is not None:
+                    if cda_criterion_code.nullFlavor is None:
+                        cda_criterion_code_code = cda_criterion_code.code
+                        if cda_criterion_code_code is not None:
+                            fhir_immunizationRecommendation_recommendation_series = string(value=str(getattr(cda_criterion_code_code, 'value', cda_criterion_code_code if cda_criterion_code_code is not None else '')))
+                            fhir_immunizationRecommendation_recommendation.series = fhir_immunizationRecommendation_recommendation_series
+                            fhir_immunizationRecommendation_recommendation_series_extension = malac.models.fhir.r4.Extension()
+                            fhir_immunizationRecommendation_recommendation_series.extension.append(fhir_immunizationRecommendation_recommendation_series_extension)
+                            fhir_immunizationRecommendation_recommendation_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                            fhir_coding = malac.models.fhir.r4.Coding()
+                            fhir_immunizationRecommendation_recommendation_series_extension.valueCoding = fhir_coding
+                            CECoding(cda_criterion_code, fhir_coding)
+                cda_criterion_value = cda_criterion.value
+                if cda_criterion_value is not None:
+                    if cda_criterion_value.nullFlavor is None:
+                        for cda_criterion_value_code in (cda_criterion_value.code if isinstance(cda_criterion_value.code, list) else ([] if not cda_criterion_value.code else [cda_criterion_value.code])):
+                            fhir_immunizationRecommendation_recommendation_doseNumber = string(value=str(getattr(cda_criterion_value_code, 'value', cda_criterion_value_code if cda_criterion_value_code is not None else '')))
+                            fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
+                            fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
+                            fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
+                            fhir_immunizationRecommendation_recommendation_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                            fhir_coding = malac.models.fhir.r4.Coding()
+                            fhir_immunizationRecommendation_recommendation_doseNumber_extension.valueCoding = fhir_coding
+                            CECoding(cda_criterion_value, fhir_coding)
+                cda_criterion_value = cda_criterion.value
+                if cda_criterion_value is not None:
+                    if cda_criterion_value.nullFlavor is not None:
+                        fhir_immunizationRecommendation_recommendation_doseNumber = malac.models.fhir.r4.string()
+                        fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
+                        fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
+                        fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
+                        CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension)
+
+def CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_vaccineCode):
+    cda_manufacturedMaterial_code = cda_manufacturedMaterial.code
+    if cda_manufacturedMaterial_code is not None:
+        if cda_manufacturedMaterial_code.nullFlavor == 'NA' or cda_manufacturedMaterial_code.nullFlavor == 'OTH':
+            cda_manufacturedMaterial_code_nullFlavor = cda_manufacturedMaterial_code.nullFlavor
+            if cda_manufacturedMaterial_code_nullFlavor is not None:
+                fhir_vaccineCode_coding = malac.models.fhir.r4.Coding()
+                fhir_vaccineCode.coding.append(fhir_vaccineCode_coding)
+                fhir_vaccineCode_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
+                fhir_vaccineCode_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(cda_manufacturedMaterial_code_nullFlavor if isinstance(cda_manufacturedMaterial_code_nullFlavor, str) else cda_manufacturedMaterial_code_nullFlavor.value), out_type='code'))
+                for cda_manufacturedMaterial_code_translation in cda_manufacturedMaterial_code.translation:
+                    CECodeableConcept(cda_manufacturedMaterial_code_translation, fhir_vaccineCode)
+    cda_manufacturedMaterial_code = cda_manufacturedMaterial.code
+    if cda_manufacturedMaterial_code is not None:
+        if cda_manufacturedMaterial_code.nullFlavor is None:
+            CECodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode)
 
 def unpack_container(resource_container):
     if resource_container is None:
@@ -86399,7 +86930,7 @@ default_types_maps = {
     (malac.models.cda.at_ext.IVL_PQ, malac.models.fhir.r4.Range): IVLPQRange,
     (malac.models.cda.at_ext.IVXB_PQ, malac.models.fhir.r4.Quantity): IVXB_PQQuantity,
     (malac.models.cda.at_ext.RTO, malac.models.fhir.r4.Ratio): RTORatio,
-    (malac.models.cda.at_ext.ANY, malac.models.fhir.r4.Extension): CdaNullFlavorToFhirNullFlavor,
+    (malac.models.cda.at_ext.ANY, malac.models.fhir.r4.Extension): CdaNullFlavorToFhirDataAbsentReason,
 }
 default_types_maps_plus = {
 }
