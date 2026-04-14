@@ -528,6 +528,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/SimpleQuantity" alias SimpleQu
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Period" alias Period as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/date" alias date as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Extension" alias Extension as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as source
 
 group Any(source src, target tgt) {
 }
@@ -874,6 +875,22 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
 // Target: http://hl7.org/fhir/organization.html
 group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaOrganization, target fhir_organization : Organization) {
+  cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
+  cda_organization.name -> fhir_organization.name;
+  cda_organization.telecom -> fhir_organization.telecom;
+  // cda_organization.addr as cda_organization_addr ->
+  //   fhir_organization.address = create('Address') as fhir_organization_address then
+  //   CdaAdressCompilationToFhirAustrianAddress(cda_organization_addr, fhir_organization_address)
+  //   "CdaOrganizationAddressToFhirOrganizationAustrianAddress";
+  cda_organization.addr -> fhir_organization.address;
+}
+
+group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organization: CdaOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
+  fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
+    fhir_organization.meta as fhir_organization_meta,
+    fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Organization-eu-myhealth-eu'
+    "FhirOrganizationProfile";
+  
   cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
   cda_organization.name -> fhir_organization.name;
   cda_organization.telecom -> fhir_organization.telecom;

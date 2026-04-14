@@ -8162,7 +8162,7 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
 
               fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
               fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
-              fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
+              fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganizationWithBundle(cda_receivedOrganization, fhir_bundle, fhir_organization);
           } "CdaIntendedRecipientToFhirPractitionerRole";
     };
 
