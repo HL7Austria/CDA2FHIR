@@ -8771,6 +8771,10 @@ group CdaLabBeilagenSectionToFhirDiagnosticReportMedia(source cda_section: Secti
 
 group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, target fhir_specimen: Specimen, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
   cda_procedure ->
+    // set FHIR profile for Specimen
+    fhir_specimen.meta as fhir_specimen_meta,
+    fhir_specimen_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Specimen-lab-myhealtheu',
+
     // create relation from specimen to patient
     fhir_specimen.subject = create('Reference') as fhir_specimen_patient_reference,
     fhir_patient.id as fhir_patient_id,
@@ -8898,6 +8902,12 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
 }
 
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
+  // set FHIR profile for Observation
+  cda_organizer ->
+    fhir_observation.meta as fhir_observation_meta,
+    fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
+    "FhirObservationProfile";
+  
   // fhir_observation.category
   cda_organizer -> fhir_observation.category as fhir_category,
     fhir_category.coding as fhir_category_coding,
@@ -8971,6 +8981,7 @@ group CdaLabOrganizerToFhirObservationWithSpecimen(source cda: ClinicalDocument,
 }
 
 group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  // set FHIR profile for Observation
   cda_laboratory_observation ->
     fhir_observation.meta as fhir_observation_meta,
     fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
