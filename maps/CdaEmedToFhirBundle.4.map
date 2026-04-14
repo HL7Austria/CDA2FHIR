@@ -440,7 +440,7 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
         };
 
         // "Zusatzinformationen für den Patienten" -> MedicationDispense.dosageInstruction.patientInstruction
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ZINFO') {
+        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ZINFO') then {
           cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
             cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
               cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction2,
@@ -475,13 +475,17 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
                 
                         // Create a substring from the start till the first occurrence of < character
                         fhir_medicationDispense_dosageInstruction2_patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
+                  };
+                };
               };
             };
           };
         };
 
         // "Informationen zur alternativen Einnahme" -> MedicationDispense.dosageInstruction.text
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ALTEIN'){
+        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ALTEIN') then {
           cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
             cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
               cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction3,
@@ -516,13 +520,17 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
 
                         // Create a substring from the start till the first occurrence of < character
                         fhir_medicationDispense_dosageInstruction3.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-              };          
+                      };
+                    };
+                  };
+                };
+              };
             };
           };
         };
 
         // "Informationen zur Arznei" -> Medication.text
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ARZNEIINFO') {
+        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ARZNEIINFO') then {
           cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
             cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
               cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
@@ -556,66 +564,21 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
 
                         // Create a substring from the start till the first occurrence of < character
                         fhir_medication.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
                   };
                 };
               };
             };
           };
         };
-      };
-    };
 
-    // Informationen zur Abgabe -> MedicationDispense.dosageInstruction.text
-    // section/entry/supply/entryRelationship/act/text/@value (code FINSTRUCT) -> MedicationDispense.dosageInstruction
-    cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {
-      cda_entryRelationship_act.text as cda_entryRelationship_act_text then {
-        cda_entryRelationship_act_text.reference as cda_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction then {
-          cda_entryRelationship_act_reference.value as cda_entryRelationship_act_reference_value then {
-            
-            cda.component as cda_component then {
-              cda_structuredBody.component as cda_structuredBody_component then {
-                cda_section.text as cda_section_text then {
-
-                  // section/text -> Narrative.div
-                  cda_section_text -> 
-                  // Create Narrative (same datatype as in Composition.section.text)
-                  create('Narrative') as fhir_narrative,
-                  // section/text -> Narrative.div
-                  fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                              
-                  // Create string
-                  create('string') as fhir_string,
-                  // Convert test_div to a FHIR string
-                  fhir_string = (fhir_narrative_div),
-          
-                  // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
-                  create('string') as fhir_substring_01,
-                  // cda_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                  // fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
-                  fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)))),
-          
-                  // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-                  create('string') as fhir_substring_02,
-                  fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
-          
-                  // Create a substring from the start till the first occurrence of < character
-                  fhir_medicationDispense_dosageInstruction.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                };
-              };
-            };
-          };
-        };
-      };
-    };
-
-    // Ergänzende Informationen zur Abgabe -> MedicationDispense.dosageInstruction.text
-    // section/entry/supply/entryRelationship/act/text/@value (code ERGINFO) -> MedicationDispense.dosageInstruction
-    cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ERGINFO') {
-        cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
-          cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction2,
-            fhir_medicationDispense_dosageInstruction2.text as fhir_medicationDispense_dosageInstruction2_text then {
-              cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+        // Informationen zur Abgabe -> MedicationDispense.dosageInstruction.text
+        // section/entry/supply/entryRelationship/act/text/@value (code FINSTRUCT) -> MedicationDispense.dosageInstruction
+        cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {
+          cda_entryRelationship_act.text as cda_entryRelationship_act_text then {
+            cda_entryRelationship_act_text.reference as cda_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction then {
+              cda_entryRelationship_act_reference.value as cda_entryRelationship_act_reference_value then {
                 
                 cda.component as cda_component then {
                   cda_structuredBody.component as cda_structuredBody_component then {
@@ -632,19 +595,64 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
                       create('string') as fhir_string,
                       // Convert test_div to a FHIR string
                       fhir_string = (fhir_narrative_div),
-                
+              
                       // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
                       create('string') as fhir_substring_01,
-                      // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                      // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
-                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
-                
+                      // cda_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                      // fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)))),
+              
                       // Create a substring from the first occurrence of > character till the end of fhir_substring_01
                       create('string') as fhir_substring_02,
                       fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
-                      
+              
                       // Create a substring from the start till the first occurrence of < character
-                      fhir_medicationDispense_dosageInstruction2.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      fhir_medicationDispense_dosageInstruction.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                    };
+                  };
+                };
+              };
+            };
+          };
+        };
+
+        // Ergänzende Informationen zur Abgabe -> MedicationDispense.dosageInstruction.text
+        // section/entry/supply/entryRelationship/act/text/@value (code ERGINFO) -> MedicationDispense.dosageInstruction
+        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ERGINFO') then {
+          cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+            cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction2,
+              fhir_medicationDispense_dosageInstruction2.text as fhir_medicationDispense_dosageInstruction2_text then {
+                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+                    
+                  cda.component as cda_component then {
+                    cda_structuredBody.component as cda_structuredBody_component then {
+                      cda_section.text as cda_section_text then {
+
+                        // section/text -> Narrative.div
+                        cda_section_text -> 
+                        // Create Narrative (same datatype as in Composition.section.text)
+                        create('Narrative') as fhir_narrative,
+                        // section/text -> Narrative.div
+                        fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                                      
+                        // Create string
+                        create('string') as fhir_string,
+                        // Convert test_div to a FHIR string
+                        fhir_string = (fhir_narrative_div),
+                    
+                        // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
+                        create('string') as fhir_substring_01,
+                        // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                        // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                        fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+                    
+                        // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                        create('string') as fhir_substring_02,
+                        fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+                          
+                        // Create a substring from the start till the first occurrence of < character
+                        fhir_medicationDispense_dosageInstruction2.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
                       };
                     };
                   };
@@ -652,113 +660,119 @@ group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_
               };
             };
           };
+        };
 
-          // Magistrale Zubereitung -> Medication.text
-          // section/entry/supply/entryRelationship/act/text/@value (code MAGZUB) -> Medication.text
-          cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'MAGZUB') {
-              cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
-                cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-                  cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction2,
-                  fhir_medicationDispense_dosageInstruction2.text as fhir_medicationDispense_dosageInstruction2_text then {
-                    cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
-                      
-                      cda.component as cda_component then {
-                        cda_structuredBody.component as cda_structuredBody_component then {
-                          cda_section.text as cda_section_text then {
+        // Magistrale Zubereitung -> Medication.text
+        // section/entry/supply/entryRelationship/act/text/@value (code MAGZUB) -> Medication.text
+        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'MAGZUB') then {
+          cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+            cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction2,
+              fhir_medicationDispense_dosageInstruction2.text as fhir_medicationDispense_dosageInstruction2_text then {
+                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+                    
+                  cda.component as cda_component then {
+                    cda_structuredBody.component as cda_structuredBody_component then {
+                      cda_section.text as cda_section_text then {
 
-                            // section/text -> Narrative.div
-                            cda_section_text -> 
-                            // Create Narrative (same datatype as in Composition.section.text)
-                            create('Narrative') as fhir_narrative,
-                            // section/text -> Narrative.div
-                            fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                                        
-                            // Create string
-                            create('string') as fhir_string,
-                            // Convert test_div to a FHIR string
-                            fhir_string = (fhir_narrative_div),
+                        // section/text -> Narrative.div
+                        cda_section_text -> 
+                        // Create Narrative (same datatype as in Composition.section.text)
+                        create('Narrative') as fhir_narrative,
+                        // section/text -> Narrative.div
+                        fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                                       
+                        // Create string
+                        create('string') as fhir_string,
+                        // Convert test_div to a FHIR string
+                        fhir_string = (fhir_narrative_div),
                       
-                            // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
-                            create('string') as fhir_substring_01,
-                            // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                            // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
-                            fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+                        // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
+                        create('string') as fhir_substring_01,
+                        // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                        // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                        fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
                       
-                            // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-                            create('string') as fhir_substring_02,
-                            fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+                        // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                        create('string') as fhir_substring_02,
+                        fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
 
-                            // Create a substring from the start till the first occurrence of < character
-                            fhir_medication.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                            };
-                          };
-                        };
-                      };  
+                        // Create a substring from the start till the first occurrence of < character
+                        fhir_medication.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
                     };
                   };
+                };  
+              };
             };
-            
-          // Einnahmedauer, Dosierungsinformationen und Art der Anwendung (1.3.6.1.4.1.19376.1.9.1.3.6)
-          cda_entryRelationship_act.entryRelationship as cda__entryRelationship_act_entryRelationship where ($this.substanceAdministration.exists()) then {
-
-            cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction then {
-
-                // Einnahmedauer Period -> MedicationDispense.dosageInstruction.timing.boundsPeriod
-                cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime where ($this.width.exists().not()) -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing,
-                fhir_medicationDispense_dosageInstruction_timing.boundsPeriod = create('Period') as fhir_medicationDispense_dosageInstruction_timing_boundsPeriod then {
-                  // effectiveTime/low and effectiveTime/high
-                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime then IVLTSPeriod(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime, fhir_medicationDispense_dosageInstruction_timing_boundsPeriod);
-                };
-                // Einnahmedauer Duration -> MedicationDispense.dosageInstruction.timing.boundsDuration
-                cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime where ($this.width.exists()) -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing,
-                fhir_medicationDispense_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationDispense_dosageInstruction_timing_boundsDuration then {
-                  // effectiveTime/width
-                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.width as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_width then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_width,fhir_medicationDispense_dosageInstruction_timing_boundsDuration);
-                };
-                
-                // Normal Dosing 
-                cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration where ($this.templateId.root = '1.3.6.1.4.1.19376.1.5.3.1.4.7.1') then {
-                  cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing then {
-                    // Zeitraum und Periodeneinheit der Dosis
-                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_period -> fhir_medicationDispense_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationDispense_dosageInstruction_timing_boundsDuration then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_period,fhir_medicationDispense_dosageInstruction_timing_boundsDuration);
-                    // Tagesdosierung
-                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.doseQuantity as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_doseQuantity -> fhir_medicationDispense_dosageInstruction.doseAndRate = create('Element') as fhir_medicationDispense_dosageInstruction_doseAndRate,
-                    fhir_medicationDispense_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity);
-                    // Erstes Datum des Wochentages nach Einnahmebeginn
-                    // TODO: Klären Transformation Datum zu Wochentag
-                    // Tagesdosierung an EINEM Tag
-                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase then TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase.value,fhir_medicationDispense_dosageInstruction_timing.event);
-
-                    // Tagesdosierung an MEHREREN Tagen (z.B. Montag, Mittwoch, Freitag)
-                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.comp as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp then {
-                      // Daten der Wochentage nach Einnahmebeginn
-                      cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase then TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase.value,fhir_medicationDispense_dosageInstruction_timing.event);
-                      // Zeitraum und Periodeneinheit der Dosis
-                      cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period -> fhir_medicationDispense_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationDispense_dosageInstruction_timing_boundsDuration then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period,fhir_medicationDispense_dosageInstruction_timing_boundsDuration);
-                    };
-                  };
-                };
-
-                // Split Dosing
-                cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration where ($this.templateId.root = '1.3.6.1.4.1.19376.1.5.3.1.4.9') then {
-                  // Aufsteigende Nummerierung der Unterelemente
-                  cda_entryRelationship_act_entryRelationship_substanceAdministration.sequenceNumber -> fhir_medicationDispense_dosageInstruction.sequence;
-                  cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing then {
-                    // Einnahmezeitpunkt als Zeitcode
-                    // TODO: Abklären ob Code-Mapping erforderlich ist oder ob die Zeitpunkte direkt übernommen werden können (z.B. morgens -> AM, abends -> PM etc.) 
-                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.event as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_event -> fhir_medicationDispense_dosageInstruction_timing.code as fhir_medicationDispense_dosageInstruction_timing_code then CECodeableConcept(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_event,fhir_medicationDispense_dosageInstruction_timing_code);
-                    // Offset
-                    // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
-                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset -> fhir_medicationDispense_dosageInstruction_timing.repeat as fhir_medicationDispense_dosageInstruction_timing_repeat then INT(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset.value,fhir_medicationDispense_dosageInstruction_timing_repeat.offset);
-                  };
-                  // Tagesdosierung
-                  cda_entryRelationship_act_entryRelationship.doseQuantity as cda_entryRelationship_act_entryRelationship_doseQuantity -> fhir_medicationDispense_dosageInstruction.doseAndRate = create('Element') as fhir_medicationDispense_dosageInstruction_doseAndRate,
-                  fhir_medicationDispense_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_entryRelationship_act_entryRelationship_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity);
-                };
-             }:
           };
         };
+            
+        // Einnahmedauer, Dosierungsinformationen und Art der Anwendung (1.3.6.1.4.1.19376.1.9.1.3.6)
+        cda_entryRelationship_act.entryRelationship as cda__entryRelationship_act_entryRelationship where ($this.substanceAdministration.exists()) then {
+
+          cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction then {
+
+              // Einnahmedauer Period -> MedicationDispense.dosageInstruction.timing.boundsPeriod
+              cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime where ($this.width.exists().not()) -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing,
+              fhir_medicationDispense_dosageInstruction_timing.boundsPeriod = create('Period') as fhir_medicationDispense_dosageInstruction_timing_boundsPeriod then {
+                // effectiveTime/low and effectiveTime/high
+                cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime then IVLTSPeriod(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime, fhir_medicationDispense_dosageInstruction_timing_boundsPeriod);
+              };
+              // Einnahmedauer Duration -> MedicationDispense.dosageInstruction.timing.boundsDuration
+              cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime where ($this.width.exists()) -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing,
+              fhir_medicationDispense_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationDispense_dosageInstruction_timing_boundsDuration then {
+                // effectiveTime/width
+                cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.width as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_width then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_width,fhir_medicationDispense_dosageInstruction_timing_boundsDuration);
+              };
+                
+              // Normal Dosing 
+              cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration where ($this.templateId.root = '1.3.6.1.4.1.19376.1.5.3.1.4.7.1') then {
+                cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing then {
+                  // Zeitraum und Periodeneinheit der Dosis
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_period -> fhir_medicationDispense_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationDispense_dosageInstruction_timing_boundsDuration then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_period,fhir_medicationDispense_dosageInstruction_timing_boundsDuration);
+                  // Tagesdosierung
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.doseQuantity as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_doseQuantity -> fhir_medicationDispense_dosageInstruction.doseAndRate = create('Element') as fhir_medicationDispense_dosageInstruction_doseAndRate,
+                  fhir_medicationDispense_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity);
+                  // Erstes Datum des Wochentages nach Einnahmebeginn
+                  // TODO: Klären Transformation Datum zu Wochentag
+                  // Tagesdosierung an EINEM Tag
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase,
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase_value -> fhir_medicationDispense_dosageInstruction_timing.event as fhir_medicationDispense_dosageInstruction_timing_event then TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase_value,fhir_medicationDispense_dosageInstruction_timing_event);
+
+                  // Tagesdosierung an MEHREREN Tagen (z.B. Montag, Mittwoch, Freitag)
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.comp as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp then {
+                    // Daten der Wochentage nach Einnahmebeginn
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase,
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase_value -> fhir_medicationDispense_dosageInstruction_timing.event as fhir_medicationDispense_dosageInstruction_timing_event then TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase_value,fhir_medicationDispense_dosageInstruction_timing_event);
+                    // Zeitraum und Periodeneinheit der Dosis
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period -> fhir_medicationDispense_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationDispense_dosageInstruction_timing_boundsDuration then PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period,fhir_medicationDispense_dosageInstruction_timing_boundsDuration);
+                  };
+                };
+              };
+
+              // Split Dosing
+              cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration where ($this.templateId.root = '1.3.6.1.4.1.19376.1.5.3.1.4.9') then {
+                // Aufsteigende Nummerierung der Unterelemente
+                cda_entryRelationship_act_entryRelationship_substanceAdministration.sequenceNumber -> fhir_medicationDispense_dosageInstruction.sequence;
+                cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime -> fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing then {
+                  // Einnahmezeitpunkt als Zeitcode
+                  // TODO: Abklären ob Code-Mapping erforderlich ist oder ob die Zeitpunkte direkt übernommen werden können (z.B. morgens -> AM, abends -> PM etc.) 
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.event as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_event -> fhir_medicationDispense_dosageInstruction_timing.code as fhir_medicationDispense_dosageInstruction_timing_code then CECodeableConcept(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_event,fhir_medicationDispense_dosageInstruction_timing_code);
+                  // Offset
+                  // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset,
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset_value -> fhir_medicationDispense_dosageInstruction_timing.repeat as fhir_medicationDispense_dosageInstruction_timing_repeat,
+                  fhir_medicationDispense_dosageInstruction_timing_repeat.offset as fhir_medicationDispense_dosageInstruction_timing_repeat_offset then INT(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset_value,fhir_medicationDispense_dosageInstruction_timing_repeat_offset);
+                };
+                // Tagesdosierung
+                cda_entryRelationship_act_entryRelationship.doseQuantity as cda_entryRelationship_act_entryRelationship_doseQuantity -> fhir_medicationDispense_dosageInstruction.doseAndRate = create('Element') as fhir_medicationDispense_dosageInstruction_doseAndRate,
+                fhir_medicationDispense_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_entryRelationship_act_entryRelationship_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity);
+              };
+           }:
+        };
       };
+    };
 }*/
 
 /*
