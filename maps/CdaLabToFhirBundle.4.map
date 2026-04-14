@@ -7944,7 +7944,7 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_serviceRequest_id),
     // set FHIR profile for ServiceRequest
     fhir_serviceRequest.meta as fhir_serviceRequest_meta,
-    fhir_serviceRequest_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu',
+    fhir_serviceRequest_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu',
 
     // create relation from Composition to ServiceRequest
     fhir_composition.extension as fhir_composition_extenstion_01,
