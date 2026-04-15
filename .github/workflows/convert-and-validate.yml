@@ -3,6 +3,8 @@
 name: Convert and validate test file
 
 on:
+  push:
+    branches: [bt-elga-dev]
   pull_request:
     branches: [ elga, elga-dev ]
 
