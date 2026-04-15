@@ -9441,6 +9441,11 @@ group CdaLabPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocum
 group CdaObservationMediaToFhirObservation(source cda_observationMedia : ObservationMedia, target fhir_observation : Observation, target fhir_patient : Patient, target fhir_bundle : Bundle){
   cda_observationMedia.id -> fhir_observation.identifier; 
   
+  cda_observationMedia -> fhir_observation.category as fhir_category,
+    fhir_category.coding as fhir_category_coding,
+    fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
+    fhir_category_coding.code = 'laboratory';
+  
   cda_observationMedia -> fhir_observation.status = 'unknown';
   
   cda_observationMedia -> fhir_observation.code = create('CodeableConcept') as fhir_observation_code,
@@ -9453,12 +9458,13 @@ group CdaObservationMediaToFhirObservation(source cda_observationMedia : Observa
     fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id)
     "FhirObservationSubject";
 
-  cda_observationMedia -> fhir_observation.effectiveTime = create('dateTime') as fhir_observation_effectiveTime,
-    fhir_observation_effectiveTime.extension as fhir_observation_effectiveTime_extension,
-    fhir_observation_effectiveTime_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
-    fhir_observation_effectiveTime_extension.value = create('code') as fhir_observation_effectiveTime_extension_code,
-    fhir_observation_effectiveTime_extension_code.code = 'unknown',
-    fhir_observation_effectiveTime_extension_code.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason';
+  cda_observationMedia ->
+    fhir_observation.effective = create('dateTime') as fhir_observation_effective,
+    fhir_observation_effective.extension as fhir_observation_effective_extenstion,
+    fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+    fhir_observation_effective_extenstion.value = create('code') as fhir_observation_effective_extenstion_code,
+    fhir_observation_effective_extenstion_code.value = 'unknown'
+      "CdaEffectiveTimeExistsNotToFhirObservationEffective";
 
   cda_observationMedia.value as cda_observationMedia_value ->
     fhir_observation.extension as fhir_observation_value_extension,
