@@ -9440,6 +9440,13 @@ group CdaLabPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocum
 
 group CdaObservationMediaToFhirObservation(source cda_observationMedia : ObservationMedia, target fhir_observation : Observation, target fhir_bundle : Bundle){
   cda_observationMedia.id -> fhir_observation.identifier; 
+  
+  cda_observationMedia -> fhir_observation.status = 'unknown';
+  
+  cda_observationMedia -> fhir_observation.code = create('CodeableConcept') as fhir_observation_code,
+    fhir_observation_code.coding as fhir_observation_code_coding,
+    fhir_observation_code_coding.system = 'http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions',
+    fhir_observation_code_coding.code = 'OTH';
 
   cda_observationMedia.value as cda_observationMedia_value ->
     fhir_observation.extension as fhir_observation_value_extension,
