@@ -9376,4 +9376,4 @@ group CdaLabPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocum
 
   // the following lines execute only if cda_laboratory_organizer.performer does not exist
   cda_laboratory_organizer where cda_laboratory_organizer.performer.exists().not() then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle) "CdaOrganizerNoPerformer";
-}
+} 
