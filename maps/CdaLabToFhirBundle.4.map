@@ -8573,7 +8573,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
                     then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_laboratory_observation, fhir_bundle)
                     "CdaObservationPerformerToFhirObservationPerformer";
                 cda_component.observationMedia where (performer.exists().not()) then CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
-                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation,fhir_bundle);
+                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation, fhir_patient, fhir_bundle);
               };
           };
       };
@@ -8589,7 +8589,7 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
           fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference, 
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_bundle);
+          fhir_section_entry_reference.type = 'Observation' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient,fhir_bundle);
         };
     };
   };
@@ -8755,7 +8755,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                     then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_laboratory_observation, fhir_bundle)
                     "CdaObservationPerformerToFhirObservationPerformer";
                 cda_component.observationMedia where (performer.exists().not()) then CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle) "CdaNoObservationPerformerToFhirObservationPerformer";
-                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation,fhir_bundle);
+                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation, fhir_patient, fhir_bundle);
               };
           };
       };
@@ -8770,7 +8770,7 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference, 
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_bundle);
+          fhir_section_entry_reference.type = 'Observation' then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
         };
     };
   };
@@ -8788,8 +8788,8 @@ group CdaLabBeilagenSectionToFhirDiagnosticReportSupportingInfo(source cda_secti
       fhir_diagnosticReport.extension as fhir_diagnosticReport_extension, 
       fhir_diagnosticReport_extension.url = 'http://hl7.org/fhir/StructureDefinition/workflow-supportingInfo',
       fhir_diagnosticReport_extension.value = create('Reference') as fhir_diagnosticReport_extension_reference, 
-      fhir_diagnosticReport_extension_reference.reference = append('urn:uuid:',fhir_observation_id) then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_bundle);
-
+      fhir_diagnosticReport_extension_reference.reference = append('urn:uuid:',fhir_observation_id) then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
+  };
   // ToDo: Check if the code below is a better mapping than the one above 
   // cda_section ->
   //   // create Media resource
@@ -9438,7 +9438,7 @@ group CdaLabPerformerToObservationPerformerSecondLevel(source cda: ClinicalDocum
 }
 
 
-group CdaObservationMediaToFhirObservation(source cda_observationMedia : ObservationMedia, target fhir_observation : Observation, target fhir_bundle : Bundle){
+group CdaObservationMediaToFhirObservation(source cda_observationMedia : ObservationMedia, target fhir_observation : Observation, target fhir_patient : Patient, target fhir_bundle : Bundle){
   cda_observationMedia.id -> fhir_observation.identifier; 
   
   cda_observationMedia -> fhir_observation.status = 'unknown';
@@ -9447,6 +9447,18 @@ group CdaObservationMediaToFhirObservation(source cda_observationMedia : Observa
     fhir_observation_code.coding as fhir_observation_code_coding,
     fhir_observation_code_coding.system = 'http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions',
     fhir_observation_code_coding.code = 'OTH';
+
+  cda_observationMedia -> fhir_observation.subject = create('Reference') as fhir_observation_subject_reference,
+    fhir_patient.id as fhir_patient_id,
+    fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id)
+    "FhirObservationSubject";
+
+  cda_observationMedia -> fhir_observation.effectiveTime = create('dateTime') as fhir_observation_effectiveTime,
+    fhir_observation_effectiveTime.extension as fhir_observation_effectiveTime_extension,
+    fhir_observation_effectiveTime_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+    fhir_observation_effectiveTime_extension.value = create('code') as fhir_observation_effectiveTime_extension_code,
+    fhir_observation_effectiveTime_extension_code.code = 'unknown',
+    fhir_observation_effectiveTime_extension_code.system = 'http://terminology.hl7.org/CodeSystem/data-absent-reason';
 
   cda_observationMedia.value as cda_observationMedia_value ->
     fhir_observation.extension as fhir_observation_value_extension,
