@@ -375,11 +375,6 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
   }; 
 }
 
-/*
-group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_composition: Composition, target fhir_medicationRequest: MedicationRequest, target fhir_bundle) {
-}*/
-
-
 group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source cda_entryRelationship: EntryRelationship, target fhir_composition: Composition, target fhir_medication: Medication, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
 
   // Verordnung zu Abgabe -> map to MedicationRequest
@@ -815,8 +810,187 @@ group CdaEmedAbgabeSupplyReferenceToFhir(source cda_supply_reference: CDAReferen
   };
 }
 
-/*
-group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_supply: Act, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
-}*/
-  
-  
+
+// --------------------------------------Verordnung-----------------------------------------------
+
+group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbadm: SubstanceAdministration, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+
+  cda_sbadm ->
+    // create MedicationRequest
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('MedicationRequest') as fhir_medicationRequest,
+    fhir_medicationRequest.meta as fhir_medicationRequest_meta,
+    fhir_medicationRequest_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-medicationrequest',
+    fhir_medicationRequest.id = uuid() as fhir_medicationRequest_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medicationRequest_id),
+
+    // create Medication
+    fhir_bundle.entry as fhir_bundle_entry2,
+    fhir_bundle_entry2.resource = create('Medication') as fhir_medication,
+    fhir_medication.meta as fhir_medication_meta,
+    fhir_medication_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-medication',
+    fhir_medication.id = uuid() as fhir_medication_id,
+    fhir_bundle_entry2.fullUrl = append('urn:uuid:', fhir_medication_id),
+
+    // link Medication to MedicationRequest via medicationReference
+    fhir_medicationRequest.medicationReference = create('Reference') as fhir_medicationRequest_medicationReference_reference,
+    fhir_medicationRequest_medicationReference_reference.reference = append('urn:uuid:', fhir_medication_id),
+    fhir_medicationRequest_medicationReference_reference.type = 'Medication' then {
+
+      // map consumable -> Medication
+      cda_sbadm.consumable as cda_consumable then CdaEmedConsumableToFhirMedication(cda, cda_consumable, fhir_composition, fhir_medication, fhir_patient, fhir_bundle);
+
+      // author
+      cda_sbadm.author as cda_author then CdaEmedVerordnungSbadmAuthorToFhir(cda, cda_author, fhir_composition, fhir_medication, fhir_medicationRequest, fhir_bundle);
+    };
+}
+
+group CdaEmedConsumableToFhirMedication(source cda: ClinicalDocument, source cda_consumable: Consumable, target fhir_composition: Composition, target fhir_medication: Medication, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+    
+    cda_consumable then {
+
+      // fill FHIR Medication resource with information from CDA consumable of Verordnung-Entry
+      cda_consumable.manufacturedProduct as cda_manufacturedProduct then {
+        cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial -> fhir_medication.code = create('CodeableConcept') as fhir_medication_code then {
+
+          cda_manufacturedMaterial.code as cda_manufacturedMaterial_code then {
+
+            // PZN aus Hauptcode
+            // ClinicalDocument/component/structuredBody/section/entry/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code
+            // -> Medication.code.coding (PZN)
+            cda_manufacturedMaterial_code where ($this.codeSystem = '1.2.40.0.34.4.16') ->
+              fhir_medication_code.coding = create('Coding') as fhir_medication_code_coding then
+                CECoding(cda_manufacturedMaterial_code, fhir_medication_code_coding);
+
+            // Zulassungsnummer aus translation
+            // ClinicalDocument/component/structuredBody/section/entry/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code/translation
+            // -> Medication.code.coding (Zulassungsnummer)
+            cda_manufacturedMaterial_code.translation as cda_manufacturedMaterial_code_translation where ($this.codeSystem = '1.2.40.0.34.4.17') ->
+              fhir_medication_code.coding = create('Coding') as fhir_medication_code_coding_translation then
+                CECoding(cda_manufacturedMaterial_code_translation, fhir_medication_code_coding_translation);
+          };
+
+          // Name
+          // ClinicalDocument/component/structuredBody/section/entry/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
+          // -> Medication.code.text
+          cda_manufacturedMaterial.name -> fhir_medication_code.text;
+
+          // Darreichungsform
+          // ClinicalDocument/component/structuredBody/section/entry/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/formCode
+          // -> Medication.form
+          cda_manufacturedMaterial.formCode -> fhir_medication.form;
+
+          // Packungsgröße
+          // ClinicalDocument/component/structuredBody/section/entry/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/asContent/containerPackagedMedicine/capacityQuantity
+          // -> Medication.amount
+          cda_manufacturedMaterial.asContent as cda_asContent then {
+            cda_asContent.containerPackagedMedicine as cda_containerPackagedMedicine then {
+              cda_containerPackagedMedicine.capacityQuantity as capq ->
+                fhir_medication.amount = create('Ratio') as fhir_medication_amount then {
+                  capq -> fhir_medication_amount.numerator = create('Quantity') as fhir_medication_amount_numerator then
+                    PQQuantity(capq, fhir_medication_amount_numerator);
+
+                  capq -> fhir_medication_amount.denominator = create('Quantity') as fhir_medication_amount_denominator,
+                  fhir_medication_amount_denominator.value = '1',
+                  fhir_medication_amount_denominator.unit = 'Packung';
+                };
+            };
+          };
+
+          // Wirkstoffe
+          // ClinicalDocument/component/structuredBody/section/entry/substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/ingredient
+          // -> Medication.ingredient
+          cda_manufacturedMaterial.ingredient as cda_ingredient then {
+            cda_ingredient.ingredient as cda_ingredient_inner ->
+              fhir_medication.ingredient as fhir_medication_ingredient then {
+
+                cda_ingredient_inner ->
+                  fhir_medication_ingredient.item = create('CodeableConcept') as fhir_medication_ingredient_item then {
+
+                    // Name
+                    cda_ingredient_inner.name -> fhir_medication_ingredient_item.text;
+
+                    cda_ingredient_inner.code as cda_ingredient_inner_code then {
+                      // ATC / Hauptcode
+                      cda_ingredient_inner_code where ($this.codeSystem = '2.16.840.1.113883.6.73') ->
+                        fhir_medication_ingredient_item.coding = create('Coding') as fhir_medication_ingredient_item_coding then
+                          CECoding(cda_ingredient_inner_code, fhir_medication_ingredient_item_coding);
+
+                      // AGES Wirkstoff
+                      cda_ingredient_inner_code where ($this.codeSystem = '1.2.40.0.34.5.156') ->
+                        fhir_medication_ingredient_item.coding = create('Coding') as fhir_medication_ingredient_item_coding2 then
+                          CECoding(cda_ingredient_inner_code, fhir_medication_ingredient_item_coding2);
+
+                      // translation, z.B. atc-deutsch-wido
+                      cda_ingredient_inner_code.translation as cda_ingredient_inner_code_translation where ($this.codeSystem = '1.2.276.0.76.5.558') ->
+                        fhir_medication_ingredient_item.coding = create('Coding') as fhir_medication_ingredient_item_coding3 then
+                          CECoding(cda_ingredient_inner_code_translation, fhir_medication_ingredient_item_coding3);
+                    };
+                };
+            };
+          };
+        };
+      };
+    };
+}
+
+group CdaEmedVerordnungSbadmAuthorToFhir(source cda: ClinicalDocument, source cda_author: Author, target fhir_composition: Composition, target fhir_medication: Medication, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
+
+  // Author is Person -> map to PractitionerRole and Practitioner
+  cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedPerson.exists()) then {
+
+      // Date of prescription
+      cda_author.time -> fhir_medicationRequest.authoredOn;
+
+      // create FHIR PractitionerRole resource for the assignedAuthor
+      cda_author_assignedAuthor -> fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.meta as fhir_practitionerRole_meta,
+      fhir_practitionerRole_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-practitionerrole',
+      fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+
+      // link PractitionerRole to MedicationRequest as requester
+      fhir_medicationRequest.requester = create('Reference') as fhir_medicationRequest_requester_reference,
+      fhir_medicationRequest_requester_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+      fhir_medicationRequest_requester_reference.type = 'PractitionerRole',
+
+      // create Practitioner
+      fhir_bundle.entry as fhir_bundle_entry2,
+      fhir_bundle_entry2.resource = create('Practitioner') as fhir_practitioner,
+      fhir_practitioner.meta as fhir_practitioner_meta,
+      fhir_practitioner_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-practitioner',
+      fhir_practitioner.id = uuid() as fhir_practitioner_id,
+      fhir_bundle_entry2.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+
+      // link Practitioner to PractitionerRole
+      fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
+      fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
+      fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then
+        CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author, fhir_practitioner, fhir_practitionerRole, fhir_bundle) "CdaAuthorToFhirPractitionerAndPractitionerRole";
+  };
+
+  // Author is Device -> map to Device
+  cda_author.assignedAuthor as cda_author_assignedAuthor where ($this.assignedAuthoringDevice.exists()) then {
+
+      // Date of prescription
+      cda_author.time -> fhir_medicationRequest.authoredOn;
+
+      // create FHIR Device resource for the assignedAuthor
+      cda_author_assignedAuthor -> fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Device') as fhir_device,
+      fhir_device.meta as fhir_device_meta,
+      fhir_device_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-device',
+      fhir_device.id = uuid() as fhir_device_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
+
+      // link Device to MedicationRequest as requester
+      fhir_medicationRequest.requester = create('Reference') as fhir_medicationRequest_requester_reference,
+      fhir_medicationRequest_requester_reference.reference = append('urn:uuid:', fhir_device_id),
+      fhir_medicationRequest_requester_reference.type = 'Device' then
+        CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle) "CdaAuthorToFhirDevice";
+  };
+}
+
+group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_composition: Composition, target fhir_medicationRequest: MedicationRequest, target fhir_bundle) {
+}
