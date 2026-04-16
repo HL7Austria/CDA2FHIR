@@ -8593,10 +8593,10 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
                 // cda_laboratory_observation.performer exists
                 cda_laboratory_observationMedia.performer as cda_laboratory_observationMedia_performer
                     where cda_laboratory_observationMedia.performer.exists()
-                    then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_laboratory_observation, fhir_bundle)
+                    then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_observation, fhir_bundle)
                     "CdaObservationPerformerToFhirObservationPerformer";
                 cda_component.observationMedia where (performer.exists().not()) then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
-                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation, fhir_patient, fhir_bundle);
+                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
               };
         };
     };
@@ -8782,10 +8782,10 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
                 // cda_laboratory_observation.performer exists
                 cda_laboratory_observationMedia.performer as cda_laboratory_observationMedia_performer
                     where cda_laboratory_observationMedia.performer.exists()
-                    then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_laboratory_observation, fhir_bundle)
+                    then CdaPerformerToFhirObservationPerformer(cda_laboratory_observationMedia_performer, fhir_observation, fhir_bundle)
                     "CdaObservationPerformerToFhirObservationPerformer";
                 cda_component.observationMedia where (performer.exists().not()) then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
-                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_laboratory_observation, fhir_patient, fhir_bundle);
+                cda_laboratory_observationMedia then CdaObservationMediaToFhirObservation(cda_laboratory_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
               };
         };
     };                                                        
