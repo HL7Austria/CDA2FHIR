@@ -51,7 +51,6 @@ jobs:
 
   convert:
     runs-on: ubuntu-latest
-    needs: [malac]
     steps:
       - name: Check out repo
         uses: actions/checkout@v5
