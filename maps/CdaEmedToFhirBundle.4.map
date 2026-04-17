@@ -947,5 +947,345 @@ group CdaEmedVerordnungSbadmAuthorToFhir(source cda: ClinicalDocument, source cd
   };
 }*/
 
-group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_composition: Composition, target fhir_medicationRequest: MedicationRequest, target fhir_bundle) {
+/*group CdaEmedVerordnungSupplyEntryToFhir(source cda_author: Author, target fhir_composition: Composition, target fhir_medicationRequest: MedicationRequest, target fhir_bundle) {
+}*/
+
+group CdaEmedVerordnungEntryRelationshipToFhir(source cda: ClinicalDocument, source cda_entryRelationship: EntryRelationship, target fhir_composition: Composition, target fhir_medication: Medication, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
+
+  // Verordnete Menge -> MedicationRequest.dispenseRequest.quantity
+  cda_entryRelationship where ($this.typeCode = 'COMP') then {
+    cda_entryRelationship.supply as cda_entryRelationship_supply then {
+      cda_entryRelationship_supply.quantity as cda_entryRelationship_supply_quantity ->
+        fhir_medicationRequest.dispenseRequest = create('BackboneElement') as fhir_medicationRequest_dispenseRequest,
+        fhir_medicationRequest_dispenseRequest.quantity = create('Quantity') as fhir_medicationRequest_dispenseRequest_quantity then
+          PQQuantity(cda_entryRelationship_supply_quantity, fhir_medicationRequest_dispenseRequest_quantity);
+    };
+  };
+
+  cda_entryRelationship where ($this.typeCode = 'SUBJ') then {
+    // Patienteninstruktionen -> MedicationRequest.dosageInstruction.patientInstruction
+    // section/entry/substanceAdministration/entryRelationship/act/text/@value (code PINSTRUCT) -> MedicationRequest.dosageInstruction.patientInstruction
+    cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'PINSTRUCT') then {
+      cda_entryRelationship_act.text as cda_entryRelationship_act_text then {
+        cda_entryRelationship_act_text.reference as cda_entryRelationship_act_reference ->
+          fhir_medicationRequest.dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction,
+          fhir_medicationRequest_dosageInstruction.patientInstruction as fhir_medicationRequest_dosageInstruction_patientInstruction then {
+            cda_entryRelationship_act_reference.value as cda_entryRelationship_act_reference_value then {
+
+              cda.component as cda_component then {
+                cda_component.structuredBody as cda_structuredBody then {
+                  cda_structuredBody.component as cda_structuredBody_component then {
+                    cda_structuredBody_component.section as cda_section then {
+                      cda_section.text as cda_section_text then {
+
+                        cda_section_text ->
+                          create('Narrative') as fhir_narrative,
+                          fhir_narrative.div = cda_section_text as fhir_narrative_div,
+
+                          create('string') as fhir_string,
+                          fhir_string = (fhir_narrative_div),
+
+                          create('string') as fhir_substring_01,
+                          fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)))),
+
+                          create('string') as fhir_substring_02,
+                          fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                          fhir_medicationRequest_dosageInstruction_patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
+                  };
+                };
+              };
+            };
+          };
+      };
+
+      // Zusatzinformationen für den Patienten -> MedicationRequest.dosageInstruction.patientInstruction
+      cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ZINFO') then {
+        cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+          cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+              fhir_medicationRequest.dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction2,
+              fhir_medicationRequest_dosageInstruction2.patientInstruction as fhir_medicationRequest_dosageInstruction2_patientInstruction then {
+                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+
+                  cda.component as cda_component then {
+                    cda_structuredBody.component as cda_structuredBody_component then {
+                      cda_section.text as cda_section_text then {
+
+                        cda_section_text ->
+                          create('Narrative') as fhir_narrative,
+                          fhir_narrative.div = cda_section_text as fhir_narrative_div,
+
+                          create('string') as fhir_string,
+                          fhir_string = (fhir_narrative_div),
+
+                          create('string') as fhir_substring_01,
+                          fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+
+                          create('string') as fhir_substring_02,
+                          fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                          fhir_medicationRequest_dosageInstruction2_patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
+                  };
+                };
+              };
+          };
+        };
+      };
+
+      // Informationen zur alternativen Einnahme -> MedicationRequest.dosageInstruction.text
+      cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ALTEIN') then {
+        cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+          cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+              fhir_medicationRequest.dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction3,
+              fhir_medicationRequest_dosageInstruction3.text as fhir_medicationRequest_dosageInstruction3_text then {
+                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+
+                  cda.component as cda_component then {
+                    cda_structuredBody.component as cda_structuredBody_component then {
+                      cda_section.text as cda_section_text then {
+
+                        cda_section_text ->
+                          create('Narrative') as fhir_narrative,
+                          fhir_narrative.div = cda_section_text as fhir_narrative_div,
+
+                          create('string') as fhir_string,
+                          fhir_string = (fhir_narrative_div),
+
+                          create('string') as fhir_substring_01,
+                          fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+
+                          create('string') as fhir_substring_02,
+                          fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                          fhir_medicationRequest_dosageInstruction3.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
+                  };
+                };
+              };
+          };
+        };
+      };
+    };
+
+    // Informationen zur Verordnung -> MedicationRequest.dosageInstruction.text
+    // section/entry/substanceAdministration/entryRelationship/act/text/@value (code FINSTRUCT) -> MedicationRequest.dosageInstruction.text
+    cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {
+      cda_entryRelationship_act.text as cda_entryRelationship_act_text then {
+        cda_entryRelationship_act_text.reference as cda_entryRelationship_act_reference ->
+          fhir_medicationRequest.dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction4,
+          fhir_medicationRequest_dosageInstruction4.text as fhir_medicationRequest_dosageInstruction4_text then {
+            cda_entryRelationship_act_reference.value as cda_entryRelationship_act_reference_value then {
+
+              cda.component as cda_component then {
+                cda_structuredBody.component as cda_structuredBody_component then {
+                  cda_section.text as cda_section_text then {
+
+                    cda_section_text ->
+                      create('Narrative') as fhir_narrative,
+                      fhir_narrative.div = cda_section_text as fhir_narrative_div,
+
+                      create('string') as fhir_string,
+                      fhir_string = (fhir_narrative_div),
+
+                      create('string') as fhir_substring_01,
+                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_reference_value.substring(1)))),
+
+                      create('string') as fhir_substring_02,
+                      fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                      fhir_medicationRequest_dosageInstruction4.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                  };
+                };
+              };
+            };
+          };
+      };
+
+      // Ergänzende Informationen zur Verordnung -> MedicationRequest.dosageInstruction.text
+      cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.code.code = 'ERGINFO') then {
+        cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+          cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+              fhir_medicationRequest.dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction5,
+              fhir_medicationRequest_dosageInstruction5.text as fhir_medicationRequest_dosageInstruction5_text then {
+                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+
+                  cda.component as cda_component then {
+                    cda_structuredBody.component as cda_structuredBody_component then {
+                      cda_section.text as cda_section_text then {
+
+                        cda_section_text ->
+                          create('Narrative') as fhir_narrative,
+                          fhir_narrative.div = cda_section_text as fhir_narrative_div,
+
+                          create('string') as fhir_string,
+                          fhir_string = (fhir_narrative_div),
+
+                          create('string') as fhir_substring_01,
+                          fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+
+                          create('string') as fhir_substring_02,
+                          fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                          fhir_medicationRequest_dosageInstruction5.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                      };
+                    };
+                  };
+                };
+              };
+          };
+        };
+      };
+    };
+
+    cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {
+
+      cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.substanceAdministration.exists()) then {
+        cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration ->
+          fhir_medicationRequest.dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction then {
+
+            // Aufsteigende Nummerierung der Unterelemente
+            cda_entryRelationship_act_entryRelationship.sequenceNumber -> fhir_medicationRequest_dosageInstruction.sequence;
+
+            // Einnahmedauer Period -> MedicationRequest.dosageInstruction.timing.boundsPeriod
+            cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime where ($this.width.exists().not()) ->
+              fhir_medicationRequest_dosageInstruction.timing = create('Timing') as fhir_medicationRequest_dosageInstruction_timing,
+              fhir_medicationRequest_dosageInstruction_timing.boundsPeriod = create('Period') as fhir_medicationRequest_dosageInstruction_timing_boundsPeriod then {
+                cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime then IVLTSPeriod(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime, fhir_medicationRequest_dosageInstruction_timing_boundsPeriod);
+              };
+
+            // Einnahmedauer Duration -> MedicationRequest.dosageInstruction.timing.boundsDuration
+            cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime where ($this.width.exists()) ->
+              fhir_medicationRequest_dosageInstruction.timing = create('Timing') as fhir_medicationRequest_dosageInstruction_timing,
+              fhir_medicationRequest_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then {
+                cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.width as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_width then
+                  PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_width, fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
+              };
+
+            // Art der Anwendung
+            cda_entryRelationship_act_entryRelationship_substanceAdministration.routeCode ->
+              fhir_medicationRequest_dosageInstruction.route;
+
+            // Tagesdosierung
+            cda_entryRelationship_act_entryRelationship.doseQuantity as cda_entryRelationship_act_entryRelationship_doseQuantity ->
+              fhir_medicationRequest_dosageInstruction.doseAndRate = create('Element') as fhir_medicationRequest_dosageInstruction_doseAndRate,
+              fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then
+                PQQuantity(cda_entryRelationship_act_entryRelationship_doseQuantity, fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
+
+            // Normal Dosing
+            cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration where ($this.templateId.root = '1.3.6.1.4.1.19376.1.5.3.1.4.7.1') then {
+              cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime ->
+                fhir_medicationRequest_dosageInstruction.timing = create('Timing') as fhir_medicationRequest_dosageInstruction_timing then {
+
+                  // Zeitraum und Periodeneinheit der Dosis
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_period ->
+                    fhir_medicationRequest_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then
+                      PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_period, fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
+
+                  // Tagesdosierung
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.doseQuantity as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_doseQuantity ->
+                    fhir_medicationRequest_dosageInstruction.doseAndRate = create('Element') as fhir_medicationRequest_dosageInstruction_doseAndRate,
+                    fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then
+                      PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_doseQuantity, fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
+
+                  // Tagesdosierung an EINEM Tag
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase,
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase_value ->
+                    fhir_medicationRequest_dosageInstruction_timing.event as fhir_medicationRequest_dosageInstruction_timing_event then
+                      TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_phase_value, fhir_medicationRequest_dosageInstruction_timing_event);
+
+                  // Tagesdosierung an MEHREREN Tagen
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.comp as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp then {
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase,
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase_value ->
+                      fhir_medicationRequest_dosageInstruction_timing.event as fhir_medicationRequest_dosageInstruction_timing_event then
+                        TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase_value, fhir_medicationRequest_dosageInstruction_timing_event);
+
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period ->
+                      fhir_medicationRequest_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then
+                        PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period, fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
+                  };
+                };
+            };
+
+            // Split Dosing
+            cda_entryRelationship_act_entryRelationship.substanceAdministration as cda_entryRelationship_act_entryRelationship_substanceAdministration where ($this.templateId.root = '1.3.6.1.4.1.19376.1.5.3.1.4.9') then {
+              cda_entryRelationship_act_entryRelationship_substanceAdministration.effectiveTime as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime ->
+                fhir_medicationRequest_dosageInstruction.timing = create('Timing') as fhir_medicationRequest_dosageInstruction_timing then {
+
+                  // Einnahmezeitpunkt als Zeitcode
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.event as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_event ->
+                    fhir_medicationRequest_dosageInstruction_timing.code as fhir_medicationRequest_dosageInstruction_timing_code then
+                      CECodeableConcept(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_event, fhir_medicationRequest_dosageInstruction_timing_code);
+
+                  // Offset
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset,
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset_value ->
+                    fhir_medicationRequest_dosageInstruction_timing.repeat as fhir_medicationRequest_dosageInstruction_timing_repeat,
+                    fhir_medicationRequest_dosageInstruction_timing_repeat.offset as fhir_medicationRequest_dosageInstruction_timing_repeat_offset then
+                      INT(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_offset_value, fhir_medicationRequest_dosageInstruction_timing_repeat_offset);
+
+                  cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime.comp as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp then {
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.event as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_event ->
+                      fhir_medicationRequest_dosageInstruction_timing.code as fhir_medicationRequest_dosageInstruction_timing_code then
+                        CECodeableConcept(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_event, fhir_medicationRequest_dosageInstruction_timing_code);
+
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.offset as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_offset,
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_offset.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value ->
+                      fhir_medicationRequest_dosageInstruction_timing.repeat as fhir_medicationRequest_dosageInstruction_timing_repeat2,
+                      fhir_medicationRequest_dosageInstruction_timing_repeat2.offset as fhir_medicationRequest_dosageInstruction_timing_repeat2_offset then
+                        INT(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value, fhir_medicationRequest_dosageInstruction_timing_repeat2_offset);
+
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.phase as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase,
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase.value as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase_value ->
+                      fhir_medicationRequest_dosageInstruction_timing.event as fhir_medicationRequest_dosageInstruction_timing_event then
+                        TSDateTime(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_phase_value, fhir_medicationRequest_dosageInstruction_timing_event);
+
+                    cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp.period as cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period ->
+                      fhir_medicationRequest_dosageInstruction_timing.boundsDuration = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then
+                        PQQuantity(cda_entryRelationship_act_entryRelationship_substanceAdministration_effectiveTime_comp_period, fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
+                  };
+
+                  // Tagesdosierung
+                  cda_entryRelationship_act_entryRelationship.doseQuantity as cda_entryRelationship_act_entryRelationship_doseQuantity ->
+                    fhir_medicationRequest_dosageInstruction.doseAndRate = create('Element') as fhir_medicationRequest_dosageInstruction_doseAndRate,
+                    fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then
+                      PQQuantity(cda_entryRelationship_act_entryRelationship_doseQuantity, fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
+                };
+            };
+          };
+      };
+    };
+
+    cda_entryRelationship.act as cda_entryRelationship_act where ($this.templateId.root = '1.2.40.0.34.11.8.1.3.4') then {
+      cda_entryRelationship_act.code as cda_entryRelationship_act_code ->
+        fhir_medicationRequest.note = create('Annotation') as fhir_medicationRequest_note then {
+          cda_entryRelationship_act_code.code as cda_entryRelationship_act_code_code ->
+            fhir_medicationRequest_note.text = (cda_entryRelationship_act_code_code) then {
+              cda_entryRelationship_act_code.originalText as cda_entryRelationship_act_code_originalText ->
+                fhir_medicationRequest_note.text = append(cda_entryRelationship_act_code_code + ' | ', cda_entryRelationship_act_code_originalText);
+          };
+        };
+    };
+
+  };
+}
+
+group CdaEmedVerordnungSbadmReferenceToFhir(source cda_sbadm_reference: CDAReference, target fhir_medicationRequest: MedicationRequest) {
+
+  // ID des VerordnungsEntry-Containers / Rezept-Dokuments
+  cda_sbadm_reference as cda_reference where ($this.typeCode = 'XCRPT') then {
+    cda_reference.externalDocument as cda_reference_externalDocument then {
+      cda_reference_externalDocument.id as cda_reference_externalDocument_id ->
+        fhir_medicationRequest.identifier = create('Identifier') as fhir_medicationRequest_identifier then
+          II(cda_reference_externalDocument_id, fhir_medicationRequest_identifier);
+    };
+  };
 }
