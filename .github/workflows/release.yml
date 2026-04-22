@@ -1,0 +1,40 @@
+# Workflow to convert the given FML to Python using MaLaC-HD
+
+name: Update ELGA GitLab based on release
+
+on:
+  release:
+    types: [ released ]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository 
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Update pip
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          pip install requests pandas openpyxl
+
+      - name: Create MR in ELGA repository
+        env:
+          GITLAB_CI_TOKEN: ${{ secrets.GLE_GITLAB_CI_TOKEN }}
+          GITLAB_ELGA_CDA2FHIR_REPO: ${{ vars.GITLAB_ELGA_MYHEALTHEU_MALACSERVICE_REPO }}
+          GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH: ${{ vars.GITLAB_ELGA_MYHEALTHEU_MALACSERVICE_REPO_TARGET_BRANCH }}
+          RELEASE_URL: ${{ github.event.release.html_url }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_DESCRIPTION: ${{ github.event.release.body }}
+          RELEASE_DATE: ${{ github.event.release.published_at }}
+        run: |
+          python scripts/update_elga.py

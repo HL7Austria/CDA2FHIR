@@ -78,12 +78,17 @@ def commit(topic, source_path, target_path, action='Update'):
 res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/branches?branch={SOURCE_BRANCH}&ref={TARGET_BRANCH}', headers=HEADERS)
 check_response(res)
 
+target_scripts_path = os.path.join('resources', 'scripts', 'r4')
+
 # update README.md
-commit('README', os.path.join('python-maps', 'README.md'), 'README.md')
+commit('README', os.path.join('python-maps', 'README.md'), os.path.join(target_scripts_path, 'README.md'))
 
 # update CdaToFhirBundle.py
-commit('CDA2FHIR mapping', os.path.join('python-maps', 'CdaToFhirBundle.4.py'), 'CdaToFhirBundle.4.py')
-    
+commit('CDA2FHIR mapping', os.path.join('python-maps', 'CdaToFhirBundle.4.py'), os.path.join(target_scripts_path, 'CdaToFhirBundle.4.py'))
+
+# update pyproject.toml
+commit('PyProject TOML', os.path.join('python-maps', 'pyproject.toml'), os.path.join(target_scripts_path, 'pyproject.toml'))
+
 # update requirements.txt
 commit('dependencies', os.path.join('python-maps', 'requirements.txt'), 'requirements.txt')
 
@@ -101,6 +106,12 @@ for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
         df.to_excel(writer, sheet_name='META', header=False)
 
     commit('documentation', excel, os.path.join('documentation', os.path.basename(excel)))
+
+# update sample files
+
+for sample_file in glob.glob(os.path.join('input', '**', '*.xml')):
+    print(sample_file)
+    commit('sample file', sample_file, sample_file.replace('input', 'samples'))
 
 # create MR
 
