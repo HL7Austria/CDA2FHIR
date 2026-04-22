@@ -26,7 +26,7 @@ jobs:
 
       - name: Install MaLaC-HD with CDA model
         run: |
-          pip install malac-hd[cda]
+          pip install -r python-maps/requirements.txt
 
       - name: Run MaLaC-HD
         run: |
@@ -48,11 +48,11 @@ jobs:
         run: |
           python scripts/combine_coverage.py
 
-      - name: display coverage
-        uses: orgoro/coverage@v3.2
-        with:
-          coverageFile: coverage/coverage.xml
-          token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: display coverage
+      #   uses: orgoro/coverage@v3.2
+      #   with:
+      #     coverageFile: coverage/coverage.xml
+      #     token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: upload
         uses: actions/upload-artifact@v4
