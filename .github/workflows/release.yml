@@ -51,7 +51,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG="v${{ needs.get-version.outputs.version }}"
+          TAG="${{ needs.get-version.outputs.version }}"
 
           gh release create "$TAG" \
             --title "$TAG" \
