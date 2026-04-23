@@ -11,6 +11,7 @@ TARGET_BRANCH = os.environ['GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH']
 RELEASE_URL = os.environ['RELEASE_URL']
 SOURCE_BRANCH = os.environ['RELEASE_TAG']
 RELEASE_DESCRIPTION = os.environ['RELEASE_DESCRIPTION']
+ELGA_JIRA_TICKET_NR = os.environ['ELGA_JIRA_TICKET_NR']
 
 print('-------------------------------------------------')
 print('PROJECT_ID: ' + PROJECT_ID)
@@ -50,7 +51,7 @@ def create_action(file_path, content, action='update', encoding='text'):
 def commit(topic, source_path, target_path, action='Update'):
     # create new commit
     commit_data = { 'branch': SOURCE_BRANCH,
-            'commit_message': f'{action} {topic}',
+            'commit_message': f'{ELGA_JIRA_TICKET_NR} {action} {topic}',
             'actions': []}
     commit_actions = commit_data['actions']
 
