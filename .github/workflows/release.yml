@@ -55,7 +55,8 @@ jobs:
 
           gh release create "$TAG" \
             --title "$TAG" \
-            --generate-notes
+            --generate-notes \
+            --latest=false
 
           BODY=$(gh release view "$TAG" --json body -q .body)
           URL=$(gh release view "$TAG" --json url -q .url)
