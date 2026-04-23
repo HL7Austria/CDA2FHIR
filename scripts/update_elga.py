@@ -81,8 +81,8 @@ check_response(res)
 
 target_scripts_path = os.path.join('resources', 'scripts', 'r4')
 
-# update README.md
-commit('README', os.path.join('python-maps', 'README.md'), os.path.join(target_scripts_path, 'README.md'))
+# # update README.md
+# commit('README', os.path.join('python-maps', 'README.md'), os.path.join(target_scripts_path, 'README.md'))
 
 # update CdaToFhirBundle.py
 commit('CDA2FHIR mapping', os.path.join('python-maps', 'CdaToFhirBundle.4.py'), os.path.join(target_scripts_path, 'CdaToFhirBundle.4.py'))
