@@ -93,26 +93,26 @@ commit('PyProject TOML', os.path.join('python-maps', 'pyproject.toml'), os.path.
 # update requirements.txt
 commit('dependencies', os.path.join('python-maps', 'requirements.txt'), 'requirements.txt')
 
-# update documentation
-data = {
-    'Metadata': [os.environ['RELEASE_URL'], os.environ['RELEASE_TAG'], os.environ['RELEASE_DATE']]
-}
-index = ['RELEASE_URL', 'RELEASE_TAG', 'RELEASE_DATE']
-df = pandas.DataFrame(data, index = index)
+# # update documentation
+# data = {
+#     'Metadata': [os.environ['RELEASE_URL'], os.environ['RELEASE_TAG'], os.environ['RELEASE_DATE']]
+# }
+# index = ['RELEASE_URL', 'RELEASE_TAG', 'RELEASE_DATE']
+# df = pandas.DataFrame(data, index = index)
 
-for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
-    print(excel)
+# for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
+#     print(excel)
 
-    with pandas.ExcelWriter(excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
-        df.to_excel(writer, sheet_name='META', header=False)
+#     with pandas.ExcelWriter(excel, engine='openpyxl', mode='a', if_sheet_exists='overlay') as writer:
+#         df.to_excel(writer, sheet_name='META', header=False)
 
-    commit('documentation', excel, os.path.join('documentation', os.path.basename(excel)))
+#     commit('documentation', excel, os.path.join('documentation', os.path.basename(excel)))
 
-# update sample files
+# # update sample files
 
-for sample_file in glob.glob(os.path.join('input', '**', '*.xml')):
-    print(sample_file)
-    commit('sample file', sample_file, sample_file.replace('input', 'samples'))
+# for sample_file in glob.glob(os.path.join('input', '**', '*.xml')):
+#     print(sample_file)
+#     commit('sample file', sample_file, sample_file.replace('input', 'samples'))
 
 # create MR
 
