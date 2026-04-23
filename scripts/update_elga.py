@@ -76,7 +76,7 @@ def commit(topic, source_path, target_path, action='Update'):
             res.raise_for_status()
 
 # create new branch based on TARGET_BRANCH
-res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/branches?branch={SOURCE_BRANCH}&ref={TARGET_BRANCH}', headers=HEADERS)
+res = requests.post(f'https://gitlab.com/api/v4/projects/{PROJECT_ID}/repository/branches?branch=v{SOURCE_BRANCH}&ref={TARGET_BRANCH}', headers=HEADERS)
 check_response(res)
 
 target_scripts_path = os.path.join('resources', 'scripts', 'r4')
@@ -122,7 +122,7 @@ updated_release_description = re.sub(r'@', '', RELEASE_DESCRIPTION)
 updated_release_description = f'**Link to GitHub-Release:** {RELEASE_URL}\n{updated_release_description}' 
 
 data = {
-    'title': f'Release {SOURCE_BRANCH}',
+    'title': f'{SOURCE_BRANCH} {ELGA_JIRA_TICKET_NR} Update CDA2FHIR mapping',
     'source_branch': SOURCE_BRANCH,
     'target_branch': TARGET_BRANCH,
     'description': updated_release_description
