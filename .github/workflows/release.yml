@@ -23,7 +23,8 @@ jobs:
         run: |
           VERSION=$(python - <<'EOF'
           import tomllib
-          with open("pyproject.toml", "rb") as f:
+          import os
+          with open(os.path.join('python-maps', 'pyproject.toml'), "rb") as f:
               data = tomllib.load(f)
           print(data["project"]["version"])
           EOF
