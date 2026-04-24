@@ -161,7 +161,9 @@ group CdaEimpfBodyToFhir(source cda: CdaClinicalDocument, source cda_structuredB
     // cda_component.section as cda_indikationsgruppen_section where code.where(code='11450-4' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_2 then CdaIndikationsgruppenSectionToFhirCompositionSection(cda_indikationsgruppen_section, fhir_section_2, fhir_bundle);
     
     // Impfrelevante Erkrankungen - kodiert - 1.2.40.0.34.6.0.11.2.5
-    // cda_component.section as cda_impfrelevante_erkrankungen_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_3 then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_impfrelevante_erkrankungen_section, fhir_section_3, fhir_bundle);
+    // APS section: History of Past Illness
+    cda_component.section as cda_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> 
+      fhir_composition.section as fhir_section then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_section, fhir_patient,fhir_section, fhir_bundle);
     
     // Antikörper-Bestimmung - kodiert - 1.2.40.0.34.6.0.11.2.7
     // cda_component.section as cda_antikoerper_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_4 then CdaAntikoerperSectionToFhirCompositionSection(cda_antikoerper_section, fhir_section_4, fhir_bundle);
@@ -220,7 +222,9 @@ group CdaEimpfImpfungenKodiertToFhirSection(source cda_section: CdaSection, targ
   // currently not necessary to be mapped:
   //   Since the section/text is not displayed, the translation is irrelevant in that context.
 }
-
+group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
+  
+}
 group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code;
