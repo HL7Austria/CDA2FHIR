@@ -91,7 +91,7 @@ commit('CDA2FHIR mapping', os.path.join('python-maps', 'CdaToFhirBundle.4.py'), 
 commit('PyProject TOML', os.path.join('python-maps', 'pyproject.toml'), os.path.join(target_scripts_path, 'pyproject.toml'))
 
 # update requirements.txt
-commit('dependencies', os.path.join('python-maps', 'requirements.txt'), 'requirements.txt')
+commit('dependencies', os.path.join('python-maps', 'requirements.txt'), os.path.join(target_scripts_path, 'requirements.txt'))
 
 # # update documentation
 # data = {
