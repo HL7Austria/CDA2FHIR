@@ -262,15 +262,15 @@ group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_supply: 
       cda_supply.quantity -> fhir_medicationDispense.quantity;
 
       // create Medication
-      cda_supply.product as cda_product -> fhir_bundle.entry as fhir_bundle_entry,
-      fhir_bundle_entry.resource = create('Medication') as fhir_medication,
+      cda_supply.product as cda_product -> fhir_bundle.entry as fhir_bundle_entry3,
+      fhir_bundle_entry3.resource = create('Medication') as fhir_medication,
       fhir_medication.meta as fhir_medication_meta,
       fhir_medication_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-medication',
       fhir_medication.id = uuid() as fhir_medication_id,
-      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_medication_id),
+      fhir_bundle_entry3.fullUrl = append('urn:uuid:', fhir_medication_id)/*,
       fhir_composition.section = create('Reference') as fhir_composition_section_reference,
       fhir_composition_section_reference.reference = append('urn:uuid:', fhir_medication_id),
-      fhir_composition_section_reference.type = 'Medication',
+      fhir_composition_section_reference.type = 'Medication',*/
       // link MedicationDispense to Medication
       fhir_medicationDispense.medication = create('Reference') as fhir_medicationDispense_medication_reference,
       fhir_medicationDispense_medication_reference.reference = append('urn:uuid:', fhir_medication_id),
