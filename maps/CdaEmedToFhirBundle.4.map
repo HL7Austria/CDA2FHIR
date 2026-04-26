@@ -440,6 +440,7 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                           // Create Narrative (same datatype as in Composition.section.text)
                           create('Narrative') as fhir_narrative,
                           // section/text -> Narrative.div
+                          fhir_narrative.status = 'additional',
                           fhir_narrative.div = cda_section_text as fhir_narrative_div,
                                         
                           // Create string
@@ -510,7 +511,8 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                           //create('string') as fhir_substring_03,
                           //fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
                           //create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medicationDispense_dosageInstruction_text.empty(),'',fhir_medicationDispense_dosageInstruction_text)),
-                          fhir_medicationDispense_dosageInstruction_text.div = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));//(fhir_string_05 + '|' + fhir_string_03);
+                          create('string') as fhir_string_02, fhir_string_02 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                          fhir_medicationDispense_dosageInstruction_text = append(fhir_string_02);//(fhir_string_05 + '|' + fhir_string_03);
                         };
                       };
                     };
@@ -526,7 +528,8 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
       cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ARZNEIINFO') then {
         cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
           cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medication.text = create('Narrative') as fhir_medication_text then {
+            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+            fhir_medication.text = create('Narrative') as fhir_medication_text, fhir_medication_text.status = 'additional' then {
               cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
                   
                 cda.component as cda_component then {
@@ -565,7 +568,9 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                           create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medication_text.text.empty(),'',fhir_medication_text.text)),
                           fhir_medication_text.text = (fhir_string_05 + '|' + fhir_string_03),
                           fhir_medication.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));*/
-                          fhir_medication_text.div = fhir_substring_02;//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                          //create('string') as fhir_string_02,
+                          //fhir_string_02 = ('<div>' & fhir_substring_02 & '</div>'),
+                          fhir_medication_text.div = append(fhir_substring_02);//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
                         };
                       };
                     };
@@ -623,7 +628,8 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                           //create('string') as fhir_string_03,
                           //fhir_string_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
                           //create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medicationDispense_dosageInstruction_text.empty(),' ',fhir_medicationDispense_dosageInstruction_text)),
-                          fhir_medicationDispense_dosageInstruction_text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))); //(fhir_string_05 + '|' + fhir_string_03);
+                          create('string') as fhir_string_02, fhir_string_02 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                          fhir_medicationDispense_dosageInstruction_text = append(fhir_string_02); //(fhir_string_05 + '|' + fhir_string_03);
                         };
                       };
                     };
@@ -640,7 +646,8 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
       cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'MAGZUB') then {
         cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
           cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medication.text = create('Narrative') as fhir_medication_text then {
+            cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+            fhir_medication.text = create('Narrative') as fhir_medication_text, fhir_medication_text.status = 'additional' then {
               cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
                         
                 cda.component as cda_component then {
@@ -687,7 +694,9 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                           create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medication_text.text.empty(),'',fhir_medication_text.text)),
                           fhir_medication_text.text = (fhir_string_05 + '|' + fhir_string_03),
                           fhir_medication.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));*/
-                          fhir_medication_text.div = fhir_substring_02;//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                          //create('string') as fhir_string_02,
+                          //fhir_string_02 = ('<div>' & fhir_substring_02 & '</div>'),
+                          fhir_medication_text.div = append(fhir_substring_02);//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
                         };
                       };
                     };
@@ -1095,7 +1104,8 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbad
                             //create('string') as fhir_substring_03,
                             //fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
                             //create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medicationDispense_dosageInstruction_text.empty(),'',fhir_medicationDispense_dosageInstruction_text)),
-                            fhir_medicationRequest_dosageInstruction_text.div = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));//(fhir_string_05 + '|' + fhir_string_03);
+                            //create('string') as fhir_string_02, fhir_string_02 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                            fhir_medicationRequest_dosageInstruction_text = append(fhir_substring_02);//(fhir_string_05 + '|' + fhir_string_03);
                           };
                         };
                       };
@@ -1111,7 +1121,8 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbad
         cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ARZNEIINFO') then {
           cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
             cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medication.text = create('Narrative') as fhir_medication_text then {
+              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+              fhir_medication.text = create('Narrative') as fhir_medication_text, fhir_medication_text.status = 'additional' then {
                 cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
                     
                   cda.component as cda_component then {
@@ -1150,7 +1161,9 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbad
                             create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medication_text.text.empty(),'',fhir_medication_text.text)),
                             fhir_medication_text.text = (fhir_string_05 + '|' + fhir_string_03),
                             fhir_medication.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));*/
-                            fhir_medication_text.div = fhir_substring_02;//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                            //create('string') as fhir_string_02,
+                            //fhir_string_02 = ('<div>' & fhir_substring_02 & '</div>'),
+                            fhir_medication_text.div = append(fhir_substring_02);//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
                           };
                         };
                       };
@@ -1208,7 +1221,8 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbad
                               //fhir_string_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
                               //create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medicationDispense_dosageInstruction_text.empty(),' ',fhir_medicationDispense_dosageInstruction_text)),
                               //fhir_medicationDispense_dosageInstruction_text.div = (fhir_string_05 + '|' + fhir_string_03);
-                              fhir_medicationRequest_dosageInstruction_text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                              create('string') as fhir_string_02, fhir_string_02 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                              fhir_medicationRequest_dosageInstruction_text = append(fhir_string_02);
                             };
                           };
                         };
@@ -1262,7 +1276,9 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbad
                             //create('string') as fhir_string_04,
                             //fhir_string_04 = (iif(fhir_medication.text.div.empty(),fhir_string_03,(fhir_medication.text.div))),
                             //create('string') as fhir_string_05, fhir_string_05 = (iif(fhir_medication_text.text.empty(),'',fhir_medication_text.text)),
-                            fhir_medication_text.div = fhir_substring_02;//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                            //create('string') as fhir_string_02,
+                            //fhir_string_02 = ('<div>' & fhir_substring_02 & '</div>'),
+                            fhir_medication_text.div = append(fhir_substring_02);//(fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
                           };
                         };
                       };
