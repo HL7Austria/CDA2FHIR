@@ -8426,6 +8426,7 @@ group CdaLabSpecimenSectionToFhirSpecimen(source cda_section: Section, target fh
 }
 
 group CdaLabSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+  // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   // section.code
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
   cda_section.code -> fhir_section.code;
@@ -8815,12 +8816,14 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
 
       // Entnahmeort
       // procedure.targetSiteCode
-      // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-humanactsite to https://fhir.ehdsi.eu/laboratory/ValueSet-eHDSILabSpecimenTypeWithExceptions.html
+      // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-humanactsite to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
+      // Question: Is the bodySite ValueSet correct? Is this the correct VS? https://fhir.ehdsi.eu/laboratory/ValueSet-eHDSIBodySiteWithExceptions.html
 
-      // Info which Templates are using this mapping: 
+      // Info about the Mapping of targetSiteCode to bodySite: 
       // This VS is specified in the Specimen Collection template (https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31) which is referenced by 2 Templates:
       // - Laboratory Data Processing Entry(https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.25/2023-06-01T13:53:03) and 
       // - Probeinformation (Specimen Section) (https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.2.93/2026-01-13T14:05:55)
+      // FHIR eHDSI The target resource is: https://fhir.ehdsi.eu/laboratory/StructureDefinition-Specimen-lab-myhealtheu.html
 
       cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
       // TODO: remove before production
@@ -8862,8 +8865,15 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
             cda_participantRole.id -> fhir_specimen.identifier;
             // procedure.participant.participantRole.playingEntity.code
             // TODO mapping on CTS required from
-            //   https://termgit.elga.gv.at/ValueSet/elga-probenmaterial to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
-            //   https://termgit.elga.gv.at/ValueSet/elga-specimentype to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
+            //   https://termgit.elga.gv.at/ValueSet/elga-probenmaterial to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions // Deprecated URL? https://fhir.ehdsi.eu/laboratory/ValueSet-eHDSILabSpecimenTypeWithExceptions.html
+            
+            // This VS is specified in the Basisleitfäden: (https://art-decor.org/ad/#/elga-/rules/templates/1.2.40.0.34.11.30021/2014-03-04T00:00:00) 
+
+              // https://termgit.elga.gv.at/ValueSet/elga-specimentype to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
+
+            // Where does the elga-specimentype ValueSet come from? I only see ELGA_Probenmaterial_VS specified in 
+            // proceudre.participant.participantRole.playingEntity.code https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31
+
             cda_playingEntity.code -> fhir_specimen.type;
             // TODO: remove before production
             // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
@@ -8930,6 +8940,7 @@ group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_
   // organizer.code
   cda_organizer.code -> fhir_observation.category;
 
+  // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions
   cda_organizer.code -> fhir_observation.code;
   // TODO: remove before production
@@ -9066,8 +9077,9 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
   // cda_laboratory_observation.interpretationCode -> fhir_observation.interpretation;
   // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
   // ONLY FOR TESTING
+
+  // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
     fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
     fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
