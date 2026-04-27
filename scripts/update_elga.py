@@ -102,6 +102,12 @@ for excel in glob.glob(os.path.join('python-maps', 'documentation', '*.xlsx')):
 
     commit('documentation', excel, os.path.join('documentation', os.path.basename(excel)))
 
+# update sample files
+
+for sample_file in glob.glob(os.path.join('input', '**', '*.xml')):
+    print(sample_file)
+    commit('sample file', sample_file, sample_file.replace('input', 'samples'))
+
 # create MR
 
 # replace all "@<username>" occurences as they might link to wrong users in GitLab

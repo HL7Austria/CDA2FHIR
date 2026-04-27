@@ -317,7 +317,7 @@
                             <!-- Medizinisch verantwortliche Person -->
                             <author>
                                 <!-- Zeitpunkt der Freigabe -->
-                                <time value="20160617122000+0200"/>
+                                <time nullFlavor="UNK"/>
                                 <assignedAuthor>
                                     <id root="1.2.40.0.34.99.4613.3.3" extension="232311"/>
                                     <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"

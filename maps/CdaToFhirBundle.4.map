@@ -1169,7 +1169,9 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
 }
 
 group CdaAnnotationSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
-  // section.code
+  // section/code -> Composition.section.code
+  cda_section.code -> fhir_section.code;
+  // additional code
   cda_section ->
     fhir_section.code as fhir_section_code,
     fhir_section_code.coding as fhir_section_coding,
