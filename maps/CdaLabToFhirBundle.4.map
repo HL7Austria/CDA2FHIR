@@ -8829,6 +8829,7 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
       // TODO: remove before production
       // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
       // ONLY FOR TESTING
+      // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
       cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
         fhir_specimen_collection_bodySite.coding as fhir_specimen_collection_bodySite_coding,
         fhir_specimen_collection_bodySite_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
@@ -8875,6 +8876,7 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
             // proceudre.participant.participantRole.playingEntity.code https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31
 
             cda_playingEntity.code -> fhir_specimen.type;
+            // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
             // TODO: remove before production
             // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
             // ONLY FOR TESTING
