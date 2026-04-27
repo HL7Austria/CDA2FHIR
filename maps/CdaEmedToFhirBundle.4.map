@@ -1239,7 +1239,8 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sbad
         cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'MAGZUB') then {
           cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
             cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference -> fhir_medication.text as fhir_medication_text then {
+              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+              fhir_medication.text as fhir_medication_text, fhir_medication_text.status = 'additional' then {
                 cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
                             
                   cda.component as cda_component then {
