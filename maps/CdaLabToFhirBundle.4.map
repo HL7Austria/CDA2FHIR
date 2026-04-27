@@ -9265,6 +9265,7 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     cda_laboratory_observation.value: CD as cda_observation_value then {
 
       // TODO refactor with proper conceptmap translate if possible
+      // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
       cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96') then {
         // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
         // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
