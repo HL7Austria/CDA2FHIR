@@ -8815,7 +8815,13 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
 
       // Entnahmeort
       // procedure.targetSiteCode
-      // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-humanactsite to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
+      // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-humanactsite to https://fhir.ehdsi.eu/laboratory/ValueSet-eHDSILabSpecimenTypeWithExceptions.html
+
+      // Info which Templates are using this mapping: 
+      // This VS is specified in the Specimen Collection template (https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31) which is referenced by 2 Templates:
+      // - Laboratory Data Processing Entry(https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.25/2023-06-01T13:53:03) and 
+      // - Probeinformation (Specimen Section) (https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.2.93/2026-01-13T14:05:55)
+
       cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
       // TODO: remove before production
       // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
