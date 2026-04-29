@@ -9071,6 +9071,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
   // - CDA Laborbefund v2
   //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  // ToDo: // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1' or root='1.3.6.1.4.1.19376.1.3.1.1.2') then 
     CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
     "CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue";
