@@ -12,12 +12,13 @@ conceptmap "v3-NullFlavor-2-data-absent-reason" {
   s: "UNK" == t: "unknown"
   s: "NAV" == t: "temp-unknown"
   s: "NA" == t: "not-applicable"
-  s: "OTH" == t: "unknown" // mapping not perfect
+  s: "OTH" == t: "unknown" // mapping not perfect // - review https://github.com/HL7Austria/CDA2FHIR/issues/257
   s: "MSK" == t: "masked"
 }
 
 // TODO review mapping
 // based on BlackTusk
+// Review - but not for CC in May
 conceptmap "ELGA2FHIRAddressUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
   prefix t = "http://hl7.org/fhir/address-use"
@@ -32,12 +33,13 @@ conceptmap "ELGA2FHIRAddressUse" {
 
   s:"TMP" == t:"temp" // temporary address -> use = temp; type = both
 
-  // s:"PHYS" // NOT MAPPED physical visit address
-  // s:"PST" // NOT MAPPED billing address
+  // s:"PHYS" // NOT MAPPED physical visit address // mapped hardcoded in FML 
+  // s:"PST" // NOT MAPPED billing address // mapped hardcoded in FML 
 }
 
 // TODO review mapping
 // based on BlackTusk
+//review https://github.com/HL7Austria/CDA2FHIR/issues/257
 conceptmap "ELGATelecomAddressUseFHIRContactPointUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
   prefix t = "http://hl7.org/fhir/contact-point-use"
@@ -59,6 +61,7 @@ conceptmap "ELGATelecomAddressUseFHIRContactPointUse" {
 
 // TODO review mapping
 // based on BlackTusk
+// Review https://github.com/HL7Austria/CDA2FHIR/issues/257
 conceptmap "ELGAEntityNameUseFHIRNameUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse"
   prefix t = "http://hl7.org/fhir/name-use"
@@ -82,6 +85,7 @@ conceptmap "ELGAEntityNameUseFHIRNameUse" {
 // TODO review mapping
 // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/163
 // As soon as 'TITLE' is part of FHIR name-part-qualifier this conceptmap is obsolete.
+// ok
 conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2"
@@ -98,7 +102,7 @@ conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   // s:"TITLE" == t:"TITLE"
   s:"VV" == s:"VV"
 }
-
+// Compare with TerminiologiesMetaData.csv
 conceptmap "OIDtoURI" {
   prefix s = "http://cda.oid"
   prefix t = "http://fhir.system"

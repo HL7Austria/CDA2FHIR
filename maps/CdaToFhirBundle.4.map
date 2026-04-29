@@ -3,7 +3,7 @@ map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir-bundle" = 
 //
 // Mapping CDA2FHIR
 //
-
+//ok 
 conceptmap "cda-sdtc-statuscode-2-fhir-composition-status" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
   prefix t = "http://hl7.org/fhir/composition-status"
@@ -11,7 +11,7 @@ conceptmap "cda-sdtc-statuscode-2-fhir-composition-status" {
   s:"active" == t:"preliminary"
   s:"nullified" == t:"entered-in-error"
 }
-
+// ok
 // Mapping according to https://wiki.hl7.at/index.php/Geschlecht
 // nullFlavor "UNK" will be mapped by FML to "unknown"
 conceptmap "ELGAAdministrativeGenderFHIRGender" {
@@ -26,7 +26,7 @@ conceptmap "ELGAAdministrativeGenderFHIRGender" {
   s:  "I" == t: "other"
   s:  "O" == t: "other"
 }
-
+// ok 
 conceptmap "act-status-2-observation-status" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
   prefix t = "http://hl7.org/fhir/observation-status"

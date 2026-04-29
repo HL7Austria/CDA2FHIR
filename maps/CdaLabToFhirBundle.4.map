@@ -3,14 +3,14 @@ map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir-bundle
 //
 // Mapping CDA2FHIR
 //
-
+// ok
 conceptmap "cda-lab-clinicaldocument-code-2-fhir-category" {
   prefix s = "http://loinc.org"
 
   s: "11502-2" == s: "26436-6"
   s: "18725-2" == s: "18725-2"
 }
-
+//ok
 conceptmap "cda-sdtc-statuscode-2-fhir-diagnosticreport-status" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
   prefix t = "http://hl7.org/fhir/diagnostic-report-status"
@@ -31,6 +31,7 @@ conceptmap "cda-sdtc-statuscode-2-fhir-diagnosticreport-status" {
 // in essence the following mappings are covered:
 //  https://termgit.elga.gv.at/ValueSet/elga-significantpathogens TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
 //  https://termgit.elga.gv.at/ValueSet/ems-meldepflichtige-krankheiten TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+// See https://github.com/HL7Austria/CDA2FHIR/issues/257
 conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory" {
   prefix a = "https://termgit.elga.gv.at/CodeSystem/elga-significantpathogens"
   prefix b = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2017"
@@ -42,7 +43,7 @@ conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValue
   a: "SP015" == t: "112283007"
   b: "A00" == t: "75953000"
 }
-
+// see https://github.com/HL7Austria/CDA2FHIR/issues/257
 // TODO refactor with proper conceptmap translate if possible
 // conceptmap "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"{
 //   prefix s = "https://termgit.elga.gv.at/ValueSet-elga-observationinterpretation.html"
