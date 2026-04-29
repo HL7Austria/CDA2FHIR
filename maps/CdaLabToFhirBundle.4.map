@@ -19,6 +19,14 @@ conceptmap "cda-sdtc-statuscode-2-fhir-diagnosticreport-status" {
   s:"nullified" == t:"entered-in-error"
 }
 
+conceptmap "elga-humanactSite-to-eHDSIBodySiteWithExceptions" {
+  prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActSite"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIBodySiteWithExceptions"
+
+  s: "LACF" == t: "OTH"
+  
+}
+
 // TODO: complete mapping
 // 
 // ConceptMap is being used for the Observation.value-elements of the following templates
@@ -8815,27 +8823,16 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
         IVLTSPeriod(cda_effectiveTime, fhir_specimen_collection_collected)
         "CdaSpecimenEffectiveTimeToFhirSpecimenCollectedDateTime";
 
-      // Entnahmeort
-      // procedure.targetSiteCode
-      // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-humanactsite to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
-      // Question: Is the bodySite ValueSet correct? Is this the correct VS? https://fhir.ehdsi.eu/laboratory/ValueSet-eHDSIBodySiteWithExceptions.html
-
-      // Info about the Mapping of targetSiteCode to bodySite: 
-      // This VS is specified in the Specimen Collection template (https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31) which is referenced by 2 Templates:
-      // - Laboratory Data Processing Entry(https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.25/2023-06-01T13:53:03) and 
-      // - Probeinformation (Specimen Section) (https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.2.93/2026-01-13T14:05:55)
-      // FHIR eHDSI The target resource is: https://fhir.ehdsi.eu/laboratory/StructureDefinition-Specimen-lab-myhealtheu.html
-
-      cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
-      // TODO: remove before production
-      // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-      // ONLY FOR TESTING
-      // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
-      cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
-        fhir_specimen_collection_bodySite.coding as fhir_specimen_collection_bodySite_coding,
-        fhir_specimen_collection_bodySite_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-        fhir_specimen_collection_bodySite_coding.code = 'OTH'
-        "CdaProcedureTargetSiteCodeToFhirSpecimenBodySite";
+      // cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
+      cda_procedure.targetSiteCode as cda_targetSiteCode where ($this.nullFlavor.exists().not()) then {
+        cda_targetSiteCode.code as cda_targetSiteCode_code -> fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
+              fhir_specimen_collection_bodySite.coding = translate(cda_targetSiteCode_code, '#elga-humanactSite-to-eHDSIBodySiteWithExceptions', 'Coding') as mapping_result_coding then {
+                mapping_result_coding where ($this.code != cda_targetSiteCode_code) then {
+                  cda_targetSiteCode -> fhir_specimen_collection_bodySite.coding;
+                  // mapping_result_coding.code -> fhir_specimen_collection_bodySite.coding; 
+                };
+            };
+    } "CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteNoNullFlavor";
 
       // Für die Abnahme verantwortlichen Person/Organisation
       // procedure.performer
@@ -8919,7 +8916,9 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
       };
   } "CdaLabSpecimenCollectionToFhirSpecimen";
 }
-
+// group CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteCheck(source cda_procedure: Procedure, source mapping_result_coding: Coding, target fhir_specimen_collection: BackboneElement){
+  
+// }
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
   // set FHIR profile for Observation
   cda_organizer ->
