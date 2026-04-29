@@ -23,8 +23,8 @@ conceptmap "elga-humanactSite-to-eHDSIBodySiteWithExceptions" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActSite"
   prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIBodySiteWithExceptions"
 
-  s: "LACF" == t: "OTH"
-  
+  s: "LACF" == t: "OTH" // This is the only code that occurs in the CDA example docs. 
+
 }
 
 // TODO: complete mapping
