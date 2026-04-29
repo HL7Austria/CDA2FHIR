@@ -2617,7 +2617,7 @@
                                         <participantRole classCode="SPEC">
                                             <id extension="BL-080212-02" root="1.2.40.0.34.99.4613.22.3"/>
                                             <playingEntity>
-                                                <code code="258580003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Whole blood sample"/>
+                                                <code code="119361006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Whole blood sample"/>
                                             </playingEntity>
                                         </participantRole>
                                     </participant>

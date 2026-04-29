@@ -27,6 +27,15 @@ conceptmap "elga-humanactSite-to-eHDSIBodySiteWithExceptions" {
 
 }
 
+conceptmap "elga-specimentype-to-eHDSILabSpecimenTypeWithExceptions"{
+  prefix s = "https://termgit.elga.gv.at/ValueSet/elga-probenmaterial"
+  prefix u = "https://termgit.elga.gv.at/ValueSet/elga-specimentype"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions"
+
+  s: "119361006" == t: "119361006"
+  s: "258580003" == t: "OTH"
+}
+
 // TODO: complete mapping
 // 
 // ConceptMap is being used for the Observation.value-elements of the following templates
@@ -8824,15 +8833,17 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
         "CdaSpecimenEffectiveTimeToFhirSpecimenCollectedDateTime";
 
       // cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
+      // In the case that input == output not display name is mapped. 
       cda_procedure.targetSiteCode as cda_targetSiteCode where ($this.nullFlavor.exists().not()) then {
-        cda_targetSiteCode.code as cda_targetSiteCode_code -> fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
-              fhir_specimen_collection_bodySite.coding = translate(cda_targetSiteCode_code, '#elga-humanactSite-to-eHDSIBodySiteWithExceptions', 'Coding') as mapping_result_coding then {
-                mapping_result_coding where ($this.code != cda_targetSiteCode_code) then {
-                  cda_targetSiteCode -> fhir_specimen_collection_bodySite.coding;
-                  // mapping_result_coding.code -> fhir_specimen_collection_bodySite.coding; 
-                };
+        cda_targetSiteCode.code as cda_targetSiteCode_code -> 
+          fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
+          fhir_specimen_collection_bodySite.coding = translate(cda_targetSiteCode_code, '#elga-humanactSite-to-eHDSIBodySiteWithExceptions', 'Coding') as mapping_result_coding then {
+            mapping_result_coding where ($this.code != cda_targetSiteCode_code) then {
+              cda_targetSiteCode -> fhir_specimen_collection_bodySite.coding;
+              // mapping_result_coding.code -> fhir_specimen_collection_bodySite.coding; 
             };
-    } "CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteNoNullFlavor";
+        };
+      } "CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteNoNullFlavor";
 
       // Für die Abnahme verantwortlichen Person/Organisation
       // procedure.performer
@@ -8873,16 +8884,29 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
             // Where does the elga-specimentype ValueSet come from? I only see ELGA_Probenmaterial_VS specified in 
             // proceudre.participant.participantRole.playingEntity.code https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31
 
-            cda_playingEntity.code -> fhir_specimen.type;
-            // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
-            // TODO: remove before production
-            // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-            // ONLY FOR TESTING
-            cda_playingEntity.code -> fhir_specimen.type as fhir_specimen_type,
-              fhir_specimen_type.coding as fhir_specimen_type_coding,
-              fhir_specimen_type_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-              fhir_specimen_type_coding.code = 'OTH'
-              "CdaSpecimentTypeToFhirSpecimenType";
+            // cda_playingEntity.code -> fhir_specimen.type;
+            // // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
+            // // TODO: remove before production
+            // // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+            // // ONLY FOR TESTING
+            // cda_playingEntity.code -> fhir_specimen.type as fhir_specimen_type,
+            //   fhir_specimen_type.coding as fhir_specimen_type_coding,
+            //   fhir_specimen_type_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+            //   fhir_specimen_type_coding.code = 'OTH'
+            //   "CdaSpecimentTypeToFhirSpecimenType";
+            // Probably possible to extract to a group 
+            // In the case that input == output not display name is mapped. 
+            cda_playingEntity.code as cda_playingEntity_code then {
+              cda_playingEntity_code.code as cda_playingEntity_code -> 
+                fhir_specimen.type as fhir_specimen_type, 
+                fhir_specimen_type.coding = translate(cda_playingEntity_code, '#elga-specimentype-to-eHDSILabSpecimenTypeWithExceptions', 'Coding') as mapping_result_coding then {
+                  mapping_result_coding where ($this.code != cda_playingEntity_code) then {
+                    cda_playingEntity.code -> fhir_specimen_type.coding;
+                  };
+                };
+            }"CdaPlayingEntityCodeToFhirSpecimenTypeNoNullFlavor";
+         
+         
           };
         };
       };
