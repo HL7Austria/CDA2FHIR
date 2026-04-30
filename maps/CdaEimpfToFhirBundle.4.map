@@ -14,6 +14,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMateri
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias CdaPerformer2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias CdaAuthor as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias CdaAct as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
@@ -226,7 +227,28 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_section:
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code; 
   
+  // section/title -> Composition.section.title
+  cda_section -> fhir_section.title = 'Gesundheitsprobleme und Risiken (Problems)' "FhirSectionTitle";
+
+  // section/entry
+  cda_section.entry as cda_section_entry then {
+    // section/entry/act
+    cda_section_entry.act as cda_section_entry_act -> 
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('Condition') as fhir_condition,
+      fhir_condition.id = uuid() as fhir_condition_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_condition_id),
+      fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+      fhir_section_entry_reference.reference = append('urn:uuid:', fhir_condition_id),
+      fhir_section_entry_reference.type = 'Condition' then 
+        CdaHistoryOfPastIllnessActToFhirCondition(cda_section_entry_act, cda_section, fhir_condition, fhir_patient, fhir_bundle);
+  };
+
+  // Übersetzung
+  // currently not necessary to be mapped:
+  //   Since the section/text is not displayed, the translation is irrelevant in that context.
 }
+
 group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   // section/code -> Composition.section.code
   cda_section.code -> fhir_section.code;
@@ -763,6 +785,47 @@ group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMateri
 
   // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> fhir_vaccineCode
   cda_manufacturedMaterial.code as cda_manufacturedMaterial_code where ($this.nullFlavor.exists().not()) then CECodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode); 
+}
+
+group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source cda_section: CdaSection, target fhir_condition: Condition, source fhir_patient: Patient, target fhir_bundle: Bundle){
+  // act/author -> Condition.recorder
+  cda_act.author as cda_author then {
+
+    cda_author -> fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_condition.recorder = create('Reference') as fhir_condition_recorder,
+    fhir_condition_recorder.reference = append('urn:uuid:', fhir_practitionerRole_id),
+    fhir_condition_recorder.type = 'PractitionerRole' then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
+  };
+
+  cda_act.entryRelationship as cda_act_entryRelationship then {
+    cda_act_entryRelationship.observation as cda_observation then {
+      // observation/id -> Condition.identifier
+      cda_observation.id -> fhir_condition.identifier;
+
+      cda_observation.effectiveTime as cda_observation_effectiveTime then {
+        // observation/effectiveTime/low -> Condition.onsetDateTime
+        cda_observation_effectiveTime.low as cda_observation_effectiveTime_low where ($this.nullFlavor.exists().not()) -> 
+          fhir_condition.onset = create('dateTime') as fhir_condition_onset then 
+            TSDate(cda_observation_effectiveTime_low, fhir_condition_onset);
+        
+        //observation/effectiveTime/high -> Condition.abatementDateTime
+        cda_observation_effectiveTime.high as cda_observation_effectiveTime_high where $this.exists() ->
+          fhir_condition.abatementDateTime = create('dateTime') as fhir_condition_abatementDateTime then 
+            TSDate(cda_observation_effectiveTime_high, fhir_condition_abatementDateTime);
+      };
+
+      // observation/value -> Condition.code
+      cda_observation.value -> fhir_condition.code;
+
+      // observation/participant( Participant Body -Verifier  - 1.2.40.0.34.6.0.11.9.44) 
+      // observation/participant (Participant Body - Authorized Editor - 1.2.40.0.34.6.0.11.9.46 )
+      // observation/participant (Participant Body - Data Enterer - 1.2.40.0.34.6.0.11.9.47) 
+      // obervation/entryRelationship( Comment Entry - Single Author- 1.2.40.0.34.6.0.11.3.17 ) 
+    };
+  };
 }
 
 // _________________________ Template Type not specified  ___________________
