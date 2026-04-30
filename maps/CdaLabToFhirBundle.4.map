@@ -23,7 +23,7 @@ conceptmap "elga-humanactSite-to-eHDSIBodySiteWithExceptions" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActSite"
   prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIBodySiteWithExceptions"
 
-  s: "LACF" == t: "OTH" // This is the only code that occurs in the CDA example docs. 
+  s: "LACF" == t: "OTH" // This is the only code that occurs in the CDA example docs. - Needs to be reviewed 
 
 }
 
@@ -32,10 +32,22 @@ conceptmap "elga-specimentype-to-eHDSILabSpecimenTypeWithExceptions"{
   prefix u = "https://termgit.elga.gv.at/ValueSet/elga-specimentype"
   prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions"
 
-  s: "119361006" == t: "119361006"
-  s: "258580003" == t: "OTH"
+  s: "119361006" == t: "119361006"// This is the only code that occurs in the CDA example docs. - Needs to be reviewed 
+  s: "258580003" == t: "OTH"// This is the only code that occurs in the CDA example docs. - Needs to be reviewed 
 }
 
+conceptmap "elga-observationinterpretation-to-eHDSIObservationInterpretationWithExceptions" {
+  prefix s = "https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions"
+
+  s: "H" == t: "H"
+  s: "N" == t: "N"
+  s: "L" == t: "L"
+  s: "RAST3" == t: "OTH"
+  s: "A" == t: "A"
+  s: "LL" == t: "LL"
+  s: "HH" == t: "HH"
+}
 // TODO: complete mapping
 // 
 // ConceptMap is being used for the Observation.value-elements of the following templates
@@ -8839,7 +8851,7 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
           fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
           fhir_specimen_collection_bodySite.coding = translate(cda_targetSiteCode_code, '#elga-humanactSite-to-eHDSIBodySiteWithExceptions', 'Coding') as mapping_result_coding then {
             mapping_result_coding where ($this.code != cda_targetSiteCode_code) then {
-              cda_targetSiteCode -> fhir_specimen_collection_bodySite.coding;
+              cda_targetSiteCode -> fhir_specimen_collection_bodySite.coding; // check if .code or not
               // mapping_result_coding.code -> fhir_specimen_collection_bodySite.coding; 
             };
         };
@@ -8901,12 +8913,12 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
                 fhir_specimen.type as fhir_specimen_type, 
                 fhir_specimen_type.coding = translate(cda_playingEntity_code, '#elga-specimentype-to-eHDSILabSpecimenTypeWithExceptions', 'Coding') as mapping_result_coding then {
                   mapping_result_coding where ($this.code != cda_playingEntity_code) then {
-                    cda_playingEntity.code -> fhir_specimen_type.coding;
+                    cda_playingEntity.code -> fhir_specimen_type.coding; // check if .code or not 
                   };
                 };
-            }"CdaPlayingEntityCodeToFhirSpecimenTypeNoNullFlavor";
+            }"CdaPlayingEntityCodeToFhirSpecimenType";
          
-         
+          
           };
         };
       };
@@ -9106,14 +9118,25 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO: remove before production
   // ONLY FOR TESTING
 
-  // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
-  cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
-    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
-    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
-    fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
-    "CdaObservationInterpretationCodeToFhirObservationInterpretation";
+  // // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
+  // cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
+  //   fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
+  //   fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
+  //   fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+  //   fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
+  //   "CdaObservationInterpretationCodeToFhirObservationInterpretation";
 
+  cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode then {
+    cda_laboratory_observation_interpretationCode.code as cda_laboratory_observation_interpretationCode_code -> 
+      fhir_observation.interpretation as fhir_observation_interpretation, 
+      fhir_observation_interpretation.coding = translate(cda_laboratory_observation_interpretationCode_code, '#elga-observationinterpretation-to-eHDSIObservationInterpretationWithExceptions', 'Coding') as mapping_result_coding then {
+        mapping_result_coding where ($this.code != cda_laboratory_observation_interpretationCode_code) then {
+          cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation.coding; // check if .code or not
+        };
+      };
+  }; 
+    
+  
   // observation.performer
   //   This element is being dealt with in 
   //     CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen()
