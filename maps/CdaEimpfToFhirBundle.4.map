@@ -794,6 +794,8 @@ group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMateri
 group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source cda_section: CdaSection, target fhir_condition: Condition, source fhir_patient: Patient, target fhir_bundle: Bundle){
   // act/author -> Condition.recorder
   cda_act.author as cda_author then {
+    // act/author/time -> Condition.recordedDate
+    cda_author.time where ($this.nullFlavor.exists().not()) -> fhir_condition.recordedDate;
 
     cda_author -> fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
