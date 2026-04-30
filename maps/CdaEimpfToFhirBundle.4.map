@@ -823,7 +823,46 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
       // observation/participant( Participant Body -Verifier  - 1.2.40.0.34.6.0.11.9.44) 
       // observation/participant (Participant Body - Authorized Editor - 1.2.40.0.34.6.0.11.9.46 )
       // observation/participant (Participant Body - Data Enterer - 1.2.40.0.34.6.0.11.9.47) 
-      // obervation/entryRelationship( Comment Entry - Single Author- 1.2.40.0.34.6.0.11.3.17 ) 
+
+      // observation/entryRelationship (Comment Entry)
+      cda_observation.entryRelationship as cda_observation_entryRelationship where ($this.act.templateId.where(root='1.2.40.0.34.6.0.11.3.17')) then {
+        // observation/entryRelationship/act
+        cda_observation_entryRelationship.act as cda_act then {
+          // observation/entryRelationship/act/text
+          cda_act.text as cda_act_text then {
+            // observation/entryRelationship/act/text/reference
+            cda_act_text.reference as cda_act_text_reference then {
+              cda_section.text as cda_section_text then {
+                // observation/entryRelationship/act/text/reference/@value -> ImmunizationRecommendation.recommendation.description
+                cda_act_text_reference.value as cda_act_text_reference_value -> 
+                  // Create Narrative (same datatype as in Composition.section.text)
+                  create('Narrative') as fhir_narrative, 
+                  // section/text -> Narrative.div
+                  fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                  
+                  // Create string
+                  create('string') as fhir_string,
+                  // Convert test_div to a FHIR string
+                  fhir_string = (fhir_narrative_div),
+
+                  // Create substring from the ID (identified by cda_act_text_reference_value) till the end of fhir_string
+                  create('string') as fhir_substring_01,
+                  // cda_act_text_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                  // fhir_string.indexOf(cda_act_text_reference_value.substring(1)) = the position of the ID within section/text
+                  fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_act_text_reference_value.substring(1)))),
+
+                  // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                  create('string') as fhir_substring_02,
+                  fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                  // Create a substring from the start till the first occurrence of < character
+                  fhir_condition.note as fhir_condition_note,
+                  fhir_condition_note.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+              };
+            };
+          };
+        };
+      };
     };
   };
 }
