@@ -240,7 +240,11 @@ group CdaHistoryOfPastIllnessSectionToFhirCompositionSection(source cda_section:
       fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_condition_id),
       fhir_section.entry = create('Reference') as fhir_section_entry_reference,
       fhir_section_entry_reference.reference = append('urn:uuid:', fhir_condition_id),
-      fhir_section_entry_reference.type = 'Condition' then 
+      fhir_section_entry_reference.type = 'Condition',
+      fhir_patient.id as fhir_patient_id,
+      fhir_condition.subject = create('Reference') as fhir_condition_subject_reference,
+      fhir_condition_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+      fhir_condition_subject_reference.type = 'Patient' then 
         CdaHistoryOfPastIllnessActToFhirCondition(cda_section_entry_act, cda_section, fhir_condition, fhir_patient, fhir_bundle);
   };
 
