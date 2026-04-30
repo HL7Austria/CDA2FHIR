@@ -8859,8 +8859,7 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
               cda_targetSiteCode -> fhir_specimen_collection.bodySite; 
             };
           };
-        };
-      } "CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteNoNullFlavor";
+        } "CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteNoNullFlavor";
 
       // Für die Abnahme verantwortlichen Person/Organisation
       // procedure.performer
@@ -8959,9 +8958,7 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
       };
   } "CdaLabSpecimenCollectionToFhirSpecimen";
 }
-// group CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteCheck(source cda_procedure: Procedure, source mapping_result_coding: Coding, target fhir_specimen_collection: BackboneElement){
-  
-// }
+
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
   // set FHIR profile for Observation
   cda_organizer ->
