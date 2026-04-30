@@ -822,8 +822,9 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
           fhir_condition.abatementDateTime = create('dateTime') as fhir_condition_abatementDateTime,
           // general assumption to set Condition.status to 'inactive' in case of an existing effectiveTime/high, since this indicates that the condition is not ongoing anymore
           fhir_condition.clinicalStatus as fhir_condition_clinicalStatus,
-          fhir_condition_clinicalStatus.system = 'http://terminology.hl7.org/CodeSystem/condition-clinical',
-          fhir_condition_clinicalStatus.code = 'inactive' then 
+          fhir_condition_clinicalStatus.coding as fhir_condition_clinicalStatus_coding,
+          fhir_condition_clinicalStatus_coding.system = 'http://terminology.hl7.org/CodeSystem/condition-clinical',
+          fhir_condition_clinicalStatus_coding.code = 'inactive' then 
             TSDate(cda_observation_effectiveTime_high, fhir_condition_abatementDateTime);
       };
 
