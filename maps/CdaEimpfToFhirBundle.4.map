@@ -831,9 +831,20 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
       // observation/value -> Condition.code
       cda_observation.value -> fhir_condition.code;
 
-      // observation/participant( Participant Body -Verifier  - 1.2.40.0.34.6.0.11.9.44) -> Provenance.agent
-      // observation/participant (Participant Body - Authorized Editor - 1.2.40.0.34.6.0.11.9.46 ) -> ignorieren
-      // observation/participant (Participant Body - Data Enterer - 1.2.40.0.34.6.0.11.9.47)  -> Provenance.agent
+      // observation/participant[@typeCode!='AUT'] -> Provenance
+      // Participant Body - Authorized Editor (1.2.40.0.34.6.0.11.9.46, @typeCode='AUT') -> ignorieren
+
+      // Participant Body - Data Enterer (1.2.40.0.34.6.0.11.9.47) -> Provenance.agent & Participant Body - Verifier (1.2.40.0.34.6.0.11.9.44) -> Provenance.agent
+      cda_observation.participant as cda_participant where ($this.templateId.root  != '1.2.40.0.34.6.0.11.9.46') ->
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('Provenance') as fhir_provenance,
+        fhir_provenance.id = uuid() as fhir_provenance_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_provenance_id),
+        fhir_condition.id as fhir_condition_id,
+        fhir_provenance.target = create('Reference') as fhir_provenance_target_reference,
+        fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_condition_id),
+        fhir_provenance_target_reference.type = 'Condition' then
+          CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle);
 
       // observation/entryRelationship (Comment Entry)
       cda_observation.entryRelationship as cda_observation_entryRelationship where ($this.act.templateId.where(root='1.2.40.0.34.6.0.11.3.17')) then {
