@@ -4,7 +4,7 @@ name: Convert and validate test file
 
 on:
   pull_request:
-    branches: [ elga, elga-dev, 269-map-history-of-past-illness-section-to-fhir-elga]
+    branches: [ elga, elga-dev]
 
 jobs:
   convert-and-validate:
