@@ -849,8 +849,6 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
 
       // observation/value -> Condition.code
       cda_observation.value -> fhir_condition.code;
-
-      //  -> Provenance
       
       // Participant Body - Data Enterer (1.2.40.0.34.6.0.11.9.47) -> Provenance.agent & Participant Body - Verifier (1.2.40.0.34.6.0.11.9.44) -> Provenance.agent
       // Check if observation/participant[@typeCode!='AUT'] (using template id) 
