@@ -795,16 +795,35 @@ group CdaVaccineCodeToFhirVaccineCode(source cda_manufacturedMaterial: CdaMateri
   // Immunization-Relevant Conditions Problem Concern Entry - https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.8/2023-03-31T12:18:19
   // Immunization-Relevant Conditions Problem Entry - https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.9/2023-03-30T08:46:35
 group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source cda_section: CdaSection, target fhir_condition: Condition, source fhir_patient: Patient, target fhir_bundle: Bundle){
+  //---------------------------------------
   // ToDo: 
-  //Check if Mapping is needed for following templates:  
-  // Template: Immunization-Relevant Conditions Problem Concern Entry - https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.8/2023-03-31T12:18:19
-      //act/id
-      //act.reference[templateId/@root = '1.2.40.0.34.6.0.11.3.14'] (External Document Entry)
-  
-  // Template: Immunization-Relevant Conditions Problem Entry - https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.9/2023-03-30T08:46:35
-      // observation[hl7:templateId/@root='1.2.40.0.34.6.0.11.9.1']/text (Narrative Text Reference)
-      //observation/value/originalText/reference (Textinhalt, der codiert wurde.)
+    // 1. Check if Mapping is needed for following templates:  
 
+        //Template: Immunization-Relevant Conditions Problem Concern Entry - https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.8/2023-03-31T12:18:19
+            //act/id 
+              // Mapping Recommend CRE: //act/id -> Condition.identifier  CDA IG explicitly states the act/id MUST differ from observation/id, so both have meaning; keeps the wrapper-vs-detail distinction queryable
+            
+            //act.reference[templateId/@root = '1.2.40.0.34.6.0.11.3.14'] (External Document Entry)
+              // Mapping Recommend CRE: use the same logic as for Immunization and ImmunizationRecommendation and map External Document Entry id, code -> Condition.identifier
+        
+
+        //Template: Immunization-Relevant Conditions Problem Entry - https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.9/2023-03-30T08:46:35
+            
+            // observation[hl7:templateId/@root='1.2.40.0.34.6.0.11.9.1']/text (Narrative Text Reference)
+              //Mapping Recommend CRE: Map to Condition.text.div 
+        
+            //observation/value/originalText/reference (Textinhalt, der codiert wurde.)
+              //Mapping Recommend CRE: Condition.code.text
+
+
+
+
+    // 2. Check the mapping of all Condition.identifier 
+        // Three CDA elements all land on Condition.identifier:
+        //   - act/id                  (Problem Concern Entry)
+        //   - observation/id          (Problem Entry)
+        //   - externalDocument/id     (source CDA the entry originated from)
+  //--------------------------------------- 
 
   //act/author -> Condition.recorder
   cda_act.author as cda_author then {
