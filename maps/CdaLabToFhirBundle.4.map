@@ -85,7 +85,31 @@ conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValue
 //   s: "89292003"   == t: "89292003"   // Rare 
 // }
 
-// Excel: terminology_mapping/MVC_Map_elga-labor-structure-to-ehdsi-observation-code.xlsx (TODO)
+conceptmap "elga-labor-structure-to-ehdsi-study-types-with-exceptions" {
+  prefix s = "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
+  prefix t = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix v = "http://loinc.org"
+  
+  s: "1" == t: "OTH"
+  s: "100" == t: "OTH"
+  s: "200" == t: "OTH"
+  s: "300" == t: "OTH"
+  s: "400" == t: "OTH"
+  s: "500" == t: "OTH"
+  s: "600" == t: "OTH"
+  s: "900" == t: "OTH"
+  s: "1000" == t: "OTH"
+  s: "1100" == t: "OTH"
+  s: "1300" == t: "OTH"
+  s: "1400" == t: "OTH"
+  s: "1500" == t: "OTH"
+  s: "1600" == t: "OTH"
+  s: "1800" == t: "OTH"
+  s: "2300" == t: "OTH"
+  s: "2500" == t: "OTH"
+}
+
+
 //
 // ConceptMap for mapping elga-laborstruktur organizer codes to eHDSILabCodeWithExceptions.
 // See https://github.com/HL7Austria/CDA2FHIR/issues/257
@@ -8579,15 +8603,28 @@ group CdaLabSectionToFhirSection(source cda_section: Section, target fhir_sectio
   // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   // section.code
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
-  cda_section.code -> fhir_section.code;
-  // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-  // ONLY FOR TESTING
-  cda_section.code -> fhir_section.code as fhir_section_code,
-    fhir_section_code.coding as fhir_section_code_coding,
-    fhir_section_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_section_code_coding.code = 'OTH'
-    "CdaSectionCodeToFhirCompositionSectionCode";
+  // cda_section.code -> fhir_section.code;
+  // // TODO: remove before production
+  // // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+  // // ONLY FOR TESTING
+  // cda_section.code -> fhir_section.code as fhir_section_code,
+  //   fhir_section_code.coding as fhir_section_code_coding,
+  //   fhir_section_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+  //   fhir_section_code_coding.code = 'OTH'
+  //   "CdaSectionCodeToFhirCompositionSectionCode";
+  cda_section.code as cda_section_code,
+  cda_section_code.code as cda_section_code_code -> 
+    translate(cda_section_code_code,'#elga-labor-structure-to-ehdsi-study-types-with-exceptions', 'Coding') as mapping_result_coding then {
+      mapping_result_coding where ($this.code != cda_section_code_code) -> 
+        fhir_section.code as fhir_section_code,
+        fhir_section_code.coding = mapping_result_coding then {
+          cda_section_code -> fhir_section_code.coding;
+        };
+      mapping_result_coding where ($this.code = cda_section_code_code) then {
+        cda_section_code -> fhir_section.code; 
+      };
+    };
+
 }
 
 group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: ClinicalDocument, source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_specimen: Specimen, target fhir_serviceRequest: ServiceRequest) extends CdaLabSectionToFhirSection {
