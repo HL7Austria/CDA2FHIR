@@ -1,0 +1,84 @@
+// Goal: Add an Organization Resource to the Bundle and reference it from
+// Composition.custodian. Then call CdaCustodianOrganizationToFhirOrganization
+// to fill the Organization fields (name, address).
+
+// XPath ClinicalDocument/custodian/assignedCustodian/representedCustodianOrganization
+// FHIR Path Composition.custodian -> Organization (separate bundle entry)
+
+
+// Data Types
+    // CDA: CustodianOrganization
+    // FHIR: Organization
+
+
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/ue5" = "ue5"
+
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CustodianOrganization" alias CdaCustodianOrganization as source
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Organization" alias Organization as target
+
+
+
+imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
+
+
+
+group MapClinicalDocumentCustodianToCompositionCustodian(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+
+    // TODO:
+    // 1. Create the Composition resource as bundle entry 1 (id + fullUrl).
+    // 2. Create the Organization resource as bundle entry 2 (id + fullUrl).
+    // 3. Set Composition.custodian to a Reference pointing at the Organization
+    //    (urn:uuid:<organization_id>, type = 'Organization').
+    // 4. Traverse cda.custodian.assignedCustodian.representedCustodianOrganization
+    //    and call CdaCustodianOrganizationToFhirOrganization to fill name/address.
+
+}
+
+
+group CdaCustodianOrganizationToFhirOrganization(source cda_org: CdaCustodianOrganization, target fhir_org: Organization){
+
+    // TODO:
+    // Map cda_org.name -> fhir_org.name
+    // Map cda_org.addr -> fhir_org.address
+
+}
+
+
+
+// // SOLUTION
+//
+// group MapClinicalDocumentCustodianToCompositionCustodian(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+//     // Create the Composition to have it as reference for later transformations
+//     cda ->
+//         fhir_bundle.entry as fhir_bundle_entry_1,
+//         fhir_bundle_entry_1.resource = create('Composition') as fhir_composition,
+//         fhir_composition.id = uuid() as fhir_composition_id,
+//         fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_id),
+//
+//         // Create the Organization to have it as reference for later transformations
+//         fhir_bundle.entry as fhir_bundle_entry_2,
+//         fhir_bundle_entry_2.resource = create('Organization') as fhir_organization,
+//         fhir_organization.id = uuid() as fhir_organization_id,
+//         fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_organization_id),
+//
+//         // create relation from Composition to Organization
+//         fhir_composition.custodian = create('Reference') as fhir_composition_custodian_reference,
+//         fhir_composition_custodian_reference.reference = append('urn:uuid:', fhir_organization_id),
+//         fhir_composition_custodian_reference.type = 'Organization';
+//
+//     cda.custodian as cda_custodian then {
+//         cda_custodian.assignedCustodian as cda_assignedCustodian then {
+//             cda_assignedCustodian.representedCustodianOrganization as cda_org ->
+//                 fhir_organization then CdaCustodianOrganizationToFhirOrganization(cda_org, fhir_organization);
+//         };
+//     };
+// }
+//
+// group CdaCustodianOrganizationToFhirOrganization(source cda_org: CdaCustodianOrganization, target fhir_org: Organization){
+//     cda_org.name -> fhir_org.name;
+//     cda_org.addr -> fhir_org.address;
+// }

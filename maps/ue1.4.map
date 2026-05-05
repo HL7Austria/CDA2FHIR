@@ -1,0 +1,45 @@
+// Goal: Map ClinicalDocument practiceSettingCode to Composition Category 
+
+// XPath ClinicalDocument/practiceSettingCode  
+// FHIRPath Composition.category 
+
+
+
+// Data Types
+    // CDA: CD
+    // FHIR: CodeableConcept
+
+
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/ue1" = "ue1"
+
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
+
+
+
+imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
+
+
+
+group MapClinicalDocumentSettingCodeToCompositionCategory(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+    // Create the Composition to have it as reference for later transformations
+    cda -> 
+        fhir_bundle.entry as fhir_bundle_entry_1,
+        fhir_bundle_entry_1.resource = create('Composition') as fhir_composition, 
+        fhir_composition.id = uuid() as fhir_composition_id,
+        fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_id) then {
+        
+            //cda.practiceSettingCode -> fhir_omposition.category
+            cda.practiceSettingCode -> fhir_composition.category; 
+        };
+
+
+
+    
+}
+
+
+
+

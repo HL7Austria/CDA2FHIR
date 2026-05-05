@@ -1,0 +1,47 @@
+// Goal: Map ClinicalDocument title to Composition title
+
+// XPath ClinicalDocument/title
+// FHIR Path Composition.title
+
+
+// Data Types
+    // CDA: ST
+    // FHIR: string
+
+
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/ue3" = "ue3"
+
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
+
+
+
+imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
+
+
+
+group MapClinicalDocumentTitleToCompositionTitle(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+
+    // TODO:
+    // 1. Create the Composition resource as a bundle entry (give it an id and a fullUrl of the form urn:uuid:<id>).
+    // 2. Map cda.title to fhir_composition.title.
+
+}
+
+
+
+// // SOLUTION
+//
+// group MapClinicalDocumentTitleToCompositionTitle(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+//     // Create the Composition to have it as reference for later transformations
+//     cda ->
+//         fhir_bundle.entry as fhir_bundle_entry_1,
+//         fhir_bundle_entry_1.resource = create('Composition') as fhir_composition,
+//         fhir_composition.id = uuid() as fhir_composition_id,
+//         fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_id);
+//
+//     // cda.title -> fhir_composition.title
+//     cda.title -> fhir_composition.title;
+// }

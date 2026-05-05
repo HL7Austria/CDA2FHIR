@@ -3,6 +3,8 @@
 name: Convert and validate test file
 
 on:
+  push: 
+    branches: [281-create-a-fml-exercise]
   pull_request:
     branches: [ myhealtheu, myhealtheu-dev ]
 
@@ -30,7 +32,7 @@ jobs:
 
       - name: Run MaLaC-HD
         run: |
-          malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
+          malac-hd -m maps/ue1.4.map -co python-maps/CdaToFhirBundle.4.py
 
       - name: Download FHIR validator
         uses: Legion2/download-release-action@v2.1.0

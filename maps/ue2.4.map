@@ -1,0 +1,69 @@
+// Goal: Add a Patient Resource to the Composition and then call the CdaPatientRoleToFhirPatient in the CdaToFhirBundle.4.map
+
+// XPath ClinicalDocument/recordTarget  
+// FHIR Path Composition.subject
+
+
+
+// Data Types
+    // CDA: 
+    // FHIR: 
+
+
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/ue2" = "ue2"
+
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/PatientRole" alias PatientRole as source
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias Patient as target
+
+
+
+imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
+
+
+
+
+group MapClinicalDocumentSettingCodeToCompositionCategory(source cda: ClinicalDocument, target fhir_bundle: Bundle){
+    // Create the Composition to have it as reference for later transformations
+    cda -> 
+        fhir_bundle.entry as fhir_bundle_entry_1,
+        fhir_bundle_entry_1.resource = create('Composition') as fhir_composition, 
+        fhir_composition.id = uuid() as fhir_composition_id,
+        fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_composition_id),
+        
+        // Create the Patient to have it as reference for later transformations
+        fhir_bundle.entry as fhir_bundle_entry_2,
+        fhir_bundle_entry_2.resource = create('Patient') as fhir_patient,
+        fhir_patient.id = uuid() as fhir_patient_id, 
+        fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_patient_id),
+
+        // create relation from Composition to Patient
+        fhir_composition.subject = create('Reference') as fhir_composition_subject_reference,
+        fhir_composition_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+        fhir_composition_subject_reference.type = 'Patient';
+        
+        
+        cda.recordTarget as cda_recordTarget then {
+            cda_recordTarget.patientRole as cda_patientRole then CdaPatientRoleToFhirPatient(cda,cda_patientRole,fhir_patient, fhir_bundle);
+        };
+        
+
+}
+
+group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patientRole : PatientRole, target fhir_patient : Patient, target fhir_bundle : Bundle){
+    cda_patientRole.addr -> fhir_patient.address;
+
+    // patientRole.telecom
+    cda_patientRole.telecom -> fhir_patient.telecom;
+
+    // patientRole.patient
+    cda_patientRole.patient as cda_patient then {
+    // patient.name
+    cda_patient.name  as cda_patient_name then CdaPatientNameToFHIRPatientName(cda_patient_name, fhir_patient);
+}
+
+
+
