@@ -385,7 +385,7 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
 
 
   // -----------------------------------------------------------------------------------------------
-  // NKR Please map following Elements.
+  // @NKR start here please  
 
   // observation.id -> Observation.identifier
   cda_observation.id -> fhir_observation.identifier;
@@ -424,7 +424,7 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
     // 1.2.40.0.34.6.0.11.9.44 Participant Body - Verifier
     // 1.2.40.0.34.6.0.11.9.46 Participant Body - Authorized Editor
     // 1.2.40.0.34.6.0.11.9.47 Participant Body - Data Enterer
-    // 1.2.40.0.34.6.0.11.3.17 Comment Entry - Single Author / Informant
+    // 1.2.40.0.34.6.0.11.3.17 Comment Entry - Single Author / Informant 
 }
 
 
