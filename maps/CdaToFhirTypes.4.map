@@ -12,13 +12,13 @@ conceptmap "v3-NullFlavor-2-data-absent-reason" {
   s: "UNK" == t: "unknown"
   s: "NAV" == t: "temp-unknown"
   s: "NA" == t: "not-applicable"
-  s: "OTH" == t: "unknown" // mapping not perfect // - review https://github.com/HL7Austria/CDA2FHIR/issues/257
+  s: "OTH" == t: "unknown" // Based on review by ELGA Terminolgy not-permitted is a better target. ToDo: Check if the output is used in FML -> if not change to not-permitted.
   s: "MSK" == t: "masked"
 }
 
 // TODO review mapping
 // based on BlackTusk
-// Review - but not for CC in May
+// Review - ToDo: Handle PHYS, PST
 conceptmap "ELGA2FHIRAddressUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
   prefix t = "http://hl7.org/fhir/address-use"
@@ -40,6 +40,7 @@ conceptmap "ELGA2FHIRAddressUse" {
 // TODO review mapping
 // based on BlackTusk
 //review https://github.com/HL7Austria/CDA2FHIR/issues/257
+// ToDo: We stopped the ELGA Terminlogy Review on the 5.5.26 here. Continue with this ConceptMap
 conceptmap "ELGATelecomAddressUseFHIRContactPointUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
   prefix t = "http://hl7.org/fhir/contact-point-use"
@@ -936,10 +937,10 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   // addr.use
   cda_address.use as cda_use where ($this != 'PHYS' and $this != 'PST') ->
     fhir_address.use = translate(cda_use, '#ELGA2FHIRAddressUse', 'code') "CdaAddressUseToFhirAddressUse";
-  
-  cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
+  // ToDo: Based on ELGA TErminology Review - Probably add OTH + PHYS or PST
+  //cda_address.use where ($this = 'PHYS') -> fhir_address.type = 'physical' "CdaAddressUseToFhirAddressTypePhysical";
 
-  cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
+  //cda_address.use where ($this = 'PST') -> fhir_address.type = 'postal' "CdaAddressUseToFhirAddressTypePhysical";
 
   // in case NO children elements are being used for address
   cda_address where ($this.xmlText.exists()) then {

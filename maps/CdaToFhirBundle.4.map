@@ -3,17 +3,19 @@ map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir-bundle" = 
 //
 // Mapping CDA2FHIR
 //
-//ok 
-conceptmap "cda-sdtc-statuscode-2-fhir-composition-status" {
+
+// Reviewed by ELGA Terminology on 5.5.2026
+conceptmap "cda-sdtc-statuscode-2-fhir-composition-status" { 
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
   prefix t = "http://hl7.org/fhir/composition-status"
 
   s:"active" == t:"preliminary"
-  s:"nullified" == t:"entered-in-error"
+  s:"nullified" == t:"deprecated" 
 }
-// ok
+
 // Mapping according to https://wiki.hl7.at/index.php/Geschlecht
 // nullFlavor "UNK" will be mapped by FML to "unknown"
+// Reviewed by ELGA Terminology on 5.5.2026
 conceptmap "ELGAAdministrativeGenderFHIRGender" {
   prefix r = "http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender"
   prefix s = "https://termgit.elga.gv.at/CodeSystem/hl7-at-administrativegender-ergaenzung"
@@ -26,7 +28,8 @@ conceptmap "ELGAAdministrativeGenderFHIRGender" {
   s:  "I" == t: "other"
   s:  "O" == t: "other"
 }
-// ok 
+
+// Reviewed by ELGA Terminology on 5.5.2026
 conceptmap "act-status-2-observation-status" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
   prefix t = "http://hl7.org/fhir/observation-status"
