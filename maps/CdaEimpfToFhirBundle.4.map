@@ -164,7 +164,8 @@ group CdaEimpfBodyToFhir(source cda: CdaClinicalDocument, source cda_structuredB
     // cda_component.section as cda_impfrelevante_erkrankungen_section where code.where(code='11348-0' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_3 then CdaHistoryOfPastIllnessSectionToFhirCompositionSection(cda_impfrelevante_erkrankungen_section, fhir_section_3, fhir_bundle);
     
     // Antikörper-Bestimmung - kodiert - 1.2.40.0.34.6.0.11.2.7
-    // cda_component.section as cda_antikoerper_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> fhir_composition.section as fhir_section_4 then CdaAntikoerperSectionToFhirCompositionSection(cda_antikoerper_section, fhir_section_4, fhir_bundle);
+    cda_component.section as cda_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> 
+      fhir_composition.section as fhir_section then CdaAntikoerperSectionToFhirCompositionSection(cda_section, fhir_section, fhir_patient, fhir_bundle);
     
     // Impfempfehlungen - kodiert - 1.2.40.0.34.6.0.11.2.2
     // APS section: plan of care
@@ -254,9 +255,178 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection,
   // Übersetzung
   // currently not necessary to be mapped:
   //   Since the section/text is not displayed, the translation is irrelevant in that context.
+}cda_section, fhir_section, fhir_patient, fhir_bundle
+
+// This Group contains the Mapping for  1.2.40.0.34.6.0.11.2.7 Antikörper-Bestimmung - kodiert
+// CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.2.7/2025-11-03T08:24:04
+// FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-composition.html
+group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
+  cda_section.title -> fhir_section.title;
+  cda_section.code -> fhir_section.code;
+  cda_section.entry as cda_section_entry then{
+
+    //Antikörperbestimmung Data Processing Entry - 1.2.40.0.34.6.0.11.3.15 
+    //Wrapper Act that holds the actual Battery Organizer via entryRelationship.
+    cda_section_entry.act as cda_entry_act then CdaAntiBodyDataProcessingEntryToFhir(cda_entry_act, fhir_section, fhir_patient, fhir_bundle);
+  }; 
 }
 
+
+
+
+
+
 // _________________________ Entry Level Template  _________________________
+
+// This Group contains the Mapping for Antikörperbestimmung Data Processing Entry - 1.2.40.0.34.6.0.11.3.15 
+// CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.15/2023-03-30T08:34:06
+// Target: Mainly the Groups CdaOrganizerToFhirObservation and CdaObservationToFhirObservation
+
+
+group CdaAntiBodyDataProcessingEntryToFhir(source cda_act: Act, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle){
+// ----------------------------------------------------------
+//Group Logic 
+// CDA structure handled here:
+//   Act (Data Processing Entry, 1.2.40.0.34.6.0.11.3.15)
+//     └── entryRelationship → Organizer (Battery, 1.2.40.0.34.6.0.11.3.18)
+//                              └── component → Observation (Lab Obs Entry, 1.2.40.0.34.6.0.11.3.16) [0..*]
+//
+// FHIR target shape (panel/battery pattern, see AT APS Observation):
+//   Observation "battery"  (created from the Organizer; carries the panel code/category)
+//     └── hasMember → Reference(Observation)  (one per component result)
+// All Observations are added as Bundle entries with urn:uuid fullUrls; the battery is also
+// referenced from Composition.section.entry.
+//-----------------------------------------------------------
+
+// ToDo:
+  // CRE Add other templates that are referenced in the Antikörperbestimmung Data Processing Entry
+  // Check if a DiagnosticReport is needed or if we can directly add the FHIR Battery Observation to Composition
+
+  
+// 1.2.40.0.34.6.0.11.3.18 Antikörper-Bestimmung Battery Organizer
+// Filter entryRelationships to only those who carry the Battery Organizer templateId.
+cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templateId.where(root='1.2.40.0.34.6.0.11.3.18') then {
+  cda_entryRelationship.organizer as cda_battery_organizer ->
+  
+    // Create the "battery" Observation as a fresh Bundle entry and link it from the Composition section.
+    fhir_bundle.entry as fhir_bundle_entry,
+    fhir_bundle_entry.resource = create('Observation') as fhir_battery_observation,
+    fhir_battery_observation.id = uuid() as fhir_battery_observation_id,
+    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
+    fhir_section.entry = create('Reference') as fhir_section_entry_reference,
+    fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+    fhir_section_entry_reference.type = 'Observation' then {
+      // Map organizer-level data (subject, code, category) onto the battery Observation.
+      cda_battery_organizer then CdaOrganizerToFhirObservation(cda_battery_organizer, fhir_battery_observation, fhir_patient) "CdaLabOrganizerToFhirObservation";
+
+        // organizer.component (1.2.40.0.34.6.0.11.3.16 Antikörper-Bestimmung Laboratory Observation Entry)
+        // Each component is one individual antibody result and becomes its own Observation,
+        // linked back to the battery via Observation.hasMember.
+        cda_battery_organizer.component as cda_component where $this.observation.templateId.where(root='1.2.40.0.34.6.0.11.3.16') then {
+          cda_component.observation as cda_observation ->
+            // create Observation
+            fhir_bundle.entry as fhir_bundle_entry,
+            fhir_bundle_entry.resource = create('Observation') as fhir_observation,
+            fhir_observation.id = uuid() as fhir_observation_id,
+            fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
+            // Link the battery -> member: Observation.hasMember references the per-result Observation.
+            fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
+            fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
+            fhir_battery_observation_hasMember_reference.type = 'Observation' then {
+              cda_observation then CdaObservationToFhirObservation(cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+            };
+      };
+    };
+  };
+}
+
+// This Group contains the Mapping for 1.2.40.0.34.6.0.11.3.18 Antikörper-Bestimmung Battery Organizer 
+// Cda Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.18/2025-02-13T11:44:29
+// FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-observation.html
+group CdaOrganizerToFhirObservation(source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient){
+  cda_organizer ->
+    fhir_observation.subject = create('Reference') as fhir_observation_subject_reference,
+    fhir_patient.id as fhir_patient_id,
+    fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id)
+    "FhirObservationSubject";
+  // ToDo: Check Transcoding
+  // organizer.code
+  cda_organizer.code -> fhir_observation.category;
+  // ToDo: Check Transcoding 
+  cda_organizer.code -> fhir_observation.code;
+  // ToDo: Add mapping for missing Elements 
+
+}
+
+
+// This Group contains the Mapping for 1.2.40.0.34.6.0.11.3.16 Antikörper-Bestimmung Laboratory Observation Entry 
+// CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.16/2025-02-13T12:01:32
+// FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-observation.html
+group CdaObservationToFhirObservation(source cda_observation: Observation, target fhir_observation: Observation, target fhir_patient: Patient, target fhir_bundle: Bundle){
+  
+  // -----------------------------------------------------------------------------------------------
+  // @NKR please read before starting to map. 
+
+    // I have created the Groups: CdaAntikoerperSectionToFhirCompositionSection -> CdaAntiBodyDataProcessingEntryToFhir -> (CdaOrganizerToFhirObservation and CdaObservationToFhirObservation). These are already corretly referenced in FML
+    // Therefore you only need to concern yourself with CdaObservationToFhirObservation. This group should be able to map all of the Info from 1.2.40.0.34.6.0.11.3.16 Antikörper-Bestimmung Laboratory Observation Entry (https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.16/2025-02-13T12:01:32) 
+
+
+    // Look at these CDA Elements and check if and how they can be mapped to FHIR. 
+    // To map them you need to check the CDA IG and the APS Observation. 
+    // Look at the Group CdaLaboratoryObservationToFhirObservation in the CdaLabToFhirBundle.4.map to see how its done here. 
+    // FYI: Since the APS does not constrain the ValueSets so much little transcoding is needed and therefore the mapping should be simpler than it is in CdaLaboratoryObservationToFhirObservation - CdaLabToFhirBundle.4.map
+  // -----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+  // -----------------------------------------------------------------------------------------------
+  // NKR Please map following Elements.
+
+  // observation.id -> Observation.identifier
+  cda_observation.id -> fhir_observation.identifier;
+  
+  // create Observation.category (See Lab.map CdaLaboratoryObservationToFhirObservation)
+  //your source code here -> your target here;  
+  
+  // Observation/code -> Observation.code 
+  //your source code here -> your target here;
+  
+  // Observation/statusCode -> Observation.status 
+  //your source code here -> your target here;
+  
+  // Observation/effectiveTime -> Observation.effective
+  //your source code here -> your target here;
+  
+  // Observation/value -> Observation.value  (Note since Observation.value is constraint in eHDSI we have added a group that deals just with Observation.value. Look at CdaLaboratoryObservationValueToFhirObservationValue to see which logic from this group can be applyed here.)
+  // your source code here -> your target here;
+
+  // Obsevation.interpretationCode -> Observation.interpretation
+  // your source code here -> your target here;
+
+  // Observation.referenceRange -> Observation.referenceRange (Note the mapping for this is also in CdaLaboratoryObservationToFhirObservation at the very end of the group.) 
+  // your source code here -> your target here; 
+
+  // -----------------------------------------------------------------------------------------------
+
+
+
+
+
+
+  // Elements that are out of scope at the moment.
+    //Narrative Text Reference
+    // 1.2.40.0.34.6.0.11.9.28 Performer Body - Laboratory
+    // 1.2.40.0.34.6.0.11.9.44 Participant Body - Verifier
+    // 1.2.40.0.34.6.0.11.9.46 Participant Body - Authorized Editor
+    // 1.2.40.0.34.6.0.11.9.47 Participant Body - Data Enterer
+    // 1.2.40.0.34.6.0.11.3.17 Comment Entry - Single Author / Informant
+}
+
 
 group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunization: FhirImmunization, target fhir_bundle: FhirBundle) {
   // substanceAdministration/id -> Immunization.identifier 

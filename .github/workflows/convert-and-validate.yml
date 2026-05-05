@@ -4,7 +4,7 @@ name: Convert and validate test file
 
 on:
   pull_request:
-    branches: [ elga, elga-dev ]
+    branches: [ elga, elga-dev, 283-add-antibody-mapping-to-elga-dev]
 
 jobs:
   convert-and-validate:
