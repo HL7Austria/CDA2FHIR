@@ -1,0 +1,101 @@
+name: Release and update ELGA GitLab
+
+on:
+  workflow_dispatch:
+    inputs:
+      elga_jira_ticket_nr:
+        description: 'ELGA Jira ticket number'
+        required: true
+        type: string
+
+jobs:
+  # ── 1. Read version from pyproject.toml ───────────────────────────────────
+  get-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract version from pyproject.toml
+        id: version
+        run: |
+          VERSION=$(python - <<'EOF'
+          import tomllib
+          import os
+          with open(os.path.join('python-maps', 'pyproject.toml'), "rb") as f:
+              data = tomllib.load(f)
+          print(data["project"]["version"])
+          EOF
+          )
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Detected version: ${VERSION}"
+
+  # ── 2. Create the GitHub release ──────────────────────────────────────────
+  create-release:
+    needs: get-version
+    runs-on: ubuntu-latest
+    outputs:
+      release_url:  ${{ steps.create.outputs.url }}
+      release_tag:  ${{ steps.create.outputs.tag }}
+      release_body: ${{ steps.create.outputs.body }}
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create GitHub release
+        id: create
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ needs.get-version.outputs.version }}"
+
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --generate-notes \
+            --latest=false
+
+          BODY=$(gh release view "$TAG" --json body -q .body)
+          URL=$(gh release view "$TAG" --json url -q .url)
+
+          echo "tag=${TAG}"   >> "$GITHUB_OUTPUT"
+          echo "url=${URL}"   >> "$GITHUB_OUTPUT"
+          {
+            echo "body<<EOF"
+            echo "$BODY"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  # ── 3. Update ELGA GitLab ─────────────────────────────────────────────────
+  update-elga:
+    needs: [get-version, create-release]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Update pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: pip install requests pandas openpyxl
+
+      - name: Create MR in ELGA repository
+        env:
+          GITLAB_CI_TOKEN: ${{ secrets.GLE_GITLAB_CI_TOKEN }}
+          GITLAB_ELGA_CDA2FHIR_REPO: ${{ vars.GITLAB_ELGA_MYHEALTHEU_MALACSERVICE_REPO }}
+          GITLAB_ELGA_CDA2FHIR_REPO_TARGET_BRANCH: ${{ vars.GITLAB_ELGA_MYHEALTHEU_MALACSERVICE_REPO_TARGET_BRANCH }}
+          RELEASE_URL:         ${{ needs.create-release.outputs.release_url }}
+          RELEASE_TAG:         ${{ needs.create-release.outputs.release_tag }}
+          RELEASE_DESCRIPTION: ${{ needs.create-release.outputs.release_body }}
+          RELEASE_DATE:        ${{ github.event.repository.updated_at }}
+          ELGA_JIRA_TICKET_NR: ${{ github.event.inputs.elga_jira_ticket_nr }}
+        run: python scripts/update_elga.py
