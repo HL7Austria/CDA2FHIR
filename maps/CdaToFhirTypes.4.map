@@ -639,8 +639,8 @@ group TSDate(source src : TS, target tgt : date) extends Any <<types>> {
 }
 
 group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any <<types>> {
-  src.low -> tgt.start;
-  src.high -> tgt.end;
+  src.low where ($this.nullFlavor.exists().not()) -> tgt.start;
+  src.high where ($this.nullFlavor.exists().not()) -> tgt.end;
 }
 
 group IVLTSDateTime(source src : IVL_TS, target tgt : dateTime) extends Any <<types>> {
