@@ -71,7 +71,7 @@ imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-
 
 
 // _________________________ Document Level Template  _________________________
-
+ 
 group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) {
   // ClinicalDocument/id -> Bundle.identifier
   cda.id -> fhir_bundle.identifier "CdaIdToFhirBundleIdentifier";
