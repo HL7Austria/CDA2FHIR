@@ -10,6 +10,10 @@
       {
         "package": "hl7.fhir.eu.laboratory#2.0.0",
         "url": "https://hl7.eu/fhir/preview/laboratory/package.tgz"
+      },
+      {
+        "package": "myhealth.eu.fhir.core#1.0.0",
+        "url": "https://fhir.ehdsi.eu/core/package.tgz"
       }
     ]
   },

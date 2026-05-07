@@ -16,12 +16,13 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0  # ensures full history for committing
+          #ssh-key: ${{ secrets.MALAC_HD_DEPLOY_KEY }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-          #ssh-key: ${{ secrets.MALAC_HD_DEPLOY_KEY }}
+          
 
       - name: Update pip
         run: |
