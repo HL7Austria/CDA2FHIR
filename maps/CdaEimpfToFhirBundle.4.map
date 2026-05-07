@@ -392,21 +392,51 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
   
   // create Observation.category (See Lab.map CdaLaboratoryObservationToFhirObservation)
   //your source code here -> your target here;  
+  cda_observation -> fhir_observation.category as fhir_category,
+    fhir_category.coding as fhir_category_coding,
+    fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
+    fhir_category_coding.code = 'laboratory'
+    "FhirObservationCategoryCoding";
   
   // Observation/code -> Observation.code 
   //your source code here -> your target here;
+  cda_observation.code as cda_code where ($this.nullFlavor.exists().not()) then {
+    cda_code.code -> fhir_observation.code;
+  } "CdaObservationCodeToFhirObservationCodeNoNullFlavor";
+
+  cda_observation.code as cda_code where ($this.nullFlavor.exists()) ->
+    fhir_observation.code as fhir_observation_code,
+    fhir_observation_code.coding as fhir_observation_code_coding,
+    fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    fhir_observation_code_coding.code = 'OTH'
   
   // Observation/statusCode -> Observation.status 
   //your source code here -> your target here;
   
   // Observation/effectiveTime -> Observation.effective
   //your source code here -> your target here;
+  cda_observation.effectiveTime as cda_effectiveTime -> fhir_observation.effective = create('dateTime') as fhir_observation_effective then 
+    TSDateTime(cda_effectiveTime, fhir_observation_effective) "CdaEffectiveTimeToFhirObservationEffective";
+  cda_observation
+    where cda_observation.where(effectiveTime.where(nullFlavor = 'UNK') or effectiveTime.exists().not()) ->
+    fhir_observation.effective = create('dateTime') as fhir_observation_effective,
+    fhir_observation_effective.extension as fhir_observation_effective_extenstion,
+    fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+    fhir_observation_effective_extenstion.value = create('code') as fhir_observation_effective_extenstion_code,
+    fhir_observation_effective_extenstion_code.value = 'unknown'
+      "CdaEffectiveTimeExistsNotToFhirObservationEffective";
   
   // Observation/value -> Observation.value  (Note since Observation.value is constraint in eHDSI we have added a group that deals just with Observation.value. Look at CdaLaboratoryObservationValueToFhirObservationValue to see which logic from this group can be applyed here.)
   // your source code here -> your target here;
 
   // Obsevation.interpretationCode -> Observation.interpretation
   // your source code here -> your target here;
+  cda_observation.interpretationCode as cda_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
+    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
+    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
+    fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
+    "CdaObservationInterpretationCodeToFhirObservationInterpretation";
 
   // Observation.referenceRange -> Observation.referenceRange (Note the mapping for this is also in CdaLaboratoryObservationToFhirObservation at the very end of the group.) 
   // your source code here -> your target here; 
