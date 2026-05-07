@@ -356,6 +356,8 @@ group CdaOrganizerToFhirObservation(source cda_organizer: Organizer, target fhir
   cda_organizer.code -> fhir_observation.code;
   // ToDo: Add mapping for missing Elements 
 
+  // organizer.statusCode
+  organizer -> fhir_observation.status = 'final';
 }
 
 
