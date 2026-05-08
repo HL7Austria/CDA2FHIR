@@ -408,7 +408,7 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
     fhir_observation.code as fhir_observation_code,
     fhir_observation_code.coding as fhir_observation_code_coding,
     fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_observation_code_coding.code = 'OTH'
+    fhir_observation_code_coding.code = 'OTH';
   
   // Observation/statusCode -> Observation.status 
   //your source code here -> your target here;
@@ -440,6 +440,25 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
 
   // Observation.referenceRange -> Observation.referenceRange (Note the mapping for this is also in CdaLaboratoryObservationToFhirObservation at the very end of the group.) 
   // your source code here -> your target here; 
+  cda_observation.referenceRange as cda_observation_referenceRange then {
+    cda_observation_referenceRange.observationRange as cda_referenceRange_observationRange ->
+      fhir_observation.referenceRange as fhir_observation_referenceRange then {
+        // observation.referenceRange.observationRange.text
+        // TODO how to deal with <reference>-tags
+        //cda_referenceRange_observationRange.text -> fhir_observation_referenceRange.text;
+        cda_referenceRange_observationRange.value as cda_observationRange_value then {
+          cda_observationRange_value.low where (nullFlavor.exists().not()) -> fhir_observation_referenceRange.low;
+          cda_observationRange_value.high where (nullFlavor.exists().not()) -> fhir_observation_referenceRange.high;
+        };
+        // observation.referenceRange.observationRange.interpretationCode (always 'N')
+        cda_referenceRange_observationRange.interpretationCode ->
+          fhir_observation_referenceRange.type as fhir_referenceRange_type,
+          fhir_referenceRange_type.coding as fhir_type_coding,
+          fhir_type_coding.system = 'http://terminology.hl7.org/CodeSystem/referencerange-meaning',
+          fhir_type_coding.code = 'normal'
+          "CdaInterpretationCodeToFhirInterpretationCode";
+      };
+  };
 
   // -----------------------------------------------------------------------------------------------
 
