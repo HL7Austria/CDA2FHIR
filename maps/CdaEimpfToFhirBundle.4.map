@@ -403,7 +403,7 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
   // Observation/code -> Observation.code 
   //your source code here -> your target here;
   cda_observation.code as cda_code where ($this.nullFlavor.exists().not()) then {
-    cda_code.code -> fhir_observation.code;
+    cda_code -> fhir_observation.code;
   } "CdaObservationCodeToFhirObservationCodeNoNullFlavor";
 
   cda_observation.code as cda_code where ($this.nullFlavor.exists()) ->
