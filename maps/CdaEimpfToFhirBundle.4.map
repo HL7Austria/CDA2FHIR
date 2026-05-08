@@ -255,13 +255,13 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection,
   // Übersetzung
   // currently not necessary to be mapped:
   //   Since the section/text is not displayed, the translation is irrelevant in that context.
-}cda_section, fhir_section, fhir_patient, fhir_bundle
+}
 
 // This Group contains the Mapping for  1.2.40.0.34.6.0.11.2.7 Antikörper-Bestimmung - kodiert
 // CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.2.7/2025-11-03T08:24:04
 // FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-composition.html
 group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
-  cda_section.title -> fhir_section.title;
+  //cda_section.title -> fhir_section.title;
   cda_section.code -> fhir_section.code;
   cda_section.entry as cda_section_entry then{
 
@@ -356,6 +356,8 @@ group CdaOrganizerToFhirObservation(source cda_organizer: Organizer, target fhir
   cda_organizer.code -> fhir_observation.code;
   // ToDo: Add mapping for missing Elements 
 
+  // organizer.statusCode
+  organizer -> fhir_observation.status = 'final';
 }
 
 
