@@ -262,6 +262,9 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection,
 // FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-composition.html
 group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   //cda_section.title -> fhir_section.title;
+  // ToDo
+  // Check if mapping the cda_section.code(26436-6) to fhir is ok. 
+  // FHIR section has only a example binding VS... 
   cda_section.code -> fhir_section.code;
   cda_section.entry as cda_section_entry then{
 
@@ -298,9 +301,9 @@ group CdaAntiBodyDataProcessingEntryToFhir(source cda_act: Act, target fhir_sect
 // referenced from Composition.section.entry.
 //-----------------------------------------------------------
 
-// ToDo:
-  // CRE Add other templates that are referenced in the Antikörperbestimmung Data Processing Entry
-  // Check if a DiagnosticReport is needed or if we can directly add the FHIR Battery Observation to Composition
+// ToDo Add mapping for: 
+  //entry/act/reference( External Document Entry - 1.2.40.0.34.6.0.11.3.14) 
+  //entry/act/author( Author Body - eImpfpass - 1.2.40.0.34.6.0.11.9.8) 
 
   
 // 1.2.40.0.34.6.0.11.3.18 Antikörper-Bestimmung Battery Organizer
@@ -358,6 +361,10 @@ group CdaOrganizerToFhirObservation(source cda_organizer: Organizer, target fhir
 
   // organizer.statusCode
   organizer -> fhir_observation.status = 'final';
+
+
+  // ToDo: Mapp: 
+  // organizer/effectiveTime
 }
 
 
