@@ -1319,6 +1319,8 @@ group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, ta
     performer_function_extension_value_coding.code = 'PPRF' then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
 }
 
+// ToDo
+// Check if this mapping is needed. It is never called in any of the .maps
 group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle){
   // time
   // TODO
@@ -1332,6 +1334,16 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
+
+        //ToDo
+        // Check that meta.profile url is correct
+        fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
+          fhir_practitionerRole.meta as fhir_practitionerRole_meta,
+          fhir_practitionerRole_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/PractitionerRole-eu-myhealth-eu',
+          fhir_practitioner.meta as fhir_practitioner_meta,                                                                                                           
+          fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Practitioner-eu-myhealth-eu'
+          "FhirPractitionerAndPractitionerRoleProfile";
+
         // participantRole/id ->  Practitioner.identifier
         cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
         
