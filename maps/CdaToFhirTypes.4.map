@@ -4,7 +4,8 @@ map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-type
 // Adapted from https://github.com/HL7/ccda-to-fhir/tree/master/mappings
 // CDA:  http://build.fhir.org/ig/ahdis/cda-core-2.0/branches/master/index.html
 // FHIR: http://hl7.org/fhir/r4/
-
+// TODO review mapping
+// Reviewed by ELGA Terminology but not all todos completed
 conceptmap "v3-NullFlavor-2-data-absent-reason" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
   prefix t = "http://terminology.hl7.org/CodeSystem/data-absent-reason"
@@ -18,7 +19,9 @@ conceptmap "v3-NullFlavor-2-data-absent-reason" {
 
 // TODO review mapping
 // based on BlackTusk
-// Review - ToDo: Handle PHYS, PST
+// Review - ToDo: 
+// Handle PHYS, PST
+// Reviewed by ELGA Terminology but not all todos completed
 conceptmap "ELGA2FHIRAddressUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
   prefix t = "http://hl7.org/fhir/address-use"
@@ -40,7 +43,7 @@ conceptmap "ELGA2FHIRAddressUse" {
 // TODO review mapping
 // based on BlackTusk
 //review https://github.com/HL7Austria/CDA2FHIR/issues/257
-// ToDo: We stopped the ELGA Terminlogy Review on the 5.5.26 here. Continue with this ConceptMap
+// Reviewed by ELGA Terminology but not all todos completed
 conceptmap "ELGATelecomAddressUseFHIRContactPointUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-AddressUse"
   prefix t = "http://hl7.org/fhir/contact-point-use"
@@ -49,8 +52,8 @@ conceptmap "ELGATelecomAddressUseFHIRContactPointUse" {
   s:"HP" == t:"home" // telephone primary home -> home
   s:"HV" == t:"home" // telephone vacation home -> home
 
-  s:"WP" == t:"work" // telephone work -> work
-  s:"AS" == t:"work" // answering service -> work
+  s:"WP" == t:"work" // work place -> work
+  s:"AS" == t:"work" // answering service -> work // OTH would be a better target. Evaluate if mapping to oth is better -> use extension.dataAbsentReason?  
 
   s:"EC" == t:"home" // emergency contact -> home, FHIR home "typically used with urgent cases"
 
@@ -63,30 +66,32 @@ conceptmap "ELGATelecomAddressUseFHIRContactPointUse" {
 // TODO review mapping
 // based on BlackTusk
 // Review https://github.com/HL7Austria/CDA2FHIR/issues/257
+// Reviewed by ELGA Terminology but not all todos completed
 conceptmap "ELGAEntityNameUseFHIRNameUse" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNameUse"
   prefix t = "http://hl7.org/fhir/name-use"
 
-  s:"ASGN" == t:"usual" // assigned -> usual
+  s:"ASGN" == t:"anonymous" // assigned -> anonymous
   s:"C" == t:"usual" // License -> usual
-  s:"I" == t:"anonymous" // Indigenious/Tribal -> anonymous
-  s:"L" == t:"official" // Legal -> official
+  s:"I" == t:"usual" // Indigenious/Tribal -> usual
+  s:"L" == t:"usual" // Legal -> usual
   s:"OR" == t:"official" // official registry -> official
   s:"P" == t:"anonymous" // pseudonym -> anonymous
   s:"A" == t:"anonymous" // Artist/Stage -> anonymous
-  s:"R" == t:"anonymous" // Religious -> anonymous
-  s:"SRCH" == t:"temp" // search v:HL7SearchUse -> temp
-  s:"PHON" == t:"nickname" // phonetic -> nickname
-  s:"SNDX" == t:"nickname" // soundex ->  nickname
-  s:"ABC" == t:"nickname" // alphabetic -> nickname
-  s:"IDE" == t:"nickname" // ideographic -> nickname
-  s:"SYL" == t:"nickname" // syllabic -> nickname
+  s:"R" == t:"usual" // Religious -> usual
+  s:"SRCH" == t:"temp" // search v:HL7SearchUse -> temp //CDA2FHIR AG befragen: is nickname or temp a better fitting target? 
+  s:"PHON" == t:"nickname" // phonetic -> nickname  // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
+  s:"SNDX" == t:"nickname" // soundex ->  nickname // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
+  s:"ABC" == t:"nickname" // alphabetic -> nickname // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
+  s:"IDE" == t:"nickname" // ideographic -> nickname // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
+  s:"SYL" == t:"nickname" // syllabic -> nickname // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
 }
 
 // TODO review mapping
 // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/163
 // As soon as 'TITLE' is part of FHIR name-part-qualifier this conceptmap is obsolete.
 // ok
+// Reviewed by ELGA Terminology but not all todos completed
 conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifier"
   prefix t = "http://terminology.hl7.org/CodeSystem/v3-EntityNamePartQualifierR2"
@@ -100,8 +105,10 @@ conceptmap "ELGAEntityNamePartQualifierFHIRNamePartQualifier" {
   s:"NB" == t:"NB"
   s:"PR" == t:"PR"
   s:"SP" == t:"SP"
-  // s:"TITLE" == t:"TITLE"
-  s:"VV" == s:"VV"
+  // s:"TITLE" == t:"TITLE" // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
+  // ToDo
+  // add the checks to fml 
+  // s:"VV" == s:"VV" // Optional Data Elements (cardinality of 0..1 or 0..*) If a content creator does not have data to be included in the resources, the data element is omitted.
 }
 // Compare with TerminiologiesMetaData.csv
 conceptmap "OIDtoURI" {
@@ -866,7 +873,9 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
               // name.suffix.qualifier
               cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() then {
-                cda_name_item_suffix.qualifier as qualifier where ($this != 'TITLE') ->
+                // ToDo
+                // add this != VV check to other translate calls
+                cda_name_item_suffix.qualifier as qualifier where ($this != 'TITLE' or $this != 'VV') -> 
                   fhir_humanName_suffix.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
                   extension.value = translate(qualifier, '#ELGAEntityNamePartQualifierFHIRNamePartQualifier', 'code')
