@@ -421,6 +421,9 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
   
   // Observation/statusCode -> Observation.status 
   //your source code here -> your target here;
+  cda_observation.statusCode as observation_statusCode then {
+    observation_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
+  } "CdaStatusCodeToFhirObservationStatusMapped";
   
   // Observation/effectiveTime -> Observation.effective
   //your source code here -> your target here;
