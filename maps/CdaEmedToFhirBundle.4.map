@@ -507,12 +507,12 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                     fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
 
                     // Create a substring from the start till the first occurrence of < character
-                    //fhir_medicationDispense_dosageInstruction.text = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));//(iif(fhir_medicationDispense_dosageInstruction.text.empty().not(), (fhir_medicationDispense_dosageInstruction_text, (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')))), ((fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))))));
                     create('string') as fhir_substring_03,
-                    create('string') as dosageInstruction_text,
-                    dosageInstruction_text = (fhir_medicationDispense_dosageInstruction.text),
-                    fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                    //fhir_medicationDispense_dosageInstruction.text = (iif(dosageInstruction_text.exists(),(dosageInstruction_text + fhir_substring_03), fhir_substring_03));
+                    fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                    // Check if element already contains a value and either append it or assign a new value
+                    fhir_medicationDispense_dosageInstruction.text = (iif(fhir_medicationDispense_dosageInstruction.text.exists(),
+                                                     (fhir_medicationDispense_dosageInstruction.text + fhir_substring_03),
+                                                     fhir_substring_03));
                 };
               };
           };
@@ -601,10 +601,11 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                                   
                   // Create a substring from the start till the first occurrence of < character
                   create('string') as fhir_substring_03,
-                  create('string') as dosageInstruction_text,
-                  dosageInstruction_text = (fhir_medicationDispense_dosageInstruction.text),
-                  fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                  //fhir_medicationDispense_dosageInstruction.text = (iif(dosageInstruction_text.exists(),(dosageInstruction_text + fhir_substring_03), fhir_substring_03)); 
+                  fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                  // Check if element already contains a value and either append it or assign a new value
+                  fhir_medicationDispense_dosageInstruction.text = (iif(fhir_medicationDispense_dosageInstruction.text.exists(),
+                                                                   (fhir_medicationDispense_dosageInstruction.text + fhir_substring_03),
+                                                                   fhir_substring_03));
                 };
               };
             };
@@ -1115,16 +1116,10 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
 
                     // Create a substring from the start till the first occurrence of < character
                     create('string') as fhir_substring_03,
-                    create('string') as dosageInstruction_text,
-                    dosageInstruction_text = (fhir_medicationRequest_dosageInstruction.text),
-                    fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                    /*fhir_medicationRequest_dosageInstruction.text as fhir_medicatiationRequest_dosageInstruction_text where (dosageInstruction_text.exists()) then {
-                      cda -> fhir_medicatiationRequest_dosageInstruction_text = (dosageInstruction_text + fhir_substring_03);
-                    };
-                    fhir_medicationRequest_dosageInstruction.text as fhir_medicatiationRequest_dosageInstruction_text where (dosageInstruction_text.exists().not()) then {
-                      cda -> fhir_medicatiationRequest_dosageInstruction_text = (fhir_substring_03);
-                    };*/
-                    //= //(iif(dosageInstruction_text.exists(),(dosageInstruction_text + fhir_substring_03), fhir_substring_03)); 
+                    fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                    fhir_medicationRequest_dosageInstruction.text = (iif(fhir_medicationRequest_dosageInstruction.text.exists(),
+                                                                      (fhir_medicationRequest_dosageInstruction.text + fhir_substring_03),
+                                                                      fhir_substring_03));
                   };
                 };
               };
@@ -1213,10 +1208,10 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
                                           
                       // Create a substring from the start till the first occurrence of < character
                       create('string') as fhir_substring_03,
-                      create('string') as dosageInstruction_text,
-                      dosageInstruction_text = (fhir_medicationRequest_dosageInstruction.text),
-                      fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                      //fhir_medicationRequest_dosageInstruction.text = (iif(dosageInstruction_text.exists(),(dosageInstruction_text + fhir_substring_03), fhir_substring_03)); 
+                      fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                      fhir_medicationRequest_dosageInstruction.text = (iif(fhir_medicationRequest_dosageInstruction.text.exists(),
+                                                                      (fhir_medicationRequest_dosageInstruction.text + fhir_substring_03),
+                                                                      fhir_substring_03)); 
                     };
                   };
                 };
