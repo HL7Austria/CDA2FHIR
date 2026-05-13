@@ -14,7 +14,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMateri
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias CdaPerformer2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias CdaAuthor as source
-uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias CdaAct as source 
+
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
