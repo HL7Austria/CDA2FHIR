@@ -410,14 +410,6 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
 
 group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source cda_section, source cda_entryRelationship: EntryRelationship, target fhir_composition: Composition, target fhir_medication: Medication, target fhir_medicationDispense: MedicationDispense, target fhir_medicationRequest: MedicationRequest, target fhir_bundle: Bundle) {
 
-  // Set MedicationDispense.status (mandatory element)
-  /*cda -> fhir_medicationDispense.status = 'completed',
-  // Create link between MedicationDispense and Medication via MedicationDispense.medication (mandatory element)
-  fhir_medicationDispense.medication = create('Reference') as fhir_medicationDispense_medication_reference,
-  fhir_medication.id as fhir_medication_id,
-  fhir_medicationDispense_medication_reference.reference = append('urn:uuid:', fhir_medication_id),
-  fhir_medicationDispense_medication_reference.type = 'Medication';*/
-
   // Verordnung zu Abgabe -> map to MedicationRequest
   cda_entryRelationship where ($this.typeCode = 'REFR') then {
     // section/entry/supply/entryRelationship/substanceAdministration -> MedicationRequest
@@ -1020,10 +1012,11 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
               fhir_medicationRequest_dosageInstruction_timing.bounds = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_period,fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
             };
           };
+          // Tagesdosierung
+          cda_substanceAdministration_entryRelationship_substanceAdministration.doseQuantity as cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity ->
+          fhir_medicationRequest_dosageInstruction.doseAndRate as fhir_medicationRequest_dosageInstruction_doseAndRate,
+          fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
         };
-        // Tagesdosierung - needed here?
-        //cda_substanceAdministration_entryRelationship.doseQuantity as cda_substanceAdministration_doseQuantity -> fhir_medicationRequest_dosageInstruction.doseAndRate as fhir_medicationRequest_dosageInstruction_doseAndRate,
-        //fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_substanceAdministration_doseQuantity,fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
       };
 
       // Maximale Anzahl der Einlösungen -> medicationRequest.dispenseRequest.numberOfRepeatsAllowed
@@ -1046,87 +1039,131 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
         };
       };
 
-    // Zusatzinformationen für den Patienten -> MedicationDispense.dosageInstruction.patientInstruction
-    cda_sbadm.entryRelationship as cda_entryRelationship then {
-      cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'PINSTRUCT') then {
+      // Zusatzinformationen für den Patienten -> MedicationDispense.dosageInstruction.patientInstruction
+      cda_sbadm.entryRelationship as cda_entryRelationship then {
+        cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'PINSTRUCT') then {
 
-        // "Zusatzinformationen für den Patienten" -> MedicationDispense.dosageInstruction.patientInstruction
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ZINFO') then {
-          cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
-            cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
-                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
-                    
-                  cda_section.text as cda_section_text then {
+          // "Zusatzinformationen für den Patienten" -> MedicationDispense.dosageInstruction.patientInstruction
+          cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ZINFO') then {
+            cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+              cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+                cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
+                  cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+                      
+                    cda_section.text as cda_section_text then {
 
-                    // section/text -> Narrative.div
-                    cda_section_text -> 
-                    // Create Narrative (same datatype as in Composition.section.text)
-                    create('Narrative') as fhir_narrative,
-                    // section/text -> Narrative.div
-                    fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                                          
-                    // Create string
-                    create('string') as fhir_string,
-                    // Convert test_div to a FHIR string
-                    fhir_string = (fhir_narrative_div),
+                      // section/text -> Narrative.div
+                      cda_section_text -> 
+                      // Create Narrative (same datatype as in Composition.section.text)
+                      create('Narrative') as fhir_narrative,
+                      // section/text -> Narrative.div
+                      fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                                            
+                      // Create string
+                      create('string') as fhir_string,
+                      // Convert test_div to a FHIR string
+                      fhir_string = (fhir_narrative_div),
+                        
+                      // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
+                      create('string') as fhir_substring_01,
+                      // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                      // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+                        
+                      // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                      create('string') as fhir_substring_02,
+                      fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
                       
-                    // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
-                    create('string') as fhir_substring_01,
-                    // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                    // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
-                    fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
-                      
-                    // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-                    create('string') as fhir_substring_02,
-                    fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
-                    
-                    // Create a substring from the start till the first occurrence of < character
-                    fhir_medicationRequest_dosageInstruction.patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-                  }; 
+                      // Create a substring from the start till the first occurrence of < character
+                      fhir_medicationRequest_dosageInstruction.patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+                    }; 
+                  };
                 };
               };
             };
           };
-        };
 
-        // "Informationen zur alternativen Einnahme" -> MedicationDispense.dosageInstruction.text
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ALTEIN') then {
-          cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
-            cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
-                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
-                    
-                  cda_section.text as cda_section_text then {
-
-                    // section/text -> Narrative.div
-                    cda_section_text -> 
-                    // Create Narrative (same datatype as in Composition.section.text)
-                    create('Narrative') as fhir_narrative,
-                    // section/text -> Narrative.div
-                    fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                                          
-                    // Create string
-                    create('string') as fhir_string,
-                    // Convert test_div to a FHIR string
-                    fhir_string = (fhir_narrative_div),
-                     
-                    // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
-                    create('string') as fhir_substring_01,
-                    // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                    // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
-                    fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+          // "Informationen zur alternativen Einnahme" -> MedicationDispense.dosageInstruction.text
+          cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ALTEIN') then {
+            cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+              cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+                cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
+                  cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
                       
-                    // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-                    create('string') as fhir_substring_02,
-                    fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+                    cda_section.text as cda_section_text then {
 
-                    // Create a substring from the start till the first occurrence of < character
-                    create('string') as fhir_substring_03,
-                    fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
-                    fhir_medicationRequest_dosageInstruction.text = (iif(fhir_medicationRequest_dosageInstruction.text.exists(),
-                                                                      (fhir_medicationRequest_dosageInstruction.text + fhir_substring_03),
-                                                                      fhir_substring_03));
+                      // section/text -> Narrative.div
+                      cda_section_text -> 
+                      // Create Narrative (same datatype as in Composition.section.text)
+                      create('Narrative') as fhir_narrative,
+                      // section/text -> Narrative.div
+                      fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                                            
+                      // Create string
+                      create('string') as fhir_string,
+                      // Convert test_div to a FHIR string
+                      fhir_string = (fhir_narrative_div),
+                      
+                      // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
+                      create('string') as fhir_substring_01,
+                      // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                      // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+                        
+                      // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                      create('string') as fhir_substring_02,
+                      fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                      // Create a substring from the start till the first occurrence of < character
+                      create('string') as fhir_substring_03,
+                      fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                      fhir_medicationRequest_dosageInstruction.text = (iif(fhir_medicationRequest_dosageInstruction.text.exists(),
+                                                                        (fhir_medicationRequest_dosageInstruction.text + fhir_substring_03),
+                                                                        fhir_substring_03));
+                    };
+                  };
+                };
+              };
+            };
+          };
+
+          // "Informationen zur Arznei" -> Medication.text
+          cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ARZNEIINFO') then {
+            cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+              cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+                cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
+                fhir_medication.text = create('Narrative') as fhir_medication_text, fhir_medication_text.status = 'additional' then {
+                  cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
+                      
+                    cda_section.text as cda_section_text then {
+
+                      // section/text -> Narrative.div
+                      cda_section_text -> 
+                      // Create Narrative (same datatype as in Composition.section.text)
+                      create('Narrative') as fhir_narrative,
+                      // section/text -> Narrative.div
+                      fhir_narrative.div = cda_section_text as fhir_narrative_div,
+                                            
+                      // Create string
+                      create('string') as fhir_string,
+                      // Convert test_div to a FHIR string
+                      fhir_string = (fhir_narrative_div),
+                        
+                      // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
+                      create('string') as fhir_substring_01,
+                      // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
+                      // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
+                      fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
+                        
+                      // Create a substring from the first occurrence of > character till the end of fhir_substring_01
+                      create('string') as fhir_substring_02,
+                      fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+
+                      // Create a substring from the start till the first occurrence of < character
+                      create('string') as fhir_substring_03,
+                      fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                      fhir_medication_text.div = append(fhir_substring_03);
+                    };         
                   };
                 };
               };
@@ -1134,91 +1171,47 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
           };
         };
 
-        // "Informationen zur Arznei" -> Medication.text
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ARZNEIINFO') then {
-          cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
-            cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
-              fhir_medication.text = create('Narrative') as fhir_medication_text, fhir_medication_text.status = 'additional' then {
-                cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
-                    
-                  cda_section.text as cda_section_text then {
+        // Ergänzende Informationen zur Abgabe und magistralen Zubereitungen
+        cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {
 
-                    // section/text -> Narrative.div
-                    cda_section_text -> 
-                    // Create Narrative (same datatype as in Composition.section.text)
-                    create('Narrative') as fhir_narrative,
-                    // section/text -> Narrative.div
-                    fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                                          
-                    // Create string
-                    create('string') as fhir_string,
-                    // Convert test_div to a FHIR string
-                    fhir_string = (fhir_narrative_div),
-                      
-                    // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
-                    create('string') as fhir_substring_01,
-                    // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                    // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
-                    fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
-                      
-                    // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-                    create('string') as fhir_substring_02,
-                    fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
-
-                    // Create a substring from the start till the first occurrence of < character
-                    create('string') as fhir_substring_03,
-                    fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
-                    fhir_medication_text.div = append(fhir_substring_03);
-                  };         
-                };
-              };
-            };
-          };
-        };
-      };
-
-      // Ergänzende Informationen zur Abgabe und magistralen Zubereitungen
-      cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'FINSTRUCT') then {
-
-        // Ergänzende Informationen zur Abgabe -> MedicationDispense.dosageInstruction.text
-        // section/entry/supply/entryRelationship/act/text/@value (code ERGINFO) -> MedicationDispense.dosageInstruction
-        cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ERGINFO') then {
-          cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
-            cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
-              cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
+          // Ergänzende Informationen zur Abgabe -> MedicationDispense.dosageInstruction.text
+          // section/entry/supply/entryRelationship/act/text/@value (code ERGINFO) -> MedicationDispense.dosageInstruction
+          cda_entryRelationship_act.entryRelationship as cda_entryRelationship_act_entryRelationship where ($this.act.code.code = 'ERGINFO') then {
+            cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
+              cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
+                cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference then {
                   cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
-                              
+                                
                     cda_section.text as cda_section_text then {
- 
+  
                       // section/text -> Narrative.div
                       cda_section_text -> 
                       // Create Narrative (same datatype as in Composition.section.text)
                       create('Narrative') as fhir_narrative,
                       // section/text -> Narrative.div
                       fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                                                          
+                                                            
                       // Create string
                       create('string') as fhir_string,
                       // Convert test_div to a FHIR string
                       fhir_string = (fhir_narrative_div),
-                                    
+                                      
                       // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
                       create('string') as fhir_substring_01,
                       // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
                       // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
                       fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
-                                        
+                                          
                       // Create a substring from the first occurrence of > character till the end of fhir_substring_01
                       create('string') as fhir_substring_02,
                       fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
-                                          
+                                            
                       // Create a substring from the start till the first occurrence of < character
                       create('string') as fhir_substring_03,
                       fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
                       fhir_medicationRequest_dosageInstruction.text = (iif(fhir_medicationRequest_dosageInstruction.text.exists(),
-                                                                      (fhir_medicationRequest_dosageInstruction.text + fhir_substring_03),
-                                                                      fhir_substring_03)); 
+                                                                        (fhir_medicationRequest_dosageInstruction.text + fhir_substring_03),
+                                                                        fhir_substring_03)); 
                     };
                   };
                 };
@@ -1234,7 +1227,7 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
                 cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
                 fhir_medication.text as fhir_medication_text, fhir_medication_text.status = 'additional' then {
                   cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
-                              
+                                
                     cda_section.text as cda_section_text then {
 
                       // section/text -> Narrative.div
@@ -1243,18 +1236,18 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
                       create('Narrative') as fhir_narrative,
                       // section/text -> Narrative.div
                       fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                                                    
+                                                     
                       // Create string
                       create('string') as fhir_string,
                       // Convert test_div to a FHIR string
                       fhir_string = (fhir_narrative_div),
-                                    
+                                      
                       // Create substring from the ID (identified by cda_supply_code_reference_value) till the end of fhir_string
                       create('string') as fhir_substring_01,
                       // cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
                       // fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)) = the position of the ID within section/text
                       fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_entryRelationship_act_entryRelationship_act_reference_value.substring(1)))),
-                                    
+                                      
                       // Create a substring from the first occurrence of > character till the end of fhir_substring_01
                       create('string') as fhir_substring_02,
                       fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
