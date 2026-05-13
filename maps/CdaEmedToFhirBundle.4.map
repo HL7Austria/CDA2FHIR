@@ -714,9 +714,9 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
         then CECodeableConcept(cda_entryRelationship_substanceAdministration_effectiveTime_event,fhir_medicationDispense_dosageInstruction_timing_code);
         // Offset
         // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
-        cda_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_substanceAdministration_effectiveTime_offset ->
-        fhir_medicationDispense_dosageInstruction_timing_repeat.offset as fhir_medicationDispense_dosageInstruction_timing_repeat_offset
-        then INT(cda_entryRelationship_substanceAdministration_effectiveTime_offset,fhir_medicationDispense_dosageInstruction_timing_repeat_offset);
+        cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,
+        cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value ->
+        fhir_medicationDispense_dosageInstruction_timing_repeat.offset = cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value;
       };
 
       // Komponentencontainer
@@ -779,8 +779,9 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
               fhir_medicationDispense_dosageInstruction_timing.code as fhir_medicationDispense_dosageInstruction_timing_code
               then CECodeableConcept(cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_event,fhir_medicationDispense_dosageInstruction_timing_code);
               // Offset
-              cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.offset as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset ->
-              fhir_medicationDispense_dosageInstruction_timing_repeat.offset as fhir_medicationDispense_dosageInstruction_timing_repeat_offset then INT(cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset,fhir_medicationDispense_dosageInstruction_timing_repeat_offset);
+              cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.offset as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset,
+              cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset.value as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value ->
+              fhir_medicationDispense_dosageInstruction_timing_repeat.offset = cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value;
             };
 
             cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.comp: PIVL_TS as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp ->
@@ -977,8 +978,11 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
               
             // Offset
             // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
-            cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset ->
-            fhir_medicationRequest_dosageInstruction_timing_repeat.offset as fhir_medicationRequest_dosageInstruction_timing_repeat_offset then INT(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,fhir_medicationRequest_dosageInstruction_timing_repeat_offset);
+            //cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset ->
+            //fhir_medicationRequest_dosageInstruction_timing_repeat.offset as fhir_medicationRequest_dosageInstruction_timing_repeat_offset then INT(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,fhir_medicationRequest_dosageInstruction_timing_repeat_offset);
+            cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,
+            cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value ->
+            fhir_medicationRequest_dosageInstruction_timing_repeat.offset = cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value;
           };
 
           cda_substanceAdministration_entryRelationship_substanceAdministration.effectiveTime: SXPR_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime then {
@@ -994,8 +998,9 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
               fhir_medicationRequest_dosageInstruction_timing_repeat.when = translate(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_event, '#elga-Einnahmezeitpunkte-fhir-event-timing', 'code'),
               fhir_medicationRequest_dosageInstruction_timing.code as fhir_medicationRequest_dosageInstruction_timing_code then CECodeableConcept(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_event,fhir_medicationRequest_dosageInstruction_timing_code);
               // Offset
-              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.offset as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset ->
-              fhir_medicationRequest_dosageInstruction_timing_repeat.offset as fhir_medicationRequest_dosageInstruction_timing_repeat_offset then INT(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset,fhir_medicationRequest_dosageInstruction_timing_repeat_offset);
+              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.offset as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset,
+              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset.value as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value ->
+              fhir_medicationRequest_dosageInstruction_timing_repeat.offset = cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value;
             };
 
             cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime: PIVL_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime ->
