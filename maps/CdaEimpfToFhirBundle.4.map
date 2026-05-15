@@ -823,7 +823,7 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
     // 2. Check the mapping of all Condition.identifier 
         // Three CDA elements all land on Condition.identifier:
         //   - act/id                  (Problem Concern Entry) --> do not map (todo confirm with AG)
-        //   - observation/id          (Problem Entry)  --> identifier.use = # official
+        //   - observation/id          (Problem Entry)  --> identifier.use 
         //   - externalDocument/id     (source CDA the entry originated from) --> identifier.use = #secondary
   //--------------------------------------- 
 
@@ -864,9 +864,7 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
     cda_act_entryRelationship.observation as cda_observation then {
 
       // observation/id -> Condition.identifier
-      cda_observation.id as cda_observation_id -> 
-        fhir_condition.identifier as fhir_condition_identifier, 
-        fhir_condition_identifier.use = 'official' then II(cda_observation_id, fhir_condition_identifier);
+      cda_observation.id -> fhir_condition.identifier; 
         
       cda_observation.effectiveTime as cda_observation_effectiveTime then {
         // observation/effectiveTime/low -> Condition.onsetDateTime
