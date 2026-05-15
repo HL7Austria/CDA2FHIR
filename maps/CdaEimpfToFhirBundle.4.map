@@ -532,7 +532,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_section: CdaSection, source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
   // substanceAdministration/id -> ImmunizationRecommendation.identifier 
   cda_substanceAdministration.id -> fhir_immunizationRecommendation.identifier;
-
+  // ToDo: 
+  // Check if this { is closed properly
   cda_substanceAdministration -> fhir_immunizationRecommendation.recommendation as fhir_immunizationRecommendation_recommendation then {
     // substanceAdministration/code -> fhir_immunizationRecommendation.recommendation.forecastStatus
     cda_substanceAdministration.code -> fhir_immunizationRecommendation_recommendation.forecastStatus;
@@ -595,7 +596,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
             cda_manufacturedMaterial -> 
               fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode as fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode then 
                 CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode);
-          }
+          };
 
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
           //TODO
@@ -738,6 +739,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
             cda_substanceAdministration_reference_externalDocument.code -> fhir_immunizationRecommendation_identifier.type; 
           };
         };
+    };
 
     // substanceAdministration/precondition (Immunization Schedule Entry)
     cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
@@ -820,9 +822,9 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
 
     // 2. Check the mapping of all Condition.identifier 
         // Three CDA elements all land on Condition.identifier:
-        //   - act/id                  (Problem Concern Entry)
-        //   - observation/id          (Problem Entry)
-        //   - externalDocument/id     (source CDA the entry originated from)
+        //   - act/id                  (Problem Concern Entry) --> do not map (todo confirm with AG)
+        //   - observation/id          (Problem Entry)  --> identifier.use 
+        //   - externalDocument/id     (source CDA the entry originated from) --> identifier.use = #secondary
   //--------------------------------------- 
 
   //act/author -> Condition.recorder
@@ -841,13 +843,27 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
       fhir_condition_recorder.type = 'PractitionerRole' then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
   };
 
+  //act/reference/externalDocument[templateId/@root='1.2.40.0.34.6.0.11.3.14 '] -> Condition.identifier 
+  cda_act.reference as cda_act_reference where ($this.externalDocument.templateId.where(root='1.2.40.0.34.6.0.11.3.14')) then {
+    cda_act_reference.externalDocument as cda_act_reference_externalDocument then {
+      cda_act_reference_externalDocument.id as cda_act_reference_externalDocument_id -> 
+        fhir_condition.identifier as fhir_condition_identifier,
+        fhir_condition_identifier.use = 'secondary' then {
+          cda_act_reference_externalDocument_id then II(cda_act_reference_externalDocument_id, fhir_condition_identifier);
+          cda_act_reference_externalDocument.code -> fhir_condition_identifier.type;
+        };
+    };
+  };
+
+
+
   //act.entryRelationship[templateId/@root='1.2.40.0.34.6.0.11.3.9'] -> Condition 
   cda_act.entryRelationship as cda_act_entryRelationship then {
     cda_act_entryRelationship.observation as cda_observation then {
 
       // observation/id -> Condition.identifier
-      cda_observation.id -> fhir_condition.identifier;
-
+      cda_observation.id -> fhir_condition.identifier; 
+        
       cda_observation.effectiveTime as cda_observation_effectiveTime then {
         // observation/effectiveTime/low -> Condition.onsetDateTime
         cda_observation_effectiveTime.low as cda_observation_effectiveTime_low where ($this.nullFlavor.exists().not()) -> 
@@ -881,6 +897,8 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
         fhir_provenance_target_reference.reference = append('urn:uuid:', fhir_condition_id),
         fhir_provenance_target_reference.type = 'Condition' then CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle);
 
+      //ToDo
+      // Refactor using the narrativetext group
       // observation/entryRelationship (Comment Entry) -> Condition.note.text
       cda_observation.entryRelationship as cda_observation_entryRelationship where ($this.act.templateId.where(root='1.2.40.0.34.6.0.11.3.17')) then {
         // observation/entryRelationship/act
