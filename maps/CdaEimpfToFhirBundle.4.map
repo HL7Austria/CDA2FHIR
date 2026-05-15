@@ -532,7 +532,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunization(source cda_substanceAdmi
 group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda_section: CdaSection, source cda_substanceAdministration: CdaSubstanceAdministration, target fhir_immunizationRecommendation: FhirImmunizationRecommendation, target fhir_bundle: FhirBundle) {
   // substanceAdministration/id -> ImmunizationRecommendation.identifier 
   cda_substanceAdministration.id -> fhir_immunizationRecommendation.identifier;
-
+  // ToDo: 
+  // Check if this { is closed properly
   cda_substanceAdministration -> fhir_immunizationRecommendation.recommendation as fhir_immunizationRecommendation_recommendation then {
     // substanceAdministration/code -> fhir_immunizationRecommendation.recommendation.forecastStatus
     cda_substanceAdministration.code -> fhir_immunizationRecommendation_recommendation.forecastStatus;
@@ -595,7 +596,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
             cda_manufacturedMaterial -> 
               fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode as fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode then 
                 CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode);
-          }
+          };
 
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
           //TODO
@@ -729,8 +730,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
         };
       };
     };
-    // ToDo
-    // Check if brackets are closed properly
+
     // substanceAdministration/reference/externalDocument -> Immunization.identifier
     cda_substanceAdministration.reference as cda_substanceAdministration_reference where ($this.externalDocument.templateId.where(root='1.2.40.0.34.6.0.11.3.14')) then {
         cda_substanceAdministration_reference.externalDocument as cda_substanceAdministration_reference_externalDocument then {
@@ -739,6 +739,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
             cda_substanceAdministration_reference_externalDocument.code -> fhir_immunizationRecommendation_identifier.type; 
           };
         };
+    };
 
     // substanceAdministration/precondition (Immunization Schedule Entry)
     cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
@@ -849,13 +850,13 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
     cda_act_reference.externalDocument as cda_act_reference_externalDocument then {
       cda_act_reference_externalDocument.id as cda_act_reference_externalDocument_id -> 
         fhir_condition.identifier as fhir_condition_identifier,
-        fhir_condition_identifier.use = 'secondary' then II(cda_act_reference_externalDocument_id,fhir_condition_identifier) then {
+        fhir_condition_identifier.use = 'secondary' then {
+          cda_act_reference_externalDocument_id then II(cda_act_reference_externalDocument_id, fhir_condition_identifier);
           cda_act_reference_externalDocument.code -> fhir_condition_identifier.type;
         };
     };
   };
 
-  
 
 
   //act.entryRelationship[templateId/@root='1.2.40.0.34.6.0.11.3.9'] -> Condition 
