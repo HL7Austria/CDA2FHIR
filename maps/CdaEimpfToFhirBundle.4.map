@@ -843,8 +843,6 @@ group CdaHistoryOfPastIllnessActToFhirCondition(source cda_act: CdaAct, source c
       fhir_condition_recorder.type = 'PractitionerRole' then CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
   };
 
-  // ToDo
-  // check mapping it leads to a faulty .py output after combiling. 
   //act/reference/externalDocument[templateId/@root='1.2.40.0.34.6.0.11.3.14 '] -> Condition.identifier 
   cda_act.reference as cda_act_reference where ($this.externalDocument.templateId.where(root='1.2.40.0.34.6.0.11.3.14')) then {
     cda_act_reference.externalDocument as cda_act_reference_externalDocument then {
