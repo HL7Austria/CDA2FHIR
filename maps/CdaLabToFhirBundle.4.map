@@ -7956,7 +7956,7 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     // fhir_composition_diagnosticReport_reference.reference = append('urn:uuid:', fhir_diagnosticReport_id),
     // fhir_composition_diagnosticReport_reference.type = 'DiagnosticReport',
 
-    // retrieve Composition uuid
+    // retrieve Composition uuid 
     fhir_composition.id as fhir_composition_id,
 
     // create relation from DiagnosticReport to Composition
