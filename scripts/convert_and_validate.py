@@ -1,5 +1,6 @@
 import os
 import glob
+import shlex
 import subprocess
 import json
 import urllib.request
@@ -63,7 +64,7 @@ for config in config_json:
 
         # Validate XML
         with open(f"{VALIDATION_DIR}/{directory}/{basename}.val.xml.log", "w") as log_file:
-            result = subprocess.run([
+            xml_cmd = [
                 "java", "-jar", "validator_cli.jar",
                 f"{OUTPUT_DIR}/{directory}/{basename}.fhir.xml",
                 "-locale", "de-AT",
@@ -75,14 +76,16 @@ for config in config_json:
                 "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
                 "-extension", "any",
                 "-display-issues-are-warnings" # https://confluence.hl7.org/spaces/FHIR/pages/35718580/Using+the+FHIR+Validator#UsingtheFHIRValidator-Displaywarnings
-            ], stdout=log_file, stderr=subprocess.STDOUT)
+            ]
+            print("Validator command (XML):", shlex.join(xml_cmd))
+            result = subprocess.run(xml_cmd, stdout=log_file, stderr=subprocess.STDOUT)
 
             if result.returncode != 0:
                 print("validation errors in FHIR XML")
 
         # Validate JSON
         with open(f"{VALIDATION_DIR}/{directory}/{basename}.val.json.log", "w") as log_file:
-            result = subprocess.run([
+            json_cmd = [
                 "java", "-jar", "validator_cli.jar",
                 f"{OUTPUT_DIR}/{directory}/{basename}.fhir.json",
                 "-locale", "de-AT",
@@ -94,7 +97,9 @@ for config in config_json:
                 "-advisor-file", f"{INPUT_DIR}/{directory}/advisor.json",
                 "-extension", "any",
                 "-display-issues-are-warnings" # https://confluence.hl7.org/spaces/FHIR/pages/35718580/Using+the+FHIR+Validator#UsingtheFHIRValidator-Displaywarnings
-            ], stdout=log_file, stderr=subprocess.STDOUT)
+            ]
+            print("Validator command (JSON):", shlex.join(json_cmd))
+            result = subprocess.run(json_cmd, stdout=log_file, stderr=subprocess.STDOUT)
 
             if result.returncode != 0:
                 print("validation errors in FHIR JSON")
