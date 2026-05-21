@@ -102,10 +102,9 @@
                     <family>Bürger</family>
                 </name>
                 <!-- Geschlecht des Patienten -->
-                <administrativeGenderCode code="M" displayName="Male"
-                    codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender"/>
+                <administrativeGenderCode nullFlavor="UNK"/>
                 <!-- Geburtsdatum des Patienten -->
-                <birthTime value="20121224095903+0100"/>
+                <birthTime nullFlavor="UNK"/>
                 <!-- Gesetzlicher Vertreter -->
                 <guardian classCode="GUARD">
                     <addr use="WP">
@@ -114,7 +113,6 @@
                         <city>Wien</city>
                         <state>Wien</state>
                         <country>AUT</country>
-                        <additionalLocator>2. Stock</additionalLocator>
                     </addr>
                     <telecom use="H" value="tel:+43.2682.40400"/>
                     <telecom use="MC" value="tel:+43.664.1234567"/>
@@ -126,19 +124,6 @@
                         </name>
                     </guardianPerson>
                 </guardian>
-                <birthplace>
-                    <place>
-                        <addr use="PST">
-                            <streetName>Birthplace-Straße</streetName>
-                            <houseNumber>4</houseNumber>
-                            <postalCode>7000</postalCode>
-                            <city>Eisenstadt</city>
-                            <state>Burgenland</state>
-                            <country>AUT</country>
-                            <additionalLocator>2. Stock</additionalLocator>
-                        </addr>
-                    </place>
-                </birthplace>
             </patient>
         </patientRole>
     </recordTarget>
@@ -332,11 +317,12 @@
                             <!-- Medizinisch verantwortliche Person -->
                             <author>
                                 <!-- Zeitpunkt der Freigabe -->
-                                <time nullFlavor="UNK"/>
+                                <time value="20160617122000+0200"/>
                                 <assignedAuthor>
                                     <id root="1.2.40.0.34.99.4613.3.3" extension="232311"/>
                                     <code code="100" displayName="Ärztin/Arzt für Allgemeinmedizin"
                                         codeSystem="1.2.40.0.34.5.2"/>
+                                        <!-- Adresse der Organisation -->
                                     <addr>
                                         <streetName>Person Author-FSME1-Gasse</streetName>
                                         <houseNumber>1-7</houseNumber>
@@ -345,9 +331,6 @@
                                         <state>Salzburg</state>
                                         <country>AUT</country>
                                     </addr>
-                                    <telecom use="WP" value="tel:+43.123.45678-0"/>
-                                        <!-- Adresse der Organisation -->
-                                    
                                     <!-- <assignedPerson>
                                         <name>
                                             <prefix>Dr.</prefix>
@@ -808,7 +791,6 @@
                                 <!-- Nachtragende Person: Person oder Gerät Überträgt die Daten aus einem Papierimpfpass oder einer anderen Dokumentation in den e-Impfpass -->
                                 <templateId root="1.2.40.0.34.6.0.11.9.14"/>
                                 <!-- Datum der Eintragung -->
-                                <time value="20171212151500+0200"/>
                                 <participantRole classCode="ROL">
                                     <id root="1.2.40.0.34.99.4613"
                                         assigningAuthorityName="GDA Index"/>
@@ -882,12 +864,7 @@
                                         <reference value="#criterion-3"/>
                                     </text>
                                     <!-- Dosiskennung -->
-                                    <value xsi:type="CD" code="D3" codeSystem="1.2.40.0.34.5.183"
-                                        displayName="Dosis 3">
-                                        <originalText>
-                                            <reference value="#dosenr-3"/>
-                                        </originalText>
-                                    </value>
+                                    <value nullFlavor="UNK" xsi:type="CD"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>
@@ -2262,16 +2239,23 @@
                             </consumable>
                             <!-- "Medizinisch verantwortliche Person oder System": Person oder System, das die Empfehlung generiert -->
                             <author>
-                                <time value="20190617122000+0200"/>
+                                <time nullFlavor="UNK"/>
                                 <assignedAuthor classCode="ASSIGNED">
                                     <!-- Die OID des Authors entscheidet, ob es sich um eine ärztliche Impfempfehlung oder um eine automatisch generierte handelt (1.2.40.0.34.6.104 = OID der zentralen Impfanwendung) -->
                                     <id root="1.2.40.0.34.99.4614.3.3.2" extension="2324999999"/>
+                                    <!-- Adresse der Organisation -->
+                                    <addr>
+                                        <streetName>Spital-Author-Impfempfehlung-Gürtel</streetName>
+                                        <houseNumber>18-20</houseNumber>
+                                        <postalCode>1090</postalCode>
+                                        <city>Wien</city>
+                                        <state>Wien</state>
+                                        <country>AUT</country>
+                                    </addr>
+                                    <!-- Kontaktdaten der Organisation, keine Anzeige im Referenz-Stylesheet: telecom, addr  -->
+                                    <telecom use="WP" value="tel:+43.1.3453446.0"/>
                                     <assignedPerson>
-                                        <name>
-                                            <prefix>Dr.</prefix>
-                                            <given>Inka</given>
-                                            <family>Author-Impfempfehlung</family>
-                                        </name>
+                                        <name nullFlavor="UNK"/>
                                     </assignedPerson>
                                     <representedOrganization>
                                         <!-- ID der Organisation aus dem GDA Index -->
@@ -2372,9 +2356,6 @@
                                             <family>DataEnterer-Impfempfehlung-FSME</family>
                                         </name>
                                     </playingEntity>
-                                    <scopingEntity classCode="ENT" determinerCode="INSTANCE">
-                                        <desc>Praxis DataEnterer-Impfempfehlung-FSME</desc>
-                                    </scopingEntity>
                                 </participantRole>
                             </participant>
                             <!-- "Impfziel" (Masern, FSME, Rotavirus) - Immunisierung gegen eine bestimmte Krankheit oder einen Erreger. -->
@@ -2542,7 +2523,7 @@
                                 </manufacturedProduct>
                             </consumable>
                             <author typeCode="AUT" contextControlCode="OP">
-                                <time value="20240315143000+0100"/>
+                                <time nullFlavor="UNK"/>
                                 <assignedAuthor classCode="ASSIGNED">
                                     <id root="1.2.40.0.34.99.9999.1.1" extension="device-001"/>
                                     <code code="508"
@@ -2612,12 +2593,7 @@
                                     <text>
                                         <reference value="#criterion-4"/>
                                     </text>
-                                    <value xsi:type="CD" code="B" codeSystem="1.2.40.0.34.5.183"
-                                        displayName="Auffrischungsimpfung">
-                                        <originalText>
-                                            <reference value="#dosenr-4"/>
-                                        </originalText>
-                                    </value>
+                                    <value nullFlavor="UNK" xsi:type="CD"/>
                                 </criterion>
                             </precondition>
                         </substanceAdministration>

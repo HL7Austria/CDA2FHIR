@@ -1,0 +1,1516 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="ELGA_Stylesheet_v1.0.xsl"?>
+<ClinicalDocument xmlns="urn:hl7-org:v3"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <realmCode code="AT"/>
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <templateId root="1.2.40.0.34.11.1" assigningAuthorityName="ELGA"/>
+  <templateId root="1.2.40.0.34.11.8.3" assigningAuthorityName="ELGA"/>
+  <templateId root="1.3.6.1.4.1.19376.1.9.1.1.5" assigningAuthorityName="IHE PHARM"/>
+  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1" assigningAuthorityName="IHE PCC"/>
+  <templateId root="1.2.40.0.34.11.8.0.3" assigningAuthorityName="ELGA"/>
+  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="UKM4XW6T9KLH" assigningAuthorityName="e-MedAT"/>
+  <code code="56445-0" displayName="Medication summary Document" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+  <title>Medikationsliste</title>
+  <effectiveTime value="20260206"/>
+  <confidentialityCode code="N" displayName="normal" codeSystem="2.16.840.1.113883.5.25" codeSystemName="HL7:Confidentiality"/>
+  <languageCode code="de-AT"/>
+  <setId root="1.2.40.0.10.1.4.3.4.2.1" extension="5FBYJ5ASHY9G" assigningAuthorityName="e-MedAT"/>
+  <versionNumber value="1"/>
+  <recordTarget xmlns="urn:hl7-org:v3"
+    xmlns:ns2="urn:ihe:pharm:medication"
+    xmlns:ns3="urn:hl7-at:v3">
+    <patientRole>
+      <id root="1.2.40.0.10.2.1.1.149" extension="GH:cApeHLpuyNk8IjY56BKXzMc+m40=" assigningAuthorityName="Ã&#x96;sterreichisches Stammzahlenregister"/>
+      <id root="1.2.40.0.10.1.4.3.1" extension="7791231543" assigningAuthorityName="Ã&#x96;sterreichische Sozialversicherung"/>
+      <patient>
+        <name>
+          <prefix>Mag.psych.</prefix>
+          <given>Doris</given>
+          <given>Heiner</given>
+          <family>ALJWHînrîchs ELGATest</family>
+        </name>
+        <administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1" codeSystemName="http://terminology.hl7.org/CodeSystem/v3-AdministrativeGender" displayName="Female"/>
+        <birthTime nullFlavor="UNK"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+  <author>
+    <time value="20260206"/>
+    <assignedAuthor>
+      <id root="1.2.40.0.10.1.4.3.4" />
+      <assignedAuthoringDevice>
+        <manufacturerModelName>ELGA Anwendung e-Medikation</manufacturerModelName>
+        <softwareName>E2602.2</softwareName>
+      </assignedAuthoringDevice>
+      <representedOrganization>
+
+        <id root="1.2.40.0.10.1.4" />
+        <name>HVB</name>
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <id root="1.2.40.0.10.1.4.3.4" />
+        <name>ELGA Anwendung e-Medikation</name>
+        <addr>
+          <streetName>Kundmanngasse</streetName>
+          <houseNumber>21</houseNumber>
+          <postalCode>1030</postalCode>
+          <city>Wien</city>
+          <state>Wien</state>
+          <country>Österreich</country>
+        </addr>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <templateId root="1.2.40.0.34.11.8.3.2.1" assigningAuthorityName="ELGA"/>
+          <templateId root="1.3.6.1.4.1.19376.1.9.1.2.5" assigningAuthorityName="IHE PHARM"/>
+          <id root="1.2.40.0.10.1.4.3.4.2.1" extension="UKM4XW6T9KLH" assigningAuthorityName="e-MedAT"/>
+          <code code="10160-0" displayName="History of medication use" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+          <title>Medikationsliste</title>
+          <text>
+
+            <table>
+              <thead>
+                <tr>
+                  <th>Abgabe(n)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table ID="apos-WFV74DP4SXN9">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">CIPROXIN FTBL 500MG</td>
+                  <td colspan="4">CIPROFLOXACINHYDROCHLORID</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe am</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1.0</td>
+                  <td colspan="1">10 Einheit</td>
+                  <td colspan="2">Ciprofloxacin (J01MA02)</td>
+                  <td colspan="1">0 - 10 - 0 - 0, täglich</td>
+                  <td colspan="1">2026-01-15, 15:46:54</td>
+                  <td colspan="1"></td>
+                  <td colspan="1"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2"> UKH Lorenz Böhler</td>
+                  <td colspan="2"></td>
+                  <td colspan="2">900007</td>
+                  <td colspan="2"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3"> UKH Lorenz Böhler</td>
+                  <td colspan="2">900007</td>
+                  <td colspan="3"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-WFV74DP4SXN9">
+                    
+                          Zusatzinformation Patient: <content ID="zinfo-WFV74DP4SXN9">Dosierung genau einhalten - Proxy Test!</content>
+                      <br />
+                        
+                          Alternative Einnahme: <content ID="altein-WFV74DP4SXN9">Alternativ Tablette in Wasser auflösen</content>
+                      <br />
+                          Informationen zur Arznei: <content ID="arzneiinfo-WFV74DP4SXN9">Tablette nur einmal pro Tag einnehmen</content>
+                      <br />
+
+                    </content>
+                    
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2026-01-15, 15:46:54
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Filmtablette
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table ID="apos-V3CLAUWMBJBU">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">CIPROXIN FTBL 500MG</td>
+                  <td colspan="4">CIPROFLOXACINHYDROCHLORID</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe am</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1.0</td>
+                  <td colspan="1">10 Einheit</td>
+                  <td colspan="2">Ciprofloxacin (J01MA02)</td>
+                  <td colspan="1">0 - 10 - 0 - 0, täglich</td>
+                  <td colspan="1">2025-10-17, 13:22:53</td>
+                  <td colspan="1"></td>
+                  <td colspan="1"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr. med. dent. Alexander Karagounis</td>
+                  <td colspan="2"></td>
+                  <td colspan="2">111051</td>
+                  <td colspan="2"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Dr. med. dent. Alexander Karagounis</td>
+                  <td colspan="2">111051</td>
+                  <td colspan="3"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-V3CLAUWMBJBU">
+                    
+                          Zusatzinformation Patient: <content ID="zinfo-V3CLAUWMBJBU">Dosierung genau einhalten - Proxy Test!</content>
+                      <br />
+                        
+                          Alternative Einnahme: <content ID="altein-V3CLAUWMBJBU">Alternativ Tablette in Wasser auflösen</content>
+                      <br />
+                         Informationen zur Arznei: <content ID="arzneiinfo-V3CLAUWMBJBU">Tablette nur zweimal pro Tag einnehmen</content>
+                      <br />
+
+                    </content>
+                    
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2025-10-17, 13:22:53
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Filmtablette
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table ID="apos-CJT47YWWPV57">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">AETHOXYSKLEROL AMP 0,5% 2ML</td>
+                  <td colspan="4">POLIDOCANOL</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe am</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1.0</td>
+                  <td colspan="1">5 Stück</td>
+                  <td colspan="2">Polidocanol (C05BB02)</td>
+                  <td colspan="1">1 - 0 - 0 - 0, täglich</td>
+                  <td colspan="1">2025-10-01, 00:22:58</td>
+                  <td colspan="1"></td>
+                  <td colspan="1"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2"></td>
+                  <td colspan="2"></td>
+                  <td colspan="2"></td>
+                  <td colspan="2"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">TitelVorneAuthor Vorname1Author Vorname2Author NachnameAuthor TitelHintenAuthor</td>
+                  <td colspan="2"></td>
+                  <td colspan="3">G3-Testkartenweg 6, 1020 WIEN</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-CJT47YWWPV57">
+                    
+                        
+                        
+                          Mögliche Arten der Anwendung: <content ID="arzneiinfo-CJT47YWWPV57">intravenöse Anwendung, subepitheliale Anwendung, submuköse Anwendung</content>
+                      <br />
+                    </content>
+                    
+                    Art der Anwendung: 
+                    <br />
+                    Verordnungsdatum: 
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: 
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table ID="apos-BDMVGNMUJHXC">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">Magistrale Zubereitung: jfödjakfödjsakfösaf</td>
+                  <td colspan="4"></td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe am</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1.0</td>
+                  <td colspan="1"></td>
+                  <td colspan="2"></td>
+                  <td colspan="1"></td>
+                  <td colspan="1">2025-09-30, 23:40:01</td>
+                  <td colspan="1"></td>
+                  <td colspan="1"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr. Franz Gruber</td>
+                  <td colspan="2">Ärztin/Arzt für Allgemeinmedizin</td>
+                  <td colspan="2"></td>
+                  <td colspan="2">Strassenbez_111051_94, 5531 EBEN IM PONGAU</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Dr. Franz Gruber</td>
+                  <td colspan="2"></td>
+                  <td colspan="3">Strassenbez_111051_94, 5531 EBEN IM PONGAU</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+                    
+                    
+                    
+                    Art der Anwendung: 
+                    <br />
+                    Verordnungsdatum: 2025-09-30, 23:37:21
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: 
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table ID="apos-TUU8X6BM5KNQ">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">PENTASA KLYSMA 1G/100ML</td>
+                  <td colspan="4">MESALAZIN</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe am</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1.0</td>
+                  <td colspan="1">7 Stück</td>
+                  <td colspan="2">Mesalazin (A07EC02)</td>
+                  <td colspan="1">1 - 0 - 1 - 0, täglich</td>
+                  <td colspan="1">2025-08-13, 10:19:28</td>
+                  <td colspan="1"></td>
+                  <td colspan="1"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr. Franz Gruber</td>
+                  <td colspan="2"></td>
+                  <td colspan="2"></td>
+                  <td colspan="2">Strassenbez_111051_94, 5531 EBEN IM PONGAU</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Dr. Franz Gruber</td>
+                  <td colspan="2"></td>
+                  <td colspan="3">Strassenbez_111051_94, 5531 EBEN IM PONGAU</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+                    
+                    
+                    
+                    Art der Anwendung: rektale Anwendung
+                    <br />
+                    Verordnungsdatum: 2025-08-13, 08:18:47
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Rektalsuspension
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <table ID="apos-YQV42FRHQP9L">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">CIPROXIN FTBL 500MG</td>
+                  <td colspan="4">CIPROFLOXACINHYDROCHLORID</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe am</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1.0</td>
+                  <td colspan="1">10 Einheit</td>
+                  <td colspan="2">Ciprofloxacin (J01MA02)</td>
+                  <td colspan="1"></td>
+                  <td colspan="1">2025-08-04, 14:53:55</td>
+                  <td colspan="1"></td>
+                  <td colspan="1"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr. med. dent. Alexander Karagounis</td>
+                  <td colspan="2"></td>
+                  <td colspan="2">111051</td>
+                  <td colspan="2"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Dr. med. dent. Alexander Karagounis</td>
+                  <td colspan="2">111051</td>
+                  <td colspan="3"></td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+                    
+                    
+                    
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2025-08-04, 12:53:55
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Filmtablette
+                      
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+            <br/>
+            <table>
+              <thead>
+                <tr>
+                  <th>Verordnung(en)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+
+
+          </text>
+
+
+          <entry xmlns="urn:hl7-org:v3"
+            xmlns:ns2="urn:ihe:pharm:medication"
+            xmlns:ns3="urn:hl7-at:v3" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UKM4XW6T9KLH_5" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="WFV74DP4SXN9_081511" assigningAuthorityName="Heilsapotheke"/>
+              <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="FFC" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="First Fill - Complete"/>
+              <text>
+                <reference value="#apos-WFV74DP4SXN9"/>
+              </text>
+              <quantity value="1"/>
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="0981417" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="CIPROXIN FTBL 500MG">
+                      <translation code="1-18296" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Ciproxin 500 mg Filmtabletten"/>
+                    </code>
+                    <name>CIPROXIN FTBL 500MG</name>
+                    <ns2:formCode code="100000073665" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Filmtablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="10" unit="1"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="J01MA02" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ATC WHO" displayName="Ciprofloxacin">
+                          <translation code="J01MA" codeSystem="1.2.276.0.76.5.558" codeSystemName="atc-deutsch-wido" displayName="Fluorchinolone"/>
+                        </ns2:code>
+                        <ns2:name>Ciprofloxacin</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="1708891" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe" displayName="CIPROFLOXACINHYDROCHLORID"/>
+                        <ns2:name>CIPROFLOXACINHYDROCHLORID</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20260115154654+0100"/>
+                <assignedAuthor>
+                  <id root="1.2.40.0.36.99.1" extension="900007" assigningAuthorityName="UKH Lorenz Böhler"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix/>
+                      <given>UKH</given>
+                      <family>Lorenz Böhler</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.1" extension="900007" assigningAuthorityName="UKH Lorenz Böhler"/>
+                    <name>UKH Lorenz Böhler</name>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20260115154654+0100"/>
+                <assignedAuthor>
+                  <id root="1.2.40.0.36.99.1" extension="900007" assigningAuthorityName=" UKH Lorenz Böhler"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix/>
+                      <given>UKH</given>
+                      <family>Lorenz Böhler</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.1" extension="900007" assigningAuthorityName=" UKH Lorenz Böhler"/>
+                    <name> UKH Lorenz Böhler</name>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="E2PS5EJYKJE6_1" assigningAuthorityName="Ordination Dr. Meier"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode"/>
+                  <text>
+                    <reference value="#patinfo-WFV74DP4SXN9"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-WFV74DP4SXN9"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-WFV74DP4SXN9"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ARZNEIINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#arzneiinfo-WFV74DP4SXN9"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low nullFlavor="UNK"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" codeSystemName="MedikationArtAnwendung" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACD"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="10" unit="d"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="WFV74DP4SXN9" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3"
+            xmlns:ns2="urn:ihe:pharm:medication"
+            xmlns:ns3="urn:hl7-at:v3" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UKM4XW6T9KLH_4" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="V3CLAUWMBJBU_081511" assigningAuthorityName="Heilsapotheke"/>
+              <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="FFC" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="First Fill - Complete"/>
+              <text>
+                <reference value="#apos-V3CLAUWMBJBU"/>
+              </text>
+              <quantity value="1"/>
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="0981417" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="CIPROXIN FTBL 500MG">
+                      <translation code="1-18296" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Ciproxin 500 mg Filmtabletten"/>
+                    </code>
+                    <name>CIPROXIN FTBL 500MG</name>
+                    <ns2:formCode code="100000073665" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Filmtablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="10" unit="1"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="J01MA02" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ATC WHO" displayName="Ciprofloxacin">
+                          <translation code="J01MA" codeSystem="1.2.276.0.76.5.558" codeSystemName="atc-deutsch-wido" displayName="Fluorchinolone"/>
+                        </ns2:code>
+                        <ns2:name>Ciprofloxacin</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="1708891" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe" displayName="CIPROFLOXACINHYDROCHLORID"/>
+                        <ns2:name>CIPROFLOXACINHYDROCHLORID</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20251017132253+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Dr. med. dent.</prefix>
+                      <given>Alexander</given>
+                      <family>Karagounis</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20251017132253+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Dr. med. dent.</prefix>
+                      <given>Alexander</given>
+                      <family>Karagounis</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="6SRLYG95BF9J_1" assigningAuthorityName="Ordination Dr. Meier"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode"/>
+                  <text>
+                    <reference value="#patinfo-V3CLAUWMBJBU"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-V3CLAUWMBJBU"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-V3CLAUWMBJBU"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low nullFlavor="UNK"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" codeSystemName="MedikationArtAnwendung" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACD"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="10" unit="d"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="V3CLAUWMBJBU" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3"
+            xmlns:ns2="urn:ihe:pharm:medication"
+            xmlns:ns3="urn:hl7-at:v3">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UKM4XW6T9KLH_3" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="CJT47YWWPV57_1" assigningAuthorityName="Elga Adapter"/>
+              <text>
+                <reference value="#apos-CJT47YWWPV57"/>
+              </text>
+              <quantity value="1"/>
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="0000974" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="AETHOXYSKLEROL AMP 0,5% 2ML">
+                      <translation code="13905" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aethoxysklerol 0,5 % - Ampullen"/>
+                    </code>
+                    <name>AETHOXYSKLEROL AMP 0,5% 2ML</name>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="5" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="C05BB02" codeSystem="2.16.840.1.113883.6.73" codeSystemName="whoATC" displayName="Polidocanol">
+                          <translation code="C05BB" codeSystem="1.2.276.0.76.5.558" codeSystemName="atc-deutsch-wido" displayName="Sklerosierende Mittel zur lokalen Injektion"/>
+                        </ns2:code>
+                        <ns2:name>Polidocanol</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="1707369" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe" displayName="POLIDOCANOL"/>
+                        <ns2:name>POLIDOCANOL</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author nullFlavor="NA">
+                <time nullFlavor="NA"/>
+                <assignedAuthor nullFlavor="NA">
+                  <id nullFlavor="NA"/>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20251001002258+0200"/>
+                <assignedAuthor>
+                  <id nullFlavor="UNK"/>
+                  <code code="100" codeSystem="1.2.40.0.34.5.2" displayName="Arzt/Ärztin für Allgemeinmedizin"/>
+                  <telecom value="tel:654654"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">TitelVorneAuthor</prefix>
+                      <given>Vorname1Author</given>
+                      <given>Vorname2Author</given>
+                      <family>NachnameAuthor</family>
+                      <suffix>TitelHintenAuthor</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.56" assigningAuthorityName="GDA Index"/>
+                    <id root="1.2.40.0.10.1.4.3.2" extension="590001"/>
+                    <name>MARIEN-APOTHEKE</name>
+                    <telecom value="tel:654654"/>
+                    <addr use="WP">
+                      <streetName>G3-Testkartenweg</streetName>
+                      <houseNumber>6</houseNumber>
+                      <postalCode>1020</postalCode>
+                      <city>WIEN</city>
+                      <state>AUT</state>
+                      <country>AUT</country>
+                      <additionalLocator>additional locator string</additionalLocator>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode"/>
+                  <text>
+                    <reference value="#patinfo-CJT47YWWPV57"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ARZNEIINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur Arznei"/>
+                      <text>
+                        <reference value="#arzneiinfo-CJT47YWWPV57"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low nullFlavor="UNK"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACM"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="1" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="2"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACD"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="0" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="3"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACV"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="0" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="CJT47YWWPV57" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3"
+            xmlns:ns2="urn:ihe:pharm:medication"
+            xmlns:ns3="urn:hl7-at:v3">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UKM4XW6T9KLH_2" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="BDMVGNMUJHXC_1" assigningAuthorityName="Elga Adapter"/>
+              <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="FFC" codeSystem="2.16.840.1.113883.5.4" codeSystemName="HL7:ActCode" displayName="Vollständige Abgabe"/>
+              <text>
+                <reference value="#apos-BDMVGNMUJHXC"/>
+              </text>
+              <quantity value="1"/>
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code nullFlavor="NA"/>
+                    <name>jfödjakfödjsakfösaf</name>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20250930233721+0200"/>
+                <assignedAuthor>
+                  <id nullFlavor="UNK"/>
+                  <code code="100" codeSystem="1.2.40.0.34.5.2" displayName="Ärztin/Arzt für Allgemeinmedizin"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr.</prefix>
+                      <given>Franz</given>
+                      <family>Gruber</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" assigningAuthorityName="GDA Index"/>
+                    <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                    <addr>
+                      <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                      <postalCode>5531</postalCode>
+                      <city>EBEN IM PONGAU</city>
+                      <state>04</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20250930234001+0200"/>
+                <assignedAuthor>
+                  <id nullFlavor="UNK"/>
+                  <code code="100" codeSystem="1.2.40.0.34.5.2" displayName="Ärztin/Arzt für Allgemeinmedizin"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr.</prefix>
+                      <given>Franz</given>
+                      <family>Gruber</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" assigningAuthorityName="GDA Index"/>
+                    <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                    <addr>
+                      <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                      <postalCode>5531</postalCode>
+                      <city>EBEN IM PONGAU</city>
+                      <state>04</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="2YKQSKJDNDPX_1" assigningAuthorityName="Elga Adapter"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low nullFlavor="UNK"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="BDMVGNMUJHXC" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3"
+            xmlns:ns2="urn:ihe:pharm:medication"
+            xmlns:ns3="urn:hl7-at:v3">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UKM4XW6T9KLH_1" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="TUU8X6BM5KNQ_1" assigningAuthorityName="Elga Adapter"/>
+              <text>
+                <reference value="#apos-TUU8X6BM5KNQ"/>
+              </text>
+              <quantity value="1"/>
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1276247" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="PENTASA KLYSMA 1G/100ML">
+                      <translation code="1-19907" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Pentasa 1 g - Klysma"/>
+                    </code>
+                    <name>PENTASA KLYSMA 1G/100ML</name>
+                    <ns2:formCode code="100000073830" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Rektalsuspension"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="7" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="A07EC02" codeSystem="2.16.840.1.113883.6.73" codeSystemName="whoATC" displayName="Mesalazin">
+                          <translation code="A07EC" codeSystem="1.2.276.0.76.5.558" codeSystemName="atc-deutsch-wido" displayName="Aminosalicylsäure und ähnliche Mittel"/>
+                        </ns2:code>
+                        <ns2:name>Mesalazin</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="1709091" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe" displayName="MESALAZIN"/>
+                        <ns2:name>MESALAZIN</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20250813081847+0200"/>
+                <assignedAuthor>
+                  <id nullFlavor="UNK"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr.</prefix>
+                      <given>Franz</given>
+                      <family>Gruber</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" assigningAuthorityName="GDA Index"/>
+                    <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                    <addr>
+                      <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                      <postalCode>5531</postalCode>
+                      <city>EBEN IM PONGAU</city>
+                      <state>04</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20250813101928+0200"/>
+                <assignedAuthor>
+                  <id nullFlavor="UNK"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr.</prefix>
+                      <given>Franz</given>
+                      <family>Gruber</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" assigningAuthorityName="GDA Index"/>
+                    <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                    <addr>
+                      <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                      <postalCode>5531</postalCode>
+                      <city>EBEN IM PONGAU</city>
+                      <state>04</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="TEHCCGXHEMTN_1" assigningAuthorityName="Elga Adapter"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low nullFlavor="UNK"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <routeCode code="100000073628" codeSystem="1.2.40.0.10.1.4.3.4.3.4" codeSystemName="MedikationArtAnwendung" displayName="rektale Anwendung"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACV"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="1" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="2"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACM"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="1" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="3"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="HS"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="0" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="4"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACD"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="0" unit="{Stueck}"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="TUU8X6BM5KNQ" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3"
+            xmlns:ns2="urn:ihe:pharm:medication"
+            xmlns:ns3="urn:hl7-at:v3">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UKM4XW6T9KLH_0" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="X5A275PBWDD3_081511" assigningAuthorityName="Heilsapotheke"/>
+              <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="FFC" codeSystem="2.16.840.1.113883.5.4" codeSystemName="ActCode" displayName="First Fill - Complete"/>
+              <text>
+                <reference value="#apos-YQV42FRHQP9L"/>
+              </text>
+              <quantity value="1"/>
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="0981417" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="CIPROXIN FTBL 500MG">
+                      <translation code="1-18296" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Ciproxin 500 mg Filmtabletten"/>
+                    </code>
+                    <name>CIPROXIN FTBL 500MG</name>
+                    <ns2:formCode code="100000073665" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Filmtablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="10" unit="1"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="J01MA02" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ATC WHO" displayName="Ciprofloxacin">
+                          <translation code="J01MA" codeSystem="1.2.276.0.76.5.558" codeSystemName="atc-deutsch-wido" displayName="Fluorchinolone"/>
+                        </ns2:code>
+                        <ns2:name>Ciprofloxacin</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="1708891" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe" displayName="CIPROFLOXACINHYDROCHLORID"/>
+                        <ns2:name>CIPROFLOXACINHYDROCHLORID</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20250804125355+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Dr. med. dent.</prefix>
+                      <given>Alexander</given>
+                      <family>Karagounis</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20250804145355+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Dr. med. dent.</prefix>
+                      <given>Alexander</given>
+                      <family>Karagounis</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.40.0.36.99.25" extension="111051" assigningAuthorityName="Dr. med. dent. Alexander Karagounis"/>
+                    <name>Dr. med. dent. Alexander Karagounis</name>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="QY8MAR4YRL3K_1" assigningAuthorityName="Ordination Dr. Meier"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low nullFlavor="UNK"/>
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" codeSystemName="MedikationArtAnwendung" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="X5A275PBWDD3" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
