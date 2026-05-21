@@ -5142,6 +5142,16 @@ conceptMap_as_7dimension_dict["OIDtoURI"] = {
                             "source": "OIDtoURI"
                         }
                     ],
+                    "1.2.276.0.76.5.565": [
+                        {
+                            "relationship": "equivalent",
+                            "concept": {
+                                "system": "http://fhir.system",
+                                "code": "https://termgit.elga.gv.at/CodeSystem/atc-deutsch-wido"
+                            },
+                            "source": "OIDtoURI"
+                        }
+                    ],
                     "1.2.276.0.76.5.558": [
                         {
                             "relationship": "equivalent",
