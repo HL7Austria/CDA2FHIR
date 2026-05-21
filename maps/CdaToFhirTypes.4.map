@@ -423,6 +423,7 @@ conceptmap "OIDtoURI" {
   s:"1.2.40.0.34.6.0.10.85" == t:"https://termgit.elga.gv.at/ValueSet/snomed-rare-diseases"
   s:"1.2.40.0.34.6.0.10.86" == t:"https://termgit.elga.gv.at/ValueSet/hl7-at-organizationtype"
   s:"1.2.40.0.34.6.0.10.87" == t:"https://termgit.elga.gv.at/ValueSet/hl7-at-practitionerrole"
+  s:"1.2.276.0.76.5.565" == t:"https://termgit.elga.gv.at/CodeSystem/atc-deutsch-wido"
   s:"1.2.276.0.76.5.558" == t:"https://termgit.elga.gv.at/CodeSystem/atc-deutsch-wido"
   s:"1.2.840.10003.5.109" == t:"https://termgit.elga.gv.at/CodeSystem/iana-mime-type"
   s:"1.2.840.10008.2.16.4" == t:"https://termgit.elga.gv.at/CodeSystem/dcm"
