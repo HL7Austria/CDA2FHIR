@@ -691,6 +691,25 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
         fhir_medicationDispense_dosageInstruction_timing.event as fhir_medicationDispense_dosageInstruction_timing_event then TSDateTime(cda_entryRelationship_substanceAdministration_effectiveTime_phase, fhir_medicationDispense_dosageInstruction_timing_event);
       };
 
+      // Einnahmezeitpunkt: Event und Offset-Element vorhanden -> MedicationDispense.dosageInstruction.timing
+      cda_entryRelationship_substanceAdministration.effectiveTime: EIVL_TS as cda_entryRelationship_substanceAdministration_effectiveTime ->
+      fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
+      fhir_medicationDispense_dosageInstruction.timing as fhir_medicationDispense_dosageInstruction_timing then {
+        // Einnahmezeitpunkt als Zeitcode
+        // TODO: Abklären ob Code-Mapping erforderlich ist oder ob die Zeitpunkte direkt übernommen werden können (z.B. morgens -> AM, abends -> PM etc.) 
+        cda_entryRelationship_substanceAdministration_effectiveTime.event as cda_entryRelationship_substanceAdministration_effectiveTime_event,
+        cda_entryRelationship_substanceAdministration_effectiveTime_event.code as cda_entryRelationship_substanceAdministration_effectiveTime_event_code ->
+        fhir_medicationDispense_dosageInstruction_timing.repeat as fhir_medicationDispense_dosageInstruction_timing_repeat,
+        fhir_medicationDispense_dosageInstruction_timing_repeat.when = translate(cda_entryRelationship_substanceAdministration_effectiveTime_event_code, '#elga-Einnahmezeitpunkte-fhir-event-timing' , 'code') "CdaElgaEinnahmezeitpunkteToFhirEventTiming",
+        fhir_medicationDispense_dosageInstruction_timing.code as fhir_medicationDispense_dosageInstruction_timing_code
+        then CECodeableConcept(cda_entryRelationship_substanceAdministration_effectiveTime_event,fhir_medicationDispense_dosageInstruction_timing_code);
+        // Offset
+        // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
+        cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,
+        cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value ->
+        fhir_medicationDispense_dosageInstruction_timing_repeat.offset = cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value;
+      };
+
       // Komponentencontainer
       cda_entryRelationship_substanceAdministration.effectiveTime: SXPR_TS as cda_entryRelationship_substanceAdministration_effectiveTime then {
         
