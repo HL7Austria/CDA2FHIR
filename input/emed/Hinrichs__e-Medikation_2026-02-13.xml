@@ -990,7 +990,7 @@
                     <id root="1.2.40.0.10.1.4.3.2" extension="590001"/>
                     <name>MARIEN-APOTHEKE</name>
                     <telecom value="tel:654654"/>
-                    <addr use="H">
+                    <addr use="WP">
                       <streetName>G3-Testkartenweg</streetName>
                       <houseNumber>6</houseNumber>
                       <postalCode>1020</postalCode>

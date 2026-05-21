@@ -420,7 +420,7 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
     };
   };
 
-  cda_entryRelationship where ($this.typeCode = 'SUBJ') -> fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction then {
+  cda_entryRelationship where ($this.typeCode = 'SUBJ') then {
     // Zusatzinformationen für den Patienten -> MedicationDispense.dosageInstruction.patientInstruction
     // section/entry/supply/entryRelationship/act/text/@value (code PINSTRUCT) -> MedicationDispense.dosageInstruction.patientInstruction
     cda_entryRelationship.act as cda_entryRelationship_act where ($this.code.code = 'PINSTRUCT') then {
@@ -459,6 +459,7 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                     fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
                     
                     // Create a substring from the start till the first occurrence of < character
+                    fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
                     fhir_medicationDispense_dosageInstruction.patientInstruction = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
                   };
               };
@@ -501,6 +502,7 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                     // Create a substring from the start till the first occurrence of < character
                     create('string') as fhir_substring_03,
                     fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                    fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
                     // Check if element already contains a value and either append it or assign a new value
                     fhir_medicationDispense_dosageInstruction.text = (iif(fhir_medicationDispense_dosageInstruction.text.exists(),
                                                      (fhir_medicationDispense_dosageInstruction.text + fhir_substring_03),
@@ -594,6 +596,7 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
                   // Create a substring from the start till the first occurrence of < character
                   create('string') as fhir_substring_03,
                   fhir_substring_03 = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<'))),
+                  fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
                   // Check if element already contains a value and either append it or assign a new value
                   fhir_medicationDispense_dosageInstruction.text = (iif(fhir_medicationDispense_dosageInstruction.text.exists(),
                                                                    (fhir_medicationDispense_dosageInstruction.text + fhir_substring_03),
@@ -688,25 +691,6 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
         fhir_medicationDispense_dosageInstruction_timing.event as fhir_medicationDispense_dosageInstruction_timing_event then TSDateTime(cda_entryRelationship_substanceAdministration_effectiveTime_phase, fhir_medicationDispense_dosageInstruction_timing_event);
       };
 
-      // Einnahmezeitpunkt: Event und Offset-Element vorhanden -> MedicationDispense.dosageInstruction.timing
-      cda_entryRelationship_substanceAdministration.effectiveTime: EIVL_TS as cda_entryRelationship_substanceAdministration_effectiveTime ->
-      fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
-      fhir_medicationDispense_dosageInstruction.timing as fhir_medicationDispense_dosageInstruction_timing then {
-        // Einnahmezeitpunkt als Zeitcode
-        // TODO: Abklären ob Code-Mapping erforderlich ist oder ob die Zeitpunkte direkt übernommen werden können (z.B. morgens -> AM, abends -> PM etc.) 
-        cda_entryRelationship_substanceAdministration_effectiveTime.event as cda_entryRelationship_substanceAdministration_effectiveTime_event,
-        cda_entryRelationship_substanceAdministration_effectiveTime_event.code as cda_entryRelationship_substanceAdministration_effectiveTime_event_code ->
-        fhir_medicationDispense_dosageInstruction_timing.repeat as fhir_medicationDispense_dosageInstruction_timing_repeat,
-        fhir_medicationDispense_dosageInstruction_timing_repeat.when = translate(cda_entryRelationship_substanceAdministration_effectiveTime_event_code, '#elga-Einnahmezeitpunkte-fhir-event-timing' , 'code') "CdaElgaEinnahmezeitpunkteToFhirEventTiming",
-        fhir_medicationDispense_dosageInstruction_timing.code as fhir_medicationDispense_dosageInstruction_timing_code
-        then CECodeableConcept(cda_entryRelationship_substanceAdministration_effectiveTime_event,fhir_medicationDispense_dosageInstruction_timing_code);
-        // Offset
-        // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
-        cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,
-        cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value ->
-        fhir_medicationDispense_dosageInstruction_timing_repeat.offset = cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value;
-      };
-
       // Komponentencontainer
       cda_entryRelationship_substanceAdministration.effectiveTime: SXPR_TS as cda_entryRelationship_substanceAdministration_effectiveTime then {
         
@@ -754,8 +738,27 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
       // Split Dosing
       cda_entryRelationship_substanceAdministration.entryRelationship as cda_entryRelationship_substanceAdministration_entryRelationship then {
 
-
         cda_entryRelationship_substanceAdministration_entryRelationship.substanceAdministration as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration then {
+
+          cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration.effectiveTime: EIVL_TS as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime ->
+          fhir_medicationDispense_dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
+          fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing then {
+
+            // Einnahmezeitpunkt als Zeitcode
+            // TODO: Abklären ob Code-Mapping erforderlich ist oder ob die Zeitpunkte direkt übernommen werden können (z.B. morgens -> AM, abends -> PM etc.) 
+            cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.event as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_event,
+            cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_event.code as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_event_code ->
+            fhir_medicationDispense_dosageInstruction_timing.repeat as fhir_medicationDispense_dosageInstruction_timing_repeat,
+            fhir_medicationDispense_dosageInstruction_timing_repeat.when = translate(cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_event_code, '#elga-Einnahmezeitpunkte-fhir-event-timing' , 'code') "CdaElgaEinnahmezeitpunkteToFhirEventTiming",
+            fhir_medicationDispense_dosageInstruction_timing.code as fhir_medicationDispense_dosageInstruction_timing_code
+            then CECodeableConcept(cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_event,fhir_medicationDispense_dosageInstruction_timing_code);
+              
+            // Offset
+            // TODO: Sekunden in Minuten umrechnen, da FHIR Timing.repeat.offset in Minuten angegeben wird, CDA aber in Sekunden
+            cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.offset as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset,
+            cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset.value as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value ->
+            fhir_medicationDispense_dosageInstruction_timing_repeat.offset = cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_offset_value;
+          };
           
           cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration.effectiveTime: SXPR_TS as cda_entryRelationship_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime then {
 
@@ -962,7 +965,6 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
       // Split Dosing
       cda_sbadm.entryRelationship as cda_substanceAdministration_entryRelationship where ($this.substanceAdministration.exists()) then {
 
-
         cda_substanceAdministration_entryRelationship.substanceAdministration as cda_substanceAdministration_entryRelationship_substanceAdministration then {
 
           cda_substanceAdministration_entryRelationship_substanceAdministration.effectiveTime: EIVL_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime ->
@@ -1004,15 +1006,15 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
               fhir_medicationRequest_dosageInstruction_timing_repeat.offset = cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_offset_value;
             };
 
-            cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime: PIVL_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime ->
+            cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.comp: PIVL_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp ->
             fhir_medicationRequest_dosageInstruction = create('Dosage') as fhir_medicationRequest_dosageInstruction,
             fhir_medicationRequest_dosageInstruction.timing = create('Timing') as fhir_medicationRequest_dosageInstruction_timing then {
               // Daten der Wochentage nach Einnahmebeginn
-              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.phase as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_phase ->
-              fhir_medicationRequest_dosageInstruction_timing.event as fhir_medicationRequest_dosageInstruction_timing_event then TSDateTime(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_phase, fhir_medicationRequest_dosageInstruction_timing_event);
+              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.phase as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_phase ->
+              fhir_medicationRequest_dosageInstruction_timing.event as fhir_medicationRequest_dosageInstruction_timing_event then TSDateTime(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_phase, fhir_medicationRequest_dosageInstruction_timing_event);
               // Zeitraum und Periodeneinheit der Dosis
-              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime.period as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_period ->
-              fhir_medicationRequest_dosageInstruction_timing.bounds = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_period,fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
+              cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.period as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_period ->
+              fhir_medicationRequest_dosageInstruction_timing.bounds = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_period,fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
             };
           };
           // Tagesdosierung
