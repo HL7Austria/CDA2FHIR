@@ -6,6 +6,10 @@
       {
         "package": "myhealth.eu.fhir.mvc-package#9.1.0",
         "url": "https://fhir.ehdsi.eu/mvc-package/package.tgz"
+      },
+      {
+        "package": "myhealth.eu.fhir.core#1.0.0",
+        "url": "https://fhir.ehdsi.eu/core/package.tgz"
       }
     ]
   },
