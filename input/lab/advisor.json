@@ -2,7 +2,16 @@
   "suppress" : [
     //All filters containing: `#dom-6` - ISiK resources do not contain a narrative.
     // Ignore this best practice warning for now.
-    "http://hl7.org/fhir/StructureDefinition/DomainResource#dom-6"
+    "http://hl7.org/fhir/StructureDefinition/DomainResource#dom-6",
     // "NO_VALID_DISPLAY_FOUND_NONE_FOR_LANG_ERR"
+
+    // TODO: remove once hl7.fhir.eu.base publishes PatientAnimalEu.
+    // LRR 9.1.1 declares DiagnosticReport.subject which inherits the constraints from EU Lab 2.0.0 
+    // which targets as PatientEuCore | PatientAnimalEu.
+    // but eu-base 2.0.0 does not yet ship patient-animal-eu-core, so the validator cannot
+    // resolve the profile and emits Reference_REF_CantResolveProfile on every DiagnosticReport.
+    // See LRR EU 2.0.0 CI build (https://build.fhir.org/ig/hl7-eu/laboratory/StructureDefinition-Patient-animal-eu-lab.html),
+    // Scoped to DiagnosticReport.subject only — other unresolved-profile errors still fail.
+    "Reference_REF_CantResolveProfile@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.subject"
   ]
 }
