@@ -401,9 +401,9 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
   // observation.id -> Observation.identifier
   cda_observation.id -> fhir_observation.identifier;
   
-  // create Observation.category (See Lab.map CdaLaboratoryObservationToFhirObservation)
-  //your source code here -> your target here;  
-  cda_observation -> fhir_observation.category as fhir_category,
+  // CDA observation -> fhir_observation.category
+  cda_observation -> 
+    fhir_observation.category as fhir_category,
     fhir_category.coding as fhir_category_coding,
     fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
     fhir_category_coding.code = 'laboratory'
