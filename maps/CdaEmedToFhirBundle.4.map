@@ -223,7 +223,17 @@ group CdaEmedSectionToFhir(source cda: ClinicalDocument, source cda_section: Sec
           cda_entry_substanceAdministration where templateId.where(root = '1.2.40.0.34.11.8.1.3.1') then CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_entry_substanceAdministration, fhir_composition, fhir_composition_medications_section, fhir_patient, fhir_bundle) "CdaEmedVerordnungEntryToFhir";
          };
       };
-   } "CdaEmedSectionToFhir";
+   } "CdaEmedMedicationsListSectionToFhir";
+
+   // Only map section if it contains Prescription entries (LOINC code 57828-6)
+   cda_section as cda_section where ($this.code.code = '57828-6') then {
+      cda_section.entry as cda_entry then {
+        cda_entry.substanceAdministration as cda_entry_substanceAdministration then {
+          // section/entry/substanceAdministration -> MedicationRequest
+          cda_entry_substanceAdministration where templateId.where(root = '1.2.40.0.34.11.8.1.3.1') then CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_entry_substanceAdministration, fhir_composition, fhir_composition_medications_section, fhir_patient, fhir_bundle) "CdaEmedVerordnungEntryToFhir";
+        };
+      };
+   } "CdaEmedPrescriptionListSectionToFhir"
 }
 
 group CdaEmedAbgabeEntryToFhir(source cda: ClinicalDocument, source cda_section, source cda_supply: Supply, target fhir_composition: Composition, target fhir_composition_medications_section, target fhir_patient: Patient, target fhir_bundle: Bundle) {
