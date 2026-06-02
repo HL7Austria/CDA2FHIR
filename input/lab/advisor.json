@@ -22,8 +22,8 @@
     // CareTeam) is rejected with Reference_REF_WrongTarget + Reference_REF_BadTargetType ("expected
     // [Organization]"). Inherited unchanged by diagnosticReport-myhealtheu-core and LRR 9.1.1, and
     // doubled by imposeProfile (organization-myhealtheu-core + organization-eu-core canonicals).
-    "Reference_REF_WrongTarget@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer",
-    "Reference_REF_BadTargetType@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer"
+    "Reference_REF_WrongTarget@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*",
+    "Reference_REF_BadTargetType@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*"
 
   ]
 }
