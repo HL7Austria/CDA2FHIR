@@ -89,7 +89,7 @@ def CdaToFhirBundle(cda, fhir_bundle):
                 CdaEimpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle)
         code_code = cda_code.code
         if code_code is not None:
-            if code_code == '56445-0':
+            if code_code == '56445-0' or code_code == '57833-6':
                 CdaEmedToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle)
 
 def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle):
@@ -595,8 +595,9 @@ def CdaHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle):
                 fhir_composition_event.code.append(malac.models.fhir.r4.CodeableConcept())
                 transform_default(cda_documentationOf_serviceEvent.code, fhir_composition_event.code[-1])
             if cda_documentationOf_serviceEvent.effectiveTime is not None:
-                fhir_composition_event.period = malac.models.fhir.r4.Period()
-                IVLTSPeriod(cda_documentationOf_serviceEvent.effectiveTime, fhir_composition_event.period)
+                if not [v2 for v1 in [cda_documentationOf_serviceEvent.effectiveTime] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_composition_event.period = malac.models.fhir.r4.Period()
+                    IVLTSPeriod(cda_documentationOf_serviceEvent.effectiveTime, fhir_composition_event.period)
     for cda_relatedDocument in cda.relatedDocument or []:
         cda_parentDocument = cda_relatedDocument.parentDocument
         if cda_parentDocument is not None:
@@ -87390,6 +87391,14 @@ def CdaEmedSectionToFhir(cda, cda_section, fhir_composition, fhir_composition_me
                 if cda_entry_substanceAdministration is not None:
                     if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entry_substanceAdministration,'templateId') if v1.root == '1.2.40.0.34.11.8.1.3.1']):
                         CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_entry_substanceAdministration, fhir_composition, fhir_composition_medications_section, fhir_patient, fhir_bundle)
+    cda_section = cda_section
+    if cda_section is not None:
+        if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(cda_section,'code','code'), '==', ['57828-6'])):
+            for cda_entry in cda_section.entry or []:
+                cda_entry_substanceAdministration = cda_entry.substanceAdministration
+                if cda_entry_substanceAdministration is not None:
+                    if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entry_substanceAdministration,'templateId') if v1.root == '1.2.40.0.34.11.8.1.3.1']):
+                        CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_entry_substanceAdministration, fhir_composition, fhir_composition_medications_section, fhir_patient, fhir_bundle)
 
 def CdaEmedAbgabeEntryToFhir(cda, cda_section, cda_supply, fhir_composition, fhir_composition_medications_section, fhir_patient, fhir_bundle):
     fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
@@ -87656,11 +87665,9 @@ def CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_section, cda_entryRelationship
                                         fhir_substring_02 = malac.models.fhir.r4.string()
                                         if fhir_substring_02 is not None:
                                             fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
-                                        fhir_substring_03 = malac.models.fhir.r4.string()
-                                        fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                                         fhir_medicationDispense_dosageInstruction = malac.models.fhir.r4.Dosage()
                                         fhir_medicationDispense.dosageInstruction.append(fhir_medicationDispense_dosageInstruction)
-                                        fhir_medicationDispense_dosageInstruction.text = string(value=str(fhirpath.single((fhirpath_utils.add(fhirpath_utils.get(fhir_medicationDispense_dosageInstruction,'text'), [fhir_substring_03]) if (fhir_medicationDispense_dosageInstruction.text is not None) else [fhir_substring_03]))))
+                                        fhir_medicationDispense_dosageInstruction.text = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                 for cda_entryRelationship_act_entryRelationship in cda_entryRelationship_act.entryRelationship or []:
                     if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(cda_entryRelationship_act_entryRelationship,'act','code','code'), '==', ['ARZNEIINFO'])):
                         cda_entryRelationship_act_entryRelationship_act = cda_entryRelationship_act_entryRelationship.act
@@ -87689,8 +87696,7 @@ def CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_section, cda_entryRelationship
                                             if fhir_substring_02 is not None:
                                                 fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
                                             fhir_substring_03 = malac.models.fhir.r4.string()
-                                            if fhir_substring_03 is not None:
-                                                fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
+                                            fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                                             fhir_medication_text.div = utils.builddiv(malac.models.fhir.r4, fhir_substring_03.value)
         cda_entryRelationship_act = cda_entryRelationship.act
         if cda_entryRelationship_act is not None:
@@ -87719,12 +87725,9 @@ def CdaEmedAbgabeEntryRelationshipToFhir(cda, cda_section, cda_entryRelationship
                                             fhir_substring_02 = malac.models.fhir.r4.string()
                                             if fhir_substring_02 is not None:
                                                 fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
-                                            fhir_substring_03 = malac.models.fhir.r4.string()
-                                            if fhir_substring_03 is not None:
-                                                fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                                             fhir_medicationDispense_dosageInstruction = malac.models.fhir.r4.Dosage()
                                             fhir_medicationDispense.dosageInstruction.append(fhir_medicationDispense_dosageInstruction)
-                                            fhir_medicationDispense_dosageInstruction.text = string(value=str(fhirpath.single((fhirpath_utils.add(fhirpath_utils.get(fhir_medicationDispense_dosageInstruction,'text'), [fhir_substring_03]) if (fhir_medicationDispense_dosageInstruction.text is not None) else [fhir_substring_03]))))
+                                            fhir_medicationDispense_dosageInstruction.text = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                 for cda_entryRelationship_act_entryRelationship in cda_entryRelationship_act.entryRelationship or []:
                     if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(cda_entryRelationship_act_entryRelationship,'act','code','code'), '==', ['MAGZUB'])):
                         cda_entryRelationship_act_entryRelationship_act = cda_entryRelationship_act_entryRelationship.act
@@ -88305,9 +88308,7 @@ def CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_sbadm, fhir_composition, 
                                             fhir_substring_02 = malac.models.fhir.r4.string()
                                             if fhir_substring_02 is not None:
                                                 fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
-                                            fhir_substring_03 = malac.models.fhir.r4.string()
-                                            fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
-                                            fhir_medicationRequest_dosageInstruction.text = string(value=str(fhirpath.single((fhirpath_utils.add(fhirpath_utils.get(fhir_medicationRequest_dosageInstruction,'text'), [fhir_substring_03]) if (fhir_medicationRequest_dosageInstruction.text is not None) else [fhir_substring_03]))))
+                                            fhir_medicationRequest_dosageInstruction.text = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                 for cda_entryRelationship_act_entryRelationship in cda_entryRelationship_act.entryRelationship or []:
                     if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(cda_entryRelationship_act_entryRelationship,'act','code','code'), '==', ['ARZNEIINFO'])):
                         cda_entryRelationship_act_entryRelationship_act = cda_entryRelationship_act_entryRelationship.act
@@ -88336,8 +88337,7 @@ def CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_sbadm, fhir_composition, 
                                             if fhir_substring_02 is not None:
                                                 fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
                                             fhir_substring_03 = malac.models.fhir.r4.string()
-                                            if fhir_substring_03 is not None:
-                                                fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
+                                            fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                                             fhir_medication_text.div = utils.builddiv(malac.models.fhir.r4, fhir_substring_03.value)
         cda_entryRelationship_act = cda_entryRelationship.act
         if cda_entryRelationship_act is not None:
@@ -88366,10 +88366,7 @@ def CdaEmedVerordnungEntryToFhir(cda, cda_section, cda_sbadm, fhir_composition, 
                                             fhir_substring_02 = malac.models.fhir.r4.string()
                                             if fhir_substring_02 is not None:
                                                 fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
-                                            fhir_substring_03 = malac.models.fhir.r4.string()
-                                            if fhir_substring_03 is not None:
-                                                fhir_substring_03 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
-                                            fhir_medicationRequest_dosageInstruction.text = string(value=str(fhirpath.single((fhirpath_utils.add(fhirpath_utils.get(fhir_medicationRequest_dosageInstruction,'text'), [fhir_substring_03]) if (fhir_medicationRequest_dosageInstruction.text is not None) else [fhir_substring_03]))))
+                                            fhir_medicationRequest_dosageInstruction.text = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
                 for cda_entryRelationship_act_entryRelationship in cda_entryRelationship_act.entryRelationship or []:
                     if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(cda_entryRelationship_act_entryRelationship,'act','code','code'), '==', ['MAGZUB'])):
                         cda_entryRelationship_act_entryRelationship_act = cda_entryRelationship_act_entryRelationship.act

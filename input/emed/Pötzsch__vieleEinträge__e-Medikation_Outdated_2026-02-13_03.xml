@@ -53,7 +53,7 @@
         <id root="1.2.3.5.6" />
         <name>Custodian Name</name>
         <telecom value="tel:0043558924" />
-        <addr use="H">
+        <addr use="WP">
           <streetName>Heldenplatz</streetName>
           <houseNumber>15</houseNumber>
           <postalCode>1010</postalCode>

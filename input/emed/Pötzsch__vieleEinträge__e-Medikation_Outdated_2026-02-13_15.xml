@@ -19,11 +19,11 @@
             <id root="1.2.40.0.34.4.19" extension="7770211543" assigningAuthorityName="Österreichische Sozialversicherung"/>
             <id root="1.2.40.0.10.1.4.3.1" extension="7770211543" assigningAuthorityName="Ãsterreichische Sozialversicherung"/>
             <addr>
-                <streetAddressLine></streetAddressLine>
-                <postalCode></postalCode>
-                <city></city>
-                <state></state>
-                <country></country>
+                <streetAddressLine>Im Haidfeld 5</streetAddressLine>
+                <postalCode>4031</postalCode>
+                <city>Linz</city>
+                <state>Oberösterreich</state>
+                <country>Österreich</country>
             </addr>
             <patient>
                 <name>
@@ -35,29 +35,29 @@
                 <birthTime value="19430321"/>
                 <guardian>
                     <addr>
-                        <streetAddressLine></streetAddressLine>
-                        <postalCode></postalCode>
-                        <city></city>
-                        <state></state>
-                        <country></country>
+                       <streetAddressLine>Im Haidfeld 5</streetAddressLine>
+                        <postalCode>4031</postalCode>
+                        <city>Linz</city>
+                        <state>Oberösterreich</state>
+                        <country>Österreich</country>
                     </addr>
                     <guardianPerson>
                         <name>
                             <prefix qualifier="AC"></prefix>
                             <given>null</given>
-                            <family></family>
-                            <suffix></suffix>
+                            <family>PötzschGuardian</family>
+                            <suffix>Phd</suffix>
                         </name>
                     </guardianPerson>
                 </guardian>
                 <birthplace>
                     <place>
                         <addr>
-                            <streetAddressLine></streetAddressLine>
-                            <postalCode></postalCode>
-                            <city></city>
-                            <state></state>
-                            <country></country>
+                            <streetAddressLine>Im Haidfeld 5</streetAddressLine>
+                            <postalCode>4031</postalCode>
+                            <city>Linz</city>
+                            <state>Oberösterreich</state>
+                            <country>Österreich</country>
                         </addr>
                     </place>
                 </birthplace>
