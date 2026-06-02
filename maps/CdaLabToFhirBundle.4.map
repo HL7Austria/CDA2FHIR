@@ -7953,13 +7953,6 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
     fhir_diagnosticReport_composition_reference.type = 'ServiceRequest',
 
-    // create relation from Composition to DiagnosticReport
-    fhir_composition.extension as fhir_composition_extenstion_02,
-    fhir_composition_extenstion_02.url = 'http://hl7.eu/fhir/laboratory/StructureDefinition/composition-diagnosticReportReference',
-    fhir_composition_extenstion_02.value = create('Reference') as fhir_composition_diagnosticReport_reference,
-    fhir_composition_diagnosticReport_reference.reference = append('urn:uuid:', fhir_diagnosticReport_id),
-    fhir_composition_diagnosticReport_reference.type = 'DiagnosticReport',
-
     // retrieve Composition uuid
     fhir_composition.id as fhir_composition_id,
 
