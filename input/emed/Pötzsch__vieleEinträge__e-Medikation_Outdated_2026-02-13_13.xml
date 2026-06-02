@@ -1,0 +1,294 @@
+<?xml-stylesheet type="text/xsl" href="ELGA_Stylesheet_v1.0.xsl"?><ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:hl7at="urn:hl7-at:v3" xmlns:ns3="urn:ihe:pharm:medication">
+    <realmCode code="AT"/>
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <templateId root="1.2.40.0.34.11.1"/>
+    <templateId root="1.2.40.0.34.11.8.1"/>
+    <templateId root="1.3.6.1.4.1.19376.1.9.1.1.1"/>
+    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1"/>
+    <templateId root="1.2.40.0.34.11.8.0.3"/>
+    <id root="1.2.40.0.10.1.4.3.4.2.1" extension="4MFHQJGUN4F7" assigningAuthorityName="e-MedAT"/>
+    <code code="57833-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="http://loinc.org" displayName="Prescription for medication"/>
+    <title>Rezept</title>
+    <effectiveTime value="20250827080727+0200"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25" codeSystemName="http://terminology.hl7.org/CodeSystem/v3-Confidentiality" displayName="normal"/>
+    <languageCode code="de-AT"/>
+    <setId root="1.2.40.0.10.1.4.3.4.2.1" extension="735bd70c-b7fa-47c2-96a4-9e25ad7e3efb"/>
+    <versionNumber value="1"/>
+    <recordTarget>
+        <patientRole>
+            <id root="1.2.40.0.34.4.19" extension="7770211543" assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <id root="1.2.40.0.10.1.4.3.1" extension="7770211543" assigningAuthorityName="Ãsterreichische Sozialversicherung"/>
+            <addr>
+                <streetAddressLine></streetAddressLine>
+                <postalCode></postalCode>
+                <city></city>
+                <state></state>
+                <country></country>
+            </addr>
+            <patient>
+                <name>
+                    <prefix qualifier="AC">Mag.pharm.</prefix>
+                    <given>Hartfried Tschoger</given>
+                    <family>ALJMPötzsch ELGATest</family>
+                </name>
+                <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender" displayName="Männlich"/>
+                <birthTime value="19430321"/>
+                <guardian>
+                    <addr>
+                        <streetAddressLine></streetAddressLine>
+                        <postalCode></postalCode>
+                        <city></city>
+                        <state></state>
+                        <country></country>
+                    </addr>
+                    <guardianPerson>
+                        <name>
+                            <prefix qualifier="AC"></prefix>
+                            <given>null</given>
+                            <family></family>
+                            <suffix></suffix>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+                <birthplace>
+                    <place>
+                        <addr>
+                            <streetAddressLine></streetAddressLine>
+                            <postalCode></postalCode>
+                            <city></city>
+                            <state></state>
+                            <country></country>
+                        </addr>
+                    </place>
+                </birthplace>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <author>
+        <time value="20250827080727+0200"/>
+        <assignedAuthor>
+            <id nullFlavor="UNK"/>
+            <assignedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr. med.</prefix>
+                    <given>Jolanda</given>
+                    <family>Selem</family>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <id root="1.2.40.0.36.99.27" assigningAuthorityName="GDA Index"/>
+                <id root="1.2.40.0.10.1.4.3.2" extension="110981"/>
+                <name>Dr. med. Jolanda Selem</name>
+                <addr>
+                    <streetAddressLine>BEETHOVENG.10/6/6</streetAddressLine>
+                    <postalCode>2500</postalCode>
+                    <city>BADEN BEI WIEN</city>
+                    <state>06</state>
+                    <country>AUT</country>
+                </addr>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id root="1.2.40.0.10.1.4.3.2"/>
+                <name>Dr. med. Jolanda Selem</name>
+                <addr>
+                    <streetAddressLine>BEETHOVENG.10/6/6</streetAddressLine>
+                    <postalCode>2500</postalCode>
+                    <city>BADEN BEI WIEN</city>
+                    <state>06</state>
+                    <country>AUT</country>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <legalAuthenticator>
+        <time nullFlavor="UNK"/>
+        <signatureCode code="S"/>
+        <assignedEntity>
+            <id root="1.2.40.0.10.1.4.3.2" extension="110981"/>
+            <assignedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr. med.</prefix>
+                    <given>Jolanda</given>
+                    <family>Selem</family>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <id root="1.2.40.0.36.99.27" assigningAuthorityName="GDA Index"/>
+                <id root="1.2.40.0.10.1.4.3.2" extension="110981"/>
+                <name>Dr. med. Jolanda Selem</name>
+                <addr>
+                    <streetAddressLine>BEETHOVENG.10/6/6</streetAddressLine>
+                    <postalCode>2500</postalCode>
+                    <city>BADEN BEI WIEN</city>
+                    <state>06</state>
+                    <country>AUT</country>
+                </addr>
+            </representedOrganization>
+        </assignedEntity>
+    </legalAuthenticator>
+    <documentationOf>
+        <serviceEvent>
+            <code code="KASSEN" codeSystem="1.2.40.0.10.1.4.3.4.3.3" codeSystemName="MedikationRezeptart" displayName="Kassenrezept"/>
+            <effectiveTime nullFlavor="MSK"/>
+        </serviceEvent>
+    </documentationOf>
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <templateId root="1.2.40.0.34.11.8.1.2.1"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.2.1"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.19"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.8"/>
+                    <id root="1.2.40.0.10.1.4.3.4.2.1" extension="4MFHQJGUN4F7" assigningAuthorityName="e-MedAT"/>
+                    <code code="57828-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Prescription list"/>
+                    <title>Rezept</title>
+                    <text>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rezeptart</th>
+                                    <th>Gültig von</th>
+                                    <th>Gültig bis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Kassenrezept</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table ID="vpos-522038">
+                            <tbody>
+                                <tr>
+                                    <td>Verordnung</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>VerordnungsID</td>
+                                    <td>1.2.40.0.10.1.4.3.4.2.2 / 4MFHQJGUN4F7_1</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Handelsname</td>
+                                    <td>ASPIRIN KTBL 500MG</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Pharmazentralnummer</td>
+                                    <td>1286174</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Darreichungsform</td>
+                                    <td>Kautablette</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Angaben zur Packung</td>
+                                    <td>10 {Stueck}</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Wirkstoffklassifikation (ATC Code)</td>
+                                    <td>Salicylsäure und Derivate (N02BA)</td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmestart</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmeende</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmedauer</td>
+                                    <td>5 Woche</td>
+                                </tr>
+                                <tr>
+                                    <td>Dosierung</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Art der Anwendung</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Therapieart</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Anzahl der Einlösungen</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>Anzahl der Packungen</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>Zusatzinformationen für den Patienten und alternative Einnahme</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Ergänzende Informationen zu magistralen Zubereitungen</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <substanceAdministration classCode="SBADM" moodCode="INT">
+                            <templateId root="1.2.40.0.34.11.8.1.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.9.1.3.2"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.21"/>
+                            <id root="1.2.40.0.10.1.4.3.4.2.2" extension="4MFHQJGUN4F7_1" assigningAuthorityName="Elga Adapter"/>
+                            <text>
+                                <reference value="#vpos-522038"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <effectiveTime xsi:type="IVL_TS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <width value="5.0" unit="wk"/>
+                            </effectiveTime>
+                            <repeatNumber value="0"/>
+                            <consumable>
+                                <manufacturedProduct classCode="MANU">
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.2.40.0.34.11.2.3.4"/>
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <code code="1286174" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN KTBL 500MG"/>
+                                        <name>ASPIRIN KTBL 500MG</name>
+                                        <ns3:formCode code="100000073684" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Kautablette"/>
+                                        <ns3:asContent classCode="CONT">
+                                            <ns3:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                                                <ns3:capacityQuantity value="10" unit="{Stueck}"/>
+                                            </ns3:containerPackagedMedicine>
+                                        </ns3:asContent>
+                                        <ns3:ingredient classCode="ACTI">
+                                            <ns3:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <ns3:code code="N02BA" codeSystem="2.16.840.1.113883.6.73" codeSystemName="whoATC" displayName="Salicylsäure und Derivate"/>
+                                                <ns3:name>Salicylsäure und Derivate</ns3:name>
+                                            </ns3:ingredient>
+                                        </ns3:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <entryRelationship typeCode="COMP">
+                                <supply classCode="SPLY" moodCode="RQO">
+                                    <independentInd value="false"/>
+                                    <quantity value="1"/>
+                                </supply>
+                            </entryRelationship>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>

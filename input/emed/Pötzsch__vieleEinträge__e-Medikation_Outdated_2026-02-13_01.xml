@@ -1,0 +1,389 @@
+<?xml-stylesheet type="text/xsl" href="ELGA_Stylesheet_v1.0.xsl"?><ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:hl7at="urn:hl7-at:v3" xmlns:ns3="urn:ihe:pharm:medication">
+    <realmCode code="AT"/>
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <templateId root="1.2.40.0.34.11.1"/>
+    <templateId root="1.2.40.0.34.11.8.1"/>
+    <templateId root="1.3.6.1.4.1.19376.1.9.1.1.1"/>
+    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1"/>
+    <templateId root="1.2.40.0.34.11.8.0.3"/>
+    <id root="1.2.40.0.10.1.4.3.4.2.1" extension="2FF9BAS328NT" assigningAuthorityName="e-MedAT"/>
+    <code code="57833-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="http://loinc.org" displayName="Prescription for medication"/>
+    <title>Rezept</title>
+    <effectiveTime value="20250827100522+0200"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25" codeSystemName="http://terminology.hl7.org/CodeSystem/v3-Confidentiality" displayName="normal"/>
+    <languageCode code="de-AT"/>
+    <setId root="1.2.40.0.10.1.4.3.4.2.1" extension="67fda82c-c795-483a-ad79-88737652473f"/>
+    <versionNumber value="1"/>
+    <recordTarget>
+        <patientRole>
+            <id root="1.2.40.0.34.4.19" extension="7770211543" assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <id root="1.2.40.0.10.1.4.3.1" extension="7770211543" assigningAuthorityName="Ãsterreichische Sozialversicherung"/>
+            <addr>
+                <streetAddressLine></streetAddressLine>
+                <postalCode></postalCode>
+                <city></city>
+                <state></state>
+                <country></country>
+            </addr>
+            <patient>
+                <name>
+                    <prefix qualifier="AC">Mag.pharm.</prefix>
+                    <given>Hartfried Tschoger</given>
+                    <family>ALJMPötzsch ELGATest</family>
+                </name>
+                <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender" displayName="Männlich"/>
+                <birthTime value="19430321"/>
+                <guardian>
+                    <addr>
+                        <streetAddressLine></streetAddressLine>
+                        <postalCode></postalCode>
+                        <city></city>
+                        <state></state>
+                        <country></country>
+                    </addr>
+                    <guardianPerson>
+                        <name>
+                            <prefix qualifier="AC"></prefix>
+                            <given>null</given>
+                            <family></family>
+                            <suffix></suffix>
+                        </name>
+                    </guardianPerson>
+                </guardian>
+                <birthplace>
+                    <place>
+                        <addr>
+                            <streetAddressLine></streetAddressLine>
+                            <postalCode></postalCode>
+                            <city></city>
+                            <state></state>
+                            <country></country>
+                        </addr>
+                    </place>
+                </birthplace>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <author>
+        <time value="20250827100522+0200"/>
+        <assignedAuthor>
+            <id nullFlavor="UNK"/>
+            <code code="100" codeSystem="1.2.40.0.34.5.2" displayName="Ärztin/Arzt für Allgemeinmedizin"/>
+            <assignedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr. med.</prefix>
+                    <given>Jolanda</given>
+                    <family>Selem</family>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <id root="1.2.40.0.36.99.27" assigningAuthorityName="GDA Index"/>
+                <id root="1.2.40.0.10.1.4.3.2" extension="110981"/>
+                <name>Dr. med. Jolanda Selem</name>
+                <telecom value="tel:+67655447788"/>
+                <telecom value="mailto:mail@sagewerk.de"/>
+                <telecom value="fax:+4366012345678"/>
+                <addr>
+                    <streetAddressLine>BEETHOVENG.10/6/6</streetAddressLine>
+                    <postalCode>2500</postalCode>
+                    <city>BADEN BEI WIEN</city>
+                    <state>06</state>
+                    <country>AUT</country>
+                </addr>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id root="1.2.40.0.10.1.4.3.2"/>
+                <name>Dr. med. Jolanda Selem</name>
+                <telecom value="tel:+67655447788"/>
+                <addr>
+                    <streetAddressLine>BEETHOVENG.10/6/6</streetAddressLine>
+                    <postalCode>2500</postalCode>
+                    <city>BADEN BEI WIEN</city>
+                    <state>06</state>
+                    <country>AUT</country>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <legalAuthenticator>
+        <time nullFlavor="UNK"/>
+        <signatureCode code="S"/>
+        <assignedEntity>
+            <id root="1.2.40.0.10.1.4.3.2" extension="110981"/>
+            <assignedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr. med.</prefix>
+                    <given>Jolanda</given>
+                    <family>Selem</family>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <id root="1.2.40.0.36.99.27" assigningAuthorityName="GDA Index"/>
+                <id root="1.2.40.0.10.1.4.3.2" extension="110981"/>
+                <name>Dr. med. Jolanda Selem</name>
+                <telecom value="tel:+67655447788"/>
+                <telecom value="mailto:mail@sagewerk.de"/>
+                <telecom value="fax:+4366012345678"/>
+                <addr>
+                    <streetAddressLine>BEETHOVENG.10/6/6</streetAddressLine>
+                    <postalCode>2500</postalCode>
+                    <city>BADEN BEI WIEN</city>
+                    <state>06</state>
+                    <country>AUT</country>
+                </addr>
+            </representedOrganization>
+        </assignedEntity>
+    </legalAuthenticator>
+    <documentationOf>
+        <serviceEvent>
+            <code code="PRIVAT" codeSystem="1.2.40.0.10.1.4.3.4.3.3" codeSystemName="MedikationRezeptart" displayName="Privatrezept"/>
+            <effectiveTime nullFlavor="MSK"/>
+        </serviceEvent>
+    </documentationOf>
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <templateId root="1.2.40.0.34.11.8.1.2.1"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.2.1"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.19"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.8"/>
+                    <id root="1.2.40.0.10.1.4.3.4.2.1" extension="2FF9BAS328NT" assigningAuthorityName="e-MedAT"/>
+                    <code code="57828-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Prescription list"/>
+                    <title>Rezept</title>
+                    <text>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rezeptart</th>
+                                    <th>Gültig von</th>
+                                    <th>Gültig bis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Privatrezept</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table ID="vpos-667965">
+                            <tbody>
+                                <tr>
+                                    <td>Verordnung</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>VerordnungsID</td>
+                                    <td>1.2.40.0.10.1.4.3.4.2.2 / 2FF9BAS328NT_1</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Handelsname</td>
+                                    <td>VIMOVO VW TBL 500/20MG</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Pharmazentralnummer</td>
+                                    <td>3776936</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Darreichungsform</td>
+                                    <td>Tablette mit veränderter Wirkstofffreisetzung</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Angaben zur Packung</td>
+                                    <td>60 {Stueck}</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Wirkstoffklassifikation (ATC Code)</td>
+                                    <td>Naproxen und Esomeprazol (M01AE52)</td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmestart</td>
+                                    <td>2016-05-01, 00:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmeende</td>
+                                    <td>2016-09-01, 00:00:00</td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmedauer</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosierung</td>
+                                    <td>5 Broteinheit(en), wöchentlich am Mo, Mi, Fr, So</td>
+                                </tr>
+                                <tr>
+                                    <td>Art der Anwendung</td>
+                                    <td>zum Einnehmen</td>
+                                </tr>
+                                <tr>
+                                    <td>Therapieart</td>
+                                    <td>Nicht-Einzelverordnung</td>
+                                </tr>
+                                <tr>
+                                    <td>Anzahl der Einlösungen</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>Anzahl der Packungen</td>
+                                    <td>2</td>
+                                </tr>
+                                <tr>
+                                    <td>Zusatzinformationen für den Patienten und alternative Einnahme</td>
+                                    <td>
+                                        <content ID="patinfo-667965">
+                                            <content ID="zinfo-667965">Zusatzinformationen</content>
+                                            <content ID="altein-667965">jeden Tag Morgens</content>
+                                        </content>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Ergänzende Informationen zu magistralen Zubereitungen</td>
+                                    <td>
+                                        <content ID="abginfo-667965">
+                                            <content ID="erginfo-667965">Ergänzende Information</content>
+                                        </content>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                    <entry>
+                        <substanceAdministration classCode="SBADM" moodCode="INT">
+                            <templateId root="1.2.40.0.34.11.8.1.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.9.1.3.2"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+                            <id root="1.2.40.0.10.1.4.3.4.2.2" extension="2FF9BAS328NT_1" assigningAuthorityName="Elga Adapter"/>
+                            <text>
+                                <reference value="#vpos-667965"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <effectiveTime xsi:type="IVL_TS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <low value="20160501000000+0200"/>
+                                <high value="20160901000000+0200"/>
+                            </effectiveTime>
+                            <effectiveTime xsi:type="SXPR_TS" operator="A" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <comp xsi:type="PIVL_TS">
+                                    <phase value="20160502"/>
+                                    <period value="1" unit="wk"/>
+                                </comp>
+                                <comp xsi:type="PIVL_TS" operator="I">
+                                    <phase value="20160504"/>
+                                    <period value="1" unit="wk"/>
+                                </comp>
+                                <comp xsi:type="PIVL_TS" operator="I">
+                                    <phase value="20160506"/>
+                                    <period value="1" unit="wk"/>
+                                </comp>
+                                <comp xsi:type="PIVL_TS" operator="I">
+                                    <phase value="20160501"/>
+                                    <period value="1" unit="wk"/>
+                                </comp>
+                            </effectiveTime>
+                            <repeatNumber value="0"/>
+                            <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" codeSystemName="MedikationArtAnwendung" displayName="zum Einnehmen"/>
+                            <doseQuantity value="5" unit="{Broteinheiten}"/>
+                            <consumable>
+                                <manufacturedProduct classCode="MANU">
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.2.40.0.34.11.2.3.4"/>
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <code code="3776936" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="VIMOVO VW TBL 500/20MG"/>
+                                        <name>VIMOVO VW TBL 500/20MG</name>
+                                        <ns3:formCode code="100000073668" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette mit veränderter Wirkstofffreisetzung"/>
+                                        <ns3:asContent classCode="CONT">
+                                            <ns3:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                                                <ns3:capacityQuantity value="60" unit="{Stueck}"/>
+                                            </ns3:containerPackagedMedicine>
+                                        </ns3:asContent>
+                                        <ns3:ingredient classCode="ACTI">
+                                            <ns3:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <ns3:code code="M01AE52" codeSystem="2.16.840.1.113883.6.73" codeSystemName="whoATC" displayName="Naproxen und Esomeprazol"/>
+                                                <ns3:name>Naproxen und Esomeprazol</ns3:name>
+                                            </ns3:ingredient>
+                                        </ns3:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <entryRelationship typeCode="COMP">
+                                <supply classCode="SPLY" moodCode="RQO">
+                                    <independentInd value="false"/>
+                                    <quantity value="2"/>
+                                </supply>
+                            </entryRelationship>
+                            <entryRelationship typeCode="SUBJ" inversionInd="true">
+                                <act classCode="ACT" moodCode="INT">
+                                    <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                                    <code xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                                    <text>
+                                        <reference value="#patinfo-667965"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                    <entryRelationship typeCode="SUBJ" inversionInd="true">
+                                        <act classCode="ACT" moodCode="INT">
+                                            <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                                            <code xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                                            <text>
+                                                <reference value="#zinfo-667965"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                        </act>
+                                    </entryRelationship>
+                                    <entryRelationship typeCode="SUBJ" inversionInd="true">
+                                        <act classCode="ACT" moodCode="INT">
+                                            <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                                            <code xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                                            <text>
+                                                <reference value="#altein-667965"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                        </act>
+                                    </entryRelationship>
+                                </act>
+                            </entryRelationship>
+                            <entryRelationship typeCode="SUBJ" inversionInd="true">
+                                <act classCode="ACT" moodCode="INT">
+                                    <templateId root="2.16.840.1.113883.10.20.1.43" assigningAuthorityName="HL7 CCD"/>
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3.1" assigningAuthorityName="IHE PCC"/>
+                                    <code xsi:type="CE" code="FINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                                    <text>
+                                        <reference value="#abginfo-667965"/>
+                                    </text>
+                                    <statusCode code="completed"/>
+                                    <entryRelationship typeCode="SUBJ" inversionInd="true">
+                                        <act classCode="ACT" moodCode="INT">
+                                            <templateId root="1.2.40.0.34.11.8.0.3.2"/>
+                                            <code xsi:type="CE" code="ERGINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Ergänzende Informationen zur Abgabe" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                                            <text>
+                                                <reference value="#erginfo-667965"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                        </act>
+                                    </entryRelationship>
+                                </act>
+                            </entryRelationship>
+                            <entryRelationship typeCode="COMP">
+                                <act classCode="ACT" moodCode="INT">
+                                    <templateId root="1.2.40.0.34.11.8.1.3.4"/>
+                                    <code xsi:type="CE" code="NICHTEINZEL" codeSystem="1.2.40.0.10.1.4.3.4.3.6" codeSystemName="MedikationTherapieArt" displayName="Nicht-Einzelverordnung" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+                                </act>
+                            </entryRelationship>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>
