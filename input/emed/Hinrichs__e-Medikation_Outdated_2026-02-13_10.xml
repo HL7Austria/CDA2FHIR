@@ -1,0 +1,262 @@
+<?xml-stylesheet type="text/xsl" href="ELGA_Stylesheet_v1.0.xsl"?><ClinicalDocument xmlns="urn:hl7-org:v3" xmlns:hl7at="urn:hl7-at:v3" xmlns:ns3="urn:ihe:pharm:medication">
+    <realmCode code="AT"/>
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <templateId root="1.2.40.0.34.11.1"/>
+    <templateId root="1.2.40.0.34.11.8.1"/>
+    <templateId root="1.3.6.1.4.1.19376.1.9.1.1.1"/>
+    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1"/>
+    <templateId root="1.2.40.0.34.11.8.0.3"/>
+    <id root="1.2.40.0.10.1.4.3.4.2.1" extension="HVXT2L4LND8F" assigningAuthorityName="e-MedAT"/>
+    <code code="57833-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="http://loinc.org" displayName="Prescription for medication"/>
+    <title>Rezept</title>
+    <effectiveTime value="20251113143531+0100"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25" codeSystemName="http://terminology.hl7.org/CodeSystem/v3-Confidentiality" displayName="normal"/>
+    <languageCode code="de-AT"/>
+    <setId root="1.2.40.0.10.1.4.3.4.2.1" extension="ffa7de4e-b924-48fb-a966-38cda36d89b7"/>
+    <versionNumber value="1"/>
+    <recordTarget>
+        <patientRole>
+            <id root="1.2.40.0.34.4.19" extension="7791231543" assigningAuthorityName="Österreichische Sozialversicherung"/>
+            <id root="1.2.40.0.10.1.4.3.1" extension="7791231543" assigningAuthorityName="Ãsterreichische Sozialversicherung"/>
+            <patient>
+                <name>
+                    <given>Doris Heiner</given>
+                    <family>Aljwhînrîchs Elgatest</family>
+                </name>
+                <administrativeGenderCode code="F" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender" displayName="Weiblich"/>
+                <birthTime value="19430323"/>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <author>
+        <time value="20251113143531+0100"/>
+        <assignedAuthor>
+            <id nullFlavor="UNK"/>
+            <assignedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr. med. dent. GDAMA</prefix>
+                    <given>Alexander GDAMA</given>
+                    <family>Karagounis GDAMA</family>
+                    <suffix> GDAMA</suffix>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <id root="1.2.40.0.36.99.25" assigningAuthorityName="GDA Index"/>
+                <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+                <name>Dr. med. dent. Alexander Karagounis</name>
+                <addr>
+                    <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                    <postalCode>5531</postalCode>
+                    <city>EBEN IM PONGAU</city>
+                    <state>Salzburg</state>
+                    <country>AUT</country>
+                </addr>
+            </representedOrganization>
+        </assignedAuthor>
+    </author>
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id root="1.2.40.0.10.1.4.3.2"/>
+                <name>Dr. med. dent. Alexander Karagounis</name>
+                <addr>
+                    <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                    <postalCode>5531</postalCode>
+                    <city>EBEN IM PONGAU</city>
+                    <state>Salzburg</state>
+                    <country>AUT</country>
+                </addr>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <legalAuthenticator>
+        <time nullFlavor="UNK"/>
+        <signatureCode code="S"/>
+        <assignedEntity>
+            <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+            <assignedPerson>
+                <name>
+                    <prefix qualifier="AC">Dr. med. dent. GDAMA</prefix>
+                    <given>Alexander GDAMA</given>
+                    <family>Karagounis GDAMA</family>
+                    <suffix> GDAMA</suffix>
+                </name>
+            </assignedPerson>
+            <representedOrganization>
+                <id root="1.2.40.0.36.99.25" assigningAuthorityName="GDA Index"/>
+                <id root="1.2.40.0.10.1.4.3.2" extension="111051"/>
+                <name>Dr. med. dent. Alexander Karagounis</name>
+                <addr>
+                    <streetAddressLine>Strassenbez_111051_94</streetAddressLine>
+                    <postalCode>5531</postalCode>
+                    <city>EBEN IM PONGAU</city>
+                    <state>Salzburg</state>
+                    <country>AUT</country>
+                </addr>
+            </representedOrganization>
+        </assignedEntity>
+    </legalAuthenticator>
+    <documentationOf>
+        <serviceEvent>
+            <code code="KASSEN" codeSystem="1.2.40.0.10.1.4.3.4.3.3" codeSystemName="MedikationRezeptart" displayName="Kassenrezept"/>
+            <effectiveTime>
+                <low value="20251113"/>
+                <high value="20251127"/>
+            </effectiveTime>
+        </serviceEvent>
+    </documentationOf>
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <templateId root="1.2.40.0.34.11.8.1.2.1"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.2.1"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.3.19"/>
+                    <templateId root="2.16.840.1.113883.10.20.1.8"/>
+                    <id root="1.2.40.0.10.1.4.3.4.2.1" extension="HVXT2L4LND8F" assigningAuthorityName="e-MedAT"/>
+                    <code code="57828-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Prescription list"/>
+                    <title>Rezept</title>
+                    <text>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rezeptart</th>
+                                    <th>Gültig von</th>
+                                    <th>Gültig bis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Kassenrezept</td>
+                                    <td>2025-11-13</td>
+                                    <td>2025-11-27</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table ID="vpos-109935">
+                            <tbody>
+                                <tr>
+                                    <td>Verordnung</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>VerordnungsID</td>
+                                    <td>1.2.40.0.10.1.4.3.4.2.2 / HVXT2L4LND8F_1</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Handelsname</td>
+                                    <td>AETHOXYSKLEROL AMP 0,5% 2ML</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Pharmazentralnummer</td>
+                                    <td>0000974</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Darreichungsform</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Angaben zur Packung</td>
+                                    <td>5 {Stueck}</td>
+                                </tr>
+                                <tr>
+                                    <td>Arznei: Wirkstoffklassifikation (ATC Code)</td>
+                                    <td>Polidocanol (C05BB02)</td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmestart</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmeende</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Einnahmedauer</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Dosierung</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Art der Anwendung</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Therapieart</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Anzahl der Einlösungen</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>Anzahl der Packungen</td>
+                                    <td>1</td>
+                                </tr>
+                                <tr>
+                                    <td>Zusatzinformationen für den Patienten und alternative Einnahme</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Ergänzende Informationen zu magistralen Zubereitungen</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </text>
+                    <entry typeCode="DRIV">
+                        <substanceAdministration classCode="SBADM" moodCode="INT">
+                            <templateId root="1.2.40.0.34.11.8.1.3.1"/>
+                            <templateId root="2.16.840.1.113883.10.20.1.24"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.9.1.3.2"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+                            <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+                            <id root="1.2.40.0.10.1.4.3.4.2.2" extension="HVXT2L4LND8F_1" assigningAuthorityName="Elga Adapter"/>
+                            <text>
+                                <reference value="#vpos-109935"/>
+                            </text>
+                            <statusCode code="completed"/>
+                            <effectiveTime xsi:type="IVL_TS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                                <low nullFlavor="UNK"/>
+                                <high nullFlavor="UNK"/>
+                            </effectiveTime>
+                            <repeatNumber value="0"/>
+                            <consumable>
+                                <manufacturedProduct classCode="MANU">
+                                    <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                                    <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                                    <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                                        <templateId root="1.2.40.0.34.11.2.3.4"/>
+                                        <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                                        <code code="0000974" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="AETHOXYSKLEROL AMP 0,5% 2ML"/>
+                                        <name>AETHOXYSKLEROL AMP 0,5% 2ML</name>
+                                        <ns3:asContent classCode="CONT">
+                                            <ns3:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                                                <ns3:capacityQuantity value="5" unit="{Stueck}"/>
+                                            </ns3:containerPackagedMedicine>
+                                        </ns3:asContent>
+                                        <ns3:ingredient classCode="ACTI">
+                                            <ns3:ingredient classCode="MMAT" determinerCode="KIND">
+                                                <ns3:code code="C05BB02" codeSystem="2.16.840.1.113883.6.73" codeSystemName="whoATC" displayName="Polidocanol"/>
+                                                <ns3:name>Polidocanol</ns3:name>
+                                            </ns3:ingredient>
+                                        </ns3:ingredient>
+                                    </manufacturedMaterial>
+                                </manufacturedProduct>
+                            </consumable>
+                            <entryRelationship typeCode="COMP">
+                                <supply classCode="SPLY" moodCode="RQO">
+                                    <independentInd value="false"/>
+                                    <quantity value="1"/>
+                                </supply>
+                            </entryRelationship>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</ClinicalDocument>
