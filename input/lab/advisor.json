@@ -23,7 +23,14 @@
     // [Organization]"). Inherited unchanged by diagnosticReport-myhealtheu-core and LRR 9.1.1, and
     // doubled by imposeProfile (organization-myhealtheu-core + organization-eu-core canonicals).
     "Reference_REF_WrongTarget@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*",
-    "Reference_REF_BadTargetType@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*"
+    "Reference_REF_BadTargetType@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*",
+
+    // TODO: remove once MyHealth@EU widens Observation.value[x] (LRR / medicalTestResult-myhealtheu-core).
+    // value[x] is sliced CLOSED to {Quantity, CodeableConcept, Ratio, Range}; valueString (ST) and
+    // valueDateTime (TS) from our CDA lab results are rejected (Validation_VAL_Profile_NotSlice). See Zulip thread.
+    // Scoped to Observation.value.
+    "Validation_VAL_Profile_NotSlice@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*Observation/[^*]+\\*/\\.value\\.ofType\\(.+\\).*"
+
 
   ]
 }
