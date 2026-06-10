@@ -1,0 +1,89 @@
+{
+    "resourceType": "DocumentReference",
+    "id": "2af60ae7-2ba8-44ce-8a65-c529790a664f",
+    "masterIdentifier": {
+        "system": "1.2.3.4.5.6.7.8.9",
+        "value": "89188505-7005-1293-9982-506556582221"
+    },
+    "status": "current",
+    "type": {
+        "coding": [
+            {
+                "system": "urn:uuid:7edca82f-054d-47f2-a032-9b2a5b5186c1",
+                "display": "stable"
+            }
+        ]
+    },
+    "category": [
+        {
+            "coding": [
+                {
+                    "system": "2.16.840.1.113883.6.1",
+                    "code": "11502-2",
+                    "display": "Laborbefund"
+                }
+            ]
+        }
+    ],
+    "subject": {
+        "reference": "/fhir/Patient/uZJImY3TGsdDfY0CXVppDaAGrN0CxLtW_N9Rem8f84Y",
+        "type": "Patient",
+        "identifier": {
+            "value": "REG.1QYRYS8DHO"
+        }
+    },
+    "author": [
+        {
+            "type": "Diensthabender Oberarzt",
+            "identifier": {
+                "value": "1111",
+                "assigner": {
+                    "identifier": {
+                        "value": "urn:oid:1.2.40.0.34.99.10.1.11.4.16.3"
+                    }
+                }
+            },
+            "display": "Maza Jèntsch"
+        }
+    ],
+    "authenticator": {
+        "identifier": {
+            "value": "1111",
+            "assigner": {
+                "identifier": {
+                    "value": "1.2.40.0.34.99.10.1.11.4.24.3"
+                }
+            }
+        },
+        "display": "Titel Maza Jèntsch"
+    },
+    "securityLabel": [
+        {
+            "coding": [
+                {
+                    "system": "2.16.840.1.113883.5.25",
+                    "code": "N",
+                    "display": "N"
+                }
+            ]
+        }
+    ],
+    "content": [
+        {
+            "attachment": {
+                "contentType": "application/fhir+json",
+                "language": "de-AT",
+                "url": "https://ncp-ppt.at.ehealth.testa.eu/openncp-ws-server/fhir/Bundle/86405596-8044-6759-9771-487983832502",
+                "size": 1033028,
+                "hash": "WXpFeU5UYzFaVFJsWkdVMVpXTTNObU0xTm1VeE0yWTFaVGt3WkdRMU16VTBOR0ppTlRjMk1RPT0=",
+                "title": "Laborbefund",
+                "creation": "2026-04-15T09:46:26+00:00"
+            },
+            "format": {
+                "system": "urn:oid:1.2.40.0.34.5.37",
+                "code": "urn:elga:dissum:2013:EIS_FullSupport",
+                "display": "Laborbefund"
+            }
+        }
+    ]
+}
