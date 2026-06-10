@@ -7972,7 +7972,7 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_patient.id as fhir_patient_id,
     // set FHIR profile for Patient
     fhir_patient.meta as fhir_patient_meta,
-    fhir_patient_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/patient-myhealtheu-core',
+    fhir_patient_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu',
 
     // create relation from DiagnosticReport to Patient
     fhir_diagnosticReport.subject = create('Reference') as fhir_diagnosticReport_subject_reference,
@@ -8145,15 +8145,6 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
             cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
               cda_informationRecipient_inner.name -> fhir_practitioner.name;
             };
-
-          //ToDo
-          // Check that meta.profile url is correct
-          fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-            fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-            fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
-            fhir_practitioner.meta as fhir_practitioner_meta,
-            fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
-            "FhirPractitionerAndPractitionerRoleProfile";
 
             // Organization
             cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
@@ -9093,13 +9084,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     performer_function_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
     performer_function_coding.code = 'AUTHEN' then {
       cda_participant.participantRole as cda_participantRole then {
-
-        //ToDo
-        // Check that meta.profile url is correct
-        fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-          fhir_practitioner.meta as fhir_practitioner_meta,
-          fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
-          "AuthorFhirPractitionerProfile";
         
         // participantRole.id -> practitioner.identifier
         cda_participantRole.id -> fhir_practitioner.identifier; 

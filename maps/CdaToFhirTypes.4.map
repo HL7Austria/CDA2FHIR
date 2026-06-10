@@ -889,7 +889,7 @@ group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaO
 group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organization: CdaOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
   fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
     fhir_organization.meta as fhir_organization_meta,
-    fhir_organization_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/organization-eu-core'
+    fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Organization-eu-myhealth-eu'
     "FhirOrganizationProfile";
   
   cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
@@ -905,7 +905,7 @@ group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organiza
 group CdaCustodianOrganizationToFhirOrganizationWithBundle(source cda_organization: CdaCustodianOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
   fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
     fhir_organization.meta as fhir_organization_meta,
-    fhir_organization_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/organization-eu-core'
+    fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Organization-eu-myhealth-eu'
     "FhirOrganizationProfile";
   
   // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.id

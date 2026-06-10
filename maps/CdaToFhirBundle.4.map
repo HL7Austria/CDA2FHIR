@@ -461,11 +461,6 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
     fhir_coverage.beneficiary = create('Reference') as fhir_coverage_beneficiary_reference,
     fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_coverage_beneficiary_reference.type = 'Patient' then {
-  
-      // fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-      //   fhir_coverage.meta as fhir_coverage_meta,
-      //   fhir_coverage_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Coverage-lab-myhealtheu'
-      //   "FhirOrganizationProfile";
 
       cda_participant.time -> fhir_coverage.period;
 
@@ -900,16 +895,6 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
     // ClinicalDocument.author.functionCode
     cda_author.functionCode -> fhir_practitionerRole.specialty;
 
-
-    //ToDo
-    // Check that meta.profile url is correct
-    fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-      fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-      fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
-      fhir_practitioner.meta as fhir_practitioner_meta,
-      fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
-      "AuthorFhirPractitionerAndPractitionerRoleProfile";
-
     // ClinicalDocument.author.time
     // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/159
 
@@ -1199,15 +1184,6 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
-      
-      //ToDo
-      // Check that meta.profile url is correct
-      fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-        fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-        fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
-        fhir_practitioner.meta as fhir_practitioner_meta,
-        fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
-        "FhirPractitionerAndPractitionerRoleProfile";
       // assignedEntity.id
       cda_assignedEntity.id where (nullFlavor.exists().not()) -> fhir_practitioner.identifier;
 
@@ -1254,16 +1230,6 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
-
-      //ToDo
-      // Check that meta.profile url is correct
-      fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-        fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-        fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
-        fhir_practitioner.meta as fhir_practitioner_meta,                                                                                                           
-        fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
-        "FhirPractitionerAndPractitionerRoleProfile";
-
       // associatedEntity.id
       cda_associatedEntity.id -> fhir_practitioner.identifier;
       // associatedEntity.code
@@ -1319,8 +1285,6 @@ group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, ta
     performer_function_extension_value_coding.code = 'PPRF' then CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
 }
 
-// ToDo
-// Check if this mapping is needed. It is never called in any of the .maps
 group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle){
   // time
   // TODO
@@ -1334,16 +1298,6 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
     fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner_reference,
     fhir_practitionerRole_practitioner_reference.reference = append('urn:uuid:', fhir_practitioner_id),
     fhir_practitionerRole_practitioner_reference.type = 'Practitioner' then {
-
-        //ToDo
-        // Check that meta.profile url is correct
-        fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-          fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-          fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
-          fhir_practitioner.meta as fhir_practitioner_meta,                                                                                                           
-          fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
-          "FhirPractitionerAndPractitionerRoleProfile";
-
         // participantRole/id ->  Practitioner.identifier
         cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
         
