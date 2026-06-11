@@ -882,8 +882,8 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
     fhir_medication.id = uuid() as fhir_medication_id,
     fhir_bundle_entry2.fullUrl = append('urn:uuid:', fhir_medication_id),
 
-    // link Medication to MedicationRequest
-    fhir_medicationRequest.medicationReference = create('Reference') as fhir_medicationRequest_medicationReference_reference,
+    // Create link between MedicationRequest and Medication via MedicationRequest.medication (mandatory element)
+    fhir_medicationRequest.medication = create('Reference') as fhir_medicationRequest_medicationReference_reference,
     fhir_medicationRequest_medicationReference_reference.reference = append('urn:uuid:', fhir_medication_id),
     fhir_medicationRequest_medicationReference_reference.type = 'Medication' then {
 
@@ -895,12 +895,7 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
       fhir_medicationRequest.intent = 'instance-order',
       fhir_patient.id as fhir_patient_id,
       fhir_medicationRequest_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
-      fhir_medicationRequest_subject_reference.type = 'Patient',
-      // Create link between MedicationRequest and Medication via MedicationRequest.medication (mandatory element)
-      fhir_medicationRequest.medication = create('Reference') as fhir_medicationRequest_medication_reference,
-      fhir_medication.id as fhir_medication_id,
-      fhir_medicationRequest_medication_reference.reference = append('urn:uuid:', fhir_medication_id),
-      fhir_medicationRequest_medication_reference.type = 'Medication';
+      fhir_medicationRequest_subject_reference.type = 'Patient';
 
       // Arznei -> Medication
       cda_sbadm.consumable as cda_consumable then CdaEmedConsumableToFhirMedication(cda, cda_consumable, fhir_composition, fhir_medication, fhir_patient, fhir_bundle);
@@ -1036,7 +1031,8 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
               fhir_medicationRequest_dosageInstruction_timing.event as fhir_medicationRequest_dosageInstruction_timing_event then TSDateTime(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_phase, fhir_medicationRequest_dosageInstruction_timing_event);
               // Zeitraum und Periodeneinheit der Dosis
               cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp.period as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_period ->
-              fhir_medicationRequest_dosageInstruction_timing.bounds = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_boundsDuration then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_period,fhir_medicationRequest_dosageInstruction_timing_boundsDuration);
+              fhir_medicationRequest_dosageInstruction_timing.repeat as fhir_medicationRequest_dosageInstruction_timing_repeat,
+              fhir_medicationRequest_dosageInstruction_timing_repeat.bounds = create('Duration') as fhir_medicationRequest_dosageInstruction_timing_repeat_boundsDuration then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_comp_period,fhir_medicationRequest_dosageInstruction_timing_repeat_boundsDuration);
             };
           };
           // Tagesdosierung
