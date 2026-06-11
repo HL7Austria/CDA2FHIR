@@ -882,12 +882,7 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
       fhir_medicationRequest.intent = 'instance-order',
       fhir_patient.id as fhir_patient_id,
       fhir_medicationRequest_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
-      fhir_medicationRequest_subject_reference.type = 'Patient',
-      // Create link between MedicationRequest and Medication via MedicationRequest.medication (mandatory element)
-      fhir_medicationRequest.medication = create('Reference') as fhir_medicationRequest_medication_reference,
-      fhir_medication.id as fhir_medication_id,
-      fhir_medicationRequest_medication_reference.reference = append('urn:uuid:', fhir_medication_id),
-      fhir_medicationRequest_medication_reference.type = 'Medication';
+      fhir_medicationRequest_subject_reference.type = 'Patient';
 
       // Arznei -> Medication
       cda_sbadm.consumable as cda_consumable then CdaEmedConsumableToFhirMedication(cda, cda_consumable, fhir_composition, fhir_medication, fhir_patient, fhir_bundle);
