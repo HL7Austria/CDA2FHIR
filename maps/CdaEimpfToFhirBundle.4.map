@@ -432,6 +432,15 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
   
   // Observation/value -> Observation.value  (Note since Observation.value is constraint in eHDSI we have added a group that deals just with Observation.value. Look at CdaLaboratoryObservationValueToFhirObservationValue to see which logic from this group can be applyed here.)
   // your source code here -> your target here;
+  // observation.value(xsi:type="PQ")
+  cda_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
+
+  // observation.value(xsi:type="IVL_PQ")
+  cda_observation.value: IVL_PQ as cda_observation_value then {
+    cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
+
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
+  } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // Obsevation.interpretationCode -> Observation.interpretation
   // your source code here -> your target here;
