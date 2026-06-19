@@ -9162,9 +9162,38 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     fhir_observation.value = create('Quantity') as fhir_observation_value
     then INTQuantity(cda_observation_value, fhir_observation_value) "CdaValueINTToFhirObservationValue";
 
-  // observation.value(xsi:type="TS")
-  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
-  
+  // observation.value(xsi:type="IVL_INT")
+  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
+    cda_observation_value where (cda_observation_value.value.exists()) ->
+      fhir_observation.value = create('Quantity') as fhir_observation_value
+      then INTQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueQuantity";
+    
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
+      fhir_observation.value = create('Range') as fhir_observation_value
+      then IVL_INTRange(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueRange";
+  } "CdaObservationValueIVL_INTToFhirObservationValue";
+
+  // observation.value(xsi:type="BL")
+    cda_laboratory_observation.value: BL as cda_observation_value ->
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding as fhir_observation_value_coding then {
+        cda_observation_value.value as cda_observation_value_attribute where ($this = true) -> 
+          fhir_observation_value.text = cast(cda_observation_value_attribute, 'string'),
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '373066001',
+          fhir_observation_value_coding.display = 'Yes'
+          "CdaValueBLToFhirObservationValueTrue";
+        cda_observation_value.value as cda_observation_value_attribute where ($this = false) -> 
+          fhir_observation_value.text = cast(cda_observation_value_attribute, 'string'),
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '373067005',
+          fhir_observation_value_coding.display = 'No'
+          "CdaValueBLToFhirObservationValueFalse";
+    } "CdaValueBLTrueToFhirObservationValue";
+
+  // observation.value(xsi:type="ST")
+  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+
   // observation.value(xsi:type="CV")
   cda_laboratory_observation.value: CV as cda_observation_value ->
     fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
@@ -9173,6 +9202,9 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     fhir_observation_value_coding.code = 'OTH' then 
       CVCodeableConcept(cda_observation_value, fhir_observation_value) 
       "CdaObservationValueCVToFhirObservationValueCodeableConcept";
+
+  // observation.value(xsi:type="TS")
+  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
 
   // observation.value(xsi:type="CD")
   cda_laboratory_observation where cda_laboratory_observation.value.exists((code='255599008' or code='281268007') and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -9254,19 +9286,6 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
           CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
     }"CdaIncompleteObservationToFhirObservationStatus";
       
-  // observation.value(xsi:type="ST")
-  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-  
-  // observation.value(xsi:type="IVL_INT")
-  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
-    cda_observation_value where (cda_observation_value.value.exists()) ->
-      fhir_observation.value = create('Quantity') as fhir_observation_value
-      then INTQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueQuantity";
-    
-    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
-      fhir_observation.value = create('Range') as fhir_observation_value
-      then IVL_INTRange(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueRange";
-  } "CdaObservationValueIVL_INTToFhirObservationValue";
 
   // observation.value(xsi:type="RTO")
   cda_laboratory_observation.value: RTO as cda_observation_value -> 
