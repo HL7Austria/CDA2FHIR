@@ -107,6 +107,14 @@ def CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle)
         fhir_composition_terminologyDate_dateTime = malac.models.fhir.r4.dateTime()
         fhir_composition_terminologyDate_extension.valueDateTime = fhir_composition_terminologyDate_dateTime
         TSDate(cda_terminologyDate, fhir_composition_terminologyDate_dateTime)
+    cda_formatCode = cda.formatCode
+    if cda_formatCode is not None:
+        fhir_composition_formatCode_extension = malac.models.fhir.r4.Extension()
+        fhir_composition.extension.append(fhir_composition_formatCode_extension)
+        fhir_composition_formatCode_extension.url = 'http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureDefinition/at-core-ext-composition-formatcode'
+        fhir_composition_formatCode_codeableConcept = malac.models.fhir.r4.CodeableConcept()
+        fhir_composition_formatCode_extension.valueCodeableConcept = fhir_composition_formatCode_codeableConcept
+        CDCodeableConcept(cda_formatCode, fhir_composition_formatCode_codeableConcept)
     if cda.practiceSettingCode is not None:
         fhir_composition.category.append(malac.models.fhir.r4.CodeableConcept())
         CDCodeableConcept(cda.practiceSettingCode, fhir_composition.category[-1])
@@ -1026,6 +1034,9 @@ def CdaBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_pat
 
 def CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
     CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
+    if cda_section.code is not None:
+        fhir_section.code = malac.models.fhir.r4.CodeableConcept()
+        transform_default(cda_section.code, fhir_section.code)
     if fhir_section.code is None:
         fhir_section.code = malac.models.fhir.r4.CodeableConcept()
     fhir_section_code = fhir_section.code
@@ -1214,6 +1225,26 @@ def CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole,
                 fhir_practitionerRole_organization_reference = malac.models.fhir.r4.Reference()
                 fhir_practitionerRole.organization = fhir_practitionerRole_organization_reference
                 fhir_practitionerRole_organization_reference.display = string(value=fhirpath.single(fhirpath_utils.get(cda_participant_role_scoping_entity_desc,'valueOf_',strip=True)))
+
+def CdaNarrativeTextToFhirString(cda_act, cda_section, target_string):
+    cda_act_text = cda_act.text
+    if cda_act_text is not None:
+        cda_act_text_reference = cda_act_text.reference
+        if cda_act_text_reference is not None:
+            cda_section_text = cda_section.text
+            if cda_section_text is not None:
+                cda_act_text_reference_value = cda_act_text_reference.value
+                if cda_act_text_reference_value is not None:
+                    fhir_narrative = malac.models.fhir.r4.Narrative()
+                    fhir_narrative_div = utils.strucdoctext2html(malac.models.fhir.r4, cda_section_text)
+                    fhir_narrative.div = fhir_narrative_div
+                    fhir_string = malac.models.fhir.r4.string()
+                    fhir_string = string(value=str(fhir_narrative_div))
+                    fhir_substring_01 = malac.models.fhir.r4.string()
+                    fhir_substring_01 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_string,fhirpath_utils.indexof(fhir_string, fhirpath_utils.substring(cda_act_text_reference_value,[1],[])),[])))
+                    fhir_substring_02 = malac.models.fhir.r4.string()
+                    fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
+                    target_string.value = fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<'])))
 
 def CdaSectionToFhirSection(cda_section, fhir_section, fhir_bundle):
     cda_section_title = cda_section.title
@@ -84361,7 +84392,7 @@ def CECodeableConcept(src, tgt):
             tgt_coding = malac.models.fhir.r4.Coding()
             tgt.coding.append(tgt_coding)
             tgt_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
-            tgt_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(cda_manufacturedMaterial_code_nullFlavor if isinstance(cda_manufacturedMaterial_code_nullFlavor, str) else cda_manufacturedMaterial_code_nullFlavor.value), out_type='code'))
+            tgt_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(src_nullFlavor if isinstance(src_nullFlavor, str) else src_nullFlavor.value), out_type='code'))
     for translation in src.translation or []:
         coding = malac.models.fhir.r4.Coding()
         tgt.coding.append(coding)
@@ -85920,10 +85951,40 @@ def CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observati
             fhir_observation.valueQuantity = fhir_observation_value
             INTQuantity(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.TS:
-            fhir_observation_value = malac.models.fhir.r4.dateTime()
-            fhir_observation.valueDateTime = fhir_observation_value
-            TSDateTime(cda_observation_value, fhir_observation_value)
+        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_INT:
+            if cda_observation_value.value is not None:
+                fhir_observation_value = malac.models.fhir.r4.Quantity()
+                fhir_observation.valueQuantity = fhir_observation_value
+                INTQuantity(cda_observation_value, fhir_observation_value)
+            if cda_observation_value.value is None:
+                fhir_observation_value = malac.models.fhir.r4.Range()
+                fhir_observation.valueRange = fhir_observation_value
+                IVL_INTRange(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.BL:
+            fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
+            fhir_observation.valueCodeableConcept = fhir_observation_value
+            fhir_observation_value_coding = malac.models.fhir.r4.Coding()
+            fhir_observation_value.coding.append(fhir_observation_value_coding)
+            cda_observation_value_attribute = cda_observation_value.value
+            if cda_observation_value_attribute is not None:
+                if cda_observation_value_attribute:
+                    fhir_observation_value.text = string(value=str(getattr(cda_observation_value_attribute, 'value', cda_observation_value_attribute if cda_observation_value_attribute is not None else '')))
+                    fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
+                    fhir_observation_value_coding.code = string(value='373066001')
+                    fhir_observation_value_coding.display = string(value='Yes')
+            cda_observation_value_attribute = cda_observation_value.value
+            if cda_observation_value_attribute is not None:
+                if not cda_observation_value_attribute:
+                    fhir_observation_value.text = string(value=str(getattr(cda_observation_value_attribute, 'value', cda_observation_value_attribute if cda_observation_value_attribute is not None else '')))
+                    fhir_observation_value_coding.system = uri(value='http://snomed.info/sct')
+                    fhir_observation_value_coding.code = string(value='373067005')
+                    fhir_observation_value_coding.display = string(value='No')
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
+            fhir_observation_value = malac.models.fhir.r4.string()
+            fhir_observation.valueString = fhir_observation_value
+            STstring(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
         if type(cda_observation_value) is malac.models.cda.at_ext.CV:
             fhir_observation_value = malac.models.fhir.r4.CodeableConcept()
@@ -85933,6 +85994,11 @@ def CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observati
             fhir_observation_value_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/v3-NullFlavor')
             fhir_observation_value_coding.code = string(value='OTH')
             CVCodeableConcept(cda_observation_value, fhir_observation_value)
+    for cda_observation_value in cda_laboratory_observation.value or []:
+        if type(cda_observation_value) is malac.models.cda.at_ext.TS:
+            fhir_observation_value = malac.models.fhir.r4.dateTime()
+            fhir_observation.valueDateTime = fhir_observation_value
+            TSDateTime(cda_observation_value, fhir_observation_value)
     if not [v1 for v1 in fhirpath_utils.get(cda_laboratory_observation,'value') if fhirpath_utils.bool_and(fhirpath_utils.bool_or(fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['255599008']), fhirpath_utils.equals(fhirpath_utils.get(v1,'code'), '==', ['281268007'])), fhirpath_utils.equals(fhirpath_utils.get(v1,'codeSystem'), '==', ['2.16.840.1.113883.6.96'])) == [True]]:
         for cda_observation_value in cda_laboratory_observation.value or []:
             if type(cda_observation_value) is malac.models.cda.at_ext.CD:
@@ -85996,21 +86062,6 @@ def CdaLaboratoryObservationValueToFhirObservationValue(cda_laboratory_observati
             fhir_observation_dataAbsentReason_coding_2 = malac.models.fhir.r4.Coding()
             fhir_observation_dataAbsentReason.coding.append(fhir_observation_dataAbsentReason_coding_2)
             CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.ST:
-            fhir_observation_value = malac.models.fhir.r4.string()
-            fhir_observation.valueString = fhir_observation_value
-            STstring(cda_observation_value, fhir_observation_value)
-    for cda_observation_value in cda_laboratory_observation.value or []:
-        if type(cda_observation_value) is malac.models.cda.at_ext.IVL_INT:
-            if cda_observation_value.value is not None:
-                fhir_observation_value = malac.models.fhir.r4.Quantity()
-                fhir_observation.valueQuantity = fhir_observation_value
-                INTQuantity(cda_observation_value, fhir_observation_value)
-            if cda_observation_value.value is None:
-                fhir_observation_value = malac.models.fhir.r4.Range()
-                fhir_observation.valueRange = fhir_observation_value
-                IVL_INTRange(cda_observation_value, fhir_observation_value)
     for cda_observation_value in cda_laboratory_observation.value or []:
         if type(cda_observation_value) is malac.models.cda.at_ext.RTO:
             fhir_observation_value = malac.models.fhir.r4.Ratio()
@@ -86717,24 +86768,10 @@ def CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_section,
             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'act','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.17']):
                 cda_act = cda_substanceAdministration_entryRelationship.act
                 if cda_act is not None:
-                    cda_act_text = cda_act.text
-                    if cda_act_text is not None:
-                        cda_act_text_reference = cda_act_text.reference
-                        if cda_act_text_reference is not None:
-                            cda_section_text = cda_section.text
-                            if cda_section_text is not None:
-                                cda_act_text_reference_value = cda_act_text_reference.value
-                                if cda_act_text_reference_value is not None:
-                                    fhir_narrative = malac.models.fhir.r4.Narrative()
-                                    fhir_narrative_div = utils.strucdoctext2html(malac.models.fhir.r4, cda_section_text)
-                                    fhir_narrative.div = fhir_narrative_div
-                                    fhir_string = malac.models.fhir.r4.string()
-                                    fhir_string = string(value=str(fhir_narrative_div))
-                                    fhir_substring_01 = malac.models.fhir.r4.string()
-                                    fhir_substring_01 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_string,fhirpath_utils.indexof(fhir_string, fhirpath_utils.substring(cda_act_text_reference_value,[1],[])),[])))
-                                    fhir_substring_02 = malac.models.fhir.r4.string()
-                                    fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
-                                    fhir_immunizationRecommendation_recommendation.description = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
+                    if fhir_immunizationRecommendation_recommendation.description is None:
+                        fhir_immunizationRecommendation_recommendation.description = malac.models.fhir.r4.string()
+                    fhir_description = fhir_immunizationRecommendation_recommendation.description
+                    CdaNarrativeTextToFhirString(cda_act, cda_section, fhir_description)
         for cda_substanceAdministration_reference in cda_substanceAdministration.reference or []:
             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_reference,'externalDocument','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.14']):
                 cda_substanceAdministration_reference_externalDocument = cda_substanceAdministration_reference.externalDocument
@@ -87000,9 +87037,10 @@ def CdaPerformerToFhirProvenance(cda_performer, fhir_provenance, fhir_practition
 def CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practitionerRole, fhir_bundle):
     cda_participant_time = cda_author.time
     if cda_participant_time is not None:
-        fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
-        fhir_provenance.occurredDateTime = fhir_provenance_occurred
-        TSDateTime(cda_participant_time, fhir_provenance_occurred)
+        if cda_participant_time.nullFlavor is None:
+            fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
+            fhir_provenance.occurredDateTime = fhir_provenance_occurred
+            TSDateTime(cda_participant_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
@@ -87033,9 +87071,10 @@ def CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practition
 def CdaAuthorDeviceToFhirProvenance(cda_author, fhir_provenance, fhir_bundle):
     cda_participant_time = cda_author.time
     if cda_participant_time is not None:
-        fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
-        fhir_provenance.occurredDateTime = fhir_provenance_occurred
-        TSDateTime(cda_participant_time, fhir_provenance_occurred)
+        if cda_participant_time.nullFlavor is None:
+            fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
+            fhir_provenance.occurredDateTime = fhir_provenance_occurred
+            TSDateTime(cda_participant_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
