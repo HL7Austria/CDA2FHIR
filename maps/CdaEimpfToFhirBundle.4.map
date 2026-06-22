@@ -167,7 +167,7 @@ group CdaEimpfBodyToFhir(source cda: CdaClinicalDocument, source cda_structuredB
     
     // Antikörper-Bestimmung - kodiert - 1.2.40.0.34.6.0.11.2.7
     cda_component.section as cda_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> 
-      fhir_composition.section as fhir_section then CdaAntikoerperSectionToFhirCompositionSection(cda_section, fhir_section, fhir_patient, fhir_bundle);
+      fhir_composition.section as fhir_section then CdaAntikoerperSectionToFhirCompositionSection(cda, cda_section, fhir_section, fhir_patient, fhir_bundle);
     
     // Impfempfehlungen - kodiert - 1.2.40.0.34.6.0.11.2.2
     // APS section: plan of care
@@ -262,7 +262,7 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection,
 // This Group contains the Mapping for  1.2.40.0.34.6.0.11.2.7 Antikörper-Bestimmung - kodiert
 // CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.2.7/2025-11-03T08:24:04
 // FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-composition.html
-group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
+group CdaAntikoerperSectionToFhirCompositionSection(source cda: ClinicalDocument, source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   //cda_section.title -> fhir_section.title;
   // ToDo
   // Check if mapping the cda_section.code(26436-6) to fhir is ok. 
@@ -272,7 +272,7 @@ group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSecti
 
     //Antikörperbestimmung Data Processing Entry - 1.2.40.0.34.6.0.11.3.15 
     //Wrapper Act that holds the actual Battery Organizer via entryRelationship.
-    cda_section_entry.act as cda_entry_act then CdaAntiBodyDataProcessingEntryToFhir(cda_entry_act, fhir_section, fhir_patient, fhir_bundle);
+    cda_section_entry.act as cda_entry_act then CdaAntiBodyDataProcessingEntryToFhir(cda, cda_entry_act, fhir_section, fhir_patient, fhir_bundle);
   }; 
 }
 
@@ -288,7 +288,7 @@ group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSecti
 // Target: Mainly the Groups CdaOrganizerToFhirObservation and CdaObservationToFhirObservation
 
 
-group CdaAntiBodyDataProcessingEntryToFhir(source cda_act: Act, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle){
+group CdaAntiBodyDataProcessingEntryToFhir(source cda: ClinicalDocument, source cda_act: Act, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle){
 // ----------------------------------------------------------
 //Group Logic 
 // CDA structure handled here:
@@ -338,7 +338,7 @@ cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templat
             fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
             fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
             fhir_battery_observation_hasMember_reference.type = 'Observation' then {
-              cda_observation then CdaObservationToFhirObservation(cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+              cda_observation then CdaObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
             };
       };
     };
@@ -373,7 +373,7 @@ group CdaOrganizerToFhirObservation(source cda_organizer: Organizer, target fhir
 // This Group contains the Mapping for 1.2.40.0.34.6.0.11.3.16 Antikörper-Bestimmung Laboratory Observation Entry 
 // CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.16/2025-02-13T12:01:32
 // FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-observation.html
-group CdaObservationToFhirObservation(source cda_observation: Observation, target fhir_observation: Observation, target fhir_patient: Patient, target fhir_bundle: Bundle){
+group CdaObservationToFhirObservation(source cda: ClinicalDocument, source cda_observation: Observation, target fhir_observation: Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaLaboratoryObservationToFhirObservation {
   
   // -----------------------------------------------------------------------------------------------
   // @NKR please read before starting to map. 
