@@ -14,6 +14,7 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMateri
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias CdaPerformer2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias CdaAuthor as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObservation as source
 
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
@@ -493,6 +494,10 @@ group CdaObservationToFhirObservation(source cda: ClinicalDocument, source cda_o
     // 1.2.40.0.34.6.0.11.9.46 Participant Body - Authorized Editor
     // 1.2.40.0.34.6.0.11.9.47 Participant Body - Data Enterer
     // 1.2.40.0.34.6.0.11.3.17 Comment Entry - Single Author / Informant 
+}
+
+group CdaEimpfLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaLaboratoryObservationToFhirObservation {
+
 }
 
 
