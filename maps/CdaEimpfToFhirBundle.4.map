@@ -399,48 +399,54 @@ group CdaObservationToFhirObservation(source cda: ClinicalDocument, source cda_o
   // @NKR start here please  
 
   // observation.id -> Observation.identifier
-  cda_observation.id -> fhir_observation.identifier;
+  // executed in parent group
+  //cda_observation.id -> fhir_observation.identifier;
   
   // CDA observation -> fhir_observation.category
-  cda_observation -> 
-    fhir_observation.category as fhir_category,
-    fhir_category.coding as fhir_category_coding,
-    fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
-    fhir_category_coding.code = 'laboratory'
-    "FhirObservationCategoryCoding";
+  // executed in parent group
+  // cda_observation -> 
+  //   fhir_observation.category as fhir_category,
+  //   fhir_category.coding as fhir_category_coding,
+  //   fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
+  //   fhir_category_coding.code = 'laboratory'
+  //   "FhirObservationCategoryCoding";
   
   // Observation/code -> Observation.code 
-  cda_observation.code -> fhir_observation.code;
+  // executed in parent group
+  //cda_observation.code -> fhir_observation.code;
   
   // Observation/statusCode -> Observation.status 
-  cda_observation.statusCode as observation_statusCode then {
-    observation_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
-  } "CdaStatusCodeToFhirObservationStatusMapped";
+  // executed in parent group
+  // cda_observation.statusCode as observation_statusCode then {
+  //   observation_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
+  // } "CdaStatusCodeToFhirObservationStatusMapped";
   
   // Observation/effectiveTime -> Observation.effective
+  // executed in parent group
   //your source code here -> your target here;
-  cda_observation.effectiveTime as cda_effectiveTime -> fhir_observation.effective = create('dateTime') as fhir_observation_effective then 
-    TSDateTime(cda_effectiveTime, fhir_observation_effective) "CdaEffectiveTimeToFhirObservationEffective";
-  cda_observation
-    where cda_observation.where(effectiveTime.where(nullFlavor = 'UNK') or effectiveTime.exists().not()) ->
-    fhir_observation.effective = create('dateTime') as fhir_observation_effective,
-    fhir_observation_effective.extension as fhir_observation_effective_extenstion,
-    fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
-    fhir_observation_effective_extenstion.value = create('code') as fhir_observation_effective_extenstion_code,
-    fhir_observation_effective_extenstion_code.value = 'unknown'
-      "CdaEffectiveTimeExistsNotToFhirObservationEffective";
+  // cda_observation.effectiveTime as cda_effectiveTime -> fhir_observation.effective = create('dateTime') as fhir_observation_effective then 
+  //   TSDateTime(cda_effectiveTime, fhir_observation_effective) "CdaEffectiveTimeToFhirObservationEffective";
+  // cda_observation
+  //   where cda_observation.where(effectiveTime.where(nullFlavor = 'UNK') or effectiveTime.exists().not()) ->
+  //   fhir_observation.effective = create('dateTime') as fhir_observation_effective,
+  //   fhir_observation_effective.extension as fhir_observation_effective_extenstion,
+  //   fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+  //   fhir_observation_effective_extenstion.value = create('code') as fhir_observation_effective_extenstion_code,
+  //   fhir_observation_effective_extenstion_code.value = 'unknown'
+  //     "CdaEffectiveTimeExistsNotToFhirObservationEffective";
   
   // Observation/value -> Observation.value  (Note since Observation.value is constraint in eHDSI we have added a group that deals just with Observation.value. Look at CdaLaboratoryObservationValueToFhirObservationValue to see which logic from this group can be applyed here.)
   // your source code here -> your target here;
   // observation.value(xsi:type="PQ")
-  cda_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
+  // executed in parent group
+  // cda_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
 
-  // observation.value(xsi:type="IVL_PQ")
-  cda_observation.value: IVL_PQ as cda_observation_value then {
-    cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
+  // // observation.value(xsi:type="IVL_PQ")
+  // cda_observation.value: IVL_PQ as cda_observation_value then {
+  //   cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
 
-    cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
-  } "CdaObservationValueToFhirObservationValueIVLPQ";
+  //   cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
+  // } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // Obsevation.interpretationCode -> Observation.interpretation
   // your source code here -> your target here;
