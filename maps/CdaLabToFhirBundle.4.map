@@ -8987,6 +8987,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 
   // observation.text
   // TODO
+
   // observation.statusCode
   cda_laboratory_observation
     where cda_laboratory_observation.value.exists(code='255599008' or code='281268007' and codeSystem='2.16.840.1.113883.6.96').not() then {
