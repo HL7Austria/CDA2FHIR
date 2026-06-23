@@ -8972,9 +8972,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
 
   // observation/code[not(@nullFlavor)]
   cda_laboratory_observation.code as cda_code where ($this.nullFlavor.exists().not()) then {
-    // based on concept map try to map code from within the CDA to a code according to eHDSILabCodeWithExceptions
-    cda_code.code as cda_code_code -> translate(cda_code_code, '#elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions' , 'Coding') as mapping_result_coding then 
-      CdaLaboratoryObservationCodeCheck(cda_laboratory_observation, mapping_result_coding, fhir_observation);
+    cda_code -> fhir_observation.code;
   } "CdaLaboratoryObservationCodeToFhirObservationCodeNoNullFlavor";
   // observation/code[@nullFlavor='OTH'] 
   // only check for nullFlavor in general as CDA IG only permits 'OTH'
@@ -9024,17 +9022,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     "CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue";
 
   // observation.interpretationCode
-  // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
-  // cda_laboratory_observation.interpretationCode -> fhir_observation.interpretation;
-  // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-  // ONLY FOR TESTING
-  cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
-    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
-    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
-    fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
-    "CdaObservationInterpretationCodeToFhirObservationInterpretation";
+  cda_laboratory_observation.interpretationCode -> fhir_observation.interpretation;
 
   // observation.performer
   //   This element is being dealt with in 
@@ -9197,10 +9185,11 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
 
   // observation.value(xsi:type="CV")
   cda_laboratory_observation.value: CV as cda_observation_value ->
-    fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-    fhir_observation_value.coding as fhir_observation_value_coding,
-    fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_observation_value_coding.code = 'OTH' then 
+    fhir_observation.value = create('CodeableConcept') as fhir_observation_value
+    // fhir_observation_value.coding as fhir_observation_value_coding,
+    // fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    // fhir_observation_value_coding.code = 'OTH' 
+    then 
       CVCodeableConcept(cda_observation_value, fhir_observation_value) 
       "CdaObservationValueCVToFhirObservationValueCodeableConcept";
 
@@ -9209,55 +9198,58 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
 
   // observation.value(xsi:type="CD")
   cda_laboratory_observation where cda_laboratory_observation.value.exists((code='255599008' or code='281268007') and codeSystem='2.16.840.1.113883.6.96').not() then {
-    cda_laboratory_observation.value: CD as cda_observation_value then {
+    cda_laboratory_observation.value: CD as cda_observation_value -> 
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value then
+        CDCodeableConcept(cda_observation_value, fhir_observation_value);
+    // {
 
-      // TODO refactor with proper conceptmap translate if possible
-      cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96') then {
-        // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
-        // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
-        cda_observation_value where (code='260415000' or code='260373001' or code='260413007' or code='89292003') -> 
-          fhir_observation.value = create('CodeableConcept') as fhir_observation_value then
-          CDCodeableConcept(cda_observation_value, fhir_observation_value) "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryKnownSNOMED";
+    //   // TODO refactor with proper conceptmap translate if possible
+    //   cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96') then {
+    //     // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
+    //     // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+    //     cda_observation_value where (code='260415000' or code='260373001' or code='260413007' or code='89292003') -> 
+    //       fhir_observation.value = create('CodeableConcept') as fhir_observation_value then
+    //       CDCodeableConcept(cda_observation_value, fhir_observation_value) "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryKnownSNOMED";
 
-        // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
-        // which are mappable to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
-        cda_observation_value where (code='57176003') -> 
-          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-          fhir_observation_value.coding as fhir_observation_value_coding,
-          fhir_observation_value_coding.system = 'http://snomed.info/sct',
-          fhir_observation_value_coding.code = '260348001' 
-          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap1";
-        cda_observation_value where (code='260354000') -> 
-          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-          fhir_observation_value.coding as fhir_observation_value_coding,
-          fhir_observation_value_coding.system = 'http://snomed.info/sct',
-          fhir_observation_value_coding.code = '260349009' 
-          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap2";
-        cda_observation_value where (code='260396001') -> 
-          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-          fhir_observation_value.coding as fhir_observation_value_coding,
-          fhir_observation_value_coding.system = 'http://snomed.info/sct',
-          fhir_observation_value_coding.code = '260350009' 
-          "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap3";
-      } "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratory";
+    //     // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
+    //     // which are mappable to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+    //     cda_observation_value where (code='57176003') -> 
+    //       fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    //       fhir_observation_value.coding as fhir_observation_value_coding,
+    //       fhir_observation_value_coding.system = 'http://snomed.info/sct',
+    //       fhir_observation_value_coding.code = '260348001' 
+    //       "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap1";
+    //     cda_observation_value where (code='260354000') -> 
+    //       fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    //       fhir_observation_value.coding as fhir_observation_value_coding,
+    //       fhir_observation_value_coding.system = 'http://snomed.info/sct',
+    //       fhir_observation_value_coding.code = '260349009' 
+    //       "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap2";
+    //     cda_observation_value where (code='260396001') -> 
+    //       fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    //       fhir_observation_value.coding as fhir_observation_value_coding,
+    //       fhir_observation_value_coding.system = 'http://snomed.info/sct',
+    //       fhir_observation_value_coding.code = '260350009' 
+    //       "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratoryMap3";
+    //   } "ElgaNachweisErgebnisToeHDSIResultsCodedValueLaboratory";
 
-      // deal with all other codes
-      cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96').not() then {
-        cda_observation_value -> 
-          fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-          fhir_observation_value.coding as fhir_observation_value_coding,
-          fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-          fhir_observation_value_coding.code = 'OTH' then
-          CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
-      } "CdaObservationValueCDToFhirObservationValueCodeableConceptOTH";
+    //   // deal with all other codes
+    //   cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96').not() then {
+    //     cda_observation_value -> 
+    //       fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    //       fhir_observation_value.coding as fhir_observation_value_coding,
+    //       fhir_observation_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    //       fhir_observation_value_coding.code = 'OTH' then
+    //       CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+    //   } "CdaObservationValueCDToFhirObservationValueCodeableConceptOTH";
 
-      // cda_observation_value.code as cda_code_code -> 
-      //   fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
-      //   fhir_observation_value.coding = translate(cda_code_code, '#elga-nachweisergebnis-to-fhir-eHDSI-presence-absence' , 'Coding') "asdf";
-      //   //  as mapping_result_coding then {
-      //   // cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value
-      //   // then CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
-    };
+    //   // cda_observation_value.code as cda_code_code -> 
+    //   //   fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+    //   //   fhir_observation_value.coding = translate(cda_code_code, '#elga-nachweisergebnis-to-fhir-eHDSI-presence-absence' , 'Coding') "asdf";
+    //   //   //  as mapping_result_coding then {
+    //   //   // cda_observation_value -> fhir_observation.value = create('CodeableConcept') as fhir_observation_value
+    //   //   // then CDCodeableConcept(cda_observation_value, fhir_observation_value) "test";
+    // };
   } "CdaObservationValueCDToFhirObservationValueCodeableConcept";
   
   // observation.value.codoe = 281268007 - Insufficient sample (finding)
