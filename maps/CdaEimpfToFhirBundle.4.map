@@ -480,6 +480,14 @@ group CdaObservationToFhirObservation(source cda: ClinicalDocument, source cda_o
       };
   };
 
+  // observation.entryRelationship (Comment Entry)
+  cda_observation.entryRelationship as cda_entryRelationship where ($this.act.exists()) then {
+    cda_entryRelationship.act as cda_act -> 
+      fhir_observation.note as fhir_observation_note, 
+      fhir_observation_note.text as fhir_observation_note_text then 
+         CdaNarrativeTextToFhirString(cda_act, cda_section, fhir_description);  
+  };
+
   // -----------------------------------------------------------------------------------------------
 
 

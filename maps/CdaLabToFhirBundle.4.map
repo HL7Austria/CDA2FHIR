@@ -9013,6 +9013,26 @@ group CdaLabLaboratoryObservationToFhirObservation(source cda: ClinicalDocument,
           "CdaInterpretationCodeToFhirInterpretationCode";
       };
   };
+
+  // observation.entryRelationship (Comment Entry)
+  cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.act.exists()) then {
+    cda_entryRelationship.act as cda_act -> 
+      fhir_observation.note as fhir_observation_note then {
+      
+        cda_act.text as cda_act_text then {
+          cda_act_text.reference as cda_reference -> fhir_observation_note.text = (cda_reference.value);
+        };
+        
+        cda_act.author as cda_author -> 
+          fhir_bundle.entry as fhir_bundle_entry, 
+          fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+          fhir_practitioner.id = uuid() as fhir_practitioner_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+          fhir_observation_note.author = create('Reference') as fhir_observation_note_authorReference,
+          fhir_observation_note_authorReference.reference = append('urn:uuid:', fhir_practitioner_id),
+          fhir_observation_note_authorReference.type = 'Practitioner' then CdaAuthorToFhirPractitioner(cda_author, fhir_practitioner, fhir_bundle);
+      }; 
+  };
 }
 
 group CdaLaboratoryObservationToFhirObservationWithSpecimen(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_specimen: Specimen) extends CdaLaboratoryObservationToFhirObservation {
