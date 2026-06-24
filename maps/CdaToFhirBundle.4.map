@@ -1428,7 +1428,7 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
 // ToDo
 // Look for proper naming convention for target_string -> maybe fhir_description would be better. 
 // (Naming conv. does not influence functionality of this group)
-group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Section, target target_string: markdown){
+group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Section, target target_string: string){
   // substanceAdministration/entryRelationship/act/text
   cda_act.text as cda_act_text then {
     // substanceAdministration/entryRelationship/act/text/reference
@@ -1462,3 +1462,4 @@ group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Sect
     };
   };
 }
+
