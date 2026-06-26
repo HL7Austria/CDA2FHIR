@@ -7,6 +7,10 @@ on:
         description: 'ELGA Jira ticket number'
         required: true
         type: string
+      previous_release_tag:
+        description: 'Previous release tag (optional)'
+        required: false
+        type: string
 
 jobs:
   # ── 1. Read version from pyproject.toml ───────────────────────────────────
@@ -54,8 +58,10 @@ jobs:
           TAG="${{ needs.get-version.outputs.version }}"
 
           gh release create "$TAG" \
+            --target "${{ github.ref_name }}" \
             --title "$TAG" \
             --generate-notes \
+            --notes-start-tag "${{ github.event.inputs.previous_release_tag }}" \
             --latest=false
 
           BODY=$(gh release view "$TAG" --json body -q .body)
