@@ -58,6 +58,7 @@ jobs:
           TAG="${{ needs.get-version.outputs.version }}"
 
           gh release create "$TAG" \
+            --target "${{ github.ref_name }}" \
             --title "$TAG" \
             --generate-notes \
             --notes-start-tag "${{ github.event.inputs.previous_release_tag }}" \
