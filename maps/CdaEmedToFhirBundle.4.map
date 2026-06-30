@@ -49,6 +49,9 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Parti
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias Act as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Supply" alias Supply as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Reference" alias CDAReference as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/SubstanceAdministration" alias SubstanceAdministration as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/EntryRelationship" alias EntryRelationship as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Consumable" alias Consumable as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
