@@ -462,10 +462,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
     fhir_coverage_beneficiary_reference.reference = append('urn:uuid:', fhir_patient_id),
     fhir_coverage_beneficiary_reference.type = 'Patient' then {
   
-      // fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
-      //   fhir_coverage.meta as fhir_coverage_meta,
-      //   fhir_coverage_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Coverage-lab-myhealtheu'
-      //   "FhirOrganizationProfile";
+    
 
       cda_participant.time -> fhir_coverage.period;
 
