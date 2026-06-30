@@ -614,7 +614,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
       // ClinicalDocument.documentationOf.serviceEvent.code
       cda_documentationOf_serviceEvent.code -> fhir_composition_event.code;
       // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
-      cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
+      cda_documentationOf_serviceEvent.effectiveTime where ($this.nullFlavor.exists().not()) -> fhir_composition_event.period;
       // ClinicalDocument.documentationOf.serviceEvent.performer
       // see document type specific group
     };
