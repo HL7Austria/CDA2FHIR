@@ -7972,7 +7972,7 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_patient.id as fhir_patient_id,
     // set FHIR profile for Patient
     fhir_patient.meta as fhir_patient_meta,
-    fhir_patient_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu',
+    fhir_patient_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/patient-myhealtheu-core',
 
     // create relation from DiagnosticReport to Patient
     fhir_diagnosticReport.subject = create('Reference') as fhir_diagnosticReport_subject_reference,
