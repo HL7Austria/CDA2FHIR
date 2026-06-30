@@ -803,40 +803,40 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
           "CdaPatientBirthplaceAddrToFhirPatientBirthplaceExtensionValue";
       };
     } "CdaPatientBirthplaceToFhirPatientBirthplaceExtension";
-    // // patient.languageCommunication
-    // cda_patient.languageCommunication as cda_patient_language -> fhir_patient.communication as fhir_patient_communication then {
-    //   // patient.languageCommunication.languageCode
-    //   //   no direct mapping, i.e. "cda_patient_language.languageCode -> fhir_patient_communication.language" is possible as
-    //   //   in CDA there is only the code and no information about the code sytem. As such this has to be explicitly set here.
-    //   cda_patient_language.languageCode as cda_patient_languageCode then {
-    //     cda_patient_languageCode.code as cda_patient_languageCode_code ->
-    //     fhir_patient_communication.language as fhir_patient_communication_language,
-    //     fhir_patient_communication_language.coding as fhir_patient_communication_language_coding,
-    //     fhir_patient_communication_language_coding.system = 'urn:ietf:bcp:47',
-    //     fhir_patient_communication_language_coding.code = cda_patient_languageCode_code
-    //     "CdaPatientLanguageToFhirPatientLanguage";
-    //   };
-    //   // patient.languageCommunication.preferenceInd
-    //   cda_patient_language.preferenceInd -> fhir_patient_communication.preferred;
+    // patient.languageCommunication
+    cda_patient.languageCommunication as cda_patient_language -> fhir_patient.communication as fhir_patient_communication then {
+      // patient.languageCommunication.languageCode
+      //   no direct mapping, i.e. "cda_patient_language.languageCode -> fhir_patient_communication.language" is possible as
+      //   in CDA there is only the code and no information about the code sytem. As such this has to be explicitly set here.
+      cda_patient_language.languageCode as cda_patient_languageCode then {
+        cda_patient_languageCode.code as cda_patient_languageCode_code ->
+        fhir_patient_communication.language as fhir_patient_communication_language,
+        fhir_patient_communication_language.coding as fhir_patient_communication_language_coding,
+        fhir_patient_communication_language_coding.system = 'urn:ietf:bcp:47',
+        fhir_patient_communication_language_coding.code = cda_patient_languageCode_code
+        "CdaPatientLanguageToFhirPatientLanguage";
+      };
+      // patient.languageCommunication.preferenceInd
+      cda_patient_language.preferenceInd -> fhir_patient_communication.preferred;
 
-    //   cda_patient_language where cda_patient_language.modeCode.exists() or cda_patient_language.proficiencyLevelCode.exists() ->
-    //     fhir_patient_communication.extension as communication_extension,
-    //     communication_extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-proficiency' then {
-    //       // patient.languageCommunication.modeCode
-    //       cda_patient_language.modeCode as cda_patient_language_modeCode ->
-    //         communication_extension.extension as communication_extension_type,
-    //         communication_extension_type.url = 'type',
-    //         communication_extension_type.value = create('Coding') as communication_extension_type_coding then CECoding(cda_patient_language_modeCode, communication_extension_type_coding)
-    //         "CdaLanguageModeCodeToFhirProficiencyType";
-    //       // patient.languageCommunication.proficiencyLevelCode
-    //       cda_patient_language.proficiencyLevelCode as cda_patient_language_proficiencyLevelCode ->
-    //         communication_extension.extension as communication_extension_level,
-    //         communication_extension_level.url = 'level',
-    //         communication_extension_level.value = create('Coding') as communication_extension_level_coding then CECoding(cda_patient_language_proficiencyLevelCode, communication_extension_level_coding)
-    //         "CdaLanguageProficiencyLevelToFhirProficiencyLevel";
-    //     }
-    //     "CdaPatientLanguageProficiencyToFhirPatientCommunicationProficiencyExtension";
-    // } "CdaPatientLanguageCommunicationToFhirPatientCommunication";
+      cda_patient_language where cda_patient_language.modeCode.exists() or cda_patient_language.proficiencyLevelCode.exists() ->
+        fhir_patient_communication.extension as communication_extension,
+        communication_extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-proficiency' then {
+          // patient.languageCommunication.modeCode
+          cda_patient_language.modeCode as cda_patient_language_modeCode ->
+            communication_extension.extension as communication_extension_type,
+            communication_extension_type.url = 'type',
+            communication_extension_type.value = create('Coding') as communication_extension_type_coding then CECoding(cda_patient_language_modeCode, communication_extension_type_coding)
+            "CdaLanguageModeCodeToFhirProficiencyType";
+          // patient.languageCommunication.proficiencyLevelCode
+          cda_patient_language.proficiencyLevelCode as cda_patient_language_proficiencyLevelCode ->
+            communication_extension.extension as communication_extension_level,
+            communication_extension_level.url = 'level',
+            communication_extension_level.value = create('Coding') as communication_extension_level_coding then CECoding(cda_patient_language_proficiencyLevelCode, communication_extension_level_coding)
+            "CdaLanguageProficiencyLevelToFhirProficiencyLevel";
+        }
+        "CdaPatientLanguageProficiencyToFhirPatientCommunicationProficiencyExtension";
+    } "CdaPatientLanguageCommunicationToFhirPatientCommunication";
   } "CdaPatientToFhirPatient";
 
   // patientRole.patient not existent
