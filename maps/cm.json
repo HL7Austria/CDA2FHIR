@@ -1,0 +1,27 @@
+{
+  "resourceType": "ConceptMap",
+  "id": "elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions",
+  "url": "https://fhir.hl7.at/elga/cda2fhir/r4/ConceptMap/elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions",
+  "status": "active",
+  "group": [
+    {
+      "source": "http://loinc.org",
+      "target": "http://loinc.org",
+      "element": [
+        { "code": "883-9",  "target": [ { "code": "883-9",  "relationship": "equivalent" } ] }
+        
+      ]
+    },
+    {
+      "source": "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung",
+      "target": "http://terminology.hl7.org/CodeSystem/v3-NullFlavor",
+      
+      "unmapped": {
+        "mode": "fixed",
+        "code": "OTH",
+        "display": "other",
+        "relationship": "equal"     
+      }
+    }
+  ]
+}
