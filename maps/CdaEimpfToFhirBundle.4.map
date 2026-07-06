@@ -567,7 +567,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
             cda_manufacturedMaterial -> 
               fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode as fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode then 
                 CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode);
-          }
+          };
 
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/name
           //TODO
