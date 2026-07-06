@@ -845,7 +845,7 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
           cda_participant_role_playingDevice.softwareName as cda_softwareName ->
             fhir_device.version as fhir_device_version,
             fhir_device_version.value = (cda_softwareName.xmlText);
-        }
+        };
 
         cda_participant_role where ($this.addr.exists() or $this.scopingEntity.exists()) ->
           // create Organization
