@@ -678,6 +678,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
             cda_substanceAdministration_reference_externalDocument.code -> fhir_immunizationRecommendation_identifier.type; 
           };
         };
+    };
 
     // substanceAdministration/precondition (Immunization Schedule Entry)
     cda_substanceAdministration.precondition as cda_substanceAdministration_precondition then {
