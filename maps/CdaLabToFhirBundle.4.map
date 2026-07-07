@@ -8150,9 +8150,9 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
           // Check that meta.profile url is correct
           fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
             fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-            fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
+            fhir_practitionerRole_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core',
             fhir_practitioner.meta as fhir_practitioner_meta,
-            fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
+            fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'
             "FhirPractitionerAndPractitionerRoleProfile";
 
             // Organization
@@ -9098,7 +9098,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
         // Check that meta.profile url is correct
         fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
           fhir_practitioner.meta as fhir_practitioner_meta,
-          fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
+          fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'
           "AuthorFhirPractitionerProfile";
         
         // participantRole.id -> practitioner.identifier
