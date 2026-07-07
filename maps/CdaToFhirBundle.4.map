@@ -1371,12 +1371,44 @@ group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Sect
           // fhir_string.indexOf(cda_act_text_reference_value.substring(1)) = the position of the ID within section/text
           fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_act_text_reference_value.substring(1)))),
 
-          // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-          create('string') as fhir_substring_02,
-          fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
+          // TODO: the following solution uses lastIndexOf() which is not yet supported by MaLaC-HD!
+          // Find the start of the opening tag by searching backwards to the last '<'
+          // within the already shortened substring. This should be at position 0 if the substring
+          // still contains the beginning of the tag; otherwise we need to include the part before the ID.
+          // Therefore: take substring from the last '<' before the ID in the full string.
+          create('integer') as fhir_tag_start,
+          fhir_tag_start = (fhir_string.substring(0, fhir_string.indexOf(cda_act_text_reference_value.substring(1))).lastIndexOf('<')),
 
-          // Create a substring from the start till the first occurrence of < character
-          target_string.value = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
+          // Create substring starting at the opening tag of the referenced element
+          create('string') as fhir_tag_block,
+          fhir_tag_block = (fhir_string.substring(fhir_tag_start)),
+
+          // Find end of opening tag '>'
+          create('integer') as fhir_open_tag_end,
+          fhir_open_tag_end = (fhir_tag_block.indexOf('>')),
+
+          // Extract opening tag content without '<' and '>'
+          // Example: footnote ID="commentRef-1"
+          create('string') as fhir_open_tag_content,
+          fhir_open_tag_content = (fhir_tag_block.substring(1, fhir_open_tag_end)),
+
+          // Extract tag name = text until first space, or full string if no space exists
+          create('integer') as fhir_tag_name_end,
+          fhir_tag_name_end = (iif(fhir_open_tag_content.indexOf(' ') >= 0, fhir_open_tag_content.indexOf(' '), fhir_open_tag_content.length())),
+
+          create('string') as fhir_tag_name,
+          fhir_tag_name = (fhir_open_tag_content.substring(0, fhir_tag_name_end)),
+
+          // Build closing tag, e.g. </footnote>
+          create('string') as fhir_closing_tag,
+          fhir_closing_tag = ('</' & fhir_tag_name & '>'),
+
+          // Find closing tag position inside the tag block
+          create('integer') as fhir_closing_tag_pos,
+          fhir_closing_tag_pos = (fhir_tag_block.indexOf(fhir_closing_tag)),
+
+          // Extract everything between opening and closing tag
+          target_string.value = (fhir_tag_block.substring(fhir_open_tag_end + 1, fhir_closing_tag_pos));
       };
     };
   };
