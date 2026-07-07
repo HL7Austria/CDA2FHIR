@@ -1051,7 +1051,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
                                                or (code.where(code='ABBEM' and codeSystem='1.2.40.0.34.5.40'))) // Abschließende Bemerkung
                                               ->
       fhir_composition.section as fhir_section then CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle);
-  }
+  };
 }
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
