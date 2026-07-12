@@ -769,7 +769,7 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
 
     // Einnahmedauer: Kein Width-Element vorhanden
     cda_entryRelationship_substanceAdministration.effectiveTime: IVL_TS as cda_effectiveTime_IVLTS_noWidth where ($this.width.exists().not() and ($this.low.nullFlavor.exists().not() and $this.high.nullFlavor.exists().not()) or ($this.low.nullFlavor.exists().not() and $this.high.nullFlavor.exists()) or ($this.low.nullFlavor.exists() and $this.high.nullFlavor.exists().not())) ->
-    fhir_medicationDispense_dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
+    fhir_medicationDispense.dosageInstruction = create('Dosage') as fhir_medicationDispense_dosageInstruction,
     fhir_medicationDispense_dosageInstruction.timing = create('Timing') as fhir_medicationDispense_dosageInstruction_timing,
     fhir_medicationDispense_dosageInstruction_timing.repeat as fhir_medicationDispense_dosageInstruction_timing_repeat,
     fhir_medicationDispense_dosageInstruction_timing_repeat.bounds = create('Period') as fhir_medicationDispense_dosageInstruction_timing_boundsPeriod then IVLTSPeriod(cda_effectiveTime_IVLTS_noWidth,fhir_medicationDispense_dosageInstruction_timing_boundsPeriod);
