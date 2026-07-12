@@ -1323,7 +1323,7 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
             cda_entryRelationship_act_entryRelationship.act as cda_entryRelationship_act_entryRelationship_act then {
               cda_entryRelationship_act_entryRelationship_act.text as cda_entryRelationship_act_entryRelationship_act_text then {
                 cda_entryRelationship_act_entryRelationship_act_text.reference as cda_entryRelationship_act_entryRelationship_act_reference ->
-                fhir_medication.text as fhir_medication_text, fhir_medication_text.status = 'additional' then {
+                fhir_medication.text = create('Narrative') as fhir_medication_text, fhir_medication_text.status = 'additional' then {
                   cda_entryRelationship_act_entryRelationship_act_reference.value as cda_entryRelationship_act_entryRelationship_act_reference_value then {
                                 
                     cda_section.text as cda_section_text then {
