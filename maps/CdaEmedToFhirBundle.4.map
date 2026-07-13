@@ -748,10 +748,15 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
       };
     };
 
-    // Tagesdosierung
+    // Tagesdosierung quantity
     cda_entryRelationship_substanceAdministration.doseQuantity as cda_entryRelationship_substanceAdministration_doseQuantity ->
     fhir_medicationDispense_dosageInstruction.doseAndRate as fhir_medicationDispense_dosageInstruction_doseAndRate,
     fhir_medicationDispense_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity);
+
+    // Tagesdosierung range
+    cda_entryRelationship_substanceAdministration.doseQuantity as cda_entryRelationship_substanceAdministration_doseQuantity where ($this.low.exists() or $this.high.exists() and $this.center.exists().not() and $this.width.exists().not()) ->
+    fhir_medicationDispense_dosageInstruction.doseAndRate as fhir_medicationDispense_dosageInstruction_doseAndRate,
+    fhir_medicationDispense_dosageInstruction_doseAndRate.doseRange = create('Range') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseRange then IVLPQRange(cda_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseRange);
 
     // Art der Anwendung der Arznei
     cda_entryRelationship_substanceAdministration.routeCode as cda_substanceAdministration_routeCode ->
@@ -813,11 +818,16 @@ group CdaEmedAbgabeEntryRelationshipToFhir(source cda: ClinicalDocument, source 
 
         };
 
-        // Einzeldosierung (Dosierungsvariante 2)
+        // Einzeldosierung (Dosierungsvariante 2) - quantity
         cda_substanceAdministration_entryRelationship_substanceAdministration.doseQuantity as cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity ->
         fhir_medicationDispense_dosageInstruction.doseAndRate as fhir_medicationDispense_dosageInstruction_doseAndRate,
         fhir_medicationDispense_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseQuantity);
-                
+
+        // Einzeldosierung (Dosierungsvariante 2) - range
+        cda_substanceAdministration_entryRelationship_substanceAdministration.doseQuantity as cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity where ($this.low.exists() or $this.high.exists() and $this.center.exists().not() and $this.width.exists().not()) ->
+        fhir_medicationDispense_dosageInstruction.doseAndRate as fhir_medicationDispense_dosageInstruction_doseAndRate,
+        fhir_medicationDispense_dosageInstruction_doseAndRate.doseRange = create('Range') as fhir_medicationDispense_dosageInstruction_doseAndRate_doseRange then IVLPQRange(cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationDispense_dosageInstruction_doseAndRate_doseRange);
+        
         // Komponentencontainer (Dosierungsvariante 4)
         cda_substanceAdministration_entryRelationship_substanceAdministration.effectiveTime: SXPR_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_SXPRTS then {
 
@@ -1010,11 +1020,16 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
             };
           };
 
-          // Tagesdosierung
+          // Tagesdosierung quantity
           cda_sbadm.doseQuantity as cda_doseQuantity ->
           fhir_medicationRequest_dosageInstruction.doseAndRate as fhir_medicationRequest_dosageInstruction_doseAndRate,
           fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_doseQuantity,fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
-        
+
+          // Tagesdosierung range
+          cda_sbadm.doseQuantity as cda_doseQuantity where ($this.low.exists() or $this.high.exists() and $this.center.exists().not() and $this.width.exists().not()) ->
+          fhir_medicationRequest_dosageInstruction.doseAndRate as fhir_medicationRequest_dosageInstruction_doseAndRate,
+          fhir_medicationRequest_dosageInstruction_doseAndRate.doseRange = create('Range') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseRange then IVLPQRange(cda_doseQuantity,fhir_medicationRequest_dosageInstruction_doseAndRate_doseRange);
+
           // Art der Anwendung der Arznei
           cda_sbadm.routeCode as cda_substanceAdministration_routeCode ->
           fhir_medicationRequest_dosageInstruction.route as fhir_medicationRequest_dosageInstruction_route then CECodeableConcept(cda_substanceAdministration_routeCode,fhir_medicationRequest_dosageInstruction_route);  
@@ -1074,12 +1089,16 @@ group CdaEmedVerordnungEntryToFhir(source cda: ClinicalDocument, source cda_sect
 
             };
 
-            // Einzeldosierung (Dosierungsvariante 2)
+            // Einzeldosierung (Dosierungsvariante 2) - quantity
             cda_substanceAdministration_entryRelationship_substanceAdministration.doseQuantity as cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity ->
             fhir_medicationRequest_dosageInstruction.doseAndRate as fhir_medicationRequest_dosageInstruction_doseAndRate,
             fhir_medicationRequest_dosageInstruction_doseAndRate.doseQuantity = create('Quantity') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity then PQQuantity(cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationRequest_dosageInstruction_doseAndRate_doseQuantity);
 
-              
+            // Einzeldosierung (Dosierungsvariante 2) - range
+            cda_substanceAdministration_entryRelationship_substanceAdministration.doseQuantity as cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity where ($this.low.exists() or $this.high.exists() and $this.center.exists().not() and $this.width.exists().not()) ->
+            fhir_medicationRequest_dosageInstruction.doseAndRate as fhir_medicationRequest_dosageInstruction_doseAndRate,
+            fhir_medicationRequest_dosageInstruction_doseAndRate.doseRange = create('Range') as fhir_medicationRequest_dosageInstruction_doseAndRate_doseRange then IVLPQRange(cda_substanceAdministration_entryRelationship_substanceAdministration_doseQuantity,fhir_medicationRequest_dosageInstruction_doseAndRate_doseRange);
+
             // Komponentencontainer (Dosierungsvariante 4)
             cda_substanceAdministration_entryRelationship_substanceAdministration.effectiveTime: SXPR_TS as cda_substanceAdministration_entryRelationship_substanceAdministration_effectiveTime_SXPRTS then {
 
