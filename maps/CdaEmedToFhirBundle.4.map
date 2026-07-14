@@ -423,9 +423,10 @@ group CdaEmedAbgabeSupplyAuthorToFhir(source cda: ClinicalDocument, source cda_a
         fhir_device_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-device',
         fhir_device.id = uuid() as fhir_device_id,
         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
-        fhir_composition.author = create('Reference') as fhir_composition_author_reference,
-        fhir_composition_author_reference.reference = append('urn:uuid:', fhir_device_id),
-        fhir_composition_author_reference.type = 'Device' then CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle) "CdaAuthorToFhirDevice";
+        fhir_medicationDispense.performer as fhir_medicationDispense_performer,
+        fhir_medicationDispense_performer.actor = create('Reference') as fhir_medicationDispense_performer_reference,
+        fhir_medicationDispense_performer_reference.reference = append('urn:uuid:', fhir_device_id),
+        fhir_medicationDispense_performer_reference.type = 'Device' then CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle) "CdaAuthorToFhirDevice"; then CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle) "CdaAuthorToFhirDevice";
     }; 
 
   };
