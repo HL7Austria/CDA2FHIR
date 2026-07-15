@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "FML -> Python (CDA2FHIR)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "malac/hd/__main__.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+                "-m", "{workspaceFolder}/../CDA2FHIR/maps/CdaToFhirBundle.4.map",// FML.map Input
+                "-co", "${workspaceFolder}/../MALACHD/CdaToBundle.py", // Combiled FML2Python Output 
+                "-s" // Faster conversion since structure map is not printed in terminal --> leave flag... 
+            ]
+        },
+        {
+            "name": "CDA -> FHIR (CDA2FHIR)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/tests/fml/r4/aut_lab/CdaToBundle.py",
+            "console": "integratedTerminal",
+            "args": [
+               "-s", "${workspaceFolder}/../CDA2FHIR/input/eimpf/input_CDA.xml", 
+                "-t", "${workspaceFolder}/../MALACHD/bundle.malac.fhir.json" // FHIR Bundle 
+                
+            ]
+        }
+    ]
+}
