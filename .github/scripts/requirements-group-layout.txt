@@ -1,0 +1,4 @@
+# Runtime for the ANTLR-generated FML parser used by generate_group_layout.py.
+# Must match the ANTLR tool version used to generate .github/scripts/fml/*.py
+# (see .github/scripts/fml/README.md).
+antlr4-python3-runtime==4.13.2

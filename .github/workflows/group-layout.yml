@@ -1,0 +1,58 @@
+# Parses every FML map under maps/ with an ANTLR grammar and regenerates the
+# group modularization overview in documentation/ (group_layout.html + .json +
+# group_layout.md + group_parameters.md). Runs fully locally on the runner:
+# no network at generation time, nothing sent anywhere. The report is NOT
+# committed (the generated files are gitignored to avoid churn / merge
+# conflicts); download it from the run's "group-layout" artifact instead.
+# To also commit it into documentation/, add back a git add/commit/push step
+# and remove the files from .gitignore.
+
+name: Generate group layout documentation
+
+on:
+  push:
+    branches:
+      - 390-create-gitaction-to-add-a-overview-of-modularization-in-mapping-to-the-documentation-folder
+
+    paths:
+      - 'maps/**'
+      - '.github/scripts/generate_group_layout.py'
+      - '.github/scripts/fml/**'
+      - '.github/scripts/requirements-group-layout.txt'
+      - '.github/workflows/group-layout.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  group-layout:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install ANTLR runtime
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r .github/scripts/requirements-group-layout.txt
+
+      - name: Generate group layout documentation
+        run: python .github/scripts/generate_group_layout.py
+
+      - name: Upload report as run artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: group-layout
+          if-no-files-found: error
+          path: |
+            documentation/group_layout.html
+            documentation/group_layout.json
+            documentation/group_layout.md
+            documentation/group_parameters.md
