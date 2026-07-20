@@ -902,9 +902,9 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
     // Check that meta.profile url is correct
     fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
       fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-      fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
+      fhir_practitionerRole_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core',
       fhir_practitioner.meta as fhir_practitioner_meta,
-      fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
+      fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'
       "AuthorFhirPractitionerAndPractitionerRoleProfile";
 
     // ClinicalDocument.author.time
@@ -1201,9 +1201,9 @@ group CdaAssignedEntityToFhirPractitionerRole(source cda_assignedEntity : Assign
       // Check that meta.profile url is correct
       fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
         fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-        fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
+        fhir_practitionerRole_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core',
         fhir_practitioner.meta as fhir_practitioner_meta,
-        fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
+        fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'
         "FhirPractitionerAndPractitionerRoleProfile";
       // assignedEntity.id
       cda_assignedEntity.id where (nullFlavor.exists().not()) -> fhir_practitioner.identifier;
@@ -1256,9 +1256,9 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
       // Check that meta.profile url is correct
       fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
         fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-        fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
+        fhir_practitionerRole_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core',
         fhir_practitioner.meta as fhir_practitioner_meta,                                                                                                           
-        fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
+        fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'
         "FhirPractitionerAndPractitionerRoleProfile";
 
       // associatedEntity.id
@@ -1336,9 +1336,9 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
         // Check that meta.profile url is correct
         fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
           fhir_practitionerRole.meta as fhir_practitionerRole_meta,
-          fhir_practitionerRole_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitionerRole-eu-core',
+          fhir_practitionerRole_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core',
           fhir_practitioner.meta as fhir_practitioner_meta,                                                                                                           
-          fhir_practitioner_meta.profile = 'http://hl7.eu/fhir/base/StructureDefinition/practitioner-eu-core'
+          fhir_practitioner_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'
           "FhirPractitionerAndPractitionerRoleProfile";
 
         // participantRole/id ->  Practitioner.identifier
