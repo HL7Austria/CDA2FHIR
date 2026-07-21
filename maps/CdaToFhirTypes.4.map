@@ -549,7 +549,7 @@ group II(source src : II, target tgt : Identifier) extends Any <<types>> {
     tgt.system = 'urn:ietf:rfc:3986',  
     tgt.value = append('urn:oid:', r), 
     tgt.assigner as a,  a.display = 'Bundesministerium für Gesundheit' 
-    "oidwithextension";
+    "oidwithextensionBMG";
 
   // testing if it is possible to use translate in where
   // src.root as r where (translate('#OIDtoURI', r)) ->
@@ -906,7 +906,7 @@ group CdaAdressCompilationToFhirAustrianAddress(source cda_address : AD, target 
   // in case NO children elements are being used for address
   cda_address where ($this.xmlText.exists()) then {
     cda_address -> fhir_address.line = (cda_address.xmlText);
-  }
+  };
 
   // in case children elements are being used for address
   cda_address where ($this.descendants().exists()) then {
