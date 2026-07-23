@@ -746,7 +746,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       // name.prefix
       fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix then {
         // name.prefix.qualifier
-        cda_name_item_prefix where cda_name_item_prefix.qualifier.exists() then {
+        cda_name_item_prefix where (cda_name_item_prefix.qualifier.exists()) then {
           cda_name_item_prefix.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_prefix.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -760,7 +760,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       // name.given
       fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
         // name.given.qualifier
-        cda_name_item_given where cda_name_item_given.qualifier.exists() then {
+        cda_name_item_given where (cda_name_item_given.qualifier.exists()) then {
           cda_name_item_given.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_given.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -774,7 +774,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       // name.family
       fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
         // name.family.qualifier
-        cda_name_item_family where cda_name_item_family.qualifier.exists() then {
+        cda_name_item_family where (cda_name_item_family.qualifier.exists()) then {
           cda_name_item_family.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_family.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -788,7 +788,7 @@ group CdaPersonNameCompilationToFhirHumanName(source cda_name : PN, target fhir_
       // name.suffix
       fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
         // name.suffix.qualifier
-        cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() then {
+        cda_name_item_suffix where (cda_name_item_suffix.qualifier.exists()) then {
           cda_name_item_suffix.qualifier as qualifier where ($this != 'TITLE') ->
             fhir_humanName_suffix.extension as extension,
             extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -809,7 +809,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
           // name.family
           fhir_humanName.family = (cda_name_item_family.xmlText) as fhir_humanName_family then {
             // name.family.qualifier
-            cda_name_item_family where cda_name_item_family.qualifier.exists() then {
+            cda_name_item_family where (cda_name_item_family.qualifier.exists()) then {
               cda_name_item_family.qualifier as qualifier where ($this != 'TITLE') ->
                 fhir_humanName_family.extension as extension,
                 extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -830,7 +830,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             // name.prefix
             fhir_humanName.prefix = (cda_name_item_prefix.xmlText) as fhir_humanName_prefix then {
               // name.prefix.qualifier
-              cda_name_item_prefix where cda_name_item_prefix.qualifier.exists() then {
+              cda_name_item_prefix where (cda_name_item_prefix.qualifier.exists()) then {
                 cda_name_item_prefix.qualifier as qualifier  where ($this != 'TITLE') ->
                   fhir_humanName_prefix.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -844,7 +844,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             // name.given
             fhir_humanName.given = (cda_name_item_given.xmlText) as fhir_humanName_given then {
               // name.given.qualifier
-              cda_name_item_given where cda_name_item_given.qualifier.exists() then {
+              cda_name_item_given where (cda_name_item_given.qualifier.exists()) then {
                 cda_name_item_given.qualifier as qualifier where ($this != 'TITLE') ->
                   fhir_humanName_given.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
@@ -858,7 +858,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
             // name.suffix
             fhir_humanName.suffix = (cda_name_item_suffix.xmlText) as fhir_humanName_suffix then {
               // name.suffix.qualifier
-              cda_name_item_suffix where cda_name_item_suffix.qualifier.exists() then {
+              cda_name_item_suffix where (cda_name_item_suffix.qualifier.exists()) then {
                 cda_name_item_suffix.qualifier as qualifier where ($this != 'TITLE') ->
                   fhir_humanName_suffix.extension as extension,
                   extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-EN-qualifier',
