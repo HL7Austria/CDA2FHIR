@@ -176,7 +176,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
   } "CdaRecordTargetToFhirPatient";
 
   // ClinicalDocument/author (as person) -> Composition.author
-  cda.author as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
+  cda.author as cda_author where ($this.assignedAuthor.assignedPerson.exists()) ->
     // create the PractitionerRole in order to capture the author.functionCode
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
@@ -188,7 +188,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
     CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
 
   // ClinicalDocument/author (as device) -> Composition.author
-  cda.author as cda_author where $this.assignedAuthor.assignedAuthoringDevice.exists() ->
+  cda.author as cda_author where ($this.assignedAuthor.assignedAuthoringDevice.exists()) ->
     // create the Device
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('Device') as fhir_device,
@@ -293,7 +293,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
   
   // Participant Auskunftsberechtigte Person (Notfallkontakt)
   // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.27' or @root='1.2.40.0.34.11.1.1.4']] -> Patient.contact
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.27' or root='1.2.40.0.34.11.1.1.4') then {
+  cda.participant as cda_participant where (templateId.where(root='1.2.40.0.34.6.0.11.1.27' or root='1.2.40.0.34.11.1.1.4')) then {
     cda_participant.associatedEntity as cda_associatedEntity ->
       fhir_patient.contact as fhir_patient_contact then {
         cda_participant.time -> fhir_patient_contact.period;
@@ -377,7 +377,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // Participant Angehoerige
   // ClinicalDocument/participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.25' or @root='1.2.40.0.34.11.1.1.5']] -> Patient.contact
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.25' or root='1.2.40.0.34.11.1.1.5') then {
+  cda.participant as cda_participant where (templateId.where(root='1.2.40.0.34.6.0.11.1.25' or root='1.2.40.0.34.11.1.1.5')) then {
     cda_participant.associatedEntity as cda_associatedEntity -> 
       fhir_patient.contact as fhir_patient_contact then {
 
@@ -461,7 +461,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // Participant Versicherung
   // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.26' or @root='1.2.40.0.34.11.1.1.6']] -> Coverage
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') ->
+  cda.participant as cda_participant where (templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6')) ->
 
     // Create Coverage
     fhir_bundle.entry as fhir_bundle_entry,
@@ -484,13 +484,13 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
         cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
         // SELF: Versicherter ist der Patient
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' ->
+        cda_associatedEntity.code as cda_associatedEntity_code where ($this.code = 'SELF') ->
           fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
           fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
           fhir_coverage_policyHolder_reference.type = 'Patient';
 
         // FAMDEP: Familienversichert
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'FAMDEP' ->
+        cda_associatedEntity.code as cda_associatedEntity_code where ($this.code = 'FAMDEP') ->
 
           fhir_bundle.entry as fhir_bundle_entry,
           fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
@@ -1068,10 +1068,10 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
     fhir_section.text as fhir_section_text,
     fhir_section_text.status = 'generated' then {
       // section.text where no section.languageCode exists
-      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
+      cda_section_text where (cda_section.languageCode.exists().not()) -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
 
       // section.text with section.languageCode
-      cda_section_text where cda_section.languageCode.exists() then {
+      cda_section_text where (cda_section.languageCode.exists()) then {
         cda_section.languageCode as cda_languageCode then {
           cda_languageCode.code as cda_languageCode_code ->
 
