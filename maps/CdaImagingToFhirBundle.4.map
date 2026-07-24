@@ -98,7 +98,7 @@ group CdaImagingToFhirBundle(source cda: ClinicalDocument, target fhir_patient: 
 
     then {
       // map the CDA header
-      cda then CdaImagingHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_bundle) "CdaImagingHeaderToFhirComposition";
+      cda then CdaImagingHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaImagingHeaderToFhirComposition";
       cda then CdaImagingHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport) "CdaImagingHeaderToFhirDiagnosticReport";
       cda then CdaImagingHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_diagnosticReport) "CdaImagingHeaderToFhir";
 
@@ -118,13 +118,29 @@ group CdaImagingToFhirBundle(source cda: ClinicalDocument, target fhir_patient: 
 // ClinicalDocument -> Composition (imaging report specific parts).
 // Reuses the generic Composition header (title, status, effectiveTime, confidentiality,
 // language, setId, versionNumber, ...) from CdaHeaderToFhirComposition.
-group CdaImagingHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle) extends CdaHeaderToFhirComposition {
+group CdaImagingHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaHeaderToFhirComposition {
+    // Composition.meta.profile
+    cda ->
+        fhir_composition.meta as fhir_composition_meta,
+        fhir_composition_meta.profile = 'http://hl7.eu/fhir/imaging/StructureDefinition/CompositionEuImaging'
+        "ImagingCompositionProfile";
 
+    // Composition.type 
+    // Composition.category 
+    // ... 
+    
 }
 
 // ClinicalDocument -> DiagnosticReport.
 group CdaImagingHeaderToFhirDiagnosticReport(source cda: ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
-
+    // DiagnosticReport.meta.profile
+    cda ->
+        fhir_diagnosticReport.meta as fhir_diagnosticReport_meta,
+        fhir_diagnosticReport_meta.profile = 'http://hl7.eu/fhir/imaging/StructureDefinition/DiagnosticReportEuImaging'
+        "ImagingDiagnosticReportProfile";
+    // DiagnosticReport.code
+    // DiagnosticReport.category
+    //... 
 }
 
 // ClinicalDocument -> generic header (recordTarget/Patient, author, custodian,
@@ -135,6 +151,7 @@ group CdaImagingHeaderToFhirDiagnosticReport(source cda: ClinicalDocument, targe
 group CdaImagingHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport) extends CdaHeaderToFhir {
   // TODO ClinicalDocument/documentationOf/serviceEvent -> Procedure / ImagingStudy
   // TODO ClinicalDocument/inFulfillmentOf/order         -> ServiceRequest (basedOn) + AccessionNumber
+  // So basically add every header element here that is not covered in `CdaImagingHeaderToFhirDiagnosticReport` or  `CdaImagingHeaderToFhirComposition`
 }
 
 
@@ -144,5 +161,5 @@ group CdaImagingHeaderToFhir(source cda: ClinicalDocument, target fhir_compositi
 // already routes the uncoded sections Brieftext (BRIEFT) and Abschliessende Bemerkungen
 // to annotation sections. The imaging section dispatch is added here.
 group CdaImagingBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle) extends CdaBodyToFhirComposition {
- 
+
 }
