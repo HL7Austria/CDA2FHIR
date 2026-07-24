@@ -4,7 +4,7 @@ name: Convert and validate test file
 
 on:
   pull_request:
-    branches: [ elga, elga-dev ]
+    branches: [ hl7eu, hl7eu-dev ]
 
 jobs:
   convert-and-validate:
