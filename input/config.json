@@ -10,7 +10,7 @@
   {
     "directory": "eimpf",
     "ig": "https://fhir.hl7.at/elga/aps/r4/package.tgz"
-  }
+  },
   {
     "directory": "imaging",
     "ig": "https://hl7.eu/fhir/imaging/1.0.0-ballot/package.tgz"
