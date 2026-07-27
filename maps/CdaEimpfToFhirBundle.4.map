@@ -29,11 +29,11 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 // _________________________ Document Level Template  _________________________
 
 group CdaEimpfToFhirBundle(source cda: CdaClinicalDocument, target fhir_patient: FhirPatient, target fhir_composition: FhirComposition, target fhir_bundle: FhirBundle) {
-  cda ->
+  // cda ->
     // at least on Bundle level the profile is to be set
-    fhir_bundle.meta as fhir_bundle_meta,
-    fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
-    then {
+    // fhir_bundle.meta as fhir_bundle_meta,
+    // fhir_bundle_meta.profile = 'https://fhir.hl7.at/elga/aps/r4/StructureDefinition/at-aps-bundle'
+    // then {
       // map the CDA header
       cda then CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhirComposition";
       cda then CdaEimpfHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaEimpfHeaderToFhir"; 
@@ -45,7 +45,7 @@ group CdaEimpfToFhirBundle(source cda: CdaClinicalDocument, target fhir_patient:
         cda_component.structuredBody as cda_structuredBody
           then CdaEimpfBodyToFhir(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_bundle);
       };
-    } "CdaEimpfToFhirBundle";
+    //} "CdaEimpfToFhirBundle";
 }
 
 group CdaEimpfHeaderToFhirComposition(source cda: CdaClinicalDocument, target fhir_composition: FhirComposition, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaHeaderToFhirComposition {
@@ -938,7 +938,7 @@ group CdaPerformerToFhirProvenance(source cda_performer: CdaPerformer2, target f
 group CdaAuthorPersonToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: FhirPractitionerRole, target fhir_bundle: FhirBundle){
   // author/time -> Provenance.occurredDateTime
   // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
-  cda_author.time as cda_participant_time -> 
+  cda_author.time as cda_participant_time where ($this.nullFlavor.exists().not()) -> 
     fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
       TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
 
@@ -967,7 +967,7 @@ group CdaAuthorPersonToFhirProvenance(source cda_author: CdaAuthor, target fhir_
 group CdaAuthorDeviceToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_bundle: FhirBundle){
   // author/time -> Provenance.occurredDateTime
   // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
-  cda_author.time as cda_participant_time -> 
+  cda_author.time as cda_participant_time where ($this.nullFlavor.exists().not()) -> 
     fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
       TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
 

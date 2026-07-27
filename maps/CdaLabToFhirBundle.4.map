@@ -7927,6 +7927,9 @@ imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-
 
 group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) {
   cda ->
+    // create Bundle.meta profile 
+    fhir_bundle.meta as fhir_bundle_meta, 
+    fhir_bundle_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu',
     // create the DiagnosticReport to have it as reference for later transformations
     fhir_bundle.entry as fhir_bundle_entry_1,
     fhir_bundle_entry_1.resource = create('DiagnosticReport') as fhir_diagnosticReport,
@@ -7939,22 +7942,16 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_bundle_entry_2.resource = create('ServiceRequest') as fhir_serviceRequest,
     fhir_serviceRequest.id = uuid() as fhir_serviceRequest_id,
     fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_serviceRequest_id),
+    // set FHIR profile for ServiceRequest
+    fhir_serviceRequest.meta as fhir_serviceRequest_meta,
+    fhir_serviceRequest_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu',
 
     // create relation from Composition to ServiceRequest
-    // TODO: for ELGA no extension has been defined yet
-    // fhir_composition.extension as fhir_composition_extenstion_01,
-    // fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition',
-    // fhir_composition_extenstion_01.value = create('Reference') as fhir_diagnosticReport_composition_reference,
-    // fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
-    // fhir_diagnosticReport_composition_reference.type = 'ServiceRequest',
-
-    // create relation from Composition to DiagnosticReport
-    // TODO: for ELGA no extension has been defined yet
-    // fhir_composition.extension as fhir_composition_extenstion_02,
-    // fhir_composition_extenstion_02.url = 'http://hl7.eu/fhir/laboratory/StructureDefinition/composition-diagnosticReportReference',
-    // fhir_composition_extenstion_02.value = create('Reference') as fhir_composition_diagnosticReport_reference,
-    // fhir_composition_diagnosticReport_reference.reference = append('urn:uuid:', fhir_diagnosticReport_id),
-    // fhir_composition_diagnosticReport_reference.type = 'DiagnosticReport',
+    fhir_composition.extension as fhir_composition_extenstion_01,
+    fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition',
+    fhir_composition_extenstion_01.value = create('Reference') as fhir_diagnosticReport_composition_reference,
+    fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
+    fhir_diagnosticReport_composition_reference.type = 'ServiceRequest',
 
     // retrieve Composition uuid
     fhir_composition.id as fhir_composition_id,
@@ -7973,6 +7970,9 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
 
     // retrieve Patient uuid
     fhir_patient.id as fhir_patient_id,
+    // set FHIR profile for Patient
+    fhir_patient.meta as fhir_patient_meta,
+    fhir_patient_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu',
 
     // create relation from DiagnosticReport to Patient
     fhir_diagnosticReport.subject = create('Reference') as fhir_diagnosticReport_subject_reference,
@@ -8003,6 +8003,12 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
 // _________________________ Header Level Templates _________________________
 
 group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_composition : Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_serviceRequest: ServiceRequest, target fhir_bundle : Bundle) extends CdaHeaderToFhirComposition {
+  // set FHIR profile for Composition
+  cda ->
+    fhir_composition.meta as fhir_composition_meta,
+    fhir_composition_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Composition-lab-myhealtheu'
+    "FhirCompositionProfile";
+  
   // ClinicalDocument/code -> Composition.category
   cda.code as cda_code then {
     cda_code.code as code_code ->
@@ -8025,6 +8031,12 @@ group CdaLabHeaderToFhirComposition(source cda : ClinicalDocument, target fhir_c
 }
 
 group CdaLabHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
+  // set FHIR profile for DiagnosticReport
+  cda ->
+    fhir_diagnosticReport.meta as fhir_diagnosticReport_meta,
+    fhir_diagnosticReport_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/DiagnosticReport-lab-myhealtheu'
+    "FhirDiagnosticReportProfile";
+
   // ClinicalDocument/code
   cda.code as cda_code then {
     cda_code.code as code_code ->
@@ -8101,80 +8113,79 @@ group CdaLabHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: 
   };
 
   // ClinicalDocument/informationRecipient -> Composition.extension
-  // TODO: for ELGA no extension has been defined yet
-  // cda.informationRecipient as cda_informationRecipient then {
+  cda.informationRecipient as cda_informationRecipient then {
 
-  //   // -> PractitionerRole
-  //   cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists()) then {
+    // -> PractitionerRole
+    cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists()) then {
 
-  //       // PractitionerRole creation
-  //       cda_intendedRecipient ->
-  //         fhir_bundle.entry as fhir_bundle_entry,
-  //         fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-  //         fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-  //         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
+        // PractitionerRole creation
+        cda_intendedRecipient ->
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+          fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id),
 
-  //         // Composition extension
-  //         fhir_composition.extension as fhir_composition_informationRecipient_extension,
-  //         fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
-  //         fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
-  //         fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-  //         fhir_composition_informationRecipient_extension_reference.type = 'PractitionerRole',
+          // Composition extension
+          fhir_composition.extension as fhir_composition_informationRecipient_extension,
+          fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+          fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
+          fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+          fhir_composition_informationRecipient_extension_reference.type = 'PractitionerRole',
           
-  //         // Practitioner creation
-  //         fhir_bundle.entry as fhir_bundle_entry,
-  //         fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
-  //         fhir_practitioner.id = uuid() as fhir_practitioner_id,
-  //         fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
+          // Practitioner creation
+          fhir_bundle.entry as fhir_bundle_entry,
+          fhir_bundle_entry.resource = create('Practitioner') as fhir_practitioner,
+          fhir_practitioner.id = uuid() as fhir_practitioner_id,
+          fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitioner_id),
 
-  //         fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner,
-  //         fhir_practitionerRole_practitioner.reference = append('urn:uuid:', fhir_practitioner_id),
-  //         fhir_practitionerRole_practitioner.type = 'Practitioner' then {
-  //           cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
-  //           cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
-  //             cda_informationRecipient_inner.name -> fhir_practitioner.name;
-  //           };
+          fhir_practitionerRole.practitioner = create('Reference') as fhir_practitionerRole_practitioner,
+          fhir_practitionerRole_practitioner.reference = append('urn:uuid:', fhir_practitioner_id),
+          fhir_practitionerRole_practitioner.type = 'Practitioner' then {
+            cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
+            cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
+              cda_informationRecipient_inner.name -> fhir_practitioner.name;
+            };
 
-  //           // Organization
-  //           cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
-  //             fhir_bundle.entry as fhir_bundle_entry_org,
-  //             fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
-  //             fhir_organization.id = uuid() as fhir_organization_id,
-  //             fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
+            // Organization
+            cda_intendedRecipient.receivedOrganization as cda_receivedOrganization ->
+              fhir_bundle.entry as fhir_bundle_entry_org,
+              fhir_bundle_entry_org.resource = create('Organization') as fhir_organization,
+              fhir_organization.id = uuid() as fhir_organization_id,
+              fhir_bundle_entry_org.fullUrl = append('urn:uuid:', fhir_organization_id),
 
-  //             fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
-  //             fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
-  //             fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganization(cda_receivedOrganization, fhir_organization);
-  //         } "CdaIntendedRecipientToFhirPractitionerRole";
-  //   };
+              fhir_practitionerRole.organization = create('Reference') as fhir_practitionerRole_organization,
+              fhir_practitionerRole_organization.reference = append('urn:uuid:', fhir_organization_id),
+              fhir_practitionerRole_organization.type = 'Organization'then CdaOrganizationCompilationToFhirOrganizationWithBundle(cda_receivedOrganization, fhir_bundle, fhir_organization);
+          } "CdaIntendedRecipientToFhirPractitionerRole";
+    };
 
-  //   cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists().not()) then {
+    cda_informationRecipient.intendedRecipient as cda_intendedRecipient where ($this.receivedOrganization.exists().not()) then {
     
-  //     cda_intendedRecipient ->
-  //       // Create RelatedPerson   
-  //       fhir_bundle.entry as fhir_bundle_entry,
-  //       fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
-  //       fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
-  //       fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
+      cda_intendedRecipient ->
+        // Create RelatedPerson   
+        fhir_bundle.entry as fhir_bundle_entry,
+        fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
+        fhir_relatedPerson.id = uuid() as fhir_relatedPerson_id,
+        fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_relatedPerson_id),
         
-  //       // Create Composition.extension
-  //       fhir_composition.extension as fhir_composition_informationRecipient_extension,
-  //       fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
-  //       fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
-  //       fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
-  //       fhir_composition_informationRecipient_extension_reference.type = 'RelatedPerson' then {
-  //         cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_relatedPerson.identifier;
-  //         cda_intendedRecipient -> 
-  //           fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
-  //           fhir_patient.id as fhir_patient_id,
-  //           fhir_relatedPerson_patient_reference.reference = append('urn:uuid:',fhir_patient_id),
-  //           fhir_relatedPerson_patient_reference.type ='Patient' "ReferenceToPatient";
-  //         cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
-  //           cda_informationRecipient_inner.name -> fhir_relatedPerson.name;
-  //         };
-  //       } "CdaIntendedRecipientToFhirRelatedPerson";
-  //   };
-  // };  
+        // Create Composition.extension
+        fhir_composition.extension as fhir_composition_informationRecipient_extension,
+        fhir_composition_informationRecipient_extension.url = 'http://hl7.eu/fhir/StructureDefinition/information-recipient',
+        fhir_composition_informationRecipient_extension.value = create('Reference') as fhir_composition_informationRecipient_extension_reference,
+        fhir_composition_informationRecipient_extension_reference.reference = append('urn:uuid:', fhir_relatedPerson_id),
+        fhir_composition_informationRecipient_extension_reference.type = 'RelatedPerson' then {
+          cda_intendedRecipient.id where ($this.nullFlavor.exists().not()) -> fhir_relatedPerson.identifier;
+          cda_intendedRecipient -> 
+            fhir_relatedPerson.patient = create('Reference') as fhir_relatedPerson_patient_reference,
+            fhir_patient.id as fhir_patient_id,
+            fhir_relatedPerson_patient_reference.reference = append('urn:uuid:',fhir_patient_id),
+            fhir_relatedPerson_patient_reference.type ='Patient' "ReferenceToPatient";
+          cda_intendedRecipient.informationRecipient as cda_informationRecipient_inner then {
+            cda_informationRecipient_inner.name -> fhir_relatedPerson.name;
+          };
+        } "CdaIntendedRecipientToFhirRelatedPerson";
+    };
+  };  
 
   // Participant Auftraggeber / Ordering Provider
   // ClinicalDocument/participant[@typeCode='REF'] -> ServiceRequest.requester
@@ -8851,6 +8862,10 @@ group CdaLabBeilagenSectionToFhirDiagnosticReportSupportingInfo(source cda_secti
 
 group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, target fhir_specimen: Specimen, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) {
   cda_procedure ->
+    // set FHIR profile for Specimen
+    fhir_specimen.meta as fhir_specimen_meta,
+    fhir_specimen_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Specimen-lab-myhealtheu',
+
     // create relation from specimen to patient
     fhir_specimen.subject = create('Reference') as fhir_specimen_patient_reference,
     fhir_patient.id as fhir_patient_id,
@@ -8978,6 +8993,12 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
 }
 
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
+  // set FHIR profile for Observation
+  cda_organizer ->
+    fhir_observation.meta as fhir_observation_meta,
+    fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
+    "FhirObservationProfile";
+  
   // fhir_observation.category
   cda_organizer -> fhir_observation.category as fhir_category,
     fhir_category.coding as fhir_category_coding,
@@ -9051,6 +9072,12 @@ group CdaLabOrganizerToFhirObservationWithSpecimen(source cda: ClinicalDocument,
 }
 
 group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) {
+  // set FHIR profile for Observation
+  cda_laboratory_observation ->
+    fhir_observation.meta as fhir_observation_meta,
+    fhir_observation_meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'
+    "FhirObservationProfile";
+
   // observation.id
   cda_laboratory_observation.id -> fhir_observation.identifier;
 
@@ -9260,9 +9287,38 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     fhir_observation.value = create('Quantity') as fhir_observation_value
     then INTQuantity(cda_observation_value, fhir_observation_value) "CdaValueINTToFhirObservationValue";
 
-  // observation.value(xsi:type="TS")
-  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
-  
+  // observation.value(xsi:type="IVL_INT")
+  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
+    cda_observation_value where (cda_observation_value.value.exists()) ->
+      fhir_observation.value = create('Quantity') as fhir_observation_value
+      then INTQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueQuantity";
+    
+    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
+      fhir_observation.value = create('Range') as fhir_observation_value
+      then IVL_INTRange(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueRange";
+  } "CdaObservationValueIVL_INTToFhirObservationValue";
+
+  // observation.value(xsi:type="BL")
+    cda_laboratory_observation.value: BL as cda_observation_value ->
+      fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
+      fhir_observation_value.coding as fhir_observation_value_coding then {
+        cda_observation_value.value as cda_observation_value_attribute where ($this = true) -> 
+          fhir_observation_value.text = cast(cda_observation_value_attribute, 'string'),
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '373066001',
+          fhir_observation_value_coding.display = 'Yes'
+          "CdaValueBLToFhirObservationValueTrue";
+        cda_observation_value.value as cda_observation_value_attribute where ($this = false) -> 
+          fhir_observation_value.text = cast(cda_observation_value_attribute, 'string'),
+          fhir_observation_value_coding.system = 'http://snomed.info/sct',
+          fhir_observation_value_coding.code = '373067005',
+          fhir_observation_value_coding.display = 'No'
+          "CdaValueBLToFhirObservationValueFalse";
+    } "CdaValueBLTrueToFhirObservationValue";
+
+  // observation.value(xsi:type="ST")
+  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
+
   // observation.value(xsi:type="CV")
   cda_laboratory_observation.value: CV as cda_observation_value ->
     fhir_observation.value = create('CodeableConcept') as fhir_observation_value,
@@ -9271,6 +9327,9 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     fhir_observation_value_coding.code = 'OTH' then 
       CVCodeableConcept(cda_observation_value, fhir_observation_value) 
       "CdaObservationValueCVToFhirObservationValueCodeableConcept";
+
+  // observation.value(xsi:type="TS")
+  cda_laboratory_observation.value: TS as cda_observation_value -> fhir_observation.value = create('dateTime') as fhir_observation_value then TSDateTime(cda_observation_value, fhir_observation_value) "CdaValueTSToFhirObservationValuedateTime";
 
   // observation.value(xsi:type="CD")
   cda_laboratory_observation where cda_laboratory_observation.value.exists((code='255599008' or code='281268007') and codeSystem='2.16.840.1.113883.6.96').not() then {
@@ -9352,19 +9411,6 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
           CDCoding(cda_laboratory_observation_value, fhir_observation_dataAbsentReason_coding_2);
     }"CdaIncompleteObservationToFhirObservationStatus";
       
-  // observation.value(xsi:type="ST")
-  cda_laboratory_observation.value: ST as cda_observation_value -> fhir_observation.value = create('string') as fhir_observation_value then STstring(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueST";
-  
-  // observation.value(xsi:type="IVL_INT")
-  cda_laboratory_observation.value: IVL_INT as cda_observation_value then{
-    cda_observation_value where (cda_observation_value.value.exists()) ->
-      fhir_observation.value = create('Quantity') as fhir_observation_value
-      then INTQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueQuantity";
-    
-    cda_observation_value where (cda_observation_value.value.exists().not()) -> 
-      fhir_observation.value = create('Range') as fhir_observation_value
-      then IVL_INTRange(cda_observation_value, fhir_observation_value) "CdaObservationValueIVL_INTToFhirObservationValueRange";
-  } "CdaObservationValueIVL_INTToFhirObservationValue";
 
   // observation.value(xsi:type="RTO")
   cda_laboratory_observation.value: RTO as cda_observation_value -> 

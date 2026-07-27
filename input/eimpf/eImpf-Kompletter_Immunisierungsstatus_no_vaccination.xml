@@ -125,6 +125,11 @@
                         </name>
                     </guardianPerson>
                 </guardian>
+                <birthplace>
+					<place>
+						<addr use="PST">Graz</addr> 
+					</place>
+				</birthplace>
             </patient>
         </patientRole>
     </recordTarget>
