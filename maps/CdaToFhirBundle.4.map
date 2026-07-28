@@ -129,7 +129,7 @@ group CdaHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_compo
   cda.sdtcStatusCode as cda_statusCode then {
     cda_statusCode.code as cda_code -> fhir_composition.status = translate(cda_code, '#cda-sdtc-statuscode-2-fhir-composition-status' , 'code');
   } "CdaStatusCodeToFhirCompositionStatusMapped";
-  cda where cda.sdtcStatusCode.exists().not() -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
+  cda where (cda.sdtcStatusCode.exists().not()) -> fhir_composition.status = 'final' "CdaStatusCodeToFhirCompositionStatusFixed";
 
   //ClinicalDocument/hl7at:terminologyDate -> Composition.extension
   cda.terminologyDate as cda_terminologyDate -> 
@@ -176,7 +176,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
   } "CdaRecordTargetToFhirPatient";
 
   // ClinicalDocument/author (as person) -> Composition.author
-  cda.author as cda_author where $this.assignedAuthor.assignedPerson.exists() ->
+  cda.author as cda_author where ($this.assignedAuthor.assignedPerson.exists()) ->
     // create the PractitionerRole in order to capture the author.functionCode
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
@@ -188,7 +188,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
     CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
 
   // ClinicalDocument/author (as device) -> Composition.author
-  cda.author as cda_author where $this.assignedAuthor.assignedAuthoringDevice.exists() ->
+  cda.author as cda_author where ($this.assignedAuthor.assignedAuthoringDevice.exists()) ->
     // create the Device
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('Device') as fhir_device,
@@ -279,7 +279,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // Participant Hausarzt
   // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.23' or @root='1.2.40.0.34.11.1.1.3']] -> Patient.generalPractitioner
-  cda.participant as cda_generalPractitioner where templateId.where(root='1.2.40.0.34.6.0.11.1.23' or root='1.2.40.0.34.11.1.1.3') ->
+  cda.participant as cda_generalPractitioner where (templateId.where(root='1.2.40.0.34.6.0.11.1.23' or root='1.2.40.0.34.11.1.1.3')) ->
     // Create a PractitionerRole
     fhir_bundle.entry as fhir_bundle_entry,
     fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
@@ -293,7 +293,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
   
   // Participant Auskunftsberechtigte Person (Notfallkontakt)
   // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.27' or @root='1.2.40.0.34.11.1.1.4']] -> Patient.contact
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.27' or root='1.2.40.0.34.11.1.1.4') then {
+  cda.participant as cda_participant where (templateId.where(root='1.2.40.0.34.6.0.11.1.27' or root='1.2.40.0.34.11.1.1.4')) then {
     cda_participant.associatedEntity as cda_associatedEntity ->
       fhir_patient.contact as fhir_patient_contact then {
         cda_participant.time -> fhir_patient_contact.period;
@@ -377,7 +377,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // Participant Angehoerige
   // ClinicalDocument/participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.25' or @root='1.2.40.0.34.11.1.1.5']] -> Patient.contact
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.25' or root='1.2.40.0.34.11.1.1.5') then {
+  cda.participant as cda_participant where (templateId.where(root='1.2.40.0.34.6.0.11.1.25' or root='1.2.40.0.34.11.1.1.5')) then {
     cda_participant.associatedEntity as cda_associatedEntity -> 
       fhir_patient.contact as fhir_patient_contact then {
 
@@ -461,7 +461,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
   // Participant Versicherung
   // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.26' or @root='1.2.40.0.34.11.1.1.6']] -> Coverage
-  cda.participant as cda_participant where templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6') ->
+  cda.participant as cda_participant where (templateId.where(root='1.2.40.0.34.6.0.11.1.26' or root='1.2.40.0.34.11.1.1.6')) ->
 
     // Create Coverage
     fhir_bundle.entry as fhir_bundle_entry,
@@ -484,13 +484,13 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
 
         cda_associatedEntity.id where (nullFlavor.exists().not()) -> fhir_coverage.identifier;
         // SELF: Versicherter ist der Patient
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'SELF' ->
+        cda_associatedEntity.code as cda_associatedEntity_code where ($this.code = 'SELF') ->
           fhir_coverage.policyHolder = create('Reference') as fhir_coverage_policyHolder_reference,
           fhir_coverage_policyHolder_reference.reference = append('urn:uuid:', fhir_patient_id),
           fhir_coverage_policyHolder_reference.type = 'Patient';
 
         // FAMDEP: Familienversichert
-        cda_associatedEntity.code as cda_associatedEntity_code where $this.code = 'FAMDEP' ->
+        cda_associatedEntity.code as cda_associatedEntity_code where ($this.code = 'FAMDEP') ->
 
           fhir_bundle.entry as fhir_bundle_entry,
           fhir_bundle_entry.resource = create('RelatedPerson') as fhir_relatedPerson,
@@ -535,60 +535,60 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
     cda.descendants().where(root='1.2.40.0.34.11.1.1.7').count() = 1 or
     cda.descendants().where(root='1.2.40.0.34.11.1.1.8').count() > 1 or
     cda.descendants().where(root='1.2.40.0.34.6.0.11.1.28').count() > 1) ->
-    fhir_bundle.entry as fhir_bundle_entry,
-    fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
-    fhir_careTeam.id = uuid() as fhir_careTeam_id,
-    fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_careTeam_id),
-    fhir_patient.id as fhir_patient_id,
-    fhir_careTeam.subject = create('Reference') as fhir_careTeam_subject_reference,
-    fhir_careTeam_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
-    fhir_careTeam_subject_reference.type = 'Patient' then {
-    
-    // Betreuungsorganisation
-    // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.29' or @root='1.2.40.0.34.11.1.1.7']]
-    cda.participant as cda_participant where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.29' or root='1.2.40.0.34.11.1.1.7') then {
-      cda_participant.associatedEntity as cda_associatedEntity -> 
-        fhir_careTeam.participant as fhir_careTeam_participant then {
-        cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
-          // role
-          fhir_careTeam_participant.role = create('CodeableConcept') as fhir_careTeam_participant_role,
-          fhir_careTeam_participant_role.coding = create('Coding') as fhir_careTeam_participant_role_coding,
-          fhir_careTeam_participant_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-          fhir_careTeam_participant_role_coding.code = 'CAREGIVER',
-          // member
-          fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_participant_member_reference,
-          fhir_bundle.entry as fhir_bundle_entry_orga,
-          fhir_bundle_entry_orga.resource = create('Organization') as fhir_organization,
-          fhir_organization.id = uuid() as fhir_organization_id,
-          fhir_bundle_entry_orga.fullUrl = append('urn:uuid:', fhir_organization_id),
-          fhir_careTeam_participant_member_reference.reference = append('urn:uuid:', fhir_organization_id),
-          fhir_careTeam_participant_member_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('CareTeam') as fhir_careTeam,
+      fhir_careTeam.id = uuid() as fhir_careTeam_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_careTeam_id),
+      fhir_patient.id as fhir_patient_id,
+      fhir_careTeam.subject = create('Reference') as fhir_careTeam_subject_reference,
+      fhir_careTeam_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+      fhir_careTeam_subject_reference.type = 'Patient' then {
+        
+        // Betreuungsorganisation
+        // ClinicalDocument/participant[hl7:templateId[@root='1.2.40.0.34.6.0.11.1.29' or @root='1.2.40.0.34.11.1.1.7']]
+        cda.participant as cda_participant where ($this.templateId.where(root='1.2.40.0.34.6.0.11.1.29' or root='1.2.40.0.34.11.1.1.7')) then {
+          cda_participant.associatedEntity as cda_associatedEntity -> 
+            fhir_careTeam.participant as fhir_careTeam_participant then {
+            cda_associatedEntity.scopingOrganization as cda_scopingOrganization ->
+              // role
+              fhir_careTeam_participant.role = create('CodeableConcept') as fhir_careTeam_participant_role,
+              fhir_careTeam_participant_role.coding = create('Coding') as fhir_careTeam_participant_role_coding,
+              fhir_careTeam_participant_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+              fhir_careTeam_participant_role_coding.code = 'CAREGIVER',
+              // member
+              fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_participant_member_reference,
+              fhir_bundle.entry as fhir_bundle_entry_orga,
+              fhir_bundle_entry_orga.resource = create('Organization') as fhir_organization,
+              fhir_organization.id = uuid() as fhir_organization_id,
+              fhir_bundle_entry_orga.fullUrl = append('urn:uuid:', fhir_organization_id),
+              fhir_careTeam_participant_member_reference.reference = append('urn:uuid:', fhir_organization_id),
+              fhir_careTeam_participant_member_reference.type = 'Organization' then CdaOrganizationCompilationToFhirOrganization(cda_scopingOrganization, fhir_organization);
+            };
         };
-    };
 
-    // Weitere Behandler
-    // ClinicalDocument/participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.28' or @root='1.2.40.0.34.11.1.1.8']]
-    cda.participant as cda_participant_practitioner where $this.templateId.where(root='1.2.40.0.34.6.0.11.1.28' or root='1.2.40.0.34.11.1.1.8') ->  
-      fhir_careTeam.participant as fhir_careTeam_participant then {
-        // role
-        cda_participant_practitioner.associatedEntity as cda_associatedEntity ->
-        fhir_careTeam_participant.role = create('CodeableConcept') as fhir_careTeam_participant_role,
-        fhir_careTeam_participant_role.coding = create('Coding') as fhir_careTeam_participant_role_coding,
-        fhir_careTeam_participant_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
-        fhir_careTeam_participant_role_coding.code = 'PROV',
-        // member
-        fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_member_reference,
-        fhir_bundle.entry as fhir_bundle_entry_practitioner,
-        fhir_bundle_entry_practitioner.resource = create('PractitionerRole') as fhir_practitionerRole,
-        fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-        fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid:',fhir_practitionerRole_id),
-        fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
-        fhir_careTeam_member_reference.type = 'PractitionerRole' then {
-          cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
-          cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle) "CdaAssociatedEntityToFhirPractitionerRole";
-        };
-      };
-  } "CdaParticipantsToFhirCareTeam";
+        // Weitere Behandler
+        // ClinicalDocument/participant[hl7:templateId [@root='1.2.40.0.34.6.0.11.1.28' or @root='1.2.40.0.34.11.1.1.8']]
+        cda.participant as cda_participant_practitioner where ($this.templateId.where(root='1.2.40.0.34.6.0.11.1.28' or root='1.2.40.0.34.11.1.1.8')) ->  
+          fhir_careTeam.participant as fhir_careTeam_participant then {
+            // role
+            cda_participant_practitioner.associatedEntity as cda_associatedEntity ->
+            fhir_careTeam_participant.role = create('CodeableConcept') as fhir_careTeam_participant_role,
+            fhir_careTeam_participant_role.coding = create('Coding') as fhir_careTeam_participant_role_coding,
+            fhir_careTeam_participant_role_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-RoleClass',
+            fhir_careTeam_participant_role_coding.code = 'PROV',
+            // member
+            fhir_careTeam_participant.member = create('Reference') as fhir_careTeam_member_reference,
+            fhir_bundle.entry as fhir_bundle_entry_practitioner,
+            fhir_bundle_entry_practitioner.resource = create('PractitionerRole') as fhir_practitionerRole,
+            fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+            fhir_bundle_entry_practitioner.fullUrl = append('urn:uuid:',fhir_practitionerRole_id),
+            fhir_careTeam_member_reference.reference = append('urn:uuid:',fhir_practitionerRole_id),
+            fhir_careTeam_member_reference.type = 'PractitionerRole' then {
+              cda_participant_practitioner.functionCode -> fhir_practitionerRole.specialty;
+              cda_associatedEntity then CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity,fhir_practitionerRole,fhir_bundle) "CdaAssociatedEntityToFhirPractitionerRole";
+            };
+          };
+    } "CdaParticipantsToFhirCareTeam";
 
   // ClinicalDocument/inFulfillmentOf
   // see document type specific group
@@ -757,7 +757,7 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
       "CdaPatientBirthTimeNullFlavorToFhirPatientBirthDateDataAbsentReason";
 
     // patient.deceasedInd
-    cda_patient.sdtcDeceasedInd as cda_patient_deceasedInd where cda_patient.sdtcDeceasedTime.empty() -> fhir_patient.deceased = create('boolean') as fhir_patient_deceased then BL(cda_patient_deceasedInd, fhir_patient_deceased) "CdaPatientDeceasedIndToFhirPatientDeceasedBoolean";
+    cda_patient.sdtcDeceasedInd as cda_patient_deceasedInd where (cda_patient.sdtcDeceasedTime.empty()) -> fhir_patient.deceased = create('boolean') as fhir_patient_deceased then BL(cda_patient_deceasedInd, fhir_patient_deceased) "CdaPatientDeceasedIndToFhirPatientDeceasedBoolean";
     // patient.deceasedTime
     cda_patient.sdtcDeceasedTime as cda_patient_deceasedTime -> fhir_patient.deceased = create('dateTime') as fhir_patient_deceased then TSDateTime(cda_patient_deceasedTime, fhir_patient_deceased) "CdaPatientDeceasedTimeToFhirPatientDeceasedDateTime";
     // patient.maritalStatusCode
@@ -838,7 +838,7 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
       // patient.languageCommunication.preferenceInd
       cda_patient_language.preferenceInd -> fhir_patient_communication.preferred;
 
-      cda_patient_language where cda_patient_language.modeCode.exists() or cda_patient_language.proficiencyLevelCode.exists() ->
+      cda_patient_language where (cda_patient_language.modeCode.exists() or cda_patient_language.proficiencyLevelCode.exists()) ->
         fhir_patient_communication.extension as communication_extension,
         communication_extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-proficiency' then {
           // patient.languageCommunication.modeCode
@@ -1051,7 +1051,7 @@ group CdaBodyToFhirComposition(source cda: ClinicalDocument, source cda_structur
                                                or (code.where(code='ABBEM' and codeSystem='1.2.40.0.34.5.40'))) // Abschließende Bemerkung
                                               ->
       fhir_composition.section as fhir_section then CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle);
-  }
+  };
 }
 
 group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) {
@@ -1068,10 +1068,10 @@ group CdaSectionToFhirSection(source cda_section: Section, target fhir_section, 
     fhir_section.text as fhir_section_text,
     fhir_section_text.status = 'generated' then {
       // section.text where no section.languageCode exists
-      cda_section_text where cda_section.languageCode.exists().not() -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
+      cda_section_text where (cda_section.languageCode.exists().not()) -> fhir_section_text.div = cda_section_text "CdaSectionTextToFhirSectionText";
 
       // section.text with section.languageCode
-      cda_section_text where cda_section.languageCode.exists() then {
+      cda_section_text where (cda_section.languageCode.exists()) then {
         cda_section.languageCode as cda_languageCode then {
           cda_languageCode.code as cda_languageCode_code ->
 
