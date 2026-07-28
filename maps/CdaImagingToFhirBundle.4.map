@@ -1,0 +1,165 @@
+map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-imaging-to-fhir-bundle" = "CdaImagingToFhirBundle"
+
+//
+// Mapping CDA2FHIR - Befund bildgebende Diagnostik (Diagnostic Imaging Report)
+//
+// Source: ELGA CDA "Befund bildgebende Diagnostik" https://art-decor.org/ad/#/elgabgd-/rules/templates/1.2.40.0.34.6.0.11.0.17/2024-11-07T13:09:21
+//         ClinicalDocument/code/translation = 18748-4 (LOINC)
+// Target: HL7 Europe Imaging Report R4 (https://hl7.eu/fhir/imaging/1.0.0-ballot/)
+//
+// This map holds all imaging-report specific mappings. The generic CDA header (recordTarget,
+// author, custodian, legalAuthenticator, ...) and the section framework are reused from
+// CdaToFhirBundle.4.map by extending its groups. The data types are reused from
+// CdaToFhirTypes.4.map. See python-maps/documentation/imaging/ for the top-level mapping overview.
+//
+// Naming convention for groups: CdaImaging*ToFhir*
+//
+
+// ____________________________________ Sources ____________________________________
+
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias Author as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedAuthor" alias AssignedAuthor as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedEntity" alias AssignedEntity as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/AssociatedEntity" alias AssociatedEntity as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CustodianOrganization" alias CustodianOrganization as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias Section as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/PatientRole" alias PatientRole as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias StructuredBody as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObservation as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Procedure" alias CDAProcedure as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Organizer" alias Organizer as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias Act as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias Participant2 as source
+
+// ____________________________________ Targets ____________________________________
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Patient" alias Patient as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Person" alias Person as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Practitioner" alias Practitioner as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/PractitionerRole" alias PractitionerRole as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Organization" alias Organization as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Device" alias Device as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/DiagnosticReport" alias DiagnosticReport as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/ServiceRequest" alias ServiceRequest as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/ImagingStudy" alias ImagingStudy as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Procedure" alias Procedure as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Condition" alias Condition as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/DocumentReference" alias DocumentReference as target
+
+// ____________________________________ Imports ____________________________________
+
+imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
+
+
+// _________________________ Document Level Template _________________________
+
+// Entry point for the imaging report. Called from CdaToFhirBundle when
+// ClinicalDocument/code/translation = 18748-4. The Composition and Patient base resources have already
+// been created by the root group; here we create the DiagnosticReport and wire the
+// base references, then delegate to the header and body groups.
+group CdaImagingToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Patient, target fhir_composition: Composition, target fhir_bundle: Bundle) {
+
+  // Bundle.meta.profile
+  cda ->
+    fhir_bundle.meta as fhir_bundle_meta,
+    fhir_bundle_meta.profile = 'http://hl7.eu/fhir/imaging/StructureDefinition/BundleReportEuImaging'
+    "ImagingBundleProfile";
+
+  cda ->
+    // create the DiagnosticReport
+    fhir_bundle.entry as fhir_bundle_entry_1,
+    fhir_bundle_entry_1.resource = create('DiagnosticReport') as fhir_diagnosticReport,
+    fhir_diagnosticReport.id = uuid() as fhir_diagnosticReport_id,
+    fhir_bundle_entry_1.fullUrl = append('urn:uuid:', fhir_diagnosticReport_id),
+
+    // retrieve Composition uuid
+    fhir_composition.id as fhir_composition_id,
+
+    // DiagnosticReport -> Composition (extension-DiagnosticReport.composition)
+    fhir_diagnosticReport.extension as fhir_diagnosticReport_extension,
+    fhir_diagnosticReport_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-DiagnosticReport.composition',
+    fhir_diagnosticReport_extension.value = create('Reference') as fhir_diagnosticReport_composition_reference,
+    fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_composition_id),
+    fhir_diagnosticReport_composition_reference.type = 'Composition',
+
+    // retrieve Patient uuid
+    fhir_patient.id as fhir_patient_id,
+
+    // DiagnosticReport -> Patient
+    fhir_diagnosticReport.subject = create('Reference') as fhir_diagnosticReport_subject_reference,
+    fhir_diagnosticReport_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_diagnosticReport_subject_reference.type = 'Patient'
+
+    then {
+      // map the CDA header
+      cda then CdaImagingHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle) "CdaImagingHeaderToFhirComposition";
+      cda then CdaImagingHeaderToFhirDiagnosticReport(cda, fhir_diagnosticReport) "CdaImagingHeaderToFhirDiagnosticReport";
+      cda then CdaImagingHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_diagnosticReport) "CdaImagingHeaderToFhir";
+
+      // map the CDA body
+      // ClinicalDocument.component
+      cda.component as cda_component then {
+        // ClinicalDocument.component.structuredBody
+        cda_component.structuredBody as cda_structuredBody
+          then CdaImagingBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_patient, fhir_diagnosticReport, fhir_bundle);
+      };
+    } "CdaImagingToFhirBundle";
+}
+
+
+// _________________________ Header Level Templates _________________________
+
+// ClinicalDocument -> Composition (imaging report specific parts).
+// Reuses the generic Composition header (title, status, effectiveTime, confidentiality,
+// language, setId, versionNumber, ...) from CdaHeaderToFhirComposition.
+group CdaImagingHeaderToFhirComposition(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaHeaderToFhirComposition {
+    // Composition.meta.profile
+    cda ->
+        fhir_composition.meta as fhir_composition_meta,
+        fhir_composition_meta.profile = 'http://hl7.eu/fhir/imaging/StructureDefinition/CompositionEuImaging'
+        "ImagingCompositionProfile";
+
+    // Composition.type 
+    // Composition.category 
+    // ... 
+    
+}
+
+// ClinicalDocument -> DiagnosticReport.
+group CdaImagingHeaderToFhirDiagnosticReport(source cda: ClinicalDocument, target fhir_diagnosticReport: DiagnosticReport) {
+    // DiagnosticReport.meta.profile
+    cda ->
+        fhir_diagnosticReport.meta as fhir_diagnosticReport_meta,
+        fhir_diagnosticReport_meta.profile = 'http://hl7.eu/fhir/imaging/StructureDefinition/DiagnosticReportEuImaging'
+        "ImagingDiagnosticReportProfile";
+    // DiagnosticReport.code
+    // DiagnosticReport.category
+    //... 
+}
+
+// ClinicalDocument -> generic header (recordTarget/Patient, author, custodian,
+// legalAuthenticator, ...). Reuses CdaHeaderToFhir; imaging report specific header
+// mappings (documentationOf/serviceEvent -> Procedure/ImagingStudy timing,
+// inFulfillmentOf/order -> ServiceRequest + AccessionNumber)
+// will be added here.
+group CdaImagingHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_diagnosticReport: DiagnosticReport) extends CdaHeaderToFhir {
+  // TODO ClinicalDocument/documentationOf/serviceEvent -> Procedure / ImagingStudy
+  // TODO ClinicalDocument/inFulfillmentOf/order         -> ServiceRequest (basedOn) + AccessionNumber
+  // So basically add every header element here that is not covered in `CdaImagingHeaderToFhirDiagnosticReport` or  `CdaImagingHeaderToFhirComposition`
+}
+
+
+// _________________________ Section und Entry Level Templates _________________________
+
+// ClinicalDocument body -> Composition sections. Reuses CdaBodyToFhirComposition, which
+// already routes the uncoded sections Brieftext (BRIEFT) and Abschliessende Bemerkungen
+// to annotation sections. The imaging section dispatch is added here.
+group CdaImagingBodyToFhirComposition(source cda: ClinicalDocument, source cda_structuredBody: StructuredBody, target fhir_composition: Composition, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle) extends CdaBodyToFhirComposition {
+
+}
