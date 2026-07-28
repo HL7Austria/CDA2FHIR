@@ -86602,9 +86602,9 @@ def CdaEimpfSubstanceAdministrationToFhirImmunization(cda_substanceAdministratio
                 fhir_immunization.identifier.append(fhir_immunization_identifier)
                 fhir_immunization_identifier.use = string(value='secondary')
                 II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunization_identifier)
-            if cda_substanceAdministration_reference_externalDocument.code is not None:
-                fhir_immunization_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
-                CDCodeableConcept(cda_substanceAdministration_reference_externalDocument.code, fhir_immunization_identifier.type_)
+                if cda_substanceAdministration_reference_externalDocument.code is not None:
+                    fhir_immunization_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
+                    CDCodeableConcept(cda_substanceAdministration_reference_externalDocument.code, fhir_immunization_identifier.type_)
 
 def CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_section, cda_substanceAdministration, fhir_immunizationRecommendation, fhir_bundle):
     for id_ in cda_substanceAdministration.id or []:
@@ -86673,158 +86673,158 @@ def CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_section,
                         fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode = malac.models.fhir.r4.CodeableConcept()
                         fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode.append(fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode)
                         CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode)
-        for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
-            if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedPerson'):
-                fhir_bundle_entry01 = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry01)
-                fhir_provenance = malac.models.fhir.r4.Provenance()
-                fhir_bundle_entry01.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
-                fhir_provenance_id = string(value=str(uuid.uuid4()))
-                fhir_provenance.id = fhir_provenance_id
-                fhir_bundle_entry01.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
-                if fhir_immunizationRecommendation.id is None:
-                    fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
-                fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
-                fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
-                fhir_provenance.target.append(fhir_provenance_target_reference)
-                fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
-                fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
-                fhir_bundle_entry02 = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry02)
-                fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-                fhir_bundle_entry02.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-                fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-                fhir_practitionerRole.id = fhir_practitionerRole_id
-                fhir_bundle_entry02.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                if cda_substanceAdministration_author.time is not None:
-                    if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+    for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
+        if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedPerson'):
+            fhir_bundle_entry01 = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry01)
+            fhir_provenance = malac.models.fhir.r4.Provenance()
+            fhir_bundle_entry01.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
+            fhir_provenance_id = string(value=str(uuid.uuid4()))
+            fhir_provenance.id = fhir_provenance_id
+            fhir_bundle_entry01.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
+            if fhir_immunizationRecommendation.id is None:
+                fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
+            fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
+            fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
+            fhir_provenance.target.append(fhir_provenance_target_reference)
+            fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
+            fhir_bundle_entry02 = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry02)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry02.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry02.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            if cda_substanceAdministration_author.time is not None:
+                if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
+                    TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
+            cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
+            if cda_substanceAdministration_author_time is not None:
+                if cda_substanceAdministration_author_time.nullFlavor is not None:
+                    if fhir_immunizationRecommendation.date is None:
                         fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
-                cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
-                if cda_substanceAdministration_author_time is not None:
-                    if cda_substanceAdministration_author_time.nullFlavor is not None:
-                        if fhir_immunizationRecommendation.date is None:
-                            fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
-                        fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
-                        fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
-                        CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
-                CdaAuthorPersonToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_practitionerRole, fhir_bundle)
-        for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
-            if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedAuthoringDevice'):
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_provenance = malac.models.fhir.r4.Provenance()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
-                fhir_provenance_id = string(value=str(uuid.uuid4()))
-                fhir_provenance.id = fhir_provenance_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
-                if fhir_immunizationRecommendation.id is None:
-                    fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
-                fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
-                fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
-                fhir_provenance.target.append(fhir_provenance_target_reference)
-                fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
-                fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
-                if cda_substanceAdministration_author.time is not None:
-                    if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
+                    fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
+            CdaAuthorPersonToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_practitionerRole, fhir_bundle)
+    for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
+        if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedAuthoringDevice'):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_provenance = malac.models.fhir.r4.Provenance()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
+            fhir_provenance_id = string(value=str(uuid.uuid4()))
+            fhir_provenance.id = fhir_provenance_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
+            if fhir_immunizationRecommendation.id is None:
+                fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
+            fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
+            fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
+            fhir_provenance.target.append(fhir_provenance_target_reference)
+            fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
+            if cda_substanceAdministration_author.time is not None:
+                if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
+                    TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
+            cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
+            if cda_substanceAdministration_author_time is not None:
+                if cda_substanceAdministration_author_time.nullFlavor is not None:
+                    if fhir_immunizationRecommendation.date is None:
                         fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
-                cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
-                if cda_substanceAdministration_author_time is not None:
-                    if cda_substanceAdministration_author_time.nullFlavor is not None:
-                        if fhir_immunizationRecommendation.date is None:
-                            fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
-                        fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
-                        fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
-                        CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
-                CdaAuthorDeviceToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_bundle)
-        for cda_participant in cda_substanceAdministration.participant or []:
-            if cda_participant.typeCode != 'AUT':
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_provenance = malac.models.fhir.r4.Provenance()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
-                fhir_provenance_id = string(value=str(uuid.uuid4()))
-                fhir_provenance.id = fhir_provenance_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
-                if fhir_immunizationRecommendation.id is None:
-                    fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
-                fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
-                fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
-                fhir_provenance.target.append(fhir_provenance_target_reference)
-                fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
-                fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
-                CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle)
-        for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.2']):
-                cda_observation = cda_substanceAdministration_entryRelationship.observation
-                if cda_observation is not None:
-                    if cda_observation.code is not None:
-                        fhir_immunizationRecommendation_recommendation.targetDisease = malac.models.fhir.r4.CodeableConcept()
-                        CDCodeableConcept(cda_observation.code, fhir_immunizationRecommendation_recommendation.targetDisease)
-        for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'act','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.17']):
-                cda_act = cda_substanceAdministration_entryRelationship.act
-                if cda_act is not None:
-                    if fhir_immunizationRecommendation_recommendation.description is None:
-                        fhir_immunizationRecommendation_recommendation.description = malac.models.fhir.r4.string()
-                    fhir_description = fhir_immunizationRecommendation_recommendation.description
-                    CdaNarrativeTextToFhirString(cda_act, cda_section, fhir_description)
-        for cda_substanceAdministration_reference in cda_substanceAdministration.reference or []:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_reference,'externalDocument','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.14']):
-                cda_substanceAdministration_reference_externalDocument = cda_substanceAdministration_reference.externalDocument
-                if cda_substanceAdministration_reference_externalDocument is not None:
-                    for cda_substanceAdministration_reference_externalDocument_id in cda_substanceAdministration_reference_externalDocument.id or []:
-                        fhir_immunizationRecommendation_identifier = malac.models.fhir.r4.Identifier()
-                        fhir_immunizationRecommendation.identifier.append(fhir_immunizationRecommendation_identifier)
-                        fhir_immunizationRecommendation_identifier.use = string(value='secondary')
-                        II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunizationRecommendation_identifier)
+                    fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
+                    fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
+            CdaAuthorDeviceToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_bundle)
+    for cda_participant in cda_substanceAdministration.participant or []:
+        if cda_participant.typeCode != 'AUT':
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_provenance = malac.models.fhir.r4.Provenance()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
+            fhir_provenance_id = string(value=str(uuid.uuid4()))
+            fhir_provenance.id = fhir_provenance_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
+            if fhir_immunizationRecommendation.id is None:
+                fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
+            fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
+            fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
+            fhir_provenance.target.append(fhir_provenance_target_reference)
+            fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
+            CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle)
+    for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.2']):
+            cda_observation = cda_substanceAdministration_entryRelationship.observation
+            if cda_observation is not None:
+                if cda_observation.code is not None:
+                    fhir_immunizationRecommendation_recommendation.targetDisease = malac.models.fhir.r4.CodeableConcept()
+                    CDCodeableConcept(cda_observation.code, fhir_immunizationRecommendation_recommendation.targetDisease)
+    for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'act','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.17']):
+            cda_act = cda_substanceAdministration_entryRelationship.act
+            if cda_act is not None:
+                if fhir_immunizationRecommendation_recommendation.description is None:
+                    fhir_immunizationRecommendation_recommendation.description = malac.models.fhir.r4.string()
+                fhir_description = fhir_immunizationRecommendation_recommendation.description
+                CdaNarrativeTextToFhirString(cda_act, cda_section, fhir_description)
+    for cda_substanceAdministration_reference in cda_substanceAdministration.reference or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_reference,'externalDocument','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.14']):
+            cda_substanceAdministration_reference_externalDocument = cda_substanceAdministration_reference.externalDocument
+            if cda_substanceAdministration_reference_externalDocument is not None:
+                for cda_substanceAdministration_reference_externalDocument_id in cda_substanceAdministration_reference_externalDocument.id or []:
+                    fhir_immunizationRecommendation_identifier = malac.models.fhir.r4.Identifier()
+                    fhir_immunizationRecommendation.identifier.append(fhir_immunizationRecommendation_identifier)
+                    fhir_immunizationRecommendation_identifier.use = string(value='secondary')
+                    II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunizationRecommendation_identifier)
                     if cda_substanceAdministration_reference_externalDocument.code is not None:
                         fhir_immunizationRecommendation_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
                         CDCodeableConcept(cda_substanceAdministration_reference_externalDocument.code, fhir_immunizationRecommendation_identifier.type_)
-        for cda_substanceAdministration_precondition in cda_substanceAdministration.precondition or []:
-            cda_criterion = cda_substanceAdministration_precondition.criterion
-            if cda_criterion is not None:
-                cda_criterion_code = cda_criterion.code
-                if cda_criterion_code is not None:
-                    if cda_criterion_code.nullFlavor is None:
-                        cda_criterion_code_code = cda_criterion_code.code
-                        if cda_criterion_code_code is not None:
-                            fhir_immunizationRecommendation_recommendation_series = string(value=str(getattr(cda_criterion_code_code, 'value', cda_criterion_code_code if cda_criterion_code_code is not None else '')))
-                            fhir_immunizationRecommendation_recommendation.series = fhir_immunizationRecommendation_recommendation_series
-                            fhir_immunizationRecommendation_recommendation_series_extension = malac.models.fhir.r4.Extension()
-                            fhir_immunizationRecommendation_recommendation_series.extension.append(fhir_immunizationRecommendation_recommendation_series_extension)
-                            fhir_immunizationRecommendation_recommendation_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
-                            fhir_coding = malac.models.fhir.r4.Coding()
-                            fhir_immunizationRecommendation_recommendation_series_extension.valueCoding = fhir_coding
-                            CECoding(cda_criterion_code, fhir_coding)
-                cda_criterion_value = cda_criterion.value
-                if cda_criterion_value is not None:
-                    if cda_criterion_value.nullFlavor is None:
-                        for cda_criterion_value_code in (cda_criterion_value.code if isinstance(cda_criterion_value.code, list) else ([] if not cda_criterion_value.code else [cda_criterion_value.code])):
-                            fhir_immunizationRecommendation_recommendation_doseNumber = string(value=str(getattr(cda_criterion_value_code, 'value', cda_criterion_value_code if cda_criterion_value_code is not None else '')))
-                            fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
-                            fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
-                            fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
-                            fhir_immunizationRecommendation_recommendation_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
-                            fhir_coding = malac.models.fhir.r4.Coding()
-                            fhir_immunizationRecommendation_recommendation_doseNumber_extension.valueCoding = fhir_coding
-                            CECoding(cda_criterion_value, fhir_coding)
-                cda_criterion_value = cda_criterion.value
-                if cda_criterion_value is not None:
-                    if cda_criterion_value.nullFlavor is not None:
-                        fhir_immunizationRecommendation_recommendation_doseNumber = malac.models.fhir.r4.string()
+    for cda_substanceAdministration_precondition in cda_substanceAdministration.precondition or []:
+        cda_criterion = cda_substanceAdministration_precondition.criterion
+        if cda_criterion is not None:
+            cda_criterion_code = cda_criterion.code
+            if cda_criterion_code is not None:
+                if cda_criterion_code.nullFlavor is None:
+                    cda_criterion_code_code = cda_criterion_code.code
+                    if cda_criterion_code_code is not None:
+                        fhir_immunizationRecommendation_recommendation_series = string(value=str(getattr(cda_criterion_code_code, 'value', cda_criterion_code_code if cda_criterion_code_code is not None else '')))
+                        fhir_immunizationRecommendation_recommendation.series = fhir_immunizationRecommendation_recommendation_series
+                        fhir_immunizationRecommendation_recommendation_series_extension = malac.models.fhir.r4.Extension()
+                        fhir_immunizationRecommendation_recommendation_series.extension.append(fhir_immunizationRecommendation_recommendation_series_extension)
+                        fhir_immunizationRecommendation_recommendation_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                        fhir_coding = malac.models.fhir.r4.Coding()
+                        fhir_immunizationRecommendation_recommendation_series_extension.valueCoding = fhir_coding
+                        CECoding(cda_criterion_code, fhir_coding)
+            cda_criterion_value = cda_criterion.value
+            if cda_criterion_value is not None:
+                if cda_criterion_value.nullFlavor is None:
+                    for cda_criterion_value_code in (cda_criterion_value.code if isinstance(cda_criterion_value.code, list) else ([] if not cda_criterion_value.code else [cda_criterion_value.code])):
+                        fhir_immunizationRecommendation_recommendation_doseNumber = string(value=str(getattr(cda_criterion_value_code, 'value', cda_criterion_value_code if cda_criterion_value_code is not None else '')))
                         fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
                         fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
                         fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
-                        CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension)
+                        fhir_immunizationRecommendation_recommendation_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                        fhir_coding = malac.models.fhir.r4.Coding()
+                        fhir_immunizationRecommendation_recommendation_doseNumber_extension.valueCoding = fhir_coding
+                        CECoding(cda_criterion_value, fhir_coding)
+            cda_criterion_value = cda_criterion.value
+            if cda_criterion_value is not None:
+                if cda_criterion_value.nullFlavor is not None:
+                    fhir_immunizationRecommendation_recommendation_doseNumber = malac.models.fhir.r4.string()
+                    fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
+                    fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension)
 
 def CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_vaccineCode):
     cda_manufacturedMaterial_code = cda_manufacturedMaterial.code
     if cda_manufacturedMaterial_code is not None:
-        if cda_manufacturedMaterial_code.nullFlavor == 'NA' or cda_manufacturedMaterial_code.nullFlavor == 'OTH':
+        if cda_manufacturedMaterial_code.nullFlavor == 'NA':
             cda_manufacturedMaterial_code_nullFlavor = cda_manufacturedMaterial_code.nullFlavor
             if cda_manufacturedMaterial_code_nullFlavor is not None:
                 fhir_vaccineCode_coding = malac.models.fhir.r4.Coding()
@@ -87000,11 +87000,11 @@ def CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle
                     fhir_organization_name_extension_value.value = 'unknown'
 
 def CdaPerformerToFhirProvenance(cda_performer, fhir_provenance, fhir_practitionerRole, fhir_bundle):
-    cda_participant_time = cda_performer.time
-    if cda_participant_time is not None:
+    cda_performer_time = cda_performer.time
+    if cda_performer_time is not None:
         fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
         fhir_provenance.occurredDateTime = fhir_provenance_occurred
-        TSDateTime(cda_participant_time, fhir_provenance_occurred)
+        TSDateTime(cda_performer_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
@@ -87035,12 +87035,12 @@ def CdaPerformerToFhirProvenance(cda_performer, fhir_provenance, fhir_practition
         CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle)
 
 def CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practitionerRole, fhir_bundle):
-    cda_participant_time = cda_author.time
-    if cda_participant_time is not None:
-        if cda_participant_time.nullFlavor is None:
+    cda_author_time = cda_author.time
+    if cda_author_time is not None:
+        if cda_author_time.nullFlavor is None:
             fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
             fhir_provenance.occurredDateTime = fhir_provenance_occurred
-            TSDateTime(cda_participant_time, fhir_provenance_occurred)
+            TSDateTime(cda_author_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
@@ -87069,12 +87069,12 @@ def CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practition
     CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle)
 
 def CdaAuthorDeviceToFhirProvenance(cda_author, fhir_provenance, fhir_bundle):
-    cda_participant_time = cda_author.time
-    if cda_participant_time is not None:
-        if cda_participant_time.nullFlavor is None:
+    cda_author_time = cda_author.time
+    if cda_author_time is not None:
+        if cda_author_time.nullFlavor is None:
             fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
             fhir_provenance.occurredDateTime = fhir_provenance_occurred
-            TSDateTime(cda_participant_time, fhir_provenance_occurred)
+            TSDateTime(cda_author_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
