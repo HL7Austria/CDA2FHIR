@@ -9488,7 +9488,7 @@ group CdaObservationMediaToFhirObservation(source cda_observationMedia : Observa
     fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
     fhir_category_coding.code = 'laboratory';
   
-  cda_observationMedia -> fhir_observation.status = 'final123';
+  cda_observationMedia -> fhir_observation.status = 'final';
   
   cda_observationMedia -> fhir_observation.code = create('CodeableConcept') as fhir_observation_code,
     fhir_observation_code.coding as fhir_observation_code_coding,
