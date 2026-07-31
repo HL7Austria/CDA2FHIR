@@ -36,6 +36,21 @@ conceptmap "act-status-2-observation-status" {
   s:"aborted" == t:"cancelled"
 }
 
+conceptmap "ELGAMedientypToFHIRmedia-type" {
+  prefix s = "https://termgit.elga.gv.at/CodeSystem/iana-mime-type"
+  prefix t = "http://terminology.hl7.org/CodeSystem/media-type"
+
+
+  s:"image/gif"     == t:"image"
+  s:"image/jpeg"    == t:"image"
+  s:"image/png"     == t:"image"
+  s:"video/mpeg"    == t:"video"
+  s:"audio/mpeg"    == t:"audio"
+  s:"application/pdf"   == s:"application/pdf"
+  s:"application/dicom" == s:"application/dicom"
+  s:"text/xml"          == s:"text/xml"
+}
+
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias ClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias Author as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/AssignedAuthor" alias AssignedAuthor as source
@@ -52,6 +67,9 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Organizer" alias Organize
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias Act as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias Participant2 as source 
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias CdaPerformer2 as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Informant" alias Informant as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias Composition as target
@@ -64,6 +82,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/DiagnosticReport" alias Diagno
 uses "http://hl7.org/fhir/4.3/StructureDefinition/ServiceRequest" alias ServiceRequest as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Specimen" alias Specimen as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Provenance" alias FhirProvenance as target
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir-bundle"
@@ -1324,8 +1343,7 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
         };
     };
 }
-
-group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, target fhir_provenance: FhirProvenance, target fhir_bundle: FhirBundle){
+group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, target fhir_provenance: FhirProvenance, target fhir_bundle: Bundle){
   // participant/time -> Provenance.occurredDateTime
   cda_participant.time as cda_participant_time -> 
     fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
@@ -1469,14 +1487,14 @@ group CdaParticipantToFhirProvenance(source cda_participant: CdaParticipant2, ta
   };
 }
 
-group CdaPerformerToFhirProvenance(source cda_performer: CdaPerformer2, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: FhirPractitionerRole, target fhir_bundle: FhirBundle){
+group CdaPerformerToFhirProvenance(source cda_performer: CdaPerformer2, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle){
   // performer/time -> Provenance.occurredDateTime
-  cda_performer.time as cda_participant_time -> 
-    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
-      TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
+  cda_performer.time as cda_performer_time ->
+    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then
+      TSDateTime(cda_performer_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
 
   // Provenance.recorded
-  cda_participant -> 
+  cda_performer ->
     fhir_provenance.recorded as fhir_provenance_recorded,
     fhir_provenance_recorded.extension as fhir_provenance_recorded_extension,
     fhir_provenance_recorded_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
@@ -1497,12 +1515,51 @@ group CdaPerformerToFhirProvenance(source cda_performer: CdaPerformer2, target f
       CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle);
 }
 
-group CdaAuthorPersonToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: FhirPractitionerRole, target fhir_bundle: FhirBundle){
+group CdaAuthorToFhirProvenance(source cda_author: Author, target fhir_provenance: FhirProvenance, target fhir_bundle: Bundle){
+  cda_author where ($this.assignedAuthor.assignedPerson.exists()) ->
+    
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id) then { 
+        // // substanceAdministration/author -> ImmunizationRecommendation.date
+        // cda_author.time where ($this.nullFlavor.exists().not()) -> fhir_immunizationRecommendation.date;
+        // substanceAdministration/author -> ImmunizationRecommendation.date
+        // based on https://hl7.eu/fhir/base-r5/missing-data.html
+        // cda_author.time as cda_substanceAdministration_author_time where ($this.nullFlavor.exists()) -> 
+        //   fhir_immunizationRecommendation.date as fhir_immunizationRecommendation_date,
+        //   fhir_immunizationRecommendation_date.extension as fhir_immunizationRecommendation_date_extension
+        //   then CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension);
+
+        // author -> Provenance
+        cda_author then CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practitionerRole, fhir_bundle);
+      };
+  cda_author where ($this.assignedAuthor.assignedAuthoringDevice.exists()) then CdaAuthorDeviceToFhirProvenance(cda_author, fhir_provenance, fhir_bundle);
+
+}
+
+group CdaInformantToFhirProvenance(source cda_informant: Informant12, target fhir_provenance: FhirProvenance, target fhir_bundle: Bundle){
+    cda_informant.assignedEntity as cda_assignedEntity -> 
+      fhir_bundle.entry as fhir_bundle_entry,
+      fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+      fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_practitionerRole_id) then { 
+        cda_informant then CdaInformantAssignedEntityToFhirProvenance(cda_assignedEntity, fhir_provenance, fhir_practitionerRole, fhir_bundle);
+      };
+}
+
+group CdaInformantAssignedEntityToFhirProvenance(source cda_assignedEntity: AssignedEntity, target fhir_provenance: Provenance, target  fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle){
+  cda_assignedEntity then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
+}
+
+
+
+group CdaAuthorPersonToFhirProvenance(source cda_author: Author, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: PractitionerRole, target fhir_bundle: Bundle){
   // author/time -> Provenance.occurredDateTime
   // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
-  cda_author.time as cda_participant_time where ($this.nullFlavor.exists().not()) -> 
-    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
-      TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
+  cda_author.time as cda_author_time where ($this.nullFlavor.exists().not()) ->
+    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then
+      TSDateTime(cda_author_time, fhir_provenance_occurred) "CdaAuthorTimeToFhirProvenanceOccurred";
 
   // Provenance.recorded
   cda_author -> 
@@ -1526,12 +1583,12 @@ group CdaAuthorPersonToFhirProvenance(source cda_author: CdaAuthor, target fhir_
       CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle);
 }
 
-group CdaAuthorDeviceToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_bundle: FhirBundle){
+group CdaAuthorDeviceToFhirProvenance(source cda_author: Author, target fhir_provenance: FhirProvenance, target fhir_bundle: Bundle){
   // author/time -> Provenance.occurredDateTime
   // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
-  cda_author.time as cda_participant_time where ($this.nullFlavor.exists().not()) -> 
-    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
-      TSDateTime(cda_participant_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
+  cda_author.time as cda_author_time where ($this.nullFlavor.exists().not()) ->
+    fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then
+      TSDateTime(cda_author_time, fhir_provenance_occurred) "CdaAuthorTimeToFhirProvenanceOccurred";
 
   // Provenance.recorded
   cda_author -> 
@@ -1554,6 +1611,6 @@ group CdaAuthorDeviceToFhirProvenance(source cda_author: CdaAuthor, target fhir_
     fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_device_id),
     fhir_provenance_agent.who = create('Reference') as fhir_provenance_agent_who_reference,
     fhir_provenance_agent_who_reference.reference = append('urn:uuid:', fhir_device_id),
-    fhir_provenance_agent_who_reference.type = 'Device' then 
+    fhir_provenance_agent_who_reference.type = 'Device' then
       CdaAuthorToFhirDevice(cda_author, fhir_device, fhir_bundle);
 }
