@@ -9570,7 +9570,7 @@ group CdaObservationMediaToFhirObservation(source cda_observationMedia : Observa
 
   cda_observationMedia.value as cda_observationMedia_value ->
     fhir_observation.extension as fhir_observation_value_extension,
-    fhir_observation_value_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Observation.value[x]',
+    fhir_observation_value_extension.url = 'http://hl7.org/fhir/5.0/StructureDefinition/extension-Observation.value',
     fhir_observation_value_extension.value = create('Attachment') as fhir_observation_value_attachment then {
       // cda_observationMedia@mediaType
       cda_observationMedia_value.mediaType as cda_mediaType -> fhir_observation_value_attachment.contentType = cda_mediaType;
