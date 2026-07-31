@@ -8299,10 +8299,14 @@ group CdaLabBodyToFhirComposition(source cda: ClinicalDocument, source cda_struc
           fhir_serviceRequest.extension as fhir_serviceRequest_extension, 
           fhir_serviceRequest_extension.url = 'http://hl7.org/fhir/StructureDefinition/workflow-supportingInfo',
           fhir_serviceRequest_extension.value = create('Reference') as fhir_serviceRequest_extension_reference, 
-          fhir_serviceRequest_extension_reference.reference = append('urn:uuid:',fhir_observation_id) then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
+          fhir_serviceRequest_extension_reference.reference = append('urn:uuid:',fhir_observation_id) {
+            // performer cascade (LRR requires Observation.performer) before delegating the body
+            observationMedia then CdaLabSectionPerformerToObservationPerformer(cda, cda_section, cda_observationMedia, fhir_observation, fhir_bundle);
+            observationMedia then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
+          }; 
       };
     };
-      
+
     // Angeforderte Untersuchungen - codiert
     cda_component.section as cda_section where (code.where(code='400999005' and codeSystem='2.16.840.1.113883.6.96') and templateId.where(root='1.2.40.0.34.6.0.11.2.15')) then {
       cda_section.text as cda_section_text -> 
