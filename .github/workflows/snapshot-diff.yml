@@ -17,6 +17,7 @@ on:
 permissions:
   contents: read
   pull-requests: write
+  actions: read        # read this run's job id, to deep-link the report in the comment
 
 jobs:
   snapshot-diff:
@@ -56,6 +57,23 @@ jobs:
       - name: Compile PR maps
         run: |
           malac-hd -m pr/maps/CdaToFhirBundle.4.map -co engines/pr.py
+
+      # Build a one-click link to THIS run's report in the Summary tab. The step
+      # summary renders under an anchor #summary-<jobId>; the job id isn't a plain env
+      # var, so fetch it from the run's jobs API. Falls back to the run URL (which also
+      # lands on the Summary page) if the API call is unavailable.
+      - name: Resolve run Summary link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          JOBS="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" 2>/dev/null || echo '{}')"
+          JOB_ID="$(echo "$JOBS" | jq -r "[.jobs[]? | select(.name == \"${GITHUB_JOB}\")][0].id // (.jobs[-1]?.id) // empty")"
+          if [ -n "$JOB_ID" ]; then
+            echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}/attempts/${GITHUB_RUN_ATTEMPT}#summary-${JOB_ID}" >> "$GITHUB_ENV"
+          else
+            echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}" >> "$GITHUB_ENV"
+          fi
 
       - name: Build snapshot diff report
         env:

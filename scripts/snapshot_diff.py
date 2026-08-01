@@ -277,8 +277,7 @@ def header(groups, args):
     if changed == 0:
         lines.append(f"✅ **No mapping changes** across {total} sample(s).")
     else:
-        lines.append(f"⚠️ **{changed} of {total} sample(s) changed** — every sample is "
-                     "listed below; expand a section to see its diff.")
+        lines.append(f"⚠️ **{changed} of {total} sample(s) expand a section to see its diff.")
     return "\n".join(lines)
 
 
@@ -299,11 +298,13 @@ def render_comment(body, groups, args, limit):
     """
     if len(body) <= limit:
         return body
+    summary_ref = (f"[**run Summary**]({args.summary_url})" if args.summary_url
+                   else "run **Summary**")
     parts = [
         header(groups, args), "", inventory_table(groups), "",
         "> ℹ️ The full per-file diffs exceed GitHub's comment size limit. Every changed "
-        "sample is listed above — open the run **Summary** or the **snapshot-diff** "
-        "artifact for the complete, expandable diffs.",
+        f"sample is listed above — open the {summary_ref} (one click, all diffs "
+        "expandable) or the **snapshot-diff** artifact.",
     ]
     return "\n".join(parts).rstrip() + "\n"
 
@@ -326,6 +327,10 @@ def main():
                         help="optional size-guarded copy for the PR comment")
     parser.add_argument("--base-label", default=os.environ.get("BASE_LABEL", ""))
     parser.add_argument("--pr-label", default=os.environ.get("PR_LABEL", ""))
+    parser.add_argument("--summary-url",
+                        default=os.environ.get("SNAPSHOT_SUMMARY_URL", ""),
+                        help="deep link to this run's Summary, used in the comment's "
+                             "size-limit fallback note")
     parser.add_argument("--context", type=int, default=3,
                         help="lines of context per diff hunk (git --unified)")
     parser.add_argument("--expand-under", type=int, default=30,
