@@ -1321,10 +1321,10 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
         cda_participant_role.id where ($this.nullFlavor.exists().not()) -> fhir_practitioner.identifier;
         
         // participantRole/addr -> Practitioner.address
-        cda_participant_role.addr -> fhir_practitioner.address;
+       // cda_participant_role.addr -> fhir_practitioner.address;
 
         // participantRole/telecom -> Practitioner.telecom
-        cda_participant_role.telecom -> fhir_practitioner.telecom;
+        //cda_participant_role.telecom -> fhir_practitioner.telecom;
        
         // participantRole/playingDevice
         // TODO
