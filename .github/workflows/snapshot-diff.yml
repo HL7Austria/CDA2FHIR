@@ -1,10 +1,11 @@
 # Snapshot diff test to catch mapping regressions (issue #423).
 #
 # On every PR to a *-dev branch, compile the maps from BOTH the PR and its target
-# branch, convert the same CDA fixtures with each, normalise away the run-to-run
-# noise (generated resource UUIDs + Bundle.timestamp) and render a git diff of the
-# two FHIR bundles, grouped by document type. Because the inputs are held constant,
-# any diff is attributable to the map change under review.
+# branch and convert each branch's CDA fixtures with its own engine (base engine reads
+# base/input, PR engine reads pr/input), normalise away the run-to-run noise (generated
+# resource UUIDs + Bundle.timestamp) and render a git diff of the two FHIR bundles,
+# grouped by document type. The diff therefore reflects both the map change under
+# review and any change to the sample CDA themselves (added / removed / edited fixture).
 #
 # This is an informational report, not a gate: it succeeds even when diffs exist.
 
@@ -83,7 +84,8 @@ jobs:
           python pr/scripts/snapshot_diff.py \
             --base-engine engines/base.py \
             --pr-engine engines/pr.py \
-            --input-dir pr/input \
+            --base-input-dir base/input \
+            --pr-input-dir pr/input \
             --config pr/input/config.json \
             --work snapshots \
             --report report.md \
