@@ -69,6 +69,7 @@ jobs:
             --config pr/input/config.json \
             --work snapshots \
             --report report.md \
+            --comment comment.md \
             --summary
 
       - name: Upload snapshots + report
@@ -78,6 +79,7 @@ jobs:
           include-hidden-files: true
           path: |
             report.md
+            comment.md
             snapshots/base/
             snapshots/pr/
             engines/
@@ -91,4 +93,4 @@ jobs:
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: snapshot-diff
-          path: report.md
+          path: comment.md

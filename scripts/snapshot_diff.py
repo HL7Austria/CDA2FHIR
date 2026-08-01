@@ -9,15 +9,25 @@ two FHIR bundles, grouped by document type.
 Because the input fixtures are held constant, any diff is attributable to the change
 in the maps -- i.e. a mapping regression (or an intended mapping change to review).
 
-Typical use (from CI, see .github/workflows/snapshot-diff.yml)::
+Readability vs. completeness
+----------------------------
+The whole point is to catch *unintended* changes, so nothing may be silently dropped.
+The report is therefore built in two layers:
 
-    python scripts/snapshot_diff.py \
-        --base-engine engines/base.py --pr-engine engines/pr.py \
-        --input-dir input --config input/config.json \
-        --work snapshots --report report.md --summary
+* a **complete inventory** (every file + its ``+adds/-dels`` magnitude) that is always
+  visible -- the safety net, so no change can hide;
+* the actual per-file diffs inside collapsible ``<details>`` sections (groups collapse
+  as a whole, small diffs auto-expand) so the reader scans the inventory and drills
+  into only what they want instead of scrolling a wall of text.
 
-The report is written to ``--report`` and, when ``--summary`` is given and
-``GITHUB_STEP_SUMMARY`` is set, also appended to the GitHub Actions run summary.
+Two artefacts are emitted:
+
+* ``--report``  -- the *full* report (every diff, nothing stubbed), for the Actions run
+  Summary and the uploaded artifact where size is not a hard constraint.
+* ``--comment`` -- the same report, but size-guarded to GitHub's 65 536-char PR-comment
+  limit: the inventory is always complete; if the diffs don't fit, the largest ones are
+  replaced by a stub pointing at the run Summary / artifact so the comment still posts.
+
 Differences are *not* treated as errors: the script exits non-zero only on a hard
 failure (e.g. an engine that cannot be run at all).
 """
@@ -37,6 +47,9 @@ GROUP_HEADINGS = {
     "eimpf": "eVac",
     "emed": "eMed",
 }
+
+# GitHub rejects issue/PR comment bodies over 65 536 chars; stay comfortably under.
+COMMENT_LIMIT = 60000
 
 _UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
@@ -90,42 +103,46 @@ def write_normalized(src_json, dst_json):
         fh.write(normalize(text))
 
 
-def git_diff(base_path, pr_path, work_root, max_lines):
-    """Return the unified ``git diff`` between two normalized files, or "" if equal.
+def git_diff(base_path, pr_path, work_root, context):
+    """Diff two normalized files; return ``(adds, dels, body)``.
 
     ``--no-index`` diffs two files outside a repo; it exits 1 when they differ, which
-    is expected and not an error. Paths are made relative to ``work_root`` so the
-    diff header reads ``a/base/... b/pr/...``.
+    is expected and not an error. The noisy git header lines (``diff --git``/``index``/
+    ``---``/``+++``) are dropped -- the file name is already the section title -- so
+    only the hunks remain. ``adds``/``dels`` count changed lines for the inventory.
     """
     rel_base = os.path.relpath(base_path, work_root)
     rel_pr = os.path.relpath(pr_path, work_root)
     proc = subprocess.run(
-        ["git", "diff", "--no-index", "--no-color", "--", rel_base, rel_pr],
+        ["git", "diff", "--no-index", "--no-color",
+         f"--unified={context}", "--", rel_base, rel_pr],
         cwd=work_root,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         text=True,
     )
-    diff = proc.stdout
-    if not diff.strip():
-        return ""
-    lines = diff.splitlines()
-    if max_lines and len(lines) > max_lines:
-        omitted = len(lines) - max_lines
-        lines = lines[:max_lines] + [
-            f"... diff truncated, {omitted} more line(s); see the uploaded artifact."
-        ]
-    return "\n".join(lines)
+    if not proc.stdout.strip():
+        return 0, 0, ""
+    adds = dels = 0
+    body = []
+    for line in proc.stdout.splitlines():
+        if (line.startswith("diff --git ") or line.startswith("index ")
+                or line.startswith("--- ") or line.startswith("+++ ")):
+            continue
+        if line.startswith("+"):
+            adds += 1
+        elif line.startswith("-"):
+            dels += 1
+        body.append(line)
+    return adds, dels, "\n".join(body)
 
 
 def build(args):
+    """Convert + normalize + diff every fixture; return the list of per-group results."""
     with open(args.config, "r", encoding="utf-8") as fh:
         config = json.load(fh)
 
-    groups = []  # (heading, [ {file, status, detail} ])
-    total_changed = 0
-    total_files = 0
-
+    groups = []  # (heading, [result dict])
     for entry in config:
         directory = entry["directory"]
         in_dir = os.path.join(args.input_dir, directory)
@@ -139,7 +156,6 @@ def build(args):
         for source in sources:
             name = os.path.basename(source)
             stem = os.path.splitext(name)[0]
-            total_files += 1
 
             base_raw = os.path.join(args.work, "_raw", "base", directory, stem + ".json")
             pr_raw = os.path.join(args.work, "_raw", "pr", directory, stem + ".json")
@@ -151,75 +167,137 @@ def build(args):
             base_ok, base_msg = run_engine(args.base_engine, source, base_raw)
             pr_ok, pr_msg = run_engine(args.pr_engine, source, pr_raw)
 
+            r = {"file": name, "adds": 0, "dels": 0, "diff": "", "error": ""}
             if not base_ok or not pr_ok:
                 detail = []
                 if not base_ok:
                     detail.append(f"base engine failed:\n{base_msg}")
                 if not pr_ok:
                     detail.append(f"PR engine failed:\n{pr_msg}")
-                results.append({"file": name, "status": "error",
-                                "detail": "\n\n".join(detail)})
-                total_changed += 1
+                r["status"] = "error"
+                r["error"] = "\n\n".join(detail)
+                results.append(r)
                 continue
 
             write_normalized(base_raw, base_norm)
             write_normalized(pr_raw, pr_norm)
-            diff = git_diff(base_norm, pr_norm, args.work, args.max_lines_per_file)
+            adds, dels, diff = git_diff(base_norm, pr_norm, args.work, args.context)
             if diff:
-                results.append({"file": name, "status": "changed", "detail": diff})
-                total_changed += 1
+                r.update(status="changed", adds=adds, dels=dels, diff=diff)
             else:
-                results.append({"file": name, "status": "same", "detail": ""})
+                r["status"] = "same"
+            results.append(r)
 
         groups.append((heading_for(directory), results))
+    return groups
 
-    return render(groups, total_changed, total_files, args)
+
+# --------------------------------------------------------------------------- render
+
+def _badge(r):
+    return f"+{r['adds']} / -{r['dels']}"
 
 
-def render(groups, total_changed, total_files, args):
-    out = []
-    out.append("# Diffreport")
-    out.append("")
-    subject = f"`{args.base_label}` → `{args.pr_label}`" if args.base_label else ""
-    if subject:
-        out.append(f"Snapshot of the FHIR output before/after this PR ({subject}), "
-                   "with resource ids and `Bundle.timestamp` normalized away.")
-    if total_changed == 0:
-        out.append(f"\n✅ **No mapping changes** across {total_files} sample(s).")
-    else:
-        out.append(f"\n⚠️ **{total_changed} of {total_files} sample(s) "
-                   "changed** — review the diffs below.")
-    out.append("")
-
+def inventory_table(groups):
+    """A compact, complete listing of every file -- the 'nothing can hide' safety net."""
+    rows = ["| Group | Sample | Change |", "|---|---|---|"]
     for heading, results in groups:
-        changed = sum(1 for r in results if r["status"] != "same")
-        out.append(f"## {heading}")
-        out.append("")
         for r in results:
-            if r["status"] == "same":
-                out.append(f"### {r['file']}")
-                out.append("")
-                out.append("✅ No changes.")
-                out.append("")
+            if r["status"] == "changed":
+                change = f"⚠️ {_badge(r)}"
             elif r["status"] == "error":
-                out.append(f"### ❌ {r['file']}")
-                out.append("")
-                out.append("```")
-                out.append(r["detail"])
-                out.append("```")
-                out.append("")
+                change = "❌ error"
             else:
-                out.append(f"### ⚠️ {r['file']}")
-                out.append("")
-                out.append("```diff")
-                out.append(r["detail"])
-                out.append("```")
-                out.append("")
-    return "\n".join(out).rstrip() + "\n"
+                change = "✅ —"
+            rows.append(f"| {heading} | {r['file']} | {change} |")
+    return "\n".join(rows)
+
+
+def file_block(r, expand_under, full=True):
+    """Render one file as a collapsible <details> section."""
+    name = r["file"]
+    if r["status"] == "same":
+        return (f"<details>\n<summary>✅ <code>{name}</code> — no changes</summary>\n"
+                f"</details>")
+    if r["status"] == "error":
+        return (f"<details open>\n<summary>❌ <code>{name}</code> — conversion error"
+                f"</summary>\n\n```\n{r['error']}\n```\n\n</details>")
+    # changed
+    if not full:
+        return (f"<details>\n<summary>⚠️ <code>{name}</code> — {_badge(r)} "
+                f"(diff too large; see run Summary / artifact)</summary>\n</details>")
+    open_attr = " open" if (r["adds"] + r["dels"]) <= expand_under else ""
+    return (f"<details{open_attr}>\n<summary>⚠️ <code>{name}</code> — {_badge(r)}"
+            f"</summary>\n\n```diff\n{r['diff']}\n```\n\n</details>")
+
+
+def group_section(heading, results, expand_under, stub_ids):
+    changed = sum(1 for r in results if r["status"] != "same")
+    label = f"<b>{heading}</b> — {changed} of {len(results)} changed"
+    blocks = [file_block(r, expand_under, full=id(r) not in stub_ids) for r in results]
+    inner = "\n\n".join(blocks)
+    return f"<details open>\n<summary>{label}</summary>\n\n{inner}\n\n</details>"
+
+
+def header(groups, args, spill=0):
+    total = sum(len(r) for _, r in groups)
+    changed = sum(1 for _, rs in groups for r in rs if r["status"] != "same")
+    lines = ["# Diffreport", ""]
+    if args.base_label:
+        lines.append(
+            f"Snapshot of the FHIR output before/after this PR "
+            f"(`{args.base_label}` → `{args.pr_label}`), with resource ids and "
+            f"`Bundle.timestamp` normalized away.")
+        lines.append("")
+    if changed == 0:
+        lines.append(f"✅ **No mapping changes** across {total} sample(s).")
+    else:
+        lines.append(f"⚠️ **{changed} of {total} sample(s) changed** — every sample is "
+                     "listed below; expand a section to see its diff.")
+    if spill:
+        lines.append("")
+        lines.append(f"> ℹ️ {spill} large diff(s) exceeded GitHub's comment size limit "
+                     "and are collapsed here — see the full diff in the run **Summary** "
+                     "or the **snapshot-diff** artifact.")
+    return "\n".join(lines)
+
+
+def assemble(groups, args, stub_ids):
+    parts = [header(groups, args, spill=len(stub_ids)), "", inventory_table(groups), ""]
+    for heading, results in groups:
+        parts.append(group_section(heading, results, args.expand_under, stub_ids))
+        parts.append("")
+    return "\n".join(parts).rstrip() + "\n"
+
+
+def render_full(groups, args):
+    """The complete report -- nothing stubbed (for Summary + artifact)."""
+    return assemble(groups, args, stub_ids=set())
+
+
+def render_comment(groups, args, limit):
+    """Size-guarded report for the PR comment.
+
+    The inventory stays complete; if the body is over ``limit``, the largest diffs are
+    progressively stubbed (replaced by a pointer to Summary/artifact) until it fits.
+    """
+    body = assemble(groups, args, stub_ids=set())
+    if len(body) <= limit:
+        return body
+    changed = [r for _, rs in groups for r in rs if r["status"] == "changed"]
+    changed.sort(key=lambda r: len(r["diff"]), reverse=True)
+    stub_ids = set()
+    for r in changed:
+        stub_ids.add(id(r))
+        body = assemble(groups, args, stub_ids)
+        if len(body) <= limit:
+            break
+    return body
 
 
 def main():
-    parser = argparse.ArgumentParser(description=__doc__)
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--base-engine", required=True,
                         help="compiled engine (.py) built from the base branch maps")
     parser.add_argument("--pr-engine", required=True,
@@ -229,25 +307,39 @@ def main():
     parser.add_argument("--config", default="input/config.json")
     parser.add_argument("--work", default="snapshots",
                         help="working dir for raw + normalized outputs")
-    parser.add_argument("--report", default="report.md")
+    parser.add_argument("--report", default="report.md",
+                        help="full report (every diff) for the run Summary / artifact")
+    parser.add_argument("--comment", default="",
+                        help="optional size-guarded copy for the PR comment")
     parser.add_argument("--base-label", default=os.environ.get("BASE_LABEL", ""))
     parser.add_argument("--pr-label", default=os.environ.get("PR_LABEL", ""))
-    parser.add_argument("--max-lines-per-file", type=int, default=400,
-                        help="cap per-file diff length (0 = unlimited)")
+    parser.add_argument("--context", type=int, default=3,
+                        help="lines of context per diff hunk (git --unified)")
+    parser.add_argument("--expand-under", type=int, default=40,
+                        help="auto-expand a file's <details> when its changed-line "
+                             "count is at most this (0 = always collapsed)")
+    parser.add_argument("--comment-limit", type=int, default=COMMENT_LIMIT)
     parser.add_argument("--summary", action="store_true",
-                        help="also append the report to $GITHUB_STEP_SUMMARY")
+                        help="also append the full report to $GITHUB_STEP_SUMMARY")
     args = parser.parse_args()
 
-    report = build(args)
+    groups = build(args)
 
+    full = render_full(groups, args)
     with open(args.report, "w", encoding="utf-8") as fh:
-        fh.write(report)
-    print(f"Wrote {args.report} ({len(report)} bytes)")
+        fh.write(full)
+    print(f"Wrote {args.report} ({len(full)} bytes)")
+
+    if args.comment:
+        comment = render_comment(groups, args, args.comment_limit)
+        with open(args.comment, "w", encoding="utf-8") as fh:
+            fh.write(comment)
+        print(f"Wrote {args.comment} ({len(comment)} bytes)")
 
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if args.summary and summary_path:
         with open(summary_path, "a", encoding="utf-8") as fh:
-            fh.write(report)
+            fh.write(full)
 
     return 0
 
