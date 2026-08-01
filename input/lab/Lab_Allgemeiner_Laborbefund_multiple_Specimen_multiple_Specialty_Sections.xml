@@ -8450,6 +8450,192 @@
                                             <templateId root="1.2.40.0.34.6.0.11.3.27"/>
                                             <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
                                             <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-3-23" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2865-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-1-Globulin"/>
+                                            <text>
+                                                <reference value="#OBS-3-23"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime value="20210601130100+0200"/>
+                                            <value unit="g/L" value="1.9" xsi:type="PQ"/>
+                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                            <!-- Referenzbereich -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                    <text>
+                                                        <reference value="#OBSREF-3-23"/>
+                                                    </text>
+                                                    <value xsi:type="IVL_PQ">
+                                                        <low value="1.0" unit="g/L"/>
+                                                        <high value="2.1" unit="g/L"/>
+                                                    </value>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                    <!-- Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-3-23" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2865-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-1-Globulin"/>
+                                            <text>
+                                                <reference value="#OBS-3-23"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime value="20210601130100+0200"/>
+                                            <value unit="g/L" value="1.9" xsi:type="PQ"/>
+                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                            <!-- Referenzbereich -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                    <text>
+                                                        <reference value="#OBSREF-3-23"/>
+                                                    </text>
+                                                    <value xsi:type="IVL_PQ">
+                                                        <low value="1.0" unit="g/L"/>
+                                                        <high value="2.1" unit="g/L"/>
+                                                    </value>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                    <!-- Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-3-23" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2865-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-1-Globulin"/>
+                                            <text>
+                                                <reference value="#OBS-3-23"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime value="20210601130100+0200"/>
+                                            <value unit="g/L" value="1.9" xsi:type="PQ"/>
+                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                            <!-- Referenzbereich -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                    <text>
+                                                        <reference value="#OBSREF-3-23"/>
+                                                    </text>
+                                                    <value xsi:type="IVL_PQ">
+                                                        <low value="1.0" unit="g/L"/>
+                                                        <high value="2.1" unit="g/L"/>
+                                                    </value>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                    <!-- Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-3-23" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2865-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-1-Globulin"/>
+                                            <text>
+                                                <reference value="#OBS-3-23"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime value="20210601130100+0200"/>
+                                            <value unit="g/L" value="1.9" xsi:type="PQ"/>
+                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                            <!-- Referenzbereich -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                    <text>
+                                                        <reference value="#OBSREF-3-23"/>
+                                                    </text>
+                                                    <value xsi:type="IVL_PQ">
+                                                        <low value="1.0" unit="g/L"/>
+                                                        <high value="2.1" unit="g/L"/>
+                                                    </value>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                    <!-- Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-3-23" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2865-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-1-Globulin"/>
+                                            <text>
+                                                <reference value="#OBS-3-23"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime value="20210601130100+0200"/>
+                                            <value unit="g/L" value="1.9" xsi:type="PQ"/>
+                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                            <!-- Referenzbereich -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                    <text>
+                                                        <reference value="#OBSREF-3-23"/>
+                                                    </text>
+                                                    <value xsi:type="IVL_PQ">
+                                                        <low value="1.0" unit="g/L"/>
+                                                        <high value="2.1" unit="g/L"/>
+                                                    </value>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                    <!-- Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
+                                            <id extension="OBS-3-23" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
+                                            <code code="2865-4" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-1-Globulin"/>
+                                            <text>
+                                                <reference value="#OBS-3-23"/>
+                                            </text>
+                                            <statusCode code="completed"/>
+                                            <effectiveTime value="20210601130100+0200"/>
+                                            <value unit="g/L" value="1.9" xsi:type="PQ"/>
+                                            <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                            <!-- Referenzbereich -->
+                                            <referenceRange typeCode="REFV">
+                                                <observationRange classCode="OBS" moodCode="EVN.CRT">
+                                                    <text>
+                                                        <reference value="#OBSREF-3-23"/>
+                                                    </text>
+                                                    <value xsi:type="IVL_PQ">
+                                                        <low value="1.0" unit="g/L"/>
+                                                        <high value="2.1" unit="g/L"/>
+                                                    </value>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observationRange>
+                                            </referenceRange>
+                                        </observation>
+                                    </component>
+                                    <!-- Laboratory Observation Entry -->
+                                    <component typeCode="COMP">
+                                        <observation classCode="OBS" moodCode="EVN">
+                                            <!-- templateId für Laboratory Observation Entry -->
+                                            <templateId root="1.2.40.0.34.6.0.11.3.27"/>
+                                            <!-- templateId für IHE PalM TF3 Rev.10, 6.3.4.13 Laboratory Observation -->
+                                            <templateId root="1.3.6.1.4.1.19376.1.3.1.6"/>
                                             <id extension="OBS-3-24" root="1.2.40.0.34.99.4613.122082.1.3.5"/>
                                             <code code="2868-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Alpha-2-Globulin"/>
                                             <text>
