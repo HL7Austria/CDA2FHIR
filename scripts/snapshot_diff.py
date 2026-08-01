@@ -1,13 +1,17 @@
 """Snapshot diff test to catch mapping regressions (issue #423).
 
 Given two compiled MaLaC-HD engines -- one built from the PR branch's maps and one
-from the PR's target ``*-dev`` branch -- this converts every sample CDA document in
-``input/`` with *both* engines, normalises away the non-deterministic bits (freshly
-generated resource UUIDs and ``Bundle.timestamp``) and renders a ``git diff`` of the
-two FHIR bundles, grouped by document type.
+from the PR's target ``*-dev`` branch -- this converts each branch's sample CDA
+documents with its *matching* engine, normalises away the non-deterministic bits
+(freshly generated resource UUIDs and ``Bundle.timestamp``) and renders a ``git diff``
+of the two FHIR bundles, grouped by document type.
 
-Because the input fixtures are held constant, any diff is attributable to the change
-in the maps -- i.e. a mapping regression (or an intended mapping change to review).
+The base engine reads the base (``*-dev``) branch's ``input/`` fixtures and the PR
+engine reads the PR branch's, so the diff reflects everything the PR changes: map
+edits *and* changes to the sample CDA themselves. A fixture edited on both sides shows
+the resulting FHIR delta; one present on only a single side renders as a whole-bundle
+addition (new sample) or removal -- so a mapping regression and an input change are
+both visible, and reviewable, in the same report.
 
 Readability vs. completeness
 ----------------------------
@@ -110,6 +114,24 @@ def write_normalized(src_json, dst_json):
         fh.write(normalize(text))
 
 
+def write_empty(dst_json):
+    """Materialize an empty normalized file for a fixture that exists on only one
+    branch, so the absent side diffs as a clean whole-bundle add (new sample) or
+    remove."""
+    os.makedirs(os.path.dirname(dst_json), exist_ok=True)
+    with open(dst_json, "w", encoding="utf-8") as fh:
+        fh.write("")
+
+
+def xml_fixtures(directory_path):
+    """``basename -> full path`` for every ``*.xml`` fixture in a dir (empty if the
+    directory is absent, e.g. a document type that exists on only one branch)."""
+    if not os.path.isdir(directory_path):
+        return {}
+    return {os.path.basename(p): p
+            for p in glob.glob(os.path.join(directory_path, "*.xml"))}
+
+
 def git_diff(base_path, pr_path, work_root, context):
     """Diff two normalized files; return ``(adds, dels, body)``.
 
@@ -145,49 +167,65 @@ def git_diff(base_path, pr_path, work_root, context):
 
 
 def build(args):
-    """Convert + normalize + diff every fixture; return the list of per-group results."""
+    """Convert + normalize + diff every fixture; return the list of per-group results.
+
+    Each engine converts *its own branch's* fixtures: the base engine reads
+    ``--base-input-dir`` and the PR engine ``--pr-input-dir``. Per directory we take the
+    union of the two file sets, so a fixture present on both sides diffs its two
+    outputs, while one present on only a single side renders as a whole-bundle add
+    (``kind="added"``) or remove (``kind="removed"``) -- the absent side is an empty
+    normalized file.
+    """
     with open(args.config, "r", encoding="utf-8") as fh:
         config = json.load(fh)
 
     groups = []  # (heading, [result dict])
     for entry in config:
         directory = entry["directory"]
-        in_dir = os.path.join(args.input_dir, directory)
-        if not os.path.isdir(in_dir):
-            continue
-        sources = sorted(glob.glob(os.path.join(in_dir, "*.xml")))
-        if not sources:
+        base_files = xml_fixtures(os.path.join(args.base_input_dir, directory))
+        pr_files = xml_fixtures(os.path.join(args.pr_input_dir, directory))
+        names = sorted(set(base_files) | set(pr_files))
+        if not names:
             continue
 
         results = []
-        for source in sources:
-            name = os.path.basename(source)
+        for name in names:
             stem = os.path.splitext(name)[0]
+            base_src = base_files.get(name)
+            pr_src = pr_files.get(name)
+            kind = "both" if base_src and pr_src else "added" if pr_src else "removed"
 
             base_raw = os.path.join(args.work, "_raw", "base", directory, stem + ".json")
             pr_raw = os.path.join(args.work, "_raw", "pr", directory, stem + ".json")
             base_norm = os.path.join(args.work, "base", directory, stem + ".json")
             pr_norm = os.path.join(args.work, "pr", directory, stem + ".json")
-            for p in (base_raw, pr_raw):
-                os.makedirs(os.path.dirname(p), exist_ok=True)
 
-            base_ok, base_msg = run_engine(args.base_engine, source, base_raw)
-            pr_ok, pr_msg = run_engine(args.pr_engine, source, pr_raw)
+            # Run each present side's engine into a normalized file; a side with no
+            # fixture normalizes to empty so the diff is a clean add/remove.
+            errors = []
+            if base_src:
+                os.makedirs(os.path.dirname(base_raw), exist_ok=True)
+                ok, msg = run_engine(args.base_engine, base_src, base_raw)
+                write_normalized(base_raw, base_norm) if ok else errors.append(
+                    f"base engine failed:\n{msg}")
+            else:
+                write_empty(base_norm)
+            if pr_src:
+                os.makedirs(os.path.dirname(pr_raw), exist_ok=True)
+                ok, msg = run_engine(args.pr_engine, pr_src, pr_raw)
+                write_normalized(pr_raw, pr_norm) if ok else errors.append(
+                    f"PR engine failed:\n{msg}")
+            else:
+                write_empty(pr_norm)
 
-            r = {"file": name, "adds": 0, "dels": 0, "diff": "", "error": ""}
-            if not base_ok or not pr_ok:
-                detail = []
-                if not base_ok:
-                    detail.append(f"base engine failed:\n{base_msg}")
-                if not pr_ok:
-                    detail.append(f"PR engine failed:\n{pr_msg}")
+            r = {"file": name, "kind": kind, "adds": 0, "dels": 0,
+                 "diff": "", "error": ""}
+            if errors:
                 r["status"] = "error"
-                r["error"] = "\n\n".join(detail)
+                r["error"] = "\n\n".join(errors)
                 results.append(r)
                 continue
 
-            write_normalized(base_raw, base_norm)
-            write_normalized(pr_raw, pr_norm)
             adds, dels, diff = git_diff(base_norm, pr_norm, args.work, args.context)
             if diff:
                 r.update(status="changed", adds=adds, dels=dels, diff=diff)
@@ -203,6 +241,28 @@ def build(args):
 
 def _badge(r):
     return f"+{r['adds']} / -{r['dels']}"
+
+
+def _change_cell(r):
+    """Compact inventory-cell descriptor of a file's change."""
+    if r["status"] == "error":
+        return "❌ error"
+    if r["status"] != "changed":
+        return "✅ —"
+    if r["kind"] == "added":
+        return f"🆕 new (+{r['adds']})"
+    if r["kind"] == "removed":
+        return f"🗑️ removed (-{r['dels']})"
+    return f"⚠️ {_badge(r)}"
+
+
+def _changed_summary(r, name):
+    """``<summary>`` text for a changed file, distinguishing add / remove / edit."""
+    if r["kind"] == "added":
+        return f"🆕 <code>{name}</code> — new sample, +{r['adds']}"
+    if r["kind"] == "removed":
+        return f"🗑️ <code>{name}</code> — removed sample, -{r['dels']}"
+    return f"⚠️ <code>{name}</code> — {_badge(r)}"
 
 
 def is_big_change(groups, max_files, max_lines):
@@ -225,13 +285,9 @@ def inventory_table(groups):
     rows = ["| Group | Sample | Change |", "|---|---|---|"]
     for heading, results in groups:
         for r in results:
-            if r["status"] == "changed":
-                change = f"⚠️ {_badge(r)}"
-            elif r["status"] == "error":
-                change = "❌ error"
-            else:
-                change = "✅ —"
-            rows.append(f"| {heading} | <sub>{display_name(r['file'])}</sub> | {change} |")
+            rows.append(
+                f"| {heading} | <sub>{display_name(r['file'])}</sub> "
+                f"| {_change_cell(r)} |")
     return "\n".join(rows)
 
 
@@ -245,7 +301,7 @@ def file_block(r, open_default):
         return (f"<details open>\n<summary>❌ <code>{name}</code> — conversion error"
                 f"</summary>\n\n```\n{r['error']}\n```\n\n</details>")
     open_attr = " open" if open_default else ""
-    return (f"<details{open_attr}>\n<summary>⚠️ <code>{name}</code> — {_badge(r)}"
+    return (f"<details{open_attr}>\n<summary>{_changed_summary(r, name)}"
             f"</summary>\n\n```diff\n{r['diff']}\n```\n\n</details>")
 
 
@@ -274,9 +330,9 @@ def header(groups, args):
             f"(`{args.base_label}` → `{args.pr_label}`)")
         lines.append("")
     if changed == 0:
-        lines.append(f"✅ **No mapping changes** across {total} sample(s).")
+        lines.append(f"✅ **No differences** across {total} sample(s).")
     else:
-        lines.append(f"⚠️ **{changed} of {total} sample(s) expand a section to see its diff.")
+        lines.append(f"⚠️ **{changed} of {total}** samples changed.")
     return "\n".join(lines)
 
 
@@ -301,7 +357,7 @@ def render_comment(body, groups, args, limit):
                    else "run **Summary**")
     parts = [
         header(groups, args), "", inventory_table(groups), "",
-        "> ℹ️ Diffs exceed GitHub's comment size limit. Change sample listed above. Open {summary_ref} or the **snapshot-diff** artifact for all Diffs.",
+        f"> ℹ️ Diffs exceed GitHub's comment size limit. Change sample listed above. Open {summary_ref} or the **snapshot-diff** artifact for all Diffs.",
     ]
     return "\n".join(parts).rstrip() + "\n"
 
@@ -314,7 +370,14 @@ def main():
     parser.add_argument("--pr-engine", required=True,
                         help="compiled engine (.py) built from the PR branch maps")
     parser.add_argument("--input-dir", default="input",
-                        help="directory holding the per-type CDA fixture folders")
+                        help="fallback fixture dir used for whichever side is not given "
+                             "explicitly (see --base-input-dir / --pr-input-dir)")
+    parser.add_argument("--base-input-dir", default="",
+                        help="per-type CDA fixture folders the BASE engine converts "
+                             "(defaults to --input-dir)")
+    parser.add_argument("--pr-input-dir", default="",
+                        help="per-type CDA fixture folders the PR engine converts "
+                             "(defaults to --input-dir)")
     parser.add_argument("--config", default="input/config.json")
     parser.add_argument("--work", default="snapshots",
                         help="working dir for raw + normalized outputs")
@@ -341,6 +404,10 @@ def main():
     parser.add_argument("--summary", action="store_true",
                         help="also append the full report to $GITHUB_STEP_SUMMARY")
     args = parser.parse_args()
+    # Each side falls back to the shared --input-dir, preserving the old single-input
+    # behaviour for local runs that pass only --input-dir.
+    args.base_input_dir = args.base_input_dir or args.input_dir
+    args.pr_input_dir = args.pr_input_dir or args.input_dir
 
     groups = build(args)
 
