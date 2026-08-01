@@ -270,9 +270,8 @@ def header(groups, args):
     lines = ["# Diffreport", ""]
     if args.base_label:
         lines.append(
-            f"Snapshot of the FHIR output before/after this PR "
-            f"(`{args.base_label}` → `{args.pr_label}`), with resource ids and "
-            f"`Bundle.timestamp` normalized away.")
+            f"Snapshot of the FHIR output for PR "
+            f"(`{args.base_label}` → `{args.pr_label}`)")
         lines.append("")
     if changed == 0:
         lines.append(f"✅ **No mapping changes** across {total} sample(s).")
@@ -302,9 +301,7 @@ def render_comment(body, groups, args, limit):
                    else "run **Summary**")
     parts = [
         header(groups, args), "", inventory_table(groups), "",
-        "> ℹ️ The full per-file diffs exceed GitHub's comment size limit. Every changed "
-        f"sample is listed above — open the {summary_ref} (one click, all diffs "
-        "expandable) or the **snapshot-diff** artifact.",
+        "> ℹ️ Diffs exceed GitHub's comment size limit. Change sample listed above. Open {summary_ref} or the **snapshot-diff** artifact for all Diffs.",
     ]
     return "\n".join(parts).rstrip() + "\n"
 
