@@ -581,7 +581,7 @@ group INT(source src : INT, target tgt : integer) extends Any <<types>> {
 }
 
 group INTQuantity(source src: INT, target tgt: Quantity) extends Any <<types>> {
- // src -> tgt.system = 'http://unitsofmeasure.org' "FhirQuantitySystem";
+  src -> tgt.system = 'http://unitsofmeasure.org' "FhirQuantitySystem";
   src ->
     tgt.code = '1',
     tgt.unit = '1';
