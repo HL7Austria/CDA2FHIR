@@ -96,7 +96,7 @@
                 <!-- Name des Patienten (siehe Allgemeiner Implementierungsleitfaden) -->
                 <name>
                     <prefix qualifier="AC">Dr.</prefix>
-                    <given>Maria</given>
+                    <given>Mario</given>
                     <given>Johanna</given>
                     <family>Musterfrau</family>
                     <family qualifier="BR">VorDerHeirat</family>
