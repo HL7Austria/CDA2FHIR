@@ -16,17 +16,19 @@ The report is therefore built in two layers:
 
 * a **complete inventory** (every file + its ``+adds/-dels`` magnitude) that is always
   visible -- the safety net, so no change can hide;
-* the actual per-file diffs inside collapsible ``<details>`` sections (groups collapse
-  as a whole, small diffs auto-expand) so the reader scans the inventory and drills
-  into only what they want instead of scrolling a wall of text.
+* the actual per-file diffs inside collapsible ``<details>`` sections. Every changed
+  file is always expandable. When the change is small (few files, few lines) the diffs
+  are expanded by default; on a large change they collapse by default so the reader
+  scans the inventory and opens only what they want.
 
 Two artefacts are emitted:
 
-* ``--report``  -- the *full* report (every diff, nothing stubbed), for the Actions run
-  Summary and the uploaded artifact where size is not a hard constraint.
-* ``--comment`` -- the same report, but size-guarded to GitHub's 65 536-char PR-comment
-  limit: the inventory is always complete; if the diffs don't fit, the largest ones are
-  replaced by a stub pointing at the run Summary / artifact so the comment still posts.
+* ``--report``  -- the *full* report (every diff), for the Actions run Summary and the
+  uploaded artifact, where size is not a hard constraint.
+* ``--comment`` -- the same report for the PR comment. GitHub caps a comment at 65 536
+  chars; if the full report would exceed that, the comment degrades to the (small,
+  complete) inventory plus a pointer to the Summary/artifact -- it never drops an
+  individual file's diff in favour of a non-expandable stub.
 
 Differences are *not* treated as errors: the script exits non-zero only on a hard
 failure (e.g. an engine that cannot be run at all).
@@ -48,8 +50,8 @@ GROUP_HEADINGS = {
     "emed": "eMed",
 }
 
-# GitHub rejects issue/PR comment bodies over 65 536 chars; stay comfortably under.
-COMMENT_LIMIT = 60000
+# GitHub rejects issue/PR comment bodies over 65 536 chars; stay just under.
+COMMENT_LIMIT = 65000
 
 _UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
@@ -75,6 +77,11 @@ def normalize(text):
 
 def heading_for(directory):
     return GROUP_HEADINGS.get(directory, directory.replace("_", " ").title())
+
+
+def display_name(name):
+    """Drop the ``.xml`` extension shared by every fixture (pure visual noise)."""
+    return name[:-4] if name.endswith(".xml") else name
 
 
 def run_engine(engine, source, target):
@@ -198,8 +205,23 @@ def _badge(r):
     return f"+{r['adds']} / -{r['dels']}"
 
 
+def is_big_change(groups, max_files, max_lines):
+    """A change is 'big' when many files changed OR the total diff is large.
+
+    Small changes auto-expand (you see them without clicking); big ones collapse by
+    default so the reader isn't buried and drills in from the inventory instead.
+    """
+    changed = [r for _, rs in groups for r in rs if r["status"] == "changed"]
+    total = sum(r["adds"] + r["dels"] for r in changed)
+    return len(changed) > max_files or total > max_lines
+
+
 def inventory_table(groups):
-    """A compact, complete listing of every file -- the 'nothing can hide' safety net."""
+    """A compact, complete listing of every file -- the 'nothing can hide' safety net.
+
+    Sample names are rendered small (``<sub>``) and without the shared ``.xml`` so the
+    table stays narrow enough to read at a glance.
+    """
     rows = ["| Group | Sample | Change |", "|---|---|---|"]
     for heading, results in groups:
         for r in results:
@@ -209,37 +231,40 @@ def inventory_table(groups):
                 change = "❌ error"
             else:
                 change = "✅ —"
-            rows.append(f"| {heading} | {r['file']} | {change} |")
+            rows.append(f"| {heading} | <sub>{display_name(r['file'])}</sub> | {change} |")
     return "\n".join(rows)
 
 
-def file_block(r, expand_under, full=True):
-    """Render one file as a collapsible <details> section."""
-    name = r["file"]
+def file_block(r, open_default):
+    """Render one file as a collapsible <details> section (diff always included)."""
+    name = display_name(r["file"])
     if r["status"] == "same":
         return (f"<details>\n<summary>✅ <code>{name}</code> — no changes</summary>\n"
                 f"</details>")
     if r["status"] == "error":
         return (f"<details open>\n<summary>❌ <code>{name}</code> — conversion error"
                 f"</summary>\n\n```\n{r['error']}\n```\n\n</details>")
-    # changed
-    if not full:
-        return (f"<details>\n<summary>⚠️ <code>{name}</code> — {_badge(r)} "
-                f"(diff too large; see run Summary / artifact)</summary>\n</details>")
-    open_attr = " open" if (r["adds"] + r["dels"]) <= expand_under else ""
+    open_attr = " open" if open_default else ""
     return (f"<details{open_attr}>\n<summary>⚠️ <code>{name}</code> — {_badge(r)}"
             f"</summary>\n\n```diff\n{r['diff']}\n```\n\n</details>")
 
 
-def group_section(heading, results, expand_under, stub_ids):
+def group_section(heading, results, big_change, expand_under):
     changed = sum(1 for r in results if r["status"] != "same")
     label = f"<b>{heading}</b> — {changed} of {len(results)} changed"
-    blocks = [file_block(r, expand_under, full=id(r) not in stub_ids) for r in results]
+    blocks = []
+    for r in results:
+        open_default = (
+            r["status"] == "changed"
+            and not big_change
+            and (r["adds"] + r["dels"]) <= expand_under
+        )
+        blocks.append(file_block(r, open_default))
     inner = "\n\n".join(blocks)
     return f"<details open>\n<summary>{label}</summary>\n\n{inner}\n\n</details>"
 
 
-def header(groups, args, spill=0):
+def header(groups, args):
     total = sum(len(r) for _, r in groups)
     changed = sum(1 for _, rs in groups for r in rs if r["status"] != "same")
     lines = ["# Diffreport", ""]
@@ -254,45 +279,33 @@ def header(groups, args, spill=0):
     else:
         lines.append(f"⚠️ **{changed} of {total} sample(s) changed** — every sample is "
                      "listed below; expand a section to see its diff.")
-    if spill:
-        lines.append("")
-        lines.append(f"> ℹ️ {spill} large diff(s) exceeded GitHub's comment size limit "
-                     "and are collapsed here — see the full diff in the run **Summary** "
-                     "or the **snapshot-diff** artifact.")
     return "\n".join(lines)
 
 
-def assemble(groups, args, stub_ids):
-    parts = [header(groups, args, spill=len(stub_ids)), "", inventory_table(groups), ""]
+def assemble(groups, args):
+    big = is_big_change(groups, args.expand_max_files, args.expand_max_lines)
+    parts = [header(groups, args), "", inventory_table(groups), ""]
     for heading, results in groups:
-        parts.append(group_section(heading, results, args.expand_under, stub_ids))
+        parts.append(group_section(heading, results, big, args.expand_under))
         parts.append("")
     return "\n".join(parts).rstrip() + "\n"
 
 
-def render_full(groups, args):
-    """The complete report -- nothing stubbed (for Summary + artifact)."""
-    return assemble(groups, args, stub_ids=set())
+def render_comment(body, groups, args, limit):
+    """Size-guarded PR comment.
 
-
-def render_comment(groups, args, limit):
-    """Size-guarded report for the PR comment.
-
-    The inventory stays complete; if the body is over ``limit``, the largest diffs are
-    progressively stubbed (replaced by a pointer to Summary/artifact) until it fits.
+    If the full report fits, use it as-is (every file expandable). Otherwise fall back
+    to the complete inventory plus a pointer -- never a per-file non-expandable stub.
     """
-    body = assemble(groups, args, stub_ids=set())
     if len(body) <= limit:
         return body
-    changed = [r for _, rs in groups for r in rs if r["status"] == "changed"]
-    changed.sort(key=lambda r: len(r["diff"]), reverse=True)
-    stub_ids = set()
-    for r in changed:
-        stub_ids.add(id(r))
-        body = assemble(groups, args, stub_ids)
-        if len(body) <= limit:
-            break
-    return body
+    parts = [
+        header(groups, args), "", inventory_table(groups), "",
+        "> ℹ️ The full per-file diffs exceed GitHub's comment size limit. Every changed "
+        "sample is listed above — open the run **Summary** or the **snapshot-diff** "
+        "artifact for the complete, expandable diffs.",
+    ]
+    return "\n".join(parts).rstrip() + "\n"
 
 
 def main():
@@ -315,9 +328,13 @@ def main():
     parser.add_argument("--pr-label", default=os.environ.get("PR_LABEL", ""))
     parser.add_argument("--context", type=int, default=3,
                         help="lines of context per diff hunk (git --unified)")
-    parser.add_argument("--expand-under", type=int, default=40,
-                        help="auto-expand a file's <details> when its changed-line "
-                             "count is at most this (0 = always collapsed)")
+    parser.add_argument("--expand-under", type=int, default=30,
+                        help="auto-expand a file when its changed-line count is at "
+                             "most this (and the overall change is not big)")
+    parser.add_argument("--expand-max-files", type=int, default=4,
+                        help="above this many changed files, collapse everything")
+    parser.add_argument("--expand-max-lines", type=int, default=80,
+                        help="above this many total changed lines, collapse everything")
     parser.add_argument("--comment-limit", type=int, default=COMMENT_LIMIT)
     parser.add_argument("--summary", action="store_true",
                         help="also append the full report to $GITHUB_STEP_SUMMARY")
@@ -325,13 +342,13 @@ def main():
 
     groups = build(args)
 
-    full = render_full(groups, args)
+    full = assemble(groups, args)
     with open(args.report, "w", encoding="utf-8") as fh:
         fh.write(full)
     print(f"Wrote {args.report} ({len(full)} bytes)")
 
     if args.comment:
-        comment = render_comment(groups, args, args.comment_limit)
+        comment = render_comment(full, groups, args, args.comment_limit)
         with open(args.comment, "w", encoding="utf-8") as fh:
             fh.write(comment)
         print(f"Wrote {args.comment} ({len(comment)} bytes)")
