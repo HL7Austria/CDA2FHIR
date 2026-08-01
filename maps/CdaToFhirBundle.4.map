@@ -1381,5 +1381,3 @@ group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Sect
     };
   };
 }
-
-// Test 
