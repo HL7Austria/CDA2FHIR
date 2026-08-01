@@ -8880,6 +8880,8 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
 }
 
 group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_organizer: Organizer, target fhir_observation: Observation, target fhir_patient: Patient) {
+  /*
+  
   // fhir_observation.category
   cda_organizer -> fhir_observation.category as fhir_category,
     fhir_category.coding as fhir_category_coding,
@@ -8892,9 +8894,10 @@ group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_
     fhir_patient.id as fhir_patient_id,
     fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id)
     "FhirObservationSubject";
+    
 
   // organizer.code
-  cda_organizer.code -> fhir_observation.category;
+  //cda_organizer.code -> fhir_observation.category;
 
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions
   cda_organizer.code -> fhir_observation.code;
@@ -8919,6 +8922,8 @@ group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_
     organizer_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
   } "CdaStatusCodeToFhirObservationStatusMapped";
   // organizer.effectiveTime
+
+  */
   // TODO
   cda_organizer.effectiveTime as cda_effectiveTime ->
     fhir_observation.effective = create('dateTime') as fhir_observation_effective,
