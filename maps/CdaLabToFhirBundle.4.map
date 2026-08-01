@@ -8967,6 +8967,12 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
     fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
     fhir_category_coding.code = 'laboratory'
     "FhirObservationCategoryCoding";
+  
+  cda_laboratory_observation -> fhir_observation.category as fhir_category,
+    fhir_category.coding as fhir_category_coding,
+    fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
+    fhir_category_coding.code = 'laboratory124'
+    "FhirObservationCategoryCoding";
   // fhir_observation.subject
   cda_laboratory_observation ->
     fhir_observation.subject = create('Reference') as fhir_observation_subject_reference,
