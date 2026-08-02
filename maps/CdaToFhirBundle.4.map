@@ -1382,4 +1382,3 @@ group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Sect
   };
 }
 
-// TODO #418: create second test
