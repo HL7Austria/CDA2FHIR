@@ -8,7 +8,7 @@ sub-issue so nothing gets lost and open work is visible per parent issue at a gl
 
 Comment format (any comment leader works -- ``//``, ``#``, ``<!-- -->``, ``/* */``)::
 
-    // TODO #236: short description of what is left to do
+    
 
 Two sub-commands
 ----------------
@@ -55,7 +55,7 @@ LABEL = "todo"
 
 Todo = namedtuple("Todo", "parent description file line")
 
-# ``TODO #236: text``. Case-insensitive on the keyword; the ``#<n>:`` shape keeps prose
+# ``x``.  on the keyword; the ``#<n>:`` shape keeps prose
 # ("todo: fix later") out. ``.search`` lets any comment leader / indentation precede it.
 TODO_RE = re.compile(r"TODO\s*#(\d+)\s*:\s*(.+)$", re.IGNORECASE)
 # Trailing block-comment closers to strip off the captured description.
