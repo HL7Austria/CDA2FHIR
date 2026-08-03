@@ -8297,7 +8297,7 @@ group CdaLabBodyToFhirComposition(source cda: ClinicalDocument, source cda_struc
           fhir_observation.id = uuid() as fhir_observation_id,
           fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
           fhir_serviceRequest.supportingInfo = create('Reference') as fhir_serviceRequest_supportingInfo_reference, 
-          fhir_serviceRequest_supportingInfo_reference.reference = append('urn:uuid:',fhir_observation_id) {
+          fhir_serviceRequest_supportingInfo_reference.reference = append('urn:uuid:',fhir_observation_id) then {
             // performer cascade (LRR requires Observation.performer) before delegating the body
             observationMedia then CdaLabSectionPerformerToObservationPerformer(cda, cda_section, cda_observationMedia, fhir_observation, fhir_bundle);
             observationMedia then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
