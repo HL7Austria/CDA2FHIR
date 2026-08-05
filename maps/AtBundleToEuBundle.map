@@ -1,0 +1,17 @@
+map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-bundle-to-eu-bundle" = "AtBundleToEuBundle"
+
+//
+// Mapping AT Bundle to EU Bundle
+//
+
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as source
+uses "http://hl7.org/fhir/StructureDefinition/Bundle" alias Bundle as target
+
+group CdaToFhirBundle(source at_bundle : Bundle, target eu_bundle : Bundle) {
+  at_bundle ->
+    eu_bundle.id = uuid(),
+    eu_bundle.type = 'document',
+    eu_bundle.meta as eu_bundle_meta,
+    eu_bundle_meta.profile = 'http://hl7.eu/fhir/laboratory/StructureDefinition/Bundle-lab-xpandh'
+    "EuBundleProfile";
+}
