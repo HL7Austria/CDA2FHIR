@@ -7903,10 +7903,10 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias Section as
 uses "http://hl7.org/cda/stds/core/StructureDefinition/PatientRole" alias PatientRole as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias StructuredBody as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObservation as source
-uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Procedure" alias Procedure as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Organizer" alias Organizer as source
-uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant1 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias Act as source
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as target
