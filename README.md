@@ -1,61 +1,48 @@
 # CDA2FHIR
 
-Transformation of the ELGA CDA Laboratory Report to FHIR using the FHIR Mapping Language.
+Transformation of ELGA CDA documents (Laboratory Report, e-Vac) to FHIR R4, written in the FHIR Mapping Language (FML).
 
-## Getting Started
+The FML maps in `maps/` are the source of truth. [MaLaC-HD](https://gitlab.com/cdehealth/malac-hd) compiles them into a standalone Python module, `python-maps/CdaToFhirBundle.4.py`, which converts a CDA XML document into a FHIR `Bundle`. That Python file is generated and committed by CI — do not edit it by hand.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+## Repository layout
 
-### Prerequisites
+| Path | Content |
+| --- | --- |
+| `maps/` | The mapping. `CdaToFhirBundle.4.map` is the entry map and dispatches on `ClinicalDocument.code` to `CdaLabToFhirBundle.4.map` or `CdaEimpfToFhirBundle.4.map`; `CdaToFhirTypes.4.map` holds the shared CDA→FHIR datatype transforms. |
+| `input/` | CDA samples per document type, the IG each type is validated against (`config.json`) and the validator suppressions (`advisor.json`). |
+| `python-maps/` | The compiled mapping (generated), the pinned MaLaC-HD version (`requirements.txt`) and the release version (`pyproject.toml`). |
+| `scripts/` | CI helpers: convert & validate, coverage, ELGA release. |
 
-The following software is required to be installed upfront:
-- [Java JDK](https://adoptium.net/de/)
-- [Apache Maven](https://maven.apache.org/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [VS Code - REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+## Branches
 
-### Installing
+| Branch | Target |
+| --- | --- |
+| `elga`, `elga-dev` | national ELGA / HL7 Austria |
+| `myhealtheu`, `myhealtheu-dev` | cross-border MyHealth@EU / eHDSI |
 
-Set up Matchbox locally:
-- `git clone https://github.com/ahdis/matchbox`
-- Checkout version `2.3.0` as with the current version the mapping fails.
-  - `git checkout tags/v2.3.0`
-- `mvn clean install -DskipTests`
-- `docker build -t matchbox .`
-- `cd with-postgres`
-  - in `docker-compose.yml` change `postgres:current` to `postgres:14.5` (there occurs an error when creating the database with the current version)
-- `mkdir data`
-- `docker-compose up matchbox-db`
-  - `Strg + C` as soon as database is set up
-- `docker-compose up`
-- access Matchbox at http://localhost:8080/matchbox/#/
-  - Upload the [CDA Logical Model](https://github.com/HL7Austria/CDA-core-2.0/tree/cda-ext-elga) using http://localhost:8080/matchbox/#/igs
+Branch off the matching `-dev` branch, edit the FML, and open the pull request against it.
 
-### Transformation
+## Running the mapping locally
 
-In order to execute a transformation execute the following REST calls from within `CdaToBundle.http`:
-- 1.a. POST CdaToFhirTypes.map
-- 1.b. POST CdaToBundle.map
-- 2.a. POST Lab_Allgemeiner_Laborbefund.xml (CdaToBundle)
+```bash
+pip install -r python-maps/requirements.txt
 
-![FHIR Structure](fhir_structure.drawio.svg)
+# 1. compile the FML to Python
+malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
 
-### Validation of resources
+# 2. transform a CDA sample — the target extension selects the serialization
+python python-maps/CdaToFhirBundle.4.py -s input/lab/ELGA-043-Laborbefund_EIS-FullSupport.xml -t out.fhir.json
+```
 
-https://validator.fhir.org/
+## CI
 
-    java -jar validator_cli.jar hl7at/hl7at_CDA2FHIR/output/hl7eu_patient.json -version 4.0 -ig hl7eu_laboratory_package.tgz > hl7at/hl7at_CDA2FHIR/output/validation.log
+| Workflow | Trigger | Purpose |
+| --- | --- | --- |
+| `convert-and-validate.yml` | pull request | compiles the maps, converts every sample in `input/`, validates each output with the HL7 FHIR validator, uploads output/validation/coverage, and fails the check on validation errors |
+| `fml2python.yml` | push to the stable branch | recompiles the maps and commits `python-maps/CdaToFhirBundle.4.py` |
+| `release.yml` | manual (`workflow_dispatch`) | takes the version from `python-maps/pyproject.toml` as the tag, creates the GitHub release with generated notes, and opens a merge request in the ELGA GitLab (MalacService) with the compiled Python, `pyproject.toml` and `requirements.txt` |
 
-    java -jar validator_cli.jar hl7at/hl7at_CDA2FHIR/output/hl7eu_bundle.json -version 4.0 -ig hl7eu_laboratory_package.tgz -ig hl7at_fhir_core_package.tgz > hl7at/hl7at_CDA2FHIR/output/validation.log
-
-## Built With
-
-* [Matchbox 2.3.0](https://github.com/ahdis/matchbox/releases/tag/v2.3.0) - The mapping engine used
-* [CDA Logical Model](https://github.com/HL7Austria/CDA-core-2.0/tree/cda-ext-elga) - The CDA Logical Model adapted to the Austrian requirements
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/HL7Austria/CDA2FHIR/tags).
+Releasing: bump the version in `python-maps/pyproject.toml`, then run `release.yml` on the stable branch with the ELGA Jira ticket number (and optionally the previous release tag, which sets where the generated notes start).
 
 ## Authors
 
@@ -65,5 +52,3 @@ See the list of [contributors](https://github.com/HL7Austria/CDA2FHIR/contributo
 
 - [HL7CH - Implementation Guide CDA FHIR Maps](https://github.com/hl7ch/cda-fhir-maps)
 - BlackTusk - Mapping Austrian CDA Laboratory Report to FHIR
-
-
