@@ -612,12 +612,12 @@ group TemplateID(source template : II, target tgt) {
   } "templateId";
 }
 
-group Negation(source negation : BL, target tgt) {
-  negation -> tgt.modifierExtension as ext then {
-    negation -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/negationIndicator' "url";
-    negation as neg ->  ext.value = create('boolean'),  ext.value = neg "value";
-  } "negation";
-}
+//  group Negation(source negation : BL, target tgt) {
+//    negation -> tgt.modifierExtension as ext then {
+//      negation -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/negationIndicator' "url";
+//      negation as neg ->  ext.value = create('boolean'),  ext.value = neg "value";
+//    } "negation";
+//  }
 
 group TSInstant(source src : TS, target tgt : instant) extends Any <<types>> {
   src.value as v -> tgt.value = cast(v, 'string');
