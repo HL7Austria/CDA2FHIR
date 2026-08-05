@@ -511,8 +511,8 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/PQ" alias PQ as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/IVXB-PQ" alias IVXB_PQ as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ON" alias ON as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/HumanName" alias HumanName as target
-uses "http://hl7.org/cda/stds/core/StructureDefinition/Organization" alias CdaOrganization as source
-uses "http://hl7.org/cda/stds/core/StructureDefinition/CustodianOrganization" alias CdaCustodianOrganization as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Organization" alias CDAOrganization as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CustodianOrganization" alias CustodianOrganization as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Organization" alias Organization as target
 uses "http://hl7.org/cda/stds/core/StructureDefinition/AD" alias AD as source
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Address" alias Address as target
@@ -875,7 +875,7 @@ group CdaPatientNameToFHIRPatientName(source cda_patient_name : PN, target fhir_
 
 // Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
 // Target: http://hl7.org/fhir/organization.html
-group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaOrganization, target fhir_organization : Organization) {
+group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CDAOrganization, target fhir_organization : Organization) {
   cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
   cda_organization.name -> fhir_organization.name;
   cda_organization.telecom -> fhir_organization.telecom;
@@ -886,7 +886,7 @@ group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaO
   cda_organization.addr -> fhir_organization.address;
 }
 
-group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organization: CdaOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
+group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organization: CDAOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
   fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
     fhir_organization.meta as fhir_organization_meta,
     fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/organization-myhealtheu-core'
@@ -902,7 +902,7 @@ group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organiza
   cda_organization.addr -> fhir_organization.address;
 }
 
-group CdaCustodianOrganizationToFhirOrganizationWithBundle(source cda_organization: CdaCustodianOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
+group CdaCustodianOrganizationToFhirOrganizationWithBundle(source cda_organization: CustodianOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
   fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
     fhir_organization.meta as fhir_organization_meta,
     fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/organization-myhealtheu-core'

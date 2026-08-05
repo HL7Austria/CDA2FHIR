@@ -46,10 +46,10 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias Section as
 uses "http://hl7.org/cda/stds/core/StructureDefinition/PatientRole" alias PatientRole as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias StructuredBody as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObservation as source
-uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias Performer2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Procedure" alias Procedure as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Organizer" alias Organizer as source
-uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant1" alias Participant1 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Act" alias Act as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias Participant2 as source 
 
@@ -1294,7 +1294,7 @@ group CdaAssociatedEntityToFhirPractitionerRole(source cda_associatedEntity : As
   } "CdaAssociatedEntityToFhirPractitionerRole";
 }
 
-group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer, target fhir_observation: Observation, target fhir_bundle: Bundle) {
+group CdaPerformerToFhirObservationPerformer(source cda_performer: Performer2, target fhir_observation: Observation, target fhir_bundle: Bundle) {
   // observation.performer.time - it is assumed that only @value occurs and no interval
   cda_performer.time where (nullFlavor.exists().not()) -> fhir_observation.issued;
   // observation.performer.assignedEntity
