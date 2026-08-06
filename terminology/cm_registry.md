@@ -1,0 +1,4 @@
+- CM.id
+- JIRA Ticket Num
+- CM-Workflow status (Init, Author, Review, "Published (git action - PR completed)")
+- Type (A (CDA2FHIRSpec)/B(ehdsi))
