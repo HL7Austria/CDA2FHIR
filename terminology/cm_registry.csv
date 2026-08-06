@@ -1,1 +1,2 @@
-CmId,type,sourceScope,targetScope,targetBindingStrength,xlsxPath,status,githubIssue,reviewedBool
+CmId,type,targetBindingStrength,xlsxPath,status,githubIssue,reviewedBool
+elga-humanactsite-to-ehdsibodysitewithexceptions,B,required,https://github.com/HL7Austria/CDA2FHIR/issues/490#issuecomment-5207023396,wip,490,false
