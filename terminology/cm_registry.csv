@@ -1,1 +1,2 @@
-CmId,type,sourceScope,targetScope,targetBindingStrength,xlsxPath,status,githubIssue,reviewedBool
+CmId,type,targetBindingStrength,xlsxPath,status,githubIssue,reviewedBool
+entity-name-part-qualifier-to-entity-name-part-qualifier,A,required,https://github.com/HL7Austria/CDA2FHIR/issues/488#issuecomment-5206206172,reviewed,488,false
