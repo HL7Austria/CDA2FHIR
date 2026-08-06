@@ -20,7 +20,7 @@ How a ConceptMap (CM) is named, stored, authored, reviewed and published in this
 
 - **CM** — ConceptMap. **CM.id** — its identifier; also the filename stem.
 - **SpreadCT** — the spreadsheet format a CM is authored in (§5).
-- **Registry** — `terminology/cm_registry.md`, the table linking GitHub issue ⇄ file ⇄ status.
+- **Registry** — `terminology/cm_registry.csv`, the table linking GitHub issue ⇄ file ⇄ status.
 - **Type A / Type B** — see #482 §1. Type B artefacts exist on `myhealtheu-dev` only.
 
 ## 2 — Naming (D1)
@@ -46,7 +46,7 @@ How a ConceptMap (CM) is named, stored, authored, reviewed and published in this
 | CM content (concepts, mappings) | ELGA SharePoint | **yes** |
 | CM spreadsheet snapshot | `terminology/cm/<CM.id>.xlsx` | no — copy taken at review freeze (S3) |
 | Inline FML `conceptmap` block | `maps/*.map` | no — **generated** (S4) |
-| Registry | `terminology/cm_registry.md` | yes, for *linkage* only |
+| Registry | `terminology/cm_registry.csv` | yes, for *linkage* only |
 
 - Content is **never** edited in GitHub. Content bugs → ELGA SharePoint, tracked on the CM's GitHub issue.
 - Generated artefacts are **never** hand-edited.
@@ -55,7 +55,7 @@ How a ConceptMap (CM) is named, stored, authored, reviewed and published in this
 
 ### Registry columns
 
-`CM.id` · `type` (A/B) · `sourceScope` · `targetScope` · `xlsx path` · `FML call site` · `branch(es)` · `status` (Init / Author / Review / Published) · `GitHub issue` · `reviewed-on` · `source version`
+`CM.id` · `type` (A/B) · `sourceScope` · `targetScope` `Target binding strength `· `xlsx path` · `status` (Init / Author / Review / Published) · `GitHub issue` · `reviewed-bool`
 
 > The last two are cheap now and painful to retrofit — they are what makes a wave update auditable later.
 
