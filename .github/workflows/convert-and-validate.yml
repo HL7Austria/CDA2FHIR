@@ -30,7 +30,7 @@ jobs:
 
       - name: Run MaLaC-HD
         run: |
-          malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py
+          malac-hd -m maps/CdaToFhirBundle.4.map -co python-maps/CdaToFhirBundle.4.py -s
 
       - name: Download FHIR validator
         uses: Legion2/download-release-action@v2.1.0
