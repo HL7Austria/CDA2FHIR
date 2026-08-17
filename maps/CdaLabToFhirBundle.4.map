@@ -8032,18 +8032,18 @@ group CdaLabHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target f
     fhir_diagnosticReport_category.coding = translate(code_code, '#cda-lab-clinicaldocument-code-2-fhir-category' , 'Coding') "code";
   };
 
-  // // ClinicalDocument/code/translation
-  // cda.code as cda_code then {
-  //   // for CDA laboratory report translation is fixed to 11502-2 LOINC
-  //   cda_code.translation -> fhir_diagnosticReport.code;
-  //   // in case CDA does not have translation the DiagnosticReport.code will be explicitly set
-  //   cda_code where cda_code.translation.exists().not() ->
-  //     fhir_diagnosticReport.code = create('CodeableConcept') as code_coding,
-  //     code_coding.coding = create('Coding') as coding_coding,
-  //     coding_coding.system = 'http://loinc.org',
-  //     coding_coding.code = '11502-2'
-  //     "CdaMissingCodeTranslationToFhirCompositionType";
-  // };
+  // ClinicalDocument/code/translation
+  cda.code as cda_code then {
+    // for CDA laboratory report translation is fixed to 11502-2 LOINC
+    cda_code.translation -> fhir_diagnosticReport.code;
+    // in case CDA does not have translation the DiagnosticReport.code will be explicitly set
+    cda_code where cda_code.translation.exists().not() ->
+      fhir_diagnosticReport.code = create('CodeableConcept') as code_coding,
+      code_coding.coding = create('Coding') as coding_coding,
+      coding_coding.system = 'http://loinc.org',
+      coding_coding.code = '11502-2'
+      "CdaMissingCodeTranslationToFhirCompositionType";
+  };
 
   // ClinicalDocument/title
   // see Composition
