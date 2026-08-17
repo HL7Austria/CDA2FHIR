@@ -60,7 +60,7 @@ COMMENT_LIMIT = 65000
 _UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
 )
-_ZERO_UUID = "00000000-0000-0000-0000-000000000000"
+_ALIAS_TEMPLATE = "00000000-0000-0000-0000-%012d"
 _TIMESTAMP_RE = re.compile(r'("timestamp"\s*:\s*")[^"]*(")')
 
 
@@ -69,12 +69,29 @@ def normalize(text):
 
     1. Every resource UUID -- ``Bundle.id``/resource ``id`` (bare) and the
        ``urn:uuid:`` values in ``fullUrl``/``reference`` -- is a fresh v4 UUID on
-       each run, so collapse them all to a single placeholder. In this pipeline the
-       UUID pattern only ever occurs on those engine-generated fields (input-derived
-       ids are OIDs / plain strings), so this does not clobber meaningful data.
+       each run, so each *distinct* one is replaced by a stable alias numbered in
+       order of first appearance within the bundle. In this pipeline the UUID pattern
+       only ever occurs on those engine-generated fields (input-derived ids are OIDs /
+       plain strings), so this does not clobber meaningful data.
+
+       Aliasing, rather than collapsing every UUID onto one shared placeholder, is
+       what preserves the *reference graph* in the diff. With one placeholder a
+       regression that re-points e.g. ``Composition.subject`` at the wrong resource
+       reads identically on both sides and disappears from the report -- valid FHIR,
+       wrong content, silently passed. The cost is that inserting or removing a
+       resource renumbers the aliases after it and widens that file's diff, which is
+       itself a change worth reading.
     2. ``Bundle.timestamp`` is set to the wall-clock time of the run; blank it.
     """
-    text = _UUID_RE.sub(_ZERO_UUID, text)
+    seen = {}
+
+    def alias(match):
+        uuid_value = match.group(0)
+        if uuid_value not in seen:
+            seen[uuid_value] = _ALIAS_TEMPLATE % (len(seen) + 1)
+        return seen[uuid_value]
+
+    text = _UUID_RE.sub(alias, text)
     text = _TIMESTAMP_RE.sub(r"\1\2", text)
     return text
 
