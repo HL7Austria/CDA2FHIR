@@ -54,7 +54,17 @@ jobs:
       #     coverageFile: coverage/coverage.xml
       #     token: ${{ secrets.GITHUB_TOKEN }}
 
+      # runs before the upload so its report files end up in the artifact;
+      # the job is failed afterwards by the "Fail on validation issues" step
+      - name: Validate
+        id: validate
+        continue-on-error: true
+        run: |
+          chmod 744 check_validation_result.sh
+          ./check_validation_result.sh
+
       - name: upload
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: my-artifact
@@ -65,8 +75,6 @@ jobs:
             validation/
             python-maps/CdaToFhirBundle.4.py
 
-      - name: Validate
-        run: |
-          chmod 744 check_validation_result.sh
-          ./check_validation_result.sh || exit_code=$?
-          exit $exit_code
+      - name: Fail on validation issues
+        if: steps.validate.outcome == 'failure'
+        run: exit 20
