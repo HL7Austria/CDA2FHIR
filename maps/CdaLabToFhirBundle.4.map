@@ -7940,14 +7940,6 @@ group CdaLabToFhirBundle(source cda: ClinicalDocument, target fhir_patient: Pati
     fhir_serviceRequest.id = uuid() as fhir_serviceRequest_id,
     fhir_bundle_entry_2.fullUrl = append('urn:uuid:', fhir_serviceRequest_id),
 
-    // create relation from Composition to ServiceRequest
-    // TODO: for ELGA no extension has been defined yet
-    // fhir_composition.extension as fhir_composition_extenstion_01,
-    // fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition',
-    // fhir_composition_extenstion_01.value = create('Reference') as fhir_diagnosticReport_composition_reference,
-    // fhir_diagnosticReport_composition_reference.reference = append('urn:uuid:', fhir_serviceRequest_id),
-    // fhir_diagnosticReport_composition_reference.type = 'ServiceRequest',
-
     // create relation from Composition to DiagnosticReport
     // TODO: for ELGA no extension has been defined yet
     // fhir_composition.extension as fhir_composition_extenstion_02,
