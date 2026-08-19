@@ -1,11 +1,5 @@
 map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle" = "CdaEimpfToFhirBundle"
 
-conceptmap "cda-eimpf-clinicaldocument-code-2-fhir-category" {
-  prefix s = "http://loinc.org"
-
-  s: "11369-6" == s: "11369-6"
-}
-
 uses "http://hl7.org/cda/stds/core/StructureDefinition/ClinicalDocument" alias CdaClinicalDocument as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/StructuredBody" alias CdaStructuredBody as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Section" alias CdaSection as source
