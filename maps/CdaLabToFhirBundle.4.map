@@ -8455,7 +8455,12 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then {
+          fhir_section_entry_reference.type = 'Observation',
+          // in order to fulfill the obligation regarding DiagnosticReport.result
+          // only top level observations are referenced here, nested observations are reachable via Observation.hasMember
+          fhir_diagnosticReport.result = create('Reference') as fhir_diagnosticReport_result_reference,
+          fhir_diagnosticReport_result_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_diagnosticReport_result_reference.type = 'Observation' then {
 
             // Add performer to battery_observation       
             cda_entryRelationship.organizer then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle);
@@ -8516,7 +8521,12 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then {
+          fhir_section_entry_reference.type = 'Observation',
+          // in order to fulfill the obligation regarding DiagnosticReport.result
+          // only top level observations are referenced here, nested observations are reachable via Observation.hasMember
+          fhir_diagnosticReport.result = create('Reference') as fhir_diagnosticReport_result_reference,
+          fhir_diagnosticReport_result_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_diagnosticReport_result_reference.type = 'Observation' then {
             // cda_laboratory_observation.performer exists
             cda_laboratory_observation.performer as cda_laboratory_observation_performer where cda_laboratory_observation.performer.exists() then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle);
             cda_entryRelationship.observation where (performer.exists().not()) then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
@@ -8536,7 +8546,12 @@ group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: Clinic
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then {
+          fhir_section_entry_reference.type = 'Observation',
+          // in order to fulfill the obligation regarding DiagnosticReport.result
+          // only top level observations are referenced here, nested observations are reachable via Observation.hasMember
+          fhir_diagnosticReport.result = create('Reference') as fhir_diagnosticReport_result_reference,
+          fhir_diagnosticReport_result_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_diagnosticReport_result_reference.type = 'Observation' then {
             // cda_laboratory_battery_organizer.performer exists
             cda_laboratory_battery_organizer.performer as cda_laboratory_battery_organizer_performer
                 where cda_laboratory_battery_organizer.performer.exists()
@@ -8600,7 +8615,12 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then {
+          fhir_section_entry_reference.type = 'Observation',
+          // in order to fulfill the obligation regarding DiagnosticReport.result
+          // only top level observations are referenced here, nested observations are reachable via Observation.hasMember
+          fhir_diagnosticReport.result = create('Reference') as fhir_diagnosticReport_result_reference,
+          fhir_diagnosticReport_result_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_diagnosticReport_result_reference.type = 'Observation' then {
 
             // Add performer to battery_observation       
             cda_entryRelationship.organizer then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle);
@@ -8664,7 +8684,12 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then {
+          fhir_section_entry_reference.type = 'Observation',
+          // in order to fulfill the obligation regarding DiagnosticReport.result
+          // only top level observations are referenced here, nested observations are reachable via Observation.hasMember
+          fhir_diagnosticReport.result = create('Reference') as fhir_diagnosticReport_result_reference,
+          fhir_diagnosticReport_result_reference.reference = append('urn:uuid:', fhir_observation_id),
+          fhir_diagnosticReport_result_reference.type = 'Observation' then {
             // cda_laboratory_observation.performer exists
             cda_laboratory_observation.performer as cda_laboratory_observation_performer where cda_laboratory_observation.performer.exists() then CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle);
             cda_entryRelationship.observation where (performer.exists().not()) then CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle);
@@ -8683,7 +8708,12 @@ group CdaLaboratorySpecialtySectionToFhirSection (source cda: ClinicalDocument, 
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_battery_observation_id),
           fhir_section.entry = create('Reference') as fhir_section_entry_reference,
           fhir_section_entry_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
-          fhir_section_entry_reference.type = 'Observation' then {
+          fhir_section_entry_reference.type = 'Observation',
+          // in order to fulfill the obligation regarding DiagnosticReport.result
+          // only top level observations are referenced here, nested observations are reachable via Observation.hasMember
+          fhir_diagnosticReport.result = create('Reference') as fhir_diagnosticReport_result_reference,
+          fhir_diagnosticReport_result_reference.reference = append('urn:uuid:', fhir_battery_observation_id),
+          fhir_diagnosticReport_result_reference.type = 'Observation' then {
             // cda_laboratory_battery_organizer.performer exists
             cda_laboratory_battery_organizer.performer as cda_laboratory_battery_organizer_performer
                 where cda_laboratory_battery_organizer.performer.exists()
