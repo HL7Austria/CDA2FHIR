@@ -81,7 +81,7 @@ group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) 
     // Bundle.id
     fhir_bundle.id = uuid(),
     // Bundle.type
-    fhir_bundle.type = 'transaction',
+    fhir_bundle.type = 'document',
     // Bundle.timestamp
     fhir_bundle.timestamp = (now()),
 
