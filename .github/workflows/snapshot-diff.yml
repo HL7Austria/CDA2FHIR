@@ -1,6 +1,6 @@
 # Snapshot diff test to catch mapping regressions (issue #423).
 #
-# On every PR to a *-dev branch, compile the maps from BOTH the PR and its target
+# On every PR to a *-main or *-dev branch, compile the maps from BOTH the PR and its target
 # branch and convert each branch's CDA fixtures with its own engine (base engine reads
 # base/input, PR engine reads pr/input), normalise away the run-to-run noise (generated
 # resource UUIDs + Bundle.timestamp) and render a git diff of the two FHIR bundles,
@@ -13,7 +13,7 @@ name: Snapshot diff (mapping regression)
 
 on:
   pull_request:
-    branches: [ '*-dev' ]
+    branches: [ '*-main','*-dev' ]
 
 permissions:
   contents: read
