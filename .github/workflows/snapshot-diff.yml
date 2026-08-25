@@ -63,30 +63,33 @@ jobs:
 
       # Build a one-click link to THIS run's report in the Summary tab. The step
       # summary renders under an anchor #summary-<jobId>; the job id isn't a plain env
-      # var, so fetch it from the run's jobs API. Falls back to the run URL (which also
-      # lands on the Summary page) if the API call is unavailable.
+      # var, so fetch it from the run's jobs API. This workflow has exactly one job, so
+      # take the first -- matching on .name would compare the API's *display* name
+      # against the job key and break the moment a `name:` is added. Falls back to the
+      # run URL (which also lands on the Summary page) if the API call is unavailable.
       - name: Resolve run Summary link
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
           JOBS="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" 2>/dev/null || echo '{}')"
-          JOB_ID="$(echo "$JOBS" | jq -r "[.jobs[]? | select(.name == \"${GITHUB_JOB}\")][0].id // (.jobs[-1]?.id) // empty")"
+          JOB_ID="$(echo "$JOBS" | jq -r '.jobs[0]?.id // empty')"
           if [ -n "$JOB_ID" ]; then
             echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}/attempts/${GITHUB_RUN_ATTEMPT}#summary-${JOB_ID}" >> "$GITHUB_ENV"
           else
             echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}" >> "$GITHUB_ENV"
           fi
 
-      # A conversion failure exits non-zero, but the report is written first -- so
-      # don't skip publication here; the job is failed at the end instead.
+      # The script's exit code is recorded rather than allowed to fail the step, so the
+      # report and comment are published first and the job is failed afterwards -- with
+      # a message that matches what actually went wrong (see the two gate steps below).
       - name: Build snapshot diff report
         id: snapshot
-        continue-on-error: true
         env:
           BASE_LABEL: ${{ github.base_ref }}
           PR_LABEL: ${{ github.head_ref }}
         run: |
+          set +e
           python pr/scripts/snapshot_diff.py \
             --base-engine engines/base.py \
             --pr-engine engines/pr.py \
@@ -97,6 +100,10 @@ jobs:
             --report report.md \
             --comment comment.md \
             --summary
+          code=$?
+          set -e
+          echo "code=${code}" >> "$GITHUB_OUTPUT"
+          echo "snapshot_diff.py exited ${code}"
 
       - name: Upload snapshots + report
         if: always()
@@ -122,9 +129,20 @@ jobs:
           header: snapshot-diff
           path: comment.md
 
-      # Diffs never fail the job -- a sample that could not be converted at all does,
-      # because the report is then incomplete and cannot prove the absence of a
-      # regression. Runs last so the report and the comment are published either way.
+      # Diffs never fail the job, however large -- a sample that could not be converted
+      # at all does, because the report is then incomplete and cannot prove the absence
+      # of a regression. Keyed off the script's own exit code (20), not the step
+      # outcome, so an oversized report can never be reported as a conversion error.
       - name: Fail on conversion errors
-        if: steps.snapshot.outcome == 'failure'
-        run: exit 20
+        if: steps.snapshot.outputs.code == '20'
+        run: |
+          echo "::error::One or more samples could not be converted; the snapshot diff is incomplete. See the report for which side's engine failed."
+          exit 20
+
+      # Anything else non-zero is the script itself breaking, which is a different
+      # problem and gets a different message.
+      - name: Fail on snapshot-diff script error
+        if: steps.snapshot.outputs.code != '' && steps.snapshot.outputs.code != '0' && steps.snapshot.outputs.code != '20'
+        run: |
+          echo "::error::snapshot_diff.py exited ${{ steps.snapshot.outputs.code }} -- this is a script failure, not a conversion or size problem."
+          exit 1

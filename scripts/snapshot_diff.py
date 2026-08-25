@@ -37,8 +37,10 @@ Two artefacts are emitted:
 Differences are *not* treated as errors -- a report full of diffs still exits 0. A
 *conversion failure* is: if any sample could not be converted, the diff for it does not
 exist, so the report is incomplete. The headline says so, names the side whose engine
-failed, and the script exits 1 -- but only after the report and comment have been
-written, so the workflow can still publish them and fail the job afterwards.
+failed, and the script exits ``EXIT_CONVERSION_FAILED`` (20) -- but only after the
+report and comment have been written, so the workflow can still publish them and fail
+the job afterwards. The code is distinct from a crash's 1 so the workflow can label the
+two differently: a report that is merely large must never read as a conversion error.
 """
 
 import argparse
@@ -59,6 +61,14 @@ GROUP_HEADINGS = {
 
 # GitHub rejects issue/PR comment bodies over 65 536 chars; stay just under.
 COMMENT_LIMIT = 65000
+
+# A job summary over 1 MiB is dropped by GitHub (and errors the step), so the summary
+# is size-guarded exactly like the comment, with headroom under the cap.
+SUMMARY_LIMIT = 900000
+
+# Distinct exit code for "some samples could not be converted", so the workflow can
+# tell that apart from this script crashing -- the two need different messages.
+EXIT_CONVERSION_FAILED = 20
 
 _UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
@@ -85,6 +95,13 @@ def normalize(text):
        resource renumbers the aliases after it and widens that file's diff, which is
        itself a change worth reading.
     2. ``Bundle.timestamp`` is set to the wall-clock time of the run; blank it.
+
+    Returns ``(text, timestamps)``. The regex is deliberately unanchored -- it blanks
+    *every* key named ``timestamp``, not just ``Bundle.timestamp`` -- so the count of
+    substitutions is reported back and surfaced in the report. Today every bundle has
+    exactly one; if a future mapping introduces a nested ``timestamp``, this makes the
+    over-match visible instead of silently swallowing a real difference. The count
+    comes from the same call that does the blanking, so it cannot drift from it.
     """
     seen = {}
 
@@ -95,8 +112,8 @@ def normalize(text):
         return seen[uuid_value]
 
     text = _UUID_RE.sub(alias, text)
-    text = _TIMESTAMP_RE.sub(r"\1\2", text)
-    return text
+    text, timestamps = _TIMESTAMP_RE.subn(r"\1\2", text)
+    return text, timestamps
 
 
 def heading_for(directory):
@@ -127,11 +144,14 @@ def run_engine(engine, source, target):
 
 
 def write_normalized(src_json, dst_json):
+    """Normalize ``src_json`` into ``dst_json``; return its ``timestamp`` key count."""
     with open(src_json, "r", encoding="utf-8") as fh:
         text = fh.read()
+    normalized, timestamps = normalize(text)
     os.makedirs(os.path.dirname(dst_json), exist_ok=True)
     with open(dst_json, "w", encoding="utf-8") as fh:
-        fh.write(normalize(text))
+        fh.write(normalized)
+    return timestamps
 
 
 def write_empty(dst_json):
@@ -224,11 +244,13 @@ def build(args):
             # fixture normalizes to empty so the diff is a clean add/remove.
             errors = []
             failed = []  # which side(s) could not be converted: "base" and/or "pr"
+            timestamps = 0  # most `timestamp` keys seen on either side of this file
             if base_src:
                 os.makedirs(os.path.dirname(base_raw), exist_ok=True)
                 ok, msg = run_engine(args.base_engine, base_src, base_raw)
                 if ok:
-                    write_normalized(base_raw, base_norm)
+                    timestamps = max(timestamps,
+                                     write_normalized(base_raw, base_norm))
                 else:
                     failed.append("base")
                     errors.append(f"base engine failed:\n{msg}")
@@ -238,7 +260,8 @@ def build(args):
                 os.makedirs(os.path.dirname(pr_raw), exist_ok=True)
                 ok, msg = run_engine(args.pr_engine, pr_src, pr_raw)
                 if ok:
-                    write_normalized(pr_raw, pr_norm)
+                    timestamps = max(timestamps,
+                                     write_normalized(pr_raw, pr_norm))
                 else:
                     failed.append("pr")
                     errors.append(f"PR engine failed:\n{msg}")
@@ -246,7 +269,8 @@ def build(args):
                 write_empty(pr_norm)
 
             r = {"file": name, "kind": kind, "adds": 0, "dels": 0,
-                 "diff": "", "error": "", "failed_sides": []}
+                 "diff": "", "error": "", "failed_sides": [],
+                 "timestamps": timestamps}
             if errors:
                 r["status"] = "error"
                 r["error"] = "\n\n".join(errors)
@@ -386,6 +410,32 @@ def group_section(heading, results, big_change, expand_under):
     return f"<details open>\n<summary>{label}</summary>\n\n{inner}\n\n</details>"
 
 
+def timestamp_caveat(groups):
+    """Green/yellow line on the scope of the ``timestamp`` blanking.
+
+    ``normalize()`` blanks every key named ``timestamp``, not only
+    ``Bundle.timestamp``. That is fine while a bundle has exactly one -- and it does
+    today -- but a future mapping adding a nested ``timestamp`` would have its changes
+    silently normalised away. Rather than tighten the regex (a pattern that stops
+    matching would leave ``Bundle.timestamp`` live and make *every* sample diff on
+    every run), the count is simply reported, so the over-match can never go unnoticed.
+
+    Returns "" when nothing was converted, so an all-failed run makes no claim.
+    """
+    counted = [r for _, rs in groups for r in rs if r["timestamps"]]
+    if not counted:
+        return ""
+    multi = sorted(r["file"] for r in counted if r["timestamps"] > 1)
+    if not multi:
+        return ("🟢 `timestamp` normalisation: exactly one per bundle "
+                "(`Bundle.timestamp`).")
+    shown = ", ".join(f"`{display_name(n)}`" for n in multi[:5])
+    more = f" (+{len(multi) - 5} more)" if len(multi) > 5 else ""
+    return (f"🟡 `timestamp` normalisation: **{len(multi)} sample(s) contain more than "
+            f"one `timestamp` field** ({shown}{more}). Every one is blanked, so a "
+            f"change to a non-`Bundle.timestamp` value cannot appear in this diff.")
+
+
 def header(groups, args):
     """Headline counts. Failed samples are excluded from the changed/total ratio and
     called out on their own line, so a broken engine can never read as a clean run
@@ -411,6 +461,10 @@ def header(groups, args):
             f"❌ **{errored} of {total}** sample(s) failed to convert "
             f"({_sides_long(failed_sides(groups))}) — they are not part of the counts "
             f"above and this run is a failure, not a clean report.")
+    caveat = timestamp_caveat(groups)
+    if caveat:
+        lines.append("")
+        lines.append(caveat)
     return "\n".join(lines)
 
 
@@ -423,20 +477,38 @@ def assemble(groups, args):
     return "\n".join(parts).rstrip() + "\n"
 
 
-def render_comment(body, groups, args, limit):
-    """Size-guarded PR comment.
+def _oversize_note(args, target):
+    """Pointer used when the full report does not fit ``target``'s size cap.
+
+    Names the artifact first: it is the one copy that is never truncated. The run
+    Summary has its own 1 MiB cap, so pointing a reader there as the primary
+    destination can send them to a page that GitHub dropped.
+    """
+    if target == "summary":
+        return ("> ℹ️ The full diffs exceed GitHub's 1 MiB job-summary limit, so only "
+                "the inventory is shown here. Download the **snapshot-diff** artifact "
+                "from this run and open `report.md` for every diff. Nothing failed — "
+                "the report is simply too large to render.")
+    run_ref = (f"[this workflow run]({args.summary_url})" if args.summary_url
+               else "this workflow run")
+    return ("> ℹ️ The full diffs exceed GitHub's comment size limit, so only the "
+            f"inventory is shown here. Download the **snapshot-diff** artifact from "
+            f"{run_ref} and open `report.md` for every diff. Nothing failed — the "
+            "report is simply too large to post.")
+
+
+def render_capped(body, groups, args, limit, target):
+    """Size-guarded rendering of ``body`` for a destination with a hard cap.
 
     If the full report fits, use it as-is (every file expandable). Otherwise fall back
     to the complete inventory plus a pointer -- never a per-file non-expandable stub.
+    Used for both the PR comment and the step summary, which differ only in cap and
+    in where they send the reader.
     """
     if len(body) <= limit:
         return body
-    summary_ref = (f"[**run Summary**]({args.summary_url})" if args.summary_url
-                   else "run **Summary**")
-    parts = [
-        header(groups, args), "", inventory_table(groups), "",
-        f"> ℹ️ Diffs exceed GitHub's comment size limit. Change sample listed above. Open {summary_ref} or the **snapshot-diff** artifact for all Diffs.",
-    ]
+    parts = [header(groups, args), "", inventory_table(groups), "",
+             _oversize_note(args, target)]
     return "\n".join(parts).rstrip() + "\n"
 
 
@@ -479,6 +551,9 @@ def main():
     parser.add_argument("--expand-max-lines", type=int, default=80,
                         help="above this many total changed lines, collapse everything")
     parser.add_argument("--comment-limit", type=int, default=COMMENT_LIMIT)
+    parser.add_argument("--summary-limit", type=int, default=SUMMARY_LIMIT,
+                        help="cap for the $GITHUB_STEP_SUMMARY copy; over GitHub's "
+                             "1 MiB limit the summary is dropped and the step errors")
     parser.add_argument("--summary", action="store_true",
                         help="also append the full report to $GITHUB_STEP_SUMMARY")
     args = parser.parse_args()
@@ -495,15 +570,19 @@ def main():
     print(f"Wrote {args.report} ({len(full)} bytes)")
 
     if args.comment:
-        comment = render_comment(full, groups, args, args.comment_limit)
+        comment = render_capped(full, groups, args, args.comment_limit, "comment")
         with open(args.comment, "w", encoding="utf-8") as fh:
             fh.write(comment)
         print(f"Wrote {args.comment} ({len(comment)} bytes)")
 
+    # The summary goes through the same guard: over 1 MiB GitHub drops it *and* errors
+    # the step, which would surface a merely-large diff as a job failure.
     summary_path = os.environ.get("GITHUB_STEP_SUMMARY")
     if args.summary and summary_path:
+        summary = render_capped(full, groups, args, args.summary_limit, "summary")
         with open(summary_path, "a", encoding="utf-8") as fh:
-            fh.write(full)
+            fh.write(summary)
+        print(f"Wrote step summary ({len(summary)} bytes)")
 
     # Diffs are not failures; an engine that could not convert a sample is. Reported
     # only here, so report/comment/summary are all on disk before the non-zero exit --
@@ -513,7 +592,7 @@ def main():
         print(f"ERROR: {errored} of {total} sample(s) failed to convert "
               f"({_sides_long(failed_sides(groups))}); the report is incomplete.",
               file=sys.stderr)
-        return 1
+        return EXIT_CONVERSION_FAILED
     return 0
 
 
