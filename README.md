@@ -2,13 +2,13 @@
 
 Transformation of ELGA CDA documents (Laboratory Report, e-Vac) to FHIR R4, written in the FHIR Mapping Language (FML).
 
-The FML maps in `maps/` are the source of truth. [MaLaC-HD](https://gitlab.com/cdehealth/malac-hd) compiles them into a standalone Python module, `python-maps/CdaToFhirBundle.4.py`, which converts a CDA XML document into a FHIR `Bundle`. That Python file is generated and committed by CI — do not edit it by hand.
+The FML maps in `maps/` are the source of truth. [MaLaC-HD](https://gitlab.com/cdehealth/malac-hd) compiles them into a standalone Python module, `python-maps/CdaToFhirBundle.4.py`, which converts a CDA XML document into a FHIR `Bundle`. That Python file is generated and committed by CI.
 
 ## Repository layout
 
 | Path | Content |
 | --- | --- |
-| `maps/` | The mapping. `CdaToFhirBundle.4.map` is the entry map and dispatches on `ClinicalDocument.code` to `CdaLabToFhirBundle.4.map` or `CdaEimpfToFhirBundle.4.map`; `CdaToFhirTypes.4.map` holds the shared CDA→FHIR datatype transforms. |
+| `maps/` | The mapping. `CdaToFhirBundle.4.map` is the entry map and dispatches on `ClinicalDocument.code` to `CdaLabToFhirBundle.4.map` or `CdaEimpfToFhirBundle.4.map`; `CdaToFhirTypes.4.map` holds the shared CDA2FHIR datatype transforms. |
 | `input/` | CDA samples per document type, the IG each type is validated against (`config.json`) and the validator suppressions (`advisor.json`). |
 | `python-maps/` | The compiled mapping (generated) and the pinned MaLaC-HD version (`requirements.txt`). |
 | `scripts/` | CI helpers: convert & validate, coverage, ELGA release. |
@@ -17,8 +17,8 @@ The FML maps in `maps/` are the source of truth. [MaLaC-HD](https://gitlab.com/c
 
 | Branch | Target |
 | --- | --- |
-| `elga`, `elga-dev` | national ELGA / HL7 Austria |
-| `myhealtheu`, `myhealtheu-dev` | cross-border MyHealth@EU / eHDSI |
+| `elga-main`, `elga-dev` | national ELGA / HL7 Austria |
+| `myhealtheu-main`, `myhealtheu-dev` | cross-border MyHealth@EU |
 
 Branch off the matching `-dev` branch, edit the FML, and open the pull request against it.
 
