@@ -7,7 +7,9 @@
 # grouped by document type. The diff therefore reflects both the map change under
 # review and any change to the sample CDA themselves (added / removed / edited fixture).
 #
-# This is an informational report, not a gate: it succeeds even when diffs exist.
+# This is an informational report, not a gate on the mapping: it succeeds even when
+# diffs exist. It fails only when a sample could not be converted at all, since the
+# report is then incomplete and proves nothing about regressions.
 
 name: Snapshot diff (mapping regression)
 
@@ -76,7 +78,11 @@ jobs:
             echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}" >> "$GITHUB_ENV"
           fi
 
+      # A conversion failure exits non-zero, but the report is written first -- so
+      # don't skip publication here; the job is failed at the end instead.
       - name: Build snapshot diff report
+        id: snapshot
+        continue-on-error: true
         env:
           BASE_LABEL: ${{ github.base_ref }}
           PR_LABEL: ${{ github.head_ref }}
@@ -93,6 +99,7 @@ jobs:
             --summary
 
       - name: Upload snapshots + report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: snapshot-diff
@@ -108,9 +115,16 @@ jobs:
       # (e.g. an oversized diff exceeding the comment limit) -- the full report is
       # always in the run Summary and the uploaded artifact.
       - name: Post/update PR comment
-        if: github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
         continue-on-error: true
         uses: marocchino/sticky-pull-request-comment@v2
         with:
           header: snapshot-diff
           path: comment.md
+
+      # Diffs never fail the job -- a sample that could not be converted at all does,
+      # because the report is then incomplete and cannot prove the absence of a
+      # regression. Runs last so the report and the comment are published either way.
+      - name: Fail on conversion errors
+        if: steps.snapshot.outcome == 'failure'
+        run: exit 20

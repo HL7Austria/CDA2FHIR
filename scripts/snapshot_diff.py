@@ -34,8 +34,11 @@ Two artefacts are emitted:
   complete) inventory plus a pointer to the Summary/artifact -- it never drops an
   individual file's diff in favour of a non-expandable stub.
 
-Differences are *not* treated as errors: the script exits non-zero only on a hard
-failure (e.g. an engine that cannot be run at all).
+Differences are *not* treated as errors -- a report full of diffs still exits 0. A
+*conversion failure* is: if any sample could not be converted, the diff for it does not
+exist, so the report is incomplete. The headline says so, names the side whose engine
+failed, and the script exits 1 -- but only after the report and comment have been
+written, so the workflow can still publish them and fail the job afterwards.
 """
 
 import argparse
@@ -220,26 +223,34 @@ def build(args):
             # Run each present side's engine into a normalized file; a side with no
             # fixture normalizes to empty so the diff is a clean add/remove.
             errors = []
+            failed = []  # which side(s) could not be converted: "base" and/or "pr"
             if base_src:
                 os.makedirs(os.path.dirname(base_raw), exist_ok=True)
                 ok, msg = run_engine(args.base_engine, base_src, base_raw)
-                write_normalized(base_raw, base_norm) if ok else errors.append(
-                    f"base engine failed:\n{msg}")
+                if ok:
+                    write_normalized(base_raw, base_norm)
+                else:
+                    failed.append("base")
+                    errors.append(f"base engine failed:\n{msg}")
             else:
                 write_empty(base_norm)
             if pr_src:
                 os.makedirs(os.path.dirname(pr_raw), exist_ok=True)
                 ok, msg = run_engine(args.pr_engine, pr_src, pr_raw)
-                write_normalized(pr_raw, pr_norm) if ok else errors.append(
-                    f"PR engine failed:\n{msg}")
+                if ok:
+                    write_normalized(pr_raw, pr_norm)
+                else:
+                    failed.append("pr")
+                    errors.append(f"PR engine failed:\n{msg}")
             else:
                 write_empty(pr_norm)
 
             r = {"file": name, "kind": kind, "adds": 0, "dels": 0,
-                 "diff": "", "error": ""}
+                 "diff": "", "error": "", "failed_sides": []}
             if errors:
                 r["status"] = "error"
                 r["error"] = "\n\n".join(errors)
+                r["failed_sides"] = failed
                 results.append(r)
                 continue
 
@@ -260,10 +271,43 @@ def _badge(r):
     return f"+{r['adds']} / -{r['dels']}"
 
 
+def _sides_short(sides):
+    """``base`` / ``PR`` / ``both`` -- compact, for the inventory cell."""
+    if len(sides) > 1:
+        return "both"
+    return "PR" if sides == ["pr"] else "base"
+
+
+def _sides_long(sides):
+    """``the base engine`` / ``the PR engine`` / ``both engines`` -- for prose."""
+    if len(sides) > 1:
+        return "both engines"
+    return "the PR engine" if sides == ["pr"] else "the base engine"
+
+
+def tally(groups):
+    """``(total, changed, errored)``, counting errors *separately* from changes.
+
+    A sample whose conversion failed produced no diff at all, so folding it into the
+    "changed" count would report a broken engine as if it were a mapping change --
+    exactly the false alarm this report exists to avoid. It gets its own headline
+    line, and its own exit code, instead.
+    """
+    results = [r for _, rs in groups for r in rs]
+    changed = sum(1 for r in results if r["status"] == "changed")
+    errored = sum(1 for r in results if r["status"] == "error")
+    return len(results), changed, errored
+
+
+def failed_sides(groups):
+    """Sorted ``base``/``pr`` list of every side that failed anywhere in the run."""
+    return sorted({s for _, rs in groups for r in rs for s in r["failed_sides"]})
+
+
 def _change_cell(r):
     """Compact inventory-cell descriptor of a file's change."""
     if r["status"] == "error":
-        return "❌ error"
+        return f"❌ {_sides_short(r['failed_sides'])} failed"
     if r["status"] != "changed":
         return "✅ —"
     if r["kind"] == "added":
@@ -315,16 +359,21 @@ def file_block(r, open_default):
         return (f"<details>\n<summary>✅ <code>{name}</code> — no changes</summary>\n"
                 f"</details>")
     if r["status"] == "error":
-        return (f"<details open>\n<summary>❌ <code>{name}</code> — conversion error"
-                f"</summary>\n\n```\n{r['error']}\n```\n\n</details>")
+        side = _sides_long(r["failed_sides"])
+        return (f"<details open>\n<summary>❌ <code>{name}</code> — not converted, "
+                f"{side} failed</summary>\n\n```\n{r['error']}\n```\n\n</details>")
     open_attr = " open" if open_default else ""
     return (f"<details{open_attr}>\n<summary>{_changed_summary(r, name)}"
             f"</summary>\n\n```diff\n{r['diff']}\n```\n\n</details>")
 
 
 def group_section(heading, results, big_change, expand_under):
-    changed = sum(1 for r in results if r["status"] != "same")
-    label = f"<b>{heading}</b> — {changed} of {len(results)} changed"
+    changed = sum(1 for r in results if r["status"] == "changed")
+    errored = sum(1 for r in results if r["status"] == "error")
+    label = f"<b>{heading}</b> — {changed} of {len(results) - errored} changed"
+    if errored:
+        label += f", {errored} failed"
+
     blocks = []
     for r in results:
         open_default = (
@@ -338,18 +387,30 @@ def group_section(heading, results, big_change, expand_under):
 
 
 def header(groups, args):
-    total = sum(len(r) for _, r in groups)
-    changed = sum(1 for _, rs in groups for r in rs if r["status"] != "same")
+    """Headline counts. Failed samples are excluded from the changed/total ratio and
+    called out on their own line, so a broken engine can never read as a clean run
+    *or* as a wall of mapping changes."""
+    total, changed, errored = tally(groups)
+    comparable = total - errored
     lines = ["# Diffreport", ""]
     if args.base_label:
         lines.append(
             f"Snapshot of the FHIR output for PR "
             f"(`{args.base_label}` → `{args.pr_label}`)")
         lines.append("")
-    if changed == 0:
-        lines.append(f"✅ **No differences** across {total} sample(s).")
+    if comparable == 0:
+        lines.append(
+            f"❌ **No samples could be compared** — all {total} failed to convert.")
+    elif changed == 0:
+        lines.append(f"✅ **No differences** across {comparable} sample(s).")
     else:
-        lines.append(f"⚠️ **{changed} of {total}** samples changed.")
+        lines.append(f"⚠️ **{changed} of {comparable}** samples changed.")
+    if errored:
+        lines.append("")
+        lines.append(
+            f"❌ **{errored} of {total}** sample(s) failed to convert "
+            f"({_sides_long(failed_sides(groups))}) — they are not part of the counts "
+            f"above and this run is a failure, not a clean report.")
     return "\n".join(lines)
 
 
@@ -444,6 +505,15 @@ def main():
         with open(summary_path, "a", encoding="utf-8") as fh:
             fh.write(full)
 
+    # Diffs are not failures; an engine that could not convert a sample is. Reported
+    # only here, so report/comment/summary are all on disk before the non-zero exit --
+    # the workflow publishes them and fails the job afterwards.
+    total, _, errored = tally(groups)
+    if errored:
+        print(f"ERROR: {errored} of {total} sample(s) failed to convert "
+              f"({_sides_long(failed_sides(groups))}); the report is incomplete.",
+              file=sys.stderr)
+        return 1
     return 0
 
 
