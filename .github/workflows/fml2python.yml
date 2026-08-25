@@ -5,7 +5,7 @@ name: Convert FML to Python (MaLaC-HD)
 on:
   push:
     branches:
-      - myhealtheu
+      - myhealtheu-main
 
 jobs:
   convert-and-commit:
