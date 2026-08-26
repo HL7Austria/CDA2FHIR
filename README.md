@@ -38,7 +38,6 @@ python python-maps/CdaToFhirBundle.4.py -s input/lab/ELGA-043-Laborbefund_EIS-Fu
 The mappings are defined against the following Austrian ELGA and HL7 specifications.
 
 **Source (CDA)**
-- [CDA Logical Model](https://github.com/HL7Austria/CDA-core-2.0/tree/cda-ext-elga) - HL7 CDA logical model with the Austrian ELGA extensions
 - [ELGA Labor- & Mikrobiologiebefund v2 & v3](https://wiki.hl7.at/index.php/ILF:Labor-_und_Mikrobiologiebefund_Guide) - IG for the Laboratory and Microbiology Report
     - [v2 templates in ART-DECOR](https://art-decor.org/ad/#/elga-/rules/templates/1.2.40.0.34.11.4/2023-05-08T13:51:02)
     - [v3 templates in ART-DECOR](https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.0.11/2020-08-25T14:35:13)
