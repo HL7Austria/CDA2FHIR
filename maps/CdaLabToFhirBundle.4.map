@@ -8297,7 +8297,7 @@ group CdaLabBodyToFhirComposition(source cda: ClinicalDocument, source cda_struc
           fhir_observation.id = uuid() as fhir_observation_id,
           fhir_bundle_entry.fullUrl = append('urn:uuid:',fhir_observation_id),
           fhir_serviceRequest.supportingInfo = create('Reference') as fhir_serviceRequest_supportingInfo_reference, 
-          fhir_serviceRequest_supportingInfo_reference.reference = append('urn:uuid:',fhir_observation_id) {
+          fhir_serviceRequest_supportingInfo_reference.reference = append('urn:uuid:',fhir_observation_id) then {
             // performer cascade (LRR requires Observation.performer) before delegating the body
             observationMedia then CdaLabSectionPerformerToObservationPerformer(cda, cda_section, cda_observationMedia, fhir_observation, fhir_bundle);
             observationMedia then CdaObservationMediaToFhirObservation(cda_observationMedia, fhir_observation, fhir_patient, fhir_bundle);
@@ -9575,19 +9575,24 @@ group CdaObservationMediaToFhirObservation(source cda_observationMedia : Observa
       // cda_observationMedia.value
       cda_observationMedia_value -> fhir_observation_value_attachment.data = (cda_observationMedia_value.xmlText) "CdaObservationMediaValueToFhirAttachmentData";  
   }; 
-  cda_observationMedia.author as cda_observationMedia_author -> 
-    fhir_bundle.entry as fhir_bundle_entry, 
-    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
-    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
-    fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
-    fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
-    fhir_observation_performer_reference.type = 'PractitionerRole',
-    fhir_observation_performer_reference.extension as performer_function_extension,
-    performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction',
-    performer_function_extension.value = create('CodeableConcept') as performer_function_extension_value,
-    performer_function_extension_value.coding = create('Coding') as performer_function_extension_value_coding,
-    performer_function_extension_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
-    performer_function_extension_value_coding.code = 'AUT' then CdaAuthorToFhirPractitionerRole(cda_observationMedia_author, fhir_practitionerRole, fhir_bundle);
+
+  // ToDo handle entity mappings 
+  // Handle .author, .informant, .participant
+  // See Issues https://github.com/HL7Austria/CDA2FHIR/issues/411 and https://github.com/HL7Austria/CDA2FHIR/issues/449 for further clarification of what needs to be done.
+  
+  //  cda_observationMedia.author as cda_observationMedia_author -> 
+  //    fhir_bundle.entry as fhir_bundle_entry, 
+  //    fhir_bundle_entry.resource = create('PractitionerRole') as fhir_practitionerRole,
+  //    fhir_practitionerRole.id = uuid() as fhir_practitionerRole_id,
+  //    fhir_observation.performer = create('Reference') as fhir_observation_performer_reference,
+  //    fhir_observation_performer_reference.reference = append('urn:uuid:', fhir_practitionerRole_id),
+  //    fhir_observation_performer_reference.type = 'PractitionerRole',
+  //    fhir_observation_performer_reference.extension as performer_function_extension,
+  //    performer_function_extension.url = 'http://hl7.org/fhir/StructureDefinition/event-performerFunction',
+  //    performer_function_extension.value = create('CodeableConcept') as performer_function_extension_value,
+  //    performer_function_extension_value.coding = create('Coding') as performer_function_extension_value_coding,
+  //    performer_function_extension_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
+  //    performer_function_extension_value_coding.code = 'AUT' then CdaAuthorToFhirPractitionerRole(cda_observationMedia_author, fhir_practitionerRole, fhir_bundle);
 
   // Remove observation.informant mapping for now because informant is not a performer semantically — it's the source of the information. Promoting that to Observation.performer might misattributes responsibility
   // cda_observationMedia.informant as cda_observationMedia_informant then {
@@ -9605,8 +9610,4 @@ group CdaObservationMediaToFhirObservation(source cda_observationMedia : Observa
   //     performer_function_extension_value_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-ParticipationType',
   //     performer_function_extension_value_coding.code = 'INF' then CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitionerRole, fhir_bundle);
   // };
-
-
-  // ToDo handle if informant is the patient 
-  // ToDo handle cda_observationMedia.participant 
 }
