@@ -2520,8 +2520,8 @@
                         <content ID="ueberweisungsgrund">Text des Zuweisers: Abklärung einer
                             <content ID="illness">Thrombozytopenie</content> höflich erbeten.</content>
                     </text>
-                    <entry>
-                        <observationMedia classCode="OBS" moodCode="EVN" ID="BEFUND5">
+                    <entry typeCode="DRIV">
+                        <observationMedia classCode="OBS" moodCode="EVN" ID="BEFUND1">
                             <!-- templateId für Eingebettetes Objekt Entry -->
                             <templateId root="1.2.40.0.34.6.0.11.3.19"/>
                             <value mediaType="application/pdf" representation="B64">
@@ -4212,13 +4212,14 @@
                                 <tr>
                                     <td>Laborbefund</td>
                                     <td>05.11.2019</td>
+                                    <td><renderMultiMedia referencedObject="BEFUND3"/></td>
                                 </tr>
                             </tbody>
                         </table>
                     </text>
                     <entry typeCode="DRIV">
                         <!-- Eingebettetes Objekt Entry 1.2.40.0.34.6.0.11.3.19 -->
-                        <observationMedia classCode="OBS" moodCode="EVN">
+                        <observationMedia classCode="OBS" moodCode="EVN" ID="BEFUND3">
                             <!-- templateId für Eingebettetes Objekt Entry -->
                             <templateId root="1.2.40.0.34.6.0.11.3.19"/>
                             <value mediaType="application/pdf" representation="B64">
@@ -16135,7 +16136,7 @@
                                                         <streetAddressLine>Musterstraße 1</streetAddressLine>
                                                         <city>Wien</city>
                                                         <postalCode>1010</postalCode>
-                                                        <country>AT</country>
+                                                        <country>AUT</country>
                                                     </addr>
                                                     
                                                     <!-- At least one telecom -->
