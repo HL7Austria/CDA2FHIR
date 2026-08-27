@@ -56,7 +56,23 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
 | `fml2python.yml` | push to the stable branch | recompiles the maps and commits `python-maps/CdaToFhirBundle.4.py` |
 | `release.yml` | manual (`workflow_dispatch`) | takes the version from `python-maps/pyproject.toml` as the tag, creates the GitHub release with generated notes, and opens a merge request in the ELGA GitLab (MalacService) with the compiled Python, `pyproject.toml` and `requirements.txt` |
 
-Releasing: bump the version in `python-maps/pyproject.toml`, then run `release.yml` on the stable branch with the ELGA Jira ticket number (and optionally the previous release tag, which sets where the generated notes start).
+Releasing: bump the version in `python-maps/pyproject.toml`, then run `release.yml` on the `myhealtheu-main` branch with the ELGA Jira ticket number (and optionally the previous release tag, which sets where the generated notes start).
+
+You can invoke the following request in order to start the pipeline:
+
+curl -X POST \
+  -H "Authorization: Bearer <YOUR_GITHUB_TOKEN>" \
+  -H "Accept: application/vnd.github+json" \
+  -H "Content-Type: application/json" \
+  https://api.github.com/repos/HL7Austria/CDA2FHIR/actions/workflows/release.yml/dispatches \
+  -d '{
+    "ref": "262-propagate-release-to-elga-gitlab",
+    "inputs": {
+      "elga_jira_ticket_nr": "<ELGA_TICKET_NR>",
+      "previous_release_tag": "<PREVIOUS_RELEASE_TAG>"
+    }
+  }'
+
 
 ## Authors
 
