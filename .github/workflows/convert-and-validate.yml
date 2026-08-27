@@ -4,7 +4,7 @@ name: Convert and validate test file
 
 on:
   pull_request:
-    branches: [ myhealtheu, myhealtheu-dev ]
+    branches: [ myhealtheu-main, myhealtheu-dev ]
 
 jobs:
   convert-and-validate:
