@@ -51,7 +51,7 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
 
 | Workflow | Trigger | Purpose |
 | --- | --- | --- |
-| `convert-and-validate.yml` | pull request | compiles the maps, converts every sample in `input/`, validates each output with the HL7 FHIR validator, uploads output/validation/coverage, and fails the check on validation errors |
+| `convert-and-validate.yml` | pull request | compiles the maps, converts every sample in `input/`, validates each output with the HL7 FHIR validator, provides output/validation/coverage as artifacts, and fails if there are validation errors |
 | `fml2python.yml` | push to the stable branch | recompiles the maps and commits `python-maps/CdaToFhirBundle.4.py` |
 | `release.yml` | manual (`workflow_dispatch`) | takes the version from `python-maps/pyproject.toml` as the tag, creates the GitHub release with generated notes, and opens a merge request in the ELGA GitLab (MalacService) with the compiled Python, `pyproject.toml` and `requirements.txt` |
 
