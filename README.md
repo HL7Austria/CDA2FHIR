@@ -48,6 +48,12 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
 **Target (FHIR)**
 - [MyHealth@EU Laboratory Report](https://fhir.ehdsi.eu/laboratory/index.html) - The MyHealth@EU Laboratory Result Report which the generated Bundles conform to 
 
+**CAVE** — scope per branch
+
+- On the `myhealtheu` branches the e-Vac mapping is a **draft**: their focus is the Laboratory Report to MyHealth@EU LRR mapping.
+- The `elga` branches focus on the e-Vac to Austrian Patient Summary (APS) mapping.
+- We keep the e-Vac and Laboratory maps consistent where we can, but producing e-Vac data in the MyHealth@EU format - or laboratory results in the APS - is currently out of scope.
+
 ## CI
 
 | Workflow | Trigger | Purpose |
@@ -60,6 +66,7 @@ Releasing: bump the version in `python-maps/pyproject.toml`, then run `release.y
 
 You can invoke the following request in order to start the pipeline:
 
+```curl
 curl -X POST \
   -H "Authorization: Bearer <YOUR_GITHUB_TOKEN>" \
   -H "Accept: application/vnd.github+json" \
@@ -72,7 +79,7 @@ curl -X POST \
       "previous_release_tag": "<PREVIOUS_RELEASE_TAG>"
     }
   }'
-
+```
 
 ## Authors
 
