@@ -45,7 +45,7 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
     - [templates in ART-DECOR](https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.0.4/2026-02-04T15:09:45)
 
 **Target (FHIR)**
-- [Austrian Patient Summary](https://fhir.ehdsi.eu/laboratory/index.html) - The MyHealth@EU Laboratory Result Report which the generated Bundles conform to 
+- [MyHealth@EU Laboratory Report](https://fhir.ehdsi.eu/laboratory/index.html) - The MyHealth@EU Laboratory Result Report which the generated Bundles conform to 
 
 ## CI
 
