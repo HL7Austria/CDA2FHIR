@@ -1,5 +1,11 @@
 # CDA2FHIR
 
+> [!IMPORTANT]
+> **You are on the `myhealtheu` variant — target: cross-border MyHealth@EU / eHDSI.**
+>
+> This repository is mirrored across three branch families; the maps, the samples and this README differ per variant.
+> Other variants: [`elga`](https://github.com/HL7Austria/CDA2FHIR/tree/elga-main) · [`hl7eu`](https://github.com/HL7Austria/CDA2FHIR/tree/hl7eu-dev)
+
 Transformation of ELGA CDA documents (Laboratory Report, e-Vac) to FHIR R4, written in the FHIR Mapping Language (FML).
 
 The FML maps in `maps/` describe the rules for transforming CDA to FHIR. [MaLaC-HD](https://gitlab.com/cdehealth/malac-hd) compiles them into a standalone Python module, `python-maps/CdaToFhirBundle.4.py`, which converts a CDA XML document into a FHIR document `Bundle`. That Python file is generated and committed by CI.
@@ -15,11 +21,11 @@ The FML maps in `maps/` describe the rules for transforming CDA to FHIR. [MaLaC-
 
 ## Branches
 
-| Branch | Target |
-| --- | --- |
-| `elga-main`, `elga-dev` | [national ELGA / HL7 Austria](https://github.com/HL7Austria/CDA2FHIR/tree/elga-main) |
-| `myhealtheu-main`, `myhealtheu-dev` | cross-border MyHealth@EU / eHDSI |
-| `hl7eu-dev` | [HL7EU](https://github.com/HL7Austria/CDA2FHIR/tree/hl7eu-dev) |
+| Branch | Target | |
+| --- | --- | --- |
+| `elga-main`, `elga-dev` | [national ELGA / HL7 Austria](https://github.com/HL7Austria/CDA2FHIR/tree/elga-main) | |
+| `myhealtheu-main`, `myhealtheu-dev` | [cross-border MyHealth@EU / eHDSI](https://github.com/HL7Austria/CDA2FHIR/tree/myhealtheu-main) | **← you are here** |
+| `hl7eu-dev` | [HL7EU](https://github.com/HL7Austria/CDA2FHIR/tree/hl7eu-dev) | |
 
 Branch off the matching `-dev` branch, edit the FML, and open the pull request against it.
 
