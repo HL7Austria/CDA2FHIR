@@ -9,7 +9,7 @@ The FML maps in `maps/` describe the rules for transforming CDA to FHIR. [MaLaC-
 | Path | Content |
 | --- | --- |
 | `maps/` | The mapping. `CdaToFhirBundle.4.map` is the entry map and dispatches on `ClinicalDocument/code` to `CdaLabToFhirBundle.4.map` or `CdaEimpfToFhirBundle.4.map`; `CdaToFhirTypes.4.map` holds the shared CDA→FHIR datatype transformations. |
-| `input/` | CDA samples per document type, the IG each type is validated against (`config.json`) and the validator suppressions (`advisor.json`). |
+| `input/` | CDA samples per document type, the FHIR IG each resulting FHIR document `Bundle` is validated against (`config.json`) and the validator suppressions (`advisor.json`). |
 | `python-maps/` | The compiled mapping (generated based on the respective `*-main`-branch), the pinned MaLaC-HD version (`requirements.txt`) and the release version (`pyproject.toml`). |
 | `scripts/` | CI helpers: convert & validate, coverage, ELGA release. |
 
