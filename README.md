@@ -57,8 +57,8 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
 
 > Scope per branch
 > 
-> - On the `myhealtheu` branches the e-vac mapping is a **draft**: their focus is the laboratory report to MyHealth@EU LRR mapping.
-> - The `elga` branches focus on the e-vac to Austrian Patient Summary (APS) mapping.
+> - On the `elga` branches the Laboratory Result Report (LRR) mapping is a **draft**: their focus is the e-vac to APS mapping. 
+> - The `myhealtheu` branches focus on the CDA Laboratory Report to MyHealth@EU LRR mapping.
 > - The `hl7eu` branches focus on mapping to the HL7 EU IGs. 
 > - The e-vac and laboratory maps are kept in sync where possible, but producing e-vac data in the MyHealth@EU format or laboratory results in the APS is currently out of scope.
 
@@ -66,7 +66,7 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
 
 | Workflow | Trigger | Purpose |
 | --- | --- | --- |
-| `convert-and-validate.yml` | pull request | compiles the maps, converts every sample in `input/`, validates each output with the HL7 FHIR validator, uploads output/validation/coverage, and fails the check on validation errors |
+| `convert-and-validate.yml` | pull request | compiles the maps, converts every sample in `input/`, validates each output with the HL7 FHIR validator, provides output/validation/coverage as artifacts, and fails if there are validation errors |
 | `fml2python.yml` | push to the stable branch | recompiles the maps and commits `python-maps/CdaToFhirBundle.4.py` |
 | `release.yml` | GitHub release published | opens a merge request in the ELGA GitLab with the compiled Python, `requirements.txt`, the documentation and the CDA samples |
 
