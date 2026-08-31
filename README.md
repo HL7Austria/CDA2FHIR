@@ -17,7 +17,7 @@ The FML maps in `maps/` describe the rules for transforming CDA to FHIR. [MaLaC-
 
 | Branch | Target |
 | --- | --- |
-| `elga-main`, `elga-dev` | national ELGA / HL7 Austria |
+| `elga-main`, `elga-dev` | [national ELGA / HL7 Austria](https://github.com/HL7Austria/CDA2FHIR/tree/elga-main) |
 | `myhealtheu-main`, `myhealtheu-dev` | cross-border MyHealth@EU / eHDSI |
 | `hl7eu-dev` | [HL7EU](https://github.com/HL7Austria/CDA2FHIR/tree/hl7eu-dev) |
 
