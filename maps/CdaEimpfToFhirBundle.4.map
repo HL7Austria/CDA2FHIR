@@ -881,7 +881,7 @@ group CdaPerformerToFhirProvenance(source cda_performer: CdaPerformer2, target f
 
 group CdaAuthorPersonToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_practitionerRole: FhirPractitionerRole, target fhir_bundle: FhirBundle){
   // author/time -> Provenance.occurredDateTime
-  // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
+  // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/449
   cda_author.time as cda_author_time where ($this.nullFlavor.exists().not()) -> 
     fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
       TSDateTime(cda_author_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";
@@ -910,7 +910,7 @@ group CdaAuthorPersonToFhirProvenance(source cda_author: CdaAuthor, target fhir_
 
 group CdaAuthorDeviceToFhirProvenance(source cda_author: CdaAuthor, target fhir_provenance: FhirProvenance, target fhir_bundle: FhirBundle){
   // author/time -> Provenance.occurredDateTime
-  // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/159
+  // see CdaAuthorToFhirPractitionerAndPractitionerRole which is also used for ClinicalDocument/author: https://github.com/HL7Austria/CDA2FHIR/issues/449
   cda_author.time as cda_author_time where ($this.nullFlavor.exists().not()) -> 
     fhir_provenance.occurred = create('dateTime') as fhir_provenance_occurred then 
       TSDateTime(cda_author_time, fhir_provenance_occurred) "CdaPerformerTimeToFhirProvenanceOccurred";

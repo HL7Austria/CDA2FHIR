@@ -915,7 +915,7 @@ group CdaAuthorToFhirPractitionerAndPractitionerRole(source cda_author : Author,
     cda_author.functionCode -> fhir_practitionerRole.specialty;
 
     // ClinicalDocument.author.time
-    // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/159
+    // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/452
 
     // ClinicalDocument.author.assignedAuthor
     cda_author.assignedAuthor as cda_author_assignedAuthor then {
@@ -962,7 +962,7 @@ group CdaAuthorToFhirDevice(source cda_author : Author, target fhir_device : Dev
     cda_author.functionCode -> fhir_device.type;
     
     // author.time
-    // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/159
+    // TODO see https://github.com/HL7Austria/CDA2FHIR/issues/452
 
     // author.assignedAuthor
     cda_author.assignedAuthor as cda_author_assignedAuthor then {
