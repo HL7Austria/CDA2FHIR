@@ -14,10 +14,6 @@
     ]
   },
   {
-    "directory": "emed",
-    "ig": "https://fhir.hl7.at/elga/aps/r4/package.tgz"
-  },
-  {
     "directory": "eimpf",
     "ig": "https://fhir.hl7.at/elga/aps/r4/package.tgz"
   }
