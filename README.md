@@ -53,7 +53,7 @@ The mappings are defined against the following Austrian ELGA and HL7 specificati
     - [templates in ART-DECOR](https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.0.4)
 
 **Target (FHIR)**
-- **APS** — [Austrian Patient Summary](https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/index.html), the FHIR IG the generated document `Bundle` conforms to
+- **APS** — [Austrian Patient Summary](https://fhir.hl7.at/elga/aps/r4/index.html), the FHIR IG the generated document `Bundle` conforms to
 
 > [!NOTE]
 > **Scope of this branch**
