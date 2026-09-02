@@ -1407,8 +1407,10 @@ group CdaNarrativeTextToFhirString(source cda_act: Act, source cda_section: Sect
           create('integer') as fhir_closing_tag_pos,
           fhir_closing_tag_pos = (fhir_tag_block.indexOf(fhir_closing_tag)),
 
-          // Extract everything between opening and closing tag
-          target_string.value = (fhir_tag_block.substring(fhir_open_tag_end + 1, fhir_closing_tag_pos));
+          // Extract everything between opening and closing tag.
+          // The second substring parameter is the start position and the third one is the length,
+          // not the absolute end position. Subtract the content start so the closing tag is excluded.
+          target_string.value = (fhir_tag_block.substring(fhir_open_tag_end + 1, fhir_closing_tag_pos - (fhir_open_tag_end + 1)));
       };
     };
   };
