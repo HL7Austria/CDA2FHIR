@@ -10,10 +10,8 @@
 name: Generate group layout documentation
 
 on:
-  push:
-    branches:
-      - 390-create-gitaction-to-add-a-overview-of-modularization-in-mapping-to-the-documentation-folder
-
+  pull_request:
+    branches: [ elga, elga-dev ]
     paths:
       - 'maps/**'
       - '.github/scripts/generate_group_layout.py'
