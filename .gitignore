@@ -1,0 +1,9 @@
+# Auto-generated group-layout report.
+# Produced by the "Generate group layout documentation" GitHub Action and made
+# available as a downloadable run artifact ("group-layout"). Deliberately NOT
+# committed, so local regenerations never create churn or merge conflicts.
+/documentation/group_layout.html
+/documentation/group_layout.json
+/documentation/group_layout.md
+/documentation/group_parameters.md
+/.claude/*
