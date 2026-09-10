@@ -8031,7 +8031,12 @@ group CdaLabHeaderToFhirDiagnosticReport(source cda : ClinicalDocument, target f
     "FhirDiagnosticReportProfile";
 
   // ClinicalDocument/code
-  cda.code -> fhir_diagnosticReport.category;
+  cda.code as cda_code then {
+       cda_code -> fhir_diagnosticReport.category as fhir_diagnosticReport_category then {
+        cda_code -> fhir_diagnosticReport_category.coding;
+       };
+    };
+  };
 
   // ClinicalDocument/code/translation
   cda.code as cda_code then {
