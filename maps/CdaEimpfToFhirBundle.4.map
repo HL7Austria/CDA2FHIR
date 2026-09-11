@@ -14,6 +14,8 @@ uses "http://hl7.org/cda/stds/core/StructureDefinition/Material" alias CdaMateri
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Participant2" alias CdaParticipant2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Performer2" alias CdaPerformer2 as source
 uses "http://hl7.org/cda/stds/core/StructureDefinition/Author" alias CdaAuthor as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Observation" alias CDAObservation as source
+
 
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias FhirBundle as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Composition" alias FhirComposition as target
@@ -23,6 +25,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/ImmunizationRecommendation" al
 uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias FhirCodeableConcept as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Provenance" alias FhirProvenance as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/PractitionerRole" alias FhirPractitionerRole as target
+
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 
@@ -165,7 +168,7 @@ group CdaEimpfBodyToFhir(source cda: CdaClinicalDocument, source cda_structuredB
     
     // Antikörper-Bestimmung - kodiert - 1.2.40.0.34.6.0.11.2.7
     cda_component.section as cda_section where code.where(code='26436-6' and codeSystem='2.16.840.1.113883.6.1') -> 
-      fhir_composition.section as fhir_section then CdaAntikoerperSectionToFhirCompositionSection(cda_section, fhir_section, fhir_patient, fhir_bundle);
+      fhir_composition.section as fhir_section then CdaAntikoerperSectionToFhirCompositionSection(cda, cda_section, fhir_section, fhir_patient, fhir_bundle);
     
     // Impfempfehlungen - kodiert - 1.2.40.0.34.6.0.11.2.2
     // APS section: plan of care
@@ -260,7 +263,7 @@ group CdaEimpfImpfempfehlungKodiertToFhirSection(source cda_section: CdaSection,
 // This Group contains the Mapping for  1.2.40.0.34.6.0.11.2.7 Antikörper-Bestimmung - kodiert
 // CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.2.7/2025-11-03T08:24:04
 // FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-composition.html
-group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
+group CdaAntikoerperSectionToFhirCompositionSection(source cda: ClinicalDocument, source cda_section: CdaSection, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle) extends CdaSectionToFhirSection {
   //cda_section.title -> fhir_section.title;
   // ToDo
   // Check if mapping the cda_section.code(26436-6) to fhir is ok. 
@@ -270,7 +273,7 @@ group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSecti
 
     //Antikörperbestimmung Data Processing Entry - 1.2.40.0.34.6.0.11.3.15 
     //Wrapper Act that holds the actual Battery Organizer via entryRelationship.
-    cda_section_entry.act as cda_entry_act then CdaAntiBodyDataProcessingEntryToFhir(cda_entry_act, fhir_section, fhir_patient, fhir_bundle);
+    cda_section_entry.act as cda_entry_act then CdaAntiBodyDataProcessingEntryToFhir(cda, cda_entry_act, cda_section, fhir_section, fhir_patient, fhir_bundle);
   }; 
 }
 
@@ -286,7 +289,7 @@ group CdaAntikoerperSectionToFhirCompositionSection(source cda_section: CdaSecti
 // Target: Mainly the Groups CdaOrganizerToFhirObservation and CdaObservationToFhirObservation
 
 
-group CdaAntiBodyDataProcessingEntryToFhir(source cda_act: Act, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle){
+group CdaAntiBodyDataProcessingEntryToFhir(source cda: ClinicalDocument, source cda_act: Act, source cda_section: Section, target fhir_section, target fhir_patient: FhirPatient, target fhir_bundle: FhirBundle){
 // ----------------------------------------------------------
 //Group Logic 
 // CDA structure handled here:
@@ -336,7 +339,7 @@ cda_act.entryRelationship as cda_entryRelationship where $this.organizer.templat
             fhir_battery_observation.hasMember = create('Reference') as fhir_battery_observation_hasMember_reference,
             fhir_battery_observation_hasMember_reference.reference = append('urn:uuid:', fhir_observation_id),
             fhir_battery_observation_hasMember_reference.type = 'Observation' then {
-              cda_observation then CdaObservationToFhirObservation(cda_observation, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
+              cda_observation then CdaObservationToFhirObservation(cda, cda_observation, cda_section, fhir_observation, fhir_patient, fhir_bundle) "CdaObservationToFhirObservation";
             };
       };
     };
@@ -371,7 +374,7 @@ group CdaOrganizerToFhirObservation(source cda_organizer: Organizer, target fhir
 // This Group contains the Mapping for 1.2.40.0.34.6.0.11.3.16 Antikörper-Bestimmung Laboratory Observation Entry 
 // CDA Template: https://art-decor.org/ad/#/elgaimpf-/rules/templates/1.2.40.0.34.6.0.11.3.16/2025-02-13T12:01:32
 // FHIR Target: https://fhir.hl7.at/r4-ELGA-AustrianPatientSummary-main/StructureDefinition-at-aps-observation.html
-group CdaObservationToFhirObservation(source cda_observation: Observation, target fhir_observation: Observation, target fhir_patient: Patient, target fhir_bundle: Bundle){
+group CdaObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation: Observation, source cda_section: Section, target fhir_observation: Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaLaboratoryObservationToFhirObservation {
   
   // -----------------------------------------------------------------------------------------------
   // @NKR please read before starting to map. 
@@ -394,31 +397,96 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
 
 
   // -----------------------------------------------------------------------------------------------
-  // NKR Please map following Elements.
+  // @NKR start here please  
 
   // observation.id -> Observation.identifier
-  cda_observation.id -> fhir_observation.identifier;
+  // executed in parent group
+  //cda_observation.id -> fhir_observation.identifier;
   
-  // create Observation.category (See Lab.map CdaLaboratoryObservationToFhirObservation)
-  //your source code here -> your target here;  
+  // CDA observation -> fhir_observation.category
+  // executed in parent group
+  // cda_observation -> 
+  //   fhir_observation.category as fhir_category,
+  //   fhir_category.coding as fhir_category_coding,
+  //   fhir_category_coding.system = 'http://terminology.hl7.org/CodeSystem/observation-category',
+  //   fhir_category_coding.code = 'laboratory'
+  //   "FhirObservationCategoryCoding";
   
   // Observation/code -> Observation.code 
-  //your source code here -> your target here;
+  // executed in parent group
+  //cda_observation.code -> fhir_observation.code;
   
   // Observation/statusCode -> Observation.status 
-  //your source code here -> your target here;
+  // executed in parent group
+  // cda_observation.statusCode as observation_statusCode then {
+  //   observation_statusCode.code as cda_code -> fhir_observation.status = translate(cda_code, '#act-status-2-observation-status' , 'code');
+  // } "CdaStatusCodeToFhirObservationStatusMapped";
   
   // Observation/effectiveTime -> Observation.effective
+  // executed in parent group
   //your source code here -> your target here;
+  // cda_observation.effectiveTime as cda_effectiveTime -> fhir_observation.effective = create('dateTime') as fhir_observation_effective then 
+  //   TSDateTime(cda_effectiveTime, fhir_observation_effective) "CdaEffectiveTimeToFhirObservationEffective";
+  // cda_observation
+  //   where cda_observation.where(effectiveTime.where(nullFlavor = 'UNK') or effectiveTime.exists().not()) ->
+  //   fhir_observation.effective = create('dateTime') as fhir_observation_effective,
+  //   fhir_observation_effective.extension as fhir_observation_effective_extenstion,
+  //   fhir_observation_effective_extenstion.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+  //   fhir_observation_effective_extenstion.value = create('code') as fhir_observation_effective_extenstion_code,
+  //   fhir_observation_effective_extenstion_code.value = 'unknown'
+  //     "CdaEffectiveTimeExistsNotToFhirObservationEffective";
   
   // Observation/value -> Observation.value  (Note since Observation.value is constraint in eHDSI we have added a group that deals just with Observation.value. Look at CdaLaboratoryObservationValueToFhirObservationValue to see which logic from this group can be applyed here.)
   // your source code here -> your target here;
+  // observation.value(xsi:type="PQ")
+  // executed in parent group
+  // cda_observation.value: PQ as cda_observation_value -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValuePQ";
+
+  // // observation.value(xsi:type="IVL_PQ")
+  // cda_observation.value: IVL_PQ as cda_observation_value then {
+  //   cda_observation_value where (cda_observation_value.value.exists()) -> fhir_observation.value = create('Quantity') as fhir_observation_value then PQQuantity(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueQuantity";
+
+  //   cda_observation_value where (cda_observation_value.value.exists().not()) -> fhir_observation.value = create('Range') as fhir_observation_value then IVLPQRange(cda_observation_value, fhir_observation_value) "CdaObservationValueToFhirObservationValueRange";
+  // } "CdaObservationValueToFhirObservationValueIVLPQ";
 
   // Obsevation.interpretationCode -> Observation.interpretation
   // your source code here -> your target here;
+  cda_laboratory_observation.interpretationCode as cda_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
+    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
+    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
+    fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+    fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_observation_interpretationCode, fhir_observation_interpretation_coding_01)
+    "CdaObservationInterpretationCodeToFhirObservationInterpretation";
 
   // Observation.referenceRange -> Observation.referenceRange (Note the mapping for this is also in CdaLaboratoryObservationToFhirObservation at the very end of the group.) 
   // your source code here -> your target here; 
+  cda_laboratory_observation.referenceRange as cda_observation_referenceRange then {
+    cda_observation_referenceRange.observationRange as cda_referenceRange_observationRange ->
+      fhir_observation.referenceRange as fhir_observation_referenceRange then {
+        // observation.referenceRange.observationRange.text
+        // TODO how to deal with <reference>-tags
+        //cda_referenceRange_observationRange.text -> fhir_observation_referenceRange.text;
+        cda_referenceRange_observationRange.value as cda_observationRange_value then {
+          cda_observationRange_value.low where (nullFlavor.exists().not()) -> fhir_observation_referenceRange.low;
+          cda_observationRange_value.high where (nullFlavor.exists().not()) -> fhir_observation_referenceRange.high;
+        };
+        // observation.referenceRange.observationRange.interpretationCode (always 'N')
+        cda_referenceRange_observationRange.interpretationCode ->
+          fhir_observation_referenceRange.type as fhir_referenceRange_type,
+          fhir_referenceRange_type.coding as fhir_type_coding,
+          fhir_type_coding.system = 'http://terminology.hl7.org/CodeSystem/referencerange-meaning',
+          fhir_type_coding.code = 'normal'
+          "CdaInterpretationCodeToFhirInterpretationCode";
+      };
+  };
+
+  // observation.entryRelationship (Comment Entry)
+  cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.act.exists()) then {
+    cda_entryRelationship.act as cda_act -> 
+      fhir_observation.note as fhir_observation_note, 
+      fhir_observation_note.text as fhir_observation_note_text then 
+         CdaNarrativeTextToFhirString(cda_act, cda_section, fhir_observation_note_text);  
+  };
 
   // -----------------------------------------------------------------------------------------------
 
@@ -433,7 +501,11 @@ group CdaObservationToFhirObservation(source cda_observation: Observation, targe
     // 1.2.40.0.34.6.0.11.9.44 Participant Body - Verifier
     // 1.2.40.0.34.6.0.11.9.46 Participant Body - Authorized Editor
     // 1.2.40.0.34.6.0.11.9.47 Participant Body - Data Enterer
-    // 1.2.40.0.34.6.0.11.3.17 Comment Entry - Single Author / Informant
+    // 1.2.40.0.34.6.0.11.3.17 Comment Entry - Single Author / Informant 
+}
+
+group CdaEimpfLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle) extends CdaLaboratoryObservationToFhirObservation {
+
 }
 
 
@@ -843,40 +915,8 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
     // substanceAdministration/entryRelationship (Comment Entry)
     cda_substanceAdministration.entryRelationship as cda_substanceAdministration_entryRelationship where ($this.act.templateId.where(root='1.2.40.0.34.6.0.11.3.17')) then {
       // substanceAdministration/entryRelationship/act
-      cda_substanceAdministration_entryRelationship.act as cda_act then {
-        // substanceAdministration/entryRelationship/act/text
-        cda_act.text as cda_act_text then {
-          // substanceAdministration/entryRelationship/act/text/reference
-          cda_act_text.reference as cda_act_text_reference then {
-            cda_section.text as cda_section_text then {
-              // substanceAdministration/entryRelationship/act/text/reference/@value -> ImmunizationRecommendation.recommendation.description
-              cda_act_text_reference.value as cda_act_text_reference_value -> 
-                // Create Narrative (same datatype as in Composition.section.text)
-                create('Narrative') as fhir_narrative, 
-                // section/text -> Narrative.div
-                fhir_narrative.div = cda_section_text as fhir_narrative_div,
-                
-                // Create string
-                create('string') as fhir_string,
-                // Convert test_div to a FHIR string
-                fhir_string = (fhir_narrative_div),
-
-                // Create substring from the ID (identified by cda_act_text_reference_value) till the end of fhir_string
-                create('string') as fhir_substring_01,
-                // cda_act_text_reference_value.substring(1) = removing '#' from reference/@value (e.g. '#commentRef-1' becomes 'commentRef-1')
-                // fhir_string.indexOf(cda_act_text_reference_value.substring(1)) = the position of the ID within section/text
-                fhir_substring_01 = (fhir_string.substring(fhir_string.indexOf(cda_act_text_reference_value.substring(1)))),
-
-                // Create a substring from the first occurrence of > character till the end of fhir_substring_01
-                create('string') as fhir_substring_02,
-                fhir_substring_02 = (fhir_substring_01.substring(fhir_substring_01.indexOf('>') + 1)),
-
-                // Create a substring from the start till the first occurrence of < character
-                fhir_immunizationRecommendation_recommendation.description = (fhir_substring_02.substring(0, fhir_substring_02.indexOf('<')));
-            };
-          };
-        };
-      };
+      cda_substanceAdministration_entryRelationship.act as cda_act -> 
+        fhir_immunizationRecommendation_recommendation.description as fhir_description then CdaNarrativeTextToFhirString(cda_act, cda_section, fhir_description); 
     };
 
     // substanceAdministration/reference/externalDocument -> Immunization.identifier
