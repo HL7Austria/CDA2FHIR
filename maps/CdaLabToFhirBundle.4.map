@@ -9172,7 +9172,20 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   };
 
   // observation.entryRelationship (Frühere Ergebnisse)
-  // TODO
+  cda_laboratory_observation.entryRelationship as cda_entryRelationship where ($this.observation.exists()) then{
+    cda_entryRelationship.observation as cda_previous_observation -> 
+      fhir_bundle.entry as fhir_bundle_entry, 
+      fhir_bundle_entry.resource = create('Observation') as fhir_previous_observation,
+      fhir_previous_observation.id = uuid() as fhir_previous_observation_identifier,
+      fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_previous_observation_identifier),
+      fhir_observation.extension as fhir_observation_extension,
+      fhir_observation_extension.url = 'http://hl7.org/fhir/StructureDefinition/workflow-supportingInfo',
+      fhir_observation_extension.value = create('Reference') as fhir_observation_extension_reference,
+      fhir_observation_extension_reference.reference = append('urn:uuid:',fhir_previous_observation_identifier),
+      fhir_observation_extension_reference.type = 'Observation' then CdaLaboratoryPreviousObservationtoFhirObservation(cda, cda_previous_observation, fhir_previous_observation, fhir_patient, fhir_bundle, fhir_serviceRequest); 
+
+    //todo create issue to harmonize exentsion.type
+  };
 
   // observation.referenceRange
   cda_laboratory_observation.referenceRange as cda_observation_referenceRange then {
@@ -9198,6 +9211,19 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
           "CdaInterpretationCodeToFhirInterpretationCode";
       };
   };
+}
+
+group CdaLaboratoryPreviousObservationtoFhirObservation(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest) extends CdaLaboratoryObservationToFhirObservation{
+  
+  cda_laboratory_observation ->
+    fhir_observation.performer as fhir_observation_performer,
+    fhir_observation_performer.extension as fhir_performer_extension,
+    fhir_performer_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
+    fhir_performer_extension.value = create('code') as fhir_performer_extension_code,
+    fhir_performer_extension_code.value = 'unknown'
+    "CdaPreviousObservationNoPerformerToFhirObservationPerformer";
+
+    // todo set status
 }
 
 group CdaLaboratoryObservationToFhirObservationWithSpecimen(source cda: ClinicalDocument, source cda_laboratory_observation : CDAObservation, target fhir_observation : Observation, target fhir_patient: Patient, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest, target fhir_specimen: Specimen) extends CdaLaboratoryObservationToFhirObservation {

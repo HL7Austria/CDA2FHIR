@@ -3097,6 +3097,17 @@
                                             <effectiveTime value="20210601063500+0200"/>
                                             <value unit="10*9/L" value="26" xsi:type="PQ"/>
                                             <interpretationCode code="H" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="High"/>
+                                            <!-- Frühere Ergebnisse: derselbe Patient, dieselbe Analyse, dieselbe Einheit, früherer Zeitpunkt -->
+                                            <entryRelationship typeCode="REFR" contextConductionInd="true">
+                                                <observation classCode="OBS" moodCode="EVN">
+                                                    <!-- Der Code MUSS derselbe sein wie in observation/code -->
+                                                    <code code="26464-8" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="Leukozyten"/>
+                                                    <statusCode code="completed"/>
+                                                    <effectiveTime value="20210415071500+0200"/>
+                                                    <value unit="10*9/L" value="8.5" xsi:type="PQ"/>
+                                                    <interpretationCode code="N" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/>
+                                                </observation>
+                                            </entryRelationship>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
                                                 <observationRange classCode="OBS" moodCode="EVN.CRT">
