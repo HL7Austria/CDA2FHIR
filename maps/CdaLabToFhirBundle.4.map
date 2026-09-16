@@ -9205,8 +9205,6 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
       fhir_observation_extension.value = create('Reference') as fhir_observation_extension_reference,
       fhir_observation_extension_reference.reference = append('urn:uuid:',fhir_previous_observation_identifier),
       fhir_observation_extension_reference.type = 'Observation' then CdaLaboratoryPreviousObservationToFhirObservation(cda, cda_previous_observation, fhir_previous_observation, fhir_patient, fhir_bundle); 
-
-    //todo create issue to harmonize exentsion.type
   };
 }
 
