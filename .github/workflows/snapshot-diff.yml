@@ -1,0 +1,148 @@
+# Snapshot diff test to catch mapping regressions (issue #423).
+#
+# On every PR to a *-main or *-dev branch, compile the maps from BOTH the PR and its target
+# branch and convert each branch's CDA fixtures with its own engine (base engine reads
+# base/input, PR engine reads pr/input), normalise away the run-to-run noise (generated
+# resource UUIDs + Bundle.timestamp) and render a git diff of the two FHIR bundles,
+# grouped by document type. The diff therefore reflects both the map change under
+# review and any change to the sample CDA themselves (added / removed / edited fixture).
+#
+# This is an informational report, not a gate on the mapping: it succeeds even when
+# diffs exist. It fails only when a sample could not be converted at all, since the
+# report is then incomplete and proves nothing about regressions.
+
+name: Snapshot diff (mapping regression)
+
+on:
+  pull_request:
+    branches: [ '*-main','*-dev' ]
+
+permissions:
+  contents: read
+  pull-requests: write
+  actions: read        # read this run's job id, to deep-link the report in the comment
+
+jobs:
+  snapshot-diff:
+    runs-on: ubuntu-latest
+
+    steps:
+      # PR side = the merge ref (base + this PR), so the diff reflects only what the
+      # PR changes, not unrelated commits that have since landed on the base branch.
+      - name: Check out PR
+        uses: actions/checkout@v5
+        with:
+          path: pr
+
+      - name: Check out base branch (${{ github.base_ref }})
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.base_ref }}
+          path: base
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # Install the engine version pinned by the PR and use it to compile BOTH sides,
+      # so the diff isolates the change in the *maps* from any engine-version change.
+      - name: Install MaLaC-HD (PR-pinned version)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r pr/python-maps/requirements.txt
+
+      - name: Compile base maps
+        run: |
+          mkdir -p engines
+          malac-hd -m base/maps/CdaToFhirBundle.4.map -co engines/base.py
+
+      - name: Compile PR maps
+        run: |
+          malac-hd -m pr/maps/CdaToFhirBundle.4.map -co engines/pr.py
+
+      # Build a one-click link to THIS run's report in the Summary tab. The step
+      # summary renders under an anchor #summary-<jobId>; the job id isn't a plain env
+      # var, so fetch it from the run's jobs API. This workflow has exactly one job, so
+      # take the first -- matching on .name would compare the API's *display* name
+      # against the job key and break the moment a `name:` is added. Falls back to the
+      # run URL (which also lands on the Summary page) if the API call is unavailable.
+      - name: Resolve run Summary link
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          RUN_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          JOBS="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/attempts/${GITHUB_RUN_ATTEMPT}/jobs" 2>/dev/null || echo '{}')"
+          JOB_ID="$(echo "$JOBS" | jq -r '.jobs[0]?.id // empty')"
+          if [ -n "$JOB_ID" ]; then
+            echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}/attempts/${GITHUB_RUN_ATTEMPT}#summary-${JOB_ID}" >> "$GITHUB_ENV"
+          else
+            echo "SNAPSHOT_SUMMARY_URL=${RUN_URL}" >> "$GITHUB_ENV"
+          fi
+
+      # The script's exit code is recorded rather than allowed to fail the step, so the
+      # report and comment are published first and the job is failed afterwards -- with
+      # a message that matches what actually went wrong (see the two gate steps below).
+      - name: Build snapshot diff report
+        id: snapshot
+        env:
+          BASE_LABEL: ${{ github.base_ref }}
+          PR_LABEL: ${{ github.head_ref }}
+        run: |
+          set +e
+          python pr/scripts/snapshot_diff.py \
+            --base-engine engines/base.py \
+            --pr-engine engines/pr.py \
+            --base-input-dir base/input \
+            --pr-input-dir pr/input \
+            --config pr/input/config.json \
+            --work snapshots \
+            --report report.md \
+            --comment comment.md \
+            --summary
+          code=$?
+          set -e
+          echo "code=${code}" >> "$GITHUB_OUTPUT"
+          echo "snapshot_diff.py exited ${code}"
+
+      - name: Upload snapshots + report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: snapshot-diff
+          include-hidden-files: true
+          path: |
+            report.md
+            comment.md
+            snapshots/base/
+            snapshots/pr/
+            engines/
+
+      # Keep a single sticky comment up to date on the PR. Never fail the job on this
+      # (e.g. an oversized diff exceeding the comment limit) -- the full report is
+      # always in the run Summary and the uploaded artifact.
+      - name: Post/update PR comment
+        if: always() && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: snapshot-diff
+          path: comment.md
+
+      # Diffs never fail the job, however large -- a sample that could not be converted
+      # at all does, because the report is then incomplete and cannot prove the absence
+      # of a regression. Keyed off the script's own exit code (20), not the step
+      # outcome, so an oversized report can never be reported as a conversion error.
+      - name: Fail on conversion errors
+        if: steps.snapshot.outputs.code == '20'
+        run: |
+          echo "::error::One or more samples could not be converted; the snapshot diff is incomplete. See the report for which side's engine failed."
+          exit 20
+
+      # Anything else non-zero is the script itself breaking, which is a different
+      # problem and gets a different message.
+      - name: Fail on snapshot-diff script error
+        if: steps.snapshot.outputs.code != '' && steps.snapshot.outputs.code != '0' && steps.snapshot.outputs.code != '20'
+        run: |
+          echo "::error::snapshot_diff.py exited ${{ steps.snapshot.outputs.code }} -- this is a script failure, not a conversion or size problem."
+          exit 1
