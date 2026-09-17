@@ -9221,7 +9221,7 @@ group CdaLaboratoryPreviousObservationToFhirObservation(source cda: ClinicalDocu
   cda_laboratory_observation ->
     fhir_observation.performer as fhir_observation_performer,
     fhir_observation_performer.extension as fhir_performer_extension,
-    fhir_performer_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason160926',
+    fhir_performer_extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason',
     fhir_performer_extension.value = create('code') as fhir_performer_extension_code,
     fhir_performer_extension_code.value = 'unknown'
     "CdaPreviousObservationNoPerformerToFhirObservationPerformer";
