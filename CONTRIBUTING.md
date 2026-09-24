@@ -63,3 +63,11 @@ python scripts/convert_and_validate.py && ./check_validation_result.sh   # needs
 ## License
 
 None declared yet — see [#271](https://github.com/HL7Austria/CDA2FHIR/issues/271).
+
+
+
+# Additions
+
+- Add constraint to add no special chars in issue title/ branch name. "The head ref may contain hidden characters: "530-add-mapping-for-\u00FCberweisungsgrund-codiert"" this degrades searchability of branches/issues
+
+
