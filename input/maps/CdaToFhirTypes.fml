@@ -1,0 +1,241 @@
+map "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types" = "CdaToFhirTypes"
+
+
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ED" alias ED as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/II" alias II as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Identifier" alias Identifier as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/TS" alias TS as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/instant" alias instant as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CS" alias CS as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/code" alias code as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CE" alias CE as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CD" alias CD as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CV" alias CV as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/CodeableConcept" alias CodeableConcept as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Coding" alias Coding as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ST" alias ST as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/string" alias string as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/EN" alias EN as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/PN" alias PN as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/PQ" alias PQ as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/IVXB-PQ" alias IVXB_PQ as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ON" alias ON as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/HumanName" alias HumanName as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/Organization" alias CdaOrganization as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/CustodianOrganization" alias CdaCustodianOrganization as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Organization" alias Organization as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/AD" alias AD as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Address" alias Address as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/TEL" alias TEL as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/ContactPoint" alias ContactPoint as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/BL" alias BL as source
+uses "http://hl7.org/fhir/4.3/StructureDefinition/boolean" alias boolean as target
+uses "http://hl7.org/cda/stds/core/StructureDefinition/IVL-TS" alias IVL_TS as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/IVXB-TS" alias IVXB_TS as source
+uses "http://hl7.org/cda/stds/core/StructureDefinition/ANY" alias ANY as source
+
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Quantity" alias Quantity as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/SimpleQuantity" alias SimpleQuantity as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Period" alias Period as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/date" alias date as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Extension" alias Extension as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Bundle" alias Bundle as source
+
+group Any(source src, target tgt) {
+}
+
+group INT(source src : INT, target tgt : integer) extends Any <<types>> {
+  src.value as v -> tgt.value = v "integer";
+}
+
+group INTQuantity(source src: INT, target tgt: Quantity) extends Any <<types>> {
+  src -> tgt.system = 'http://unitsofmeasure.org' "FhirQuantitySystem";
+  src ->
+    tgt.code = '1',
+    tgt.unit = '1';
+  src.value as value -> tgt.value = value;
+}
+
+group REALQuantity(source src: INT, target tgt: Quantity) extends INTQuantity <<types>> {
+}
+
+group IVL_INTRange(source src : IVL_INT, target tgt : Range) extends Any <<types>>{
+  src.low as source_low -> tgt.low as target_low then IVXB_INTQuantity(source_low, target_low) "IVL_INTLow";
+  src.high as source_high -> tgt.high as target_high then IVXB_INTQuantity(source_high, target_high) "IVL_INTHigh";
+}
+
+group IVXB_INTQuantity(source src : IVXB_INT, target tgt : Quantity) extends INTQuantity <<types>>{
+}
+
+group BL(source src : BL, target tgt: boolean) extends Any <<types>> {
+  src.value as v -> tgt.value = v "boolean";
+}
+
+group TemplateID(source template : II, target tgt) {
+  template -> tgt.extension as ext then {
+    template -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/templateID' "url";
+    template -> ext.value = create('Identifier') as value then II(template, value) "value";
+  } "templateId";
+}
+
+//  group Negation(source negation : BL, target tgt) {
+//    negation -> tgt.modifierExtension as ext then {
+//      negation -> ext.url = 'http://hl7.org/cda/stds/core/StructureDefinition/negationIndicator' "url";
+//      negation as neg ->  ext.value = create('boolean'),  ext.value = neg "value";
+//    } "negation";
+//  }
+
+group TSInstant(source src : TS, target tgt : instant) extends Any <<types>> {
+  src.value as v -> tgt.value = cast(v, 'string');
+}
+
+group IVL_TSDateTime(source src : IVL_TS, target tgt : instant) extends TSInstant <<types>> {
+}
+
+group TSDateTime(source src : TS, target tgt : dateTime) extends Any <<types>> {
+  src.value as v -> tgt.value = cast(v, 'string');
+}
+
+group IVXB_TSDateTime(source src : IVXB_TS, target tgt : dateTime) extends TSDateTime <<types>> {
+}
+
+group TSDate(source src : TS, target tgt : date) extends Any <<types>> {
+  // guaranteeing that only date will be transformed
+  // see https://gitlab.com/cdehealth/malac-hd/-/issues/45 (resolved)
+  // TODO change if https://gitlab.com/cdehealth/malac-hd/-/issues/85 and https://github.com/hapifhir/org.hl7.fhir.core/issues/1966 have been resolved
+  src.value as v -> tgt.value = truncate(v, 10) "TSdate";
+}
+
+group IVLTSPeriod(source src : IVL_TS, target tgt : Period) extends Any <<types>> {
+  src.low -> tgt.start;
+  src.high -> tgt.end;
+}
+
+group IVLTSDateTime(source src : IVL_TS, target tgt : dateTime) extends Any <<types>> {
+  src.low as s then TSDateTime(s, tgt);
+}
+
+group STstring(source src : ST, target tgt : string) extends Any <<types>> {
+  src as v -> tgt.value = (v.xmlText) "STstring";
+}
+
+group EDstring(source src : ED, target tgt : string) extends STstring <<types>> {
+}
+
+group ENstring(source src : EN, target tgt : string) extends Any <<types>> {
+  src as v -> tgt.value = (v.item.xmlText) "value";
+}
+
+group ONstring(source src : ON, target tgt : string) extends ENstring <<types>> {
+}
+
+group CSCode(source src : CS, target tgt : code) extends Any <<types>> {
+  src.code as c -> tgt.value = cast(c, 'string');
+}
+
+group CECode(source src : CE, target tgt : code) extends CSCode <<types>> {
+}
+
+group CDCode(source src : CD, target tgt : code) extends CSCode <<types>> {
+}
+
+group CDCoding(source src : CD, target tgt : Coding) extends CECoding <<types>> {
+
+}
+
+group CSCodeableConcept(source src : CS, target tgt : CodeableConcept) extends CECodeableConcept <<types>> {
+}
+
+group CDCodeableConcept(source src : CD, target tgt : CodeableConcept) extends CECodeableConcept <<types>> {
+}
+
+group CVCodeableConcept(source src: CV, target tgt: CodeableConcept) extends CECodeableConcept <<types>> {
+
+}
+
+
+// Source: https://art-decor.org/art-decor/decor-templates--at-lab-?section=templates&id=1.2.40.0.34.6.0.11.9.5&effectiveDate=2021-06-28T13:57:53&language=de-DE
+// Target: http://hl7.org/fhir/organization.html
+group CdaOrganizationCompilationToFhirOrganization(source cda_organization: CdaOrganization, target fhir_organization : Organization) {
+  cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
+  cda_organization.name -> fhir_organization.name;
+  cda_organization.telecom -> fhir_organization.telecom;
+  // cda_organization.addr as cda_organization_addr ->
+  //   fhir_organization.address = create('Address') as fhir_organization_address then
+  //   CdaAdressCompilationToFhirAustrianAddress(cda_organization_addr, fhir_organization_address)
+  //   "CdaOrganizationAddressToFhirOrganizationAustrianAddress";
+  cda_organization.addr -> fhir_organization.address;
+}
+
+group CdaOrganizationCompilationToFhirOrganizationWithBundle(source cda_organization: CdaOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
+  fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
+    fhir_organization.meta as fhir_organization_meta,
+    fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/organization-myhealtheu-core'
+    "FhirOrganizationProfile";
+  
+  cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
+  cda_organization.name -> fhir_organization.name;
+  cda_organization.telecom -> fhir_organization.telecom;
+  // cda_organization.addr as cda_organization_addr ->
+  //   fhir_organization.address = create('Address') as fhir_organization_address then
+  //   CdaAdressCompilationToFhirAustrianAddress(cda_organization_addr, fhir_organization_address)
+  //   "CdaOrganizationAddressToFhirOrganizationAustrianAddress";
+  cda_organization.addr -> fhir_organization.address;
+}
+
+group CdaCustodianOrganizationToFhirOrganizationWithBundle(source cda_organization: CdaCustodianOrganization, source fhir_bundle: Bundle, target fhir_organization : Organization) {
+  fhir_bundle where ($this.meta.profile = 'http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu') ->
+    fhir_organization.meta as fhir_organization_meta,
+    fhir_organization_meta.profile = 'http://fhir.ehdsi.eu/core/StructureDefinition/organization-myhealtheu-core'
+    "FhirOrganizationProfile";
+  
+  // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.id
+  cda_organization.id where (nullFlavor.exists().not()) -> fhir_organization.identifier;
+  // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.name
+  cda_organization.name -> fhir_organization.name;
+  // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.telecom
+  cda_organization.telecom -> fhir_organization.telecom;
+  // ClinicalDocument.custodian.assignedCustodian.representedCustodianOrganization.addr
+  cda_organization.addr -> fhir_organization.address;
+}
+
+
+group PQQuantity(source src : PQ, target tgt : Quantity) extends Any <<types>> {
+  src -> tgt.system = 'http://unitsofmeasure.org' "FhirQuantitySystem";
+  src.unit as unit ->
+    tgt.code = unit,
+    tgt.unit = unit;
+  src.value as value -> tgt.value = value;
+}
+
+group IVLPQRange(source src : IVL_PQ, target tgt : Range) extends Any <<types>> {
+  src.low as source_low -> tgt.low as target_low then PQQuantity(source_low, target_low) "IVLPQLow";
+  src.high as source_high -> tgt.high as target_high then PQQuantity(source_high, target_high) "IVLPQHigh";
+  // Range does not support any other elements, no official extensions defined
+}
+
+group IVXB_PQQuantity(source src : IVXB_PQ, target tgt : Quantity) extends PQQuantity <<types>> {
+}
+
+// group LowQuantity(source src : IVXB_PQ, target tgt : Quantity) extends PQQuantity <<types>> {
+//   // inclusive missing
+//   // TODO to be discussed
+//   src where $this.inclusive.exists().not() -> tgt.comparator = '>' "CdaInclusiveToFhirComparatorMissing";
+//   // inclusive = false
+//   src where $this.inclusive=false -> tgt.comparator = '>' "CdaInclusiveToFhirComparatorNotInclusive";
+//   // inclusive = true
+//   src where $this.inclusive=true -> tgt.comparator = '>=' "CdaInclusiveToFhirComparatorInclusive";
+// }
+
+group RTORatio(source src: RTO, target tgt: Ratio) extends Any <<types>> {
+  // numerator
+  src.numerator: INT as src_numerator -> tgt.numerator as tgt_numerator then INTQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorINTToFhirQuantity";
+  src.numerator: REAL as src_numerator -> tgt.numerator as tgt_numerator then REALQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorREALToFhirQuantity";
+  src.numerator: PQ as src_numerator -> tgt.numerator as tgt_numerator then PQQuantity(src_numerator, tgt_numerator) "CdaRTONumeratorPQToFhirQuantity";
+
+  // denominator
+  src.denominator: INT as src_denominator -> tgt.denominator as tgt_denominator then INTQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorINTToFhirQuantity";
+  src.denominator: REAL as src_denominator -> tgt.denominator as tgt_denominator then REALQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorREALToFhirQuantity";
+  src.denominator: PQ as src_denominator -> tgt.denominator as tgt_denominator then PQQuantity(src_denominator, tgt_denominator) "CdaRTODenominatorPQToFhirQuantity";
+}
+

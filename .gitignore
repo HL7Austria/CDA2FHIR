@@ -1,0 +1,45 @@
+# IG publisher / SUSHI build output #
+#####################################
+fsh-generated*
+temp*
+template*
+output*
+local-template*
+
+# Ignore large files and frequently changed files in input-cache #
+##################################################################
+input-cache*
+
+# Conversion & validation pipeline output #
+###########################################
+output/
+coverage/
+validation/
+*_package.tgz
+
+# OS generated files #
+######################
+Thumbs.db
+.DS_Store
+.DS_Store?
+
+# backup files #
+################
+*.bak
+
+# IDE generated files #
+#######################
+.vscode
+.idea
+
+# Microsoft Office temp files #
+###############################
+~$*.xlsx
+
+# Python #
+##########
+__pycache__/
+*.py[cod]
+.venv/
+.coverage
+.coverage.*

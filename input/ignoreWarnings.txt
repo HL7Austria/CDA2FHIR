@@ -1,0 +1,5 @@
+== Suppressed Messages ==
+
+# Add warning or information messages here (one per line, exact text as
+# reported by the IG Publisher, or a %regex% pattern) to keep them out of
+# the QA report. Every suppression should be justified with a comment.
