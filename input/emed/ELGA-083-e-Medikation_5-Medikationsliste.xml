@@ -1,0 +1,2258 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet type="text/xsl" href="ELGA_Stylesheet_v1.0.xsl"?>
+<ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3">
+	<!--
+		
+		ELGA CDA Implementierungsleitfäden
+
+		*** CDA Demo-Dokument ***
+		Dies ist ein Beispielbefund. Bei den Inhalten handelt es sich um synthetische Mustertexte und keinesfalls um personenbezogene Echtdaten oder realistische Befunde.
+		Das Beispiel veranschaulicht die technischen Möglichkeiten unter Verwendung eines Maximums der erlaubten Optionen.
+
+		Spezieller Leitfaden: e-Medikation (Medikationsliste) 2.06.2
+		ELGA Interoperabilitätsstufe (EIS) "Full Support"
+
+		auf der Basis des allgemeinen Leitfadens: CDA Dokumente im österreichischen Gesundheitswesen
+
+		Autor:
+			Jürgen Brandstätter
+			CodeWerk Software Services and Development GmbH
+			j.brandstaetter@codewerk.at
+			Oliver Kuttin, ELGA GmbH
+			Stefan Sabutsch, ELGA GmbH
+								
+		Dokumentrevision:	6
+		Datum: 				03.01.2017
+
+		Die Kommentare in diesem CDA Dokument dienen lediglich der Orientierungshilfe und sind nicht 
+		Bestandteil einer konkreten Implementierung!
+	
+		=======================================================================
+	-->
+ 	<!--
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+
+			Administrative Daten "CDA Header"
+
+			siehe Allgemeiner Leitfaden, Kapitel 6
+
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+			************************************************************************************************************************************************
+	-->
+	<!--
+			========================================================================
+			========================================================================
+			Dokumentenstruktur
+			siehe Allgemeiner Leitfaden, Kapitel 6.2
+			========================================================================
+			========================================================================
+	-->
+ <!-- Hoheitsbereich des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.3) -->
+  <realmCode code="AT"/>
+  <!-- Dokumentformat Dokumentformat CDA R2 (siehe Allgemeiner Leitfaden, Kapitel 6.2.4) -->
+  <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+  <!-- ELGA TemplateId (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.1.3) -->
+  <templateId root="1.2.40.0.34.11.1" assigningAuthorityName="ELGA"/>
+  <!-- ELGA CDA Medikationsliste (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.1.3) -->
+  <templateId root="1.2.40.0.34.11.8.3" assigningAuthorityName="ELGA"/>
+  <!-- IHE PHARM (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.1.3) -->
+  <templateId root="1.3.6.1.4.1.19376.1.9.1.1.5" assigningAuthorityName="IHE PHARM"/>
+  <!-- IHE PCC (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.1.3) -->
+  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.1.1" assigningAuthorityName="IHE PCC"/>
+  <!-- ELGA Interoperabilitätsstufe (EIS) "Full Support" (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.1.3) -->
+  <templateId root="1.2.40.0.34.11.8.0.3" assigningAuthorityName="ELGA"/>
+  <!-- Dokumenten-Id (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.2.3) -->
+  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="UE4Q2YA2QYSX" assigningAuthorityName="e-MedAT"/>
+  <!-- Dokumentenklasse (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.3.6) -->
+  <code code="56445-0" displayName="Medication summary Document" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+  <!-- Titel des Dokuments (Implementierungsleitfaden e-Medikation, Kapitel 3.1.2.4.6) -->
+  <title>Medikationsliste</title>
+  <!-- Erstellungsdatum des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.9) -->
+  <effectiveTime value="20150825"/>
+  <!-- Vertraulichkeitscode (siehe Allgemeiner Leitfaden, Kapitel 6.2.10) -->
+  <confidentialityCode code="N" displayName="normal" codeSystem="2.16.840.1.113883.5.25" codeSystemName="HL7:Confidentiality"/>
+  <!-- Sprachcode des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.11) -->
+  <languageCode code="de-AT"/>
+  <!-- Versionierung des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.2.12) -->
+  <setId root="1.2.40.0.10.1.4.3.4.2.1" extension="66LU2NJUENWN" assigningAuthorityName="e-MedAT"/>
+  <versionNumber value="1"/>
+  <!--
+      ========================================================================
+      ========================================================================
+      Teilnehmende Parteien
+      siehe Allgemeiner Leitfaden, Kapitel 6.3
+      ========================================================================
+      ========================================================================
+  -->
+  <!--
+    ========================================================================
+    Patient (siehe Allgemeiner Leitfaden, Kapitel 6.3.1)
+    ========================================================================
+  -->
+  <recordTarget xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm">
+    <patientRole>
+      <id root="1.2.40.0.10.2.1.1.149" extension="GH:test" assigningAuthorityName="Österreichisches Stammzahlenregister"/>
+      <id root="1.2.40.0.10.1.4.3.1" extension="7734181543" assigningAuthorityName="Österreichische Sozialversicherung"/>
+      <patient>
+        <name>
+          <prefix>Dr.</prefix>
+          <given>Tom</given>
+          <family>Random</family>
+        </name>
+        <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1" codeSystemName="HL7:AdministrativeGender" displayName="Male"/>
+        <birthTime value="19800328"/>
+      </patient>
+    </patientRole>
+  </recordTarget>
+  <!--
+    ========================================================================
+    Verfasser des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2)
+    ========================================================================
+  -->
+  <author>
+    <!--
+      Zeitpunkt der Erstellung (z.B. des Diktats) (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.2)
+    -->
+    <time value="20150825"/>
+    <assignedAuthor>
+      <!--          Identifikation des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.3)      -->
+      <id root="1.2.40.0.34.3.9.107" assigningAuthorityName="e-MedAT"/>
+      <!--        Personendaten des Verfassers des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.6)      -->
+      <assignedAuthoringDevice>
+        <manufacturerModelName>Österreichisches e-Medikationsprojekt</manufacturerModelName>
+        <softwareName>Zentrale Komponente</softwareName>
+      </assignedAuthoringDevice>
+      <!--        Organisation, in deren Auftrag der Verfasser des Dokuments die Dokumentation verfasst hat (siehe Allgemeiner Leitfaden, Kapitel 6.3.2.3.1.7)      -->
+      <representedOrganization>
+        <id root="1.2.40.0.34.3.9.107" assigningAuthorityName="e-MedAT"/>
+        <!--          Name der Organisation        -->
+        <name>Österreichisches e-Medikationsprojekt</name>
+        <!--           Kontaktdaten der Organisation (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.4)        -->
+      </representedOrganization>
+    </assignedAuthor>
+  </author>
+  <!--
+    ========================================================================
+    Verwahrer des Dokuments (siehe Allgemeiner Leitfaden, Kapitel 6.3.4)
+    ========================================================================
+  -->
+  <custodian>
+    <assignedCustodian>
+      <representedCustodianOrganization>
+        <!--          ID der Organisation aus dem GDA Index (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.2)        -->
+        <id root="1.2.40.0.34.3.9.107" assigningAuthorityName="e-MedAT"/>
+        <!--          Name der Organisation (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.3)        -->
+        <name>Österreichisches e-Medikationsprojekt</name>
+        <!--          Adresse der Organisation (siehe Allgemeiner Leitfaden, Kapitel 6.3.4.2.5)        -->
+        <addr>
+          <streetName>Kundmanngasse</streetName>
+          <houseNumber>21</houseNumber>
+          <postalCode>1030</postalCode>
+          <city>Wien</city>
+          <state>Wien</state>
+          <country>AUT</country>
+        </addr>
+      </representedCustodianOrganization>
+    </assignedCustodian>
+  </custodian>
+  <!--
+    ========================================================================
+    Rechtlicher Unterzeichner (siehe Allgemeiner Leitfaden, Kapitel 6.3.6)
+    ========================================================================
+  -->
+
+  <!-- Medizinische Inhalte "CDA Body" -->
+  <component>
+    <structuredBody>
+      <component>
+        <section>
+          <templateId root="1.2.40.0.34.11.8.3.2.1" assigningAuthorityName="ELGA"/>
+          <templateId root="1.3.6.1.4.1.19376.1.9.1.2.5" assigningAuthorityName="IHE PHARM"/>
+          <id root="1.2.40.0.10.1.4.3.4.2.1" extension="UE4Q2YA2QYSX" assigningAuthorityName="e-MedAT"/>
+          <code code="10160-0" displayName="History of medication use" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC"/>
+          <title>Medikationsliste</title>
+          <text>
+            <!-- ID = apos-* -->
+            <table ID="apos-UJQ6JEG8W4QT">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1</td>
+                  <td colspan="1">50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="1">4 Einheit(en), pro Tag</td>
+                  <td colspan="1">2015-08-25, 08:31:58</td>
+                  <td colspan="1">2015-08-25, 10:31:58</td>
+                  <td colspan="1"/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Mag Kira Kilic BSc, Alte Löwen-Apotheke</td>
+                  <td colspan="2">471211</td>
+                  <td colspan="3">Landstraße 107, 7050 Eisenstadt</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-UJQ6JEG8W4QT">
+
+                      <!-- ID = zinfo-* -->
+                                                        Zusatzinformation Patient: <content ID="zinfo-UJQ6JEG8W4QT">Bei Kreislaufproblemen den Arzt aufsuchen</content>
+                      <br />
+
+                      <!-- ID = altein-* -->
+                                                        Alternative Einnahme: <content ID="altein-UJQ6JEG8W4QT">nasale Anwendung</content>
+                      <br />
+
+                    </content>
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:31:56
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = apos-* -->
+            <table ID="apos-E2A4SAQS4YUL">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1</td>
+                  <td colspan="1">50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="1">0 - 0 - 2 - 0, täglich</td>
+                  <td colspan="1">2015-08-25, 08:31:58</td>
+                  <td colspan="1">2014-05-05, 00:00:00</td>
+                  <td colspan="1">2014-05-10, 12:12:00</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Mag Kira Kilic BSc, Alte Löwen-Apotheke</td>
+                  <td colspan="2">471211</td>
+                  <td colspan="3">Landstraße 107, 7050 Eisenstadt</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-E2A4SAQS4YUL">
+
+                      <!-- ID = zinfo-* -->
+                                                        Zusatzinformation Patient: <content ID="zinfo-E2A4SAQS4YUL">Bei Kreislaufproblemen den Arzt aufsuchen</content>
+                      <br />
+
+                      <!-- ID = altein-* -->
+                                                        Alternative Einnahme: <content ID="altein-E2A4SAQS4YUL">nasale Anwendung</content>
+                      <br />
+
+                    </content>
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:31:56
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = apos-* -->
+            <table ID="apos-JE2UUNLJUEGE">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1</td>
+                  <td colspan="1">50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="1"/>
+                  <td colspan="1">2015-08-25, 08:31:58</td>
+                  <td colspan="1"/>
+                  <td colspan="1"/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Mag Kira Kilic BSc, Alte Löwen-Apotheke</td>
+                  <td colspan="2">471211</td>
+                  <td colspan="3">Landstraße 107, 7050 Eisenstadt</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-JE2UUNLJUEGE">
+
+                      <!-- ID = zinfo-* -->
+                                                        Zusatzinformation Patient: <content ID="zinfo-JE2UUNLJUEGE">Bei Kreislaufproblemen unbedingt den Arzt aufsuchen</content>
+                      <br />
+
+                      <!-- ID = altein-* -->
+                                                        Alternative Einnahme: <content ID="altein-JE2UUNLJUEGE">nasale Anwendung</content>
+                      <br />
+
+                    </content>
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:31:56
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = apos-* -->
+            <table ID="apos-8AUWYU8C46WK">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1</td>
+                  <td colspan="1">50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="1">0 - 0 - 10 - 0, wöchentlich am Mo, Mi</td>
+                  <td colspan="1">2015-08-25, 08:31:59</td>
+                  <td colspan="1">2015-08-25, 10:31:59</td>
+                  <td colspan="1"/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Mag Kira Kilic BSc, Alte Löwen-Apotheke</td>
+                  <td colspan="2">471211</td>
+                  <td colspan="3">Landstraße 107, 7050 Eisenstadt</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-8AUWYU8C46WK">
+
+                      <!-- ID = zinfo-* -->
+                                                        Zusatzinformation Patient: <content ID="zinfo-8AUWYU8C46WK">Bei Kreislaufproblemen den Arzt aufsuchen</content>
+                      <br />
+
+                      <!-- ID = altein-* -->
+                                                        Alternative Einnahme: <content ID="altein-8AUWYU8C46WK">nasale Anwendung</content>
+                      <br />
+
+                    </content>
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:31:56
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = apos-* -->
+            <table ID="apos-WEL8JALQUU89">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1</td>
+                  <td colspan="1">50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="1"/>
+                  <td colspan="1">2015-08-25, 08:32:04</td>
+                  <td colspan="1"/>
+                  <td colspan="1"/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Mag Kira Kilic BSc, Alte Löwen-Apotheke</td>
+                  <td colspan="2">471211</td>
+                  <td colspan="3">Landstraße 107, 7050 Eisenstadt</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:32:03
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = apos-* -->
+            <table ID="apos-W6NCQJ8NELSG">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td>Dosierung</td>
+                  <td>Abgabe</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td colspan="1">1</td>
+                  <td colspan="1">50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="1">0 - 0 - 2 - 0, täglich</td>
+                  <td colspan="1">2015-08-25, 08:32:08</td>
+                  <td colspan="1">2014-05-05, 00:00:00</td>
+                  <td colspan="1">2014-05-10, 12:12:00</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">Abgegeben von</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="3">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="3">Mag Kira Kilic BSc, Alte Löwen-Apotheke</td>
+                  <td colspan="2">471211</td>
+                  <td colspan="3">Landstraße 107, 7050 Eisenstadt</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+                    <content ID="patinfo-W6NCQJ8NELSG">
+
+                      <!-- ID = zinfo-* -->
+                                                        Zusatzinformation Patient: <content ID="zinfo-W6NCQJ8NELSG">Bei Kreislaufproblemen den Arzt aufsuchen</content>
+                      <br />
+
+                      <!-- ID = altein-* -->
+                                                        Alternative Einnahme: <content ID="altein-W6NCQJ8NELSG">nasale Anwendung</content>
+                      <br />
+
+                    </content>
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:32:07
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+            <br/>
+            <table>
+              <thead>
+                <tr>
+                  <th>Verordnung(en)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td/>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = vpos-* -->
+            <table ID="vpos-8CAJE86S6LSG">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td colspan="2">Dosierung</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td>10003</td>
+                  <td>50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="2">3 Einheit(en), pro Tag</td>
+                  <td>2014-05-05, 00:00:00</td>
+                  <td/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+                    <content ID="abginfo-8CAJE86S6LSG">
+
+
+                      <!-- ID = erginfo-* -->
+                            Ergänzende Information: <content ID="erginfo-8CAJE86S6LSG">Sie können Ihre Verordnungen auch über ELGA einsehen.</content>
+                      <br />
+
+                    </content>
+
+                    <content ID="patinfo-8CAJE86S6LSG">
+
+                      <!-- ID = zinfo-* -->
+                            Zusatzinformation Patient: <content ID="zinfo-8CAJE86S6LSG">Bitte Packungsbeilage lesen</content>
+                      <br />
+
+                      <!-- ID = altein-* -->
+                            Alternative Einnahme: <content ID="altein-8CAJE86S6LSG">Siehe Packungsbeilage</content>
+                      <br />
+
+                    </content>
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:31:28
+                    <br />
+                    Therapieart: Nicht-Einzelverordnung
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = vpos-* -->
+            <table ID="vpos-3">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">Magistrale Zubereitung: Husten salbe</td>
+                  <td colspan="4"/>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td colspan="2">Dosierung</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td>10001</td>
+                  <td/>
+                  <td colspan="2">Hamzibin (B01AC13)</td>
+                  <td colspan="2"/>
+                  <td/>
+                  <td/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+                    <content ID="abginfo-3">
+
+                      <!-- ID = magzub-* -->
+                            Ergänzenden Informationen zur magistralen Zubereitung: <content ID="magzub-3">Nicht mit Milch einnehmen!</content>
+                      <br />
+
+
+                    </content>
+
+
+                    Art der Anwendung: 
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:32:02
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Flüssigkeit zur Anwendung auf der Haut
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- ID = vpos-* -->
+            <table ID="vpos-4">
+              <tbody>
+                <tr>
+                  <td colspan="4">Arzneimittel</td>
+                  <td colspan="4">Wirkstoff(e)</td>
+                </tr>
+                <tr>
+                  <td colspan="4">ASPIRIN TBL 500MG</td>
+                  <td colspan="4">ACETYLSALICYLSÄURE</td>
+                </tr>
+                <tr>
+                  <td>Packung(en)</td>
+                  <td>Menge/art</td>
+                  <td colspan="2">ATC-Klassifikation</td>
+                  <td colspan="2">Dosierung</td>
+                  <td>Einnahmestart</td>
+                  <td>Einnahmeende</td>
+                </tr>
+                <tr>
+                  <td>10002</td>
+                  <td>50 Stück</td>
+                  <td colspan="2">Acetylsalicylsäure (N02BA01)</td>
+                  <td colspan="2"/>
+                  <td/>
+                  <td/>
+                </tr>
+                <tr>
+                  <td colspan="8">Verordnet von</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Name</td>
+                  <td colspan="2">GDA-ID</td>
+                  <td colspan="2">Fachgebiet</td>
+                  <td colspan="2">Adresse</td>
+                </tr>
+                <tr>
+                  <td colspan="2">Dr Manfred Musterdoktor, Amadeus Spital</td>
+                  <td colspan="2">5678</td>
+                  <td colspan="2">Ärztliche Gruppenpraxis</td>
+                  <td colspan="2">Hauptstraße 12, 21569 Wien</td>
+                </tr>
+                <tr>
+                  <td colspan="8">
+
+
+
+                    Art der Anwendung: zum Einnehmen
+                    <br />
+                    Verordnungsdatum: 2015-08-25, 10:32:03
+                    <br />
+                    Therapieart: 
+                    <br />
+                    Darreichungsform: Tablette
+
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+
+          </text>
+
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm">
+            <substanceAdministration classCode="SBADM" moodCode="INT">
+              <templateId root="1.2.40.0.34.11.8.1.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.24"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.2"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.2.1" extension="UE4Q2YA2QYSX_0" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.2" extension="C2LQ4JA4WYLX_001_1234" assigningAuthorityName="Dr. Aussteller GmbH."/>
+              <text>
+                <reference value="#vpos-8CAJE86S6LSG"/>
+              </text>
+              <statusCode code="completed"/>
+              <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                <low value="20140505000000+0200" />
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                <period value="1" unit="d"/>
+              </effectiveTime>
+              <repeatNumber value="0" />
+              <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+              <doseQuantity value="3"/>
+              <consumable>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+              <author>
+                <time value="20150825103128+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="COMP">
+                <supply classCode="SPLY" moodCode="RQO">
+                  <independentInd value="false"/>
+                  <quantity value="10003" />
+                </supply>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#patinfo-8CAJE86S6LSG"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-8CAJE86S6LSG"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-8CAJE86S6LSG"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.43" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3.1" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="FINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#abginfo-8CAJE86S6LSG"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.2"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ERGINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Ergänzende Informationen zur Abgabe"/>
+                      <text>
+                        <reference value="#erginfo-8CAJE86S6LSG"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="1.2.40.0.34.11.8.1.3.4"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="NICHTEINZEL" codeSystem="1.2.40.0.10.1.4.3.4.3.6" codeSystemName="MedikationTherapieart" displayName="Nicht-Einzelverordnung"/>
+                </act>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="C2LQ4JA4WYLX" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </substanceAdministration>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm">
+            <substanceAdministration classCode="SBADM" moodCode="INT">
+              <templateId root="1.2.40.0.34.11.8.1.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.24"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.2"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.2.1" extension="UE4Q2YA2QYSX_1" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.2" extension="A8YULJQEJEEU_1234" assigningAuthorityName="Dr. Aussteller GmbH."/>
+              <text>
+                <reference value="#vpos-3"/>
+              </text>
+              <statusCode code="completed"/>
+              <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                <low nullFlavor="UNK"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <effectiveTime xsi:type="PIVL_TS" operator="A" institutionSpecified="true">
+                <period value="1" unit="d"/>
+              </effectiveTime>
+              <repeatNumber value="0"/>
+              <doseQuantity value="1"/>
+              <consumable>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code nullFlavor="NA"/>
+                    <name>Husten salbe</name>
+                    <ns2:formCode code="100000073952" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Flüssigkeit zur Anwendung auf der Haut"/>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="B01AC13" codeSystem="2.16.840.1.113883.6.73" codeSystemName="whoATC" displayName="Abciximab"/>
+                        <ns2:name>Hamzibin</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+              <author>
+                <time value="20150825103202+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="COMP">
+                <supply classCode="SPLY" moodCode="RQO">
+                  <independentInd value="false"/>
+                  <quantity value="10001" />
+                </supply>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.43" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3.1" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="FINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#abginfo-3"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.2"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="MAGZUB" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Ergänzende Informationen zur magistralen Zubereitung"/>
+                      <text>
+                        <reference value="#magzub-3"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="A8YULJQEJEEU" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </substanceAdministration>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm">
+            <substanceAdministration classCode="SBADM" moodCode="INT">
+              <templateId root="1.2.40.0.34.11.8.1.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.24"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.2"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.2.1" extension="UE4Q2YA2QYSX_2" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.2" extension="SGQNCWNGGWGQ_001_1234" assigningAuthorityName="Dr. Aussteller GmbH."/>
+              <text>
+                <reference value="#vpos-4"/>
+              </text>
+              <statusCode code="completed"/>
+              <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                <low nullFlavor="UNK"/>
+                <high nullFlavor="UNK"/>
+              </effectiveTime>
+              <effectiveTime xsi:type="PIVL_TS" operator="A" institutionSpecified="true">
+                <period value="1" unit="d"/>
+              </effectiveTime>
+              <repeatNumber value="2" />
+              <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+              <doseQuantity value="1" unit="{Stueck}"/>
+              <consumable>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </consumable>
+              <author>
+                <time value="20150825103203+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="COMP">
+                <supply classCode="SPLY" moodCode="RQO">
+                  <independentInd value="false"/>
+                  <quantity value="10002" />
+                </supply>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="SGQNCWNGGWGQ" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </substanceAdministration>
+          </entry>
+
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UE4Q2YA2QYSX_3" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="UJQ6JEG8W4QT_1234"/>
+              <text>
+                <reference value="#apos-UJQ6JEG8W4QT"/>
+              </text>
+              <quantity value="1" />
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20150825103156+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20150825083158+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="471211" assigningAuthorityName="assigningAuthorityName"/>
+                  <code code="311" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Öffentliche Apotheke"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Mag</prefix>
+                      <given>Kira</given>
+                      <family>Kilic</family>
+                      <suffix>BSc</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Alte Löwen-Apotheke</name>
+                    <addr>
+                      <streetName>Landstraße</streetName>
+                      <houseNumber>107</houseNumber>
+                      <postalCode>7050</postalCode>
+                      <city>Eisenstadt</city>
+                      <state>Burgenland</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="NQGSWWNSUWYH_001_1234"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#patinfo-UJQ6JEG8W4QT"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-UJQ6JEG8W4QT"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-UJQ6JEG8W4QT"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6" assigningAuthorityName="IHE PHARM"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1" assigningAuthorityName="IHE PCC"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low value="20150825103158+0200" />
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="PIVL_TS" institutionSpecified="true" operator="A">
+                    <period value="1" unit="d"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+                  <doseQuantity value="4"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="UJQ6JEG8W4QT" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UE4Q2YA2QYSX_4" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="E2A4SAQS4YUL_1234"/>
+              <text>
+                <reference value="#apos-E2A4SAQS4YUL"/>
+              </text>
+              <quantity value="1" />
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20150825103156+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20150825083158+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="471211" assigningAuthorityName="assigningAuthorityName"/>
+                  <code code="311" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Öffentliche Apotheke"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Mag</prefix>
+                      <given>Kira</given>
+                      <family>Kilic</family>
+                      <suffix>BSc</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Alte Löwen-Apotheke</name>
+                    <addr>
+                      <streetName>Landstraße</streetName>
+                      <houseNumber>107</houseNumber>
+                      <postalCode>7050</postalCode>
+                      <city>Eisenstadt</city>
+                      <state>Burgenland</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="NQGSWWNSUWYH_001_1234"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#patinfo-E2A4SAQS4YUL"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-E2A4SAQS4YUL"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-E2A4SAQS4YUL"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6" assigningAuthorityName="IHE PHARM"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9" assigningAuthorityName="IHE PCC"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low value="20140505000000+0200" />
+                    <high value="20140510121200+0200" />
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACV"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="2" unit="mL"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="E2A4SAQS4YUL" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UE4Q2YA2QYSX_5" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="JE2UUNLJUEGE_1234"/>
+              <text>
+                <reference value="#apos-JE2UUNLJUEGE"/>
+              </text>
+              <quantity value="1" />
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20150825103156+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20150825083158+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="471211" assigningAuthorityName="assigningAuthorityName"/>
+                  <code code="311" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Öffentliche Apotheke"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Mag</prefix>
+                      <given>Kira</given>
+                      <family>Kilic</family>
+                      <suffix>BSc</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Alte Löwen-Apotheke</name>
+                    <addr>
+                      <streetName>Landstraße</streetName>
+                      <houseNumber>107</houseNumber>
+                      <postalCode>7050</postalCode>
+                      <city>Eisenstadt</city>
+                      <state>Burgenland</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="NQGSWWNSUWYH_001_1234"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#patinfo-JE2UUNLJUEGE"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-JE2UUNLJUEGE"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-JE2UUNLJUEGE"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6" assigningAuthorityName="IHE PHARM"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1" assigningAuthorityName="IHE PCC"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <width value="5" unit="d"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="JE2UUNLJUEGE" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UE4Q2YA2QYSX_6" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="8AUWYU8C46WK_1234"/>
+              <text>
+                <reference value="#apos-8AUWYU8C46WK"/>
+              </text>
+              <quantity value="1" />
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20150825103156+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20150825083159+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="471211" assigningAuthorityName="assigningAuthorityName"/>
+                  <code code="311" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Öffentliche Apotheke"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Mag</prefix>
+                      <given>Kira</given>
+                      <family>Kilic</family>
+                      <suffix>BSc</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Alte Löwen-Apotheke</name>
+                    <addr>
+                      <streetName>Landstraße</streetName>
+                      <houseNumber>107</houseNumber>
+                      <postalCode>7050</postalCode>
+                      <city>Eisenstadt</city>
+                      <state>Burgenland</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="NQGSWWNSUWYH_001_1234"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#patinfo-8AUWYU8C46WK"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-8AUWYU8C46WK"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-8AUWYU8C46WK"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6" assigningAuthorityName="IHE PHARM"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9" assigningAuthorityName="IHE PCC"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low value="20150825103159+0200" />
+                    <high nullFlavor="UNK"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="SXPR_TS">
+                        <comp xsi:type="EIVL_TS">
+                          <event code="ACV"/>
+                          <offset value="0" unit="s"/>
+                        </comp>
+                        <comp xsi:type="PIVL_TS" operator="A">
+                          <phase value="20150831"/>
+                          <period value="1" unit="wk"/>
+                        </comp>
+                        <comp xsi:type="PIVL_TS" operator="I">
+                          <phase value="20150826"/>
+                          <period value="1" unit="wk"/>
+                        </comp>
+                      </effectiveTime>
+                      <doseQuantity value="10"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="8AUWYU8C46WK" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UE4Q2YA2QYSX_7" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="WEL8JALQUU89_1234"/>
+              <text>
+                <reference value="#apos-WEL8JALQUU89"/>
+              </text>
+              <quantity value="1" />
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20150825103203+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20150825083204+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="471211" assigningAuthorityName="assigningAuthorityName"/>
+                  <code code="311" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Öffentliche Apotheke"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Mag</prefix>
+                      <given>Kira</given>
+                      <family>Kilic</family>
+                      <suffix>BSc</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Alte Löwen-Apotheke</name>
+                    <addr>
+                      <streetName>Landstraße</streetName>
+                      <houseNumber>107</houseNumber>
+                      <postalCode>7050</postalCode>
+                      <city>Eisenstadt</city>
+                      <state>Burgenland</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="SGQNCWNGGWGQ_001_1234"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6" assigningAuthorityName="IHE PHARM"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.1" assigningAuthorityName="IHE PCC"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <width value="5" unit="d"/>
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="WEL8JALQUU89" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+          <entry xmlns="urn:hl7-org:v3" xmlns:ns2="urn:ihe:pharm" typeCode="DRIV">
+            <supply classCode="SPLY" moodCode="EVN">
+              <templateId root="1.2.40.0.34.11.8.2.3.1"/>
+              <templateId root="2.16.840.1.113883.10.20.1.34"/>
+              <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.3"/>
+              <templateId root="1.3.6.1.4.1.19376.1.9.1.3.4"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3.1" extension="UE4Q2YA2QYSX_8" assigningAuthorityName="e-MedAt"/>
+              <id root="1.2.40.0.10.1.4.3.4.2.3" extension="6QLC42E8GW6S_1234"/>
+              <text>
+                <reference value="#apos-W6NCQJ8NELSG"/>
+              </text>
+              <quantity value="1" />
+              <product>
+                <manufacturedProduct classCode="MANU">
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.7.2"/>
+                  <templateId root="2.16.840.1.113883.10.20.1.53"/>
+                  <manufacturedMaterial classCode="MMAT" determinerCode="KIND">
+                    <templateId root="1.2.40.0.34.11.2.3.4"/>
+                    <templateId root="1.3.6.1.4.1.19376.1.9.1.3.1"/>
+                    <code code="1255446" codeSystem="1.2.40.0.34.4.16" codeSystemName="Pharmazentralnummer" displayName="ASPIRIN TBL 500MG" >
+                      <translation code="3155" codeSystem="1.2.40.0.34.4.17" codeSystemName="Zulassungsnummer" displayName="Aspirin 500 mg Tabletten"/>
+                    </code>
+                    <name>ASPIRIN TBL 500MG</name>
+                    <ns2:formCode code="100000073933" codeSystem="1.2.40.0.10.1.4.3.4.3.5" codeSystemName="MedikationDarreichungsform" displayName="Tablette"/>
+                    <ns2:asContent classCode="CONT">
+                      <ns2:containerPackagedMedicine classCode="CONT" determinerCode="INSTANCE">
+                        <ns2:capacityQuantity value="50" unit="{Stueck}"/>
+                      </ns2:containerPackagedMedicine>
+                    </ns2:asContent>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="N02BA01" codeSystem="2.16.840.1.113883.6.73" codeSystemName="ELGA_whoATC" displayName="Acetylsalicylsäure"/>
+                        <ns2:name>Acetylsalicylsäure</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                    <ns2:ingredient classCode="ACTI">
+                      <ns2:ingredient classCode="MMAT" determinerCode="KIND">
+                        <ns2:code code="100000124205" codeSystem="1.2.40.0.34.5.156" codeSystemName="Medikation_AGES_Wirkstoffe_CL_AGES_TEST" displayName="ACETYLSALICYLSÄURE"/>
+                        <ns2:name>ACETYLSALICYLSÄURE</ns2:name>
+                      </ns2:ingredient>
+                    </ns2:ingredient>
+                  </manufacturedMaterial>
+                </manufacturedProduct>
+              </product>
+              <author>
+                <time value="20150825103207+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="5678" assigningAuthorityName="Author Authority"/>
+                  <code code="320" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Ärztliche Gruppenpraxis"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix qualifier="AC">Dr</prefix>
+                      <given>Manfred</given>
+                      <family>Musterdoktor</family>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Amadeus Spital</name>
+                    <addr>
+                      <streetName>Hauptstraße</streetName>
+                      <houseNumber>12</houseNumber>
+                      <postalCode>21569</postalCode>
+                      <city>Wien</city>
+                      <state>Wien</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <author>
+                <time value="20150825083208+0200"/>
+                <assignedAuthor>
+                  <id root="1.2.3.4.5.6" extension="471211" assigningAuthorityName="assigningAuthorityName"/>
+                  <code code="311" codeSystem="1.2.40.0.34.5.2" codeSystemName="ELGA_GTelVoGDARollen" displayName="Öffentliche Apotheke"/>
+                  <assignedPerson>
+                    <name>
+                      <prefix>Mag</prefix>
+                      <given>Kira</given>
+                      <family>Kilic</family>
+                      <suffix>BSc</suffix>
+                    </name>
+                  </assignedPerson>
+                  <representedOrganization>
+                    <id root="1.2.3.4.5" extension="1111" assigningAuthorityName="GDA-Index"/>
+                    <name>Alte Löwen-Apotheke</name>
+                    <addr>
+                      <streetName>Landstraße</streetName>
+                      <houseNumber>107</houseNumber>
+                      <postalCode>7050</postalCode>
+                      <city>Eisenstadt</city>
+                      <state>Burgenland</state>
+                      <country>AUT</country>
+                    </addr>
+                  </representedOrganization>
+                </assignedAuthor>
+              </author>
+              <entryRelationship typeCode="REFR">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <id root="1.2.40.0.10.1.4.3.4.2.2" extension="8WJ8WYLU2YQ2_001_1234"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                </substanceAdministration>
+              </entryRelationship>
+              <entryRelationship typeCode="SUBJ" inversionInd="true">
+                <act classCode="ACT" moodCode="INT">
+                  <templateId root="2.16.840.1.113883.10.20.1.49" assigningAuthorityName="HL7 CCD"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.3" assigningAuthorityName="IHE PCC"/>
+                  <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="PINSTRUCT" codeSystem="1.3.6.1.4.1.19376.1.5.3.2" codeSystemName="IHEActCode'"/>
+                  <text>
+                    <reference value="#patinfo-W6NCQJ8NELSG"/>
+                  </text>
+                  <statusCode code="completed"/>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ALTEIN" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Informationen zur alternativen Einnahme"/>
+                      <text>
+                        <reference value="#altein-W6NCQJ8NELSG"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                  <entryRelationship typeCode="SUBJ" inversionInd="true">
+                    <act classCode="ACT" moodCode="INT">
+                      <templateId root="1.2.40.0.34.11.8.0.3.1"/>
+                      <code xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="CE" code="ZINFO" codeSystem="1.2.40.0.34.5.103" codeSystemName="ELGA_ActCode" displayName="Zusatzinformationen für den Patienten"/>
+                      <text>
+                        <reference value="#zinfo-W6NCQJ8NELSG"/>
+                      </text>
+                      <statusCode code="completed"/>
+                    </act>
+                  </entryRelationship>
+                </act>
+              </entryRelationship>
+              <entryRelationship typeCode="COMP">
+                <substanceAdministration classCode="SBADM" moodCode="INT">
+                  <templateId root="1.3.6.1.4.1.19376.1.9.1.3.6" assigningAuthorityName="IHE PHARM"/>
+                  <templateId root="1.3.6.1.4.1.19376.1.5.3.1.4.9" assigningAuthorityName="IHE PCC"/>
+                  <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="IVL_TS">
+                    <low value="20140505000000+0200" />
+                    <high value="20140510121200+0200" />
+                  </effectiveTime>
+                  <routeCode code="100000073619" codeSystem="1.2.40.0.10.1.4.3.4.3.4" displayName="zum Einnehmen"/>
+                  <consumable>
+                    <manufacturedProduct>
+                      <manufacturedMaterial nullFlavor="NA"/>
+                    </manufacturedProduct>
+                  </consumable>
+                  <entryRelationship typeCode="COMP">
+                    <sequenceNumber value="1"/>
+                    <substanceAdministration classCode="SBADM" moodCode="INT">
+                      <effectiveTime xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="EIVL_TS">
+                        <event code="ACV"/>
+                        <offset value="0" unit="s"/>
+                      </effectiveTime>
+                      <doseQuantity value="2" unit="mL"/>
+                      <consumable>
+                        <manufacturedProduct>
+                          <manufacturedMaterial nullFlavor="NA"/>
+                        </manufacturedProduct>
+                      </consumable>
+                    </substanceAdministration>
+                  </entryRelationship>
+                </substanceAdministration>
+              </entryRelationship>
+              <reference typeCode="XCRPT">
+                <externalDocument>
+                  <id root="1.2.40.0.10.1.4.3.4.2.1" extension="6QLC42E8GW6S" assigningAuthorityName="e-MedAT"/>
+                </externalDocument>
+              </reference>
+            </supply>
+          </entry>
+
+        </section>
+      </component>
+    </structuredBody>
+  </component>
+</ClinicalDocument>
