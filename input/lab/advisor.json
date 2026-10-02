@@ -2,7 +2,35 @@
   "suppress" : [
     //All filters containing: `#dom-6` - ISiK resources do not contain a narrative.
     // Ignore this best practice warning for now.
-    "http://hl7.org/fhir/StructureDefinition/DomainResource#dom-6"
+    "http://hl7.org/fhir/StructureDefinition/DomainResource#dom-6",
     // "NO_VALID_DISPLAY_FOUND_NONE_FOR_LANG_ERR"
+
+    // TODO: remove once hl7.fhir.eu.base publishes PatientAnimalEu.
+    // LRR 9.1.1 declares DiagnosticReport.subject which inherits the constraints from EU Lab 2.0.0 
+    // which targets as PatientEuCore | PatientAnimalEu.
+    // but eu-base 2.0.0 does not yet ship patient-animal-eu-core, so the validator cannot
+    // resolve the profile and emits Reference_REF_CantResolveProfile on every DiagnosticReport.
+    // See LRR EU 2.0.0 CI build (https://build.fhir.org/ig/hl7-eu/laboratory/StructureDefinition-Patient-animal-eu-lab.html),
+    // Scoped to DiagnosticReport.subject only — other unresolved-profile errors still fail.
+    "Reference_REF_CantResolveProfile@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.subject",
+
+    // TODO: remove once hl7.fhir.eu.base fixes the DiagnosticReport.performer slice discriminator.
+    // diagnosticReport-eu-core (eu-base 2.0.0) slices an OPEN performer with discriminator
+    // profile:$this instead of profile:resolve(). The validator skips open-slice fall-through
+    // and judges every performer against the named :organization slice (Reference(Organization) only).
+    // Result: any non-Organization performer the base list allows (PractitionerRole | Practitioner |
+    // CareTeam) is rejected with Reference_REF_WrongTarget + Reference_REF_BadTargetType ("expected
+    // [Organization]"). Inherited unchanged by diagnosticReport-myhealtheu-core and LRR 9.1.1, and
+    // doubled by imposeProfile (organization-myhealtheu-core + organization-eu-core canonicals).
+    "Reference_REF_WrongTarget@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*",
+    "Reference_REF_BadTargetType@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*DiagnosticReport/[^*]+\\*/\\.performer.*",
+
+    // TODO: remove once MyHealth@EU widens Observation.value[x] (LRR / medicalTestResult-myhealtheu-core).
+    // value[x] is sliced CLOSED to {Quantity, CodeableConcept, Ratio, Range}; valueString (ST) and
+    // valueDateTime (TS) from our CDA lab results are rejected (Validation_VAL_Profile_NotSlice). See Zulip thread.
+    // Scoped to Observation.value.
+    "Validation_VAL_Profile_NotSlice@^Bundle\\.entry\\[\\d+\\]\\.resource/\\*Observation/[^*]+\\*/\\.value\\.ofType\\(.+\\).*"
+
+
   ]
 }

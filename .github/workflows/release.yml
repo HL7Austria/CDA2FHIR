@@ -62,7 +62,6 @@ jobs:
             --title "$TAG" \
             --generate-notes \
             --notes-start-tag "${{ github.event.inputs.previous_release_tag }}" \
-            --latest=false
 
           BODY=$(gh release view "$TAG" --json body -q .body)
           URL=$(gh release view "$TAG" --json url -q .url)
