@@ -64,6 +64,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/DiagnosticReport" alias Diagno
 uses "http://hl7.org/fhir/4.3/StructureDefinition/ServiceRequest" alias ServiceRequest as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Observation" alias Observation as target
 uses "http://hl7.org/fhir/4.3/StructureDefinition/Specimen" alias Specimen as target
+uses "http://hl7.org/fhir/4.3/StructureDefinition/Provenance" alias Provenance as target 
 
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir-bundle"
@@ -110,7 +111,17 @@ group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) 
       cda_code.code as code_code where ($this = '11369-6') then CdaEimpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
       // CDA e-Medikation -> FHIR
       // TODO
-    } "CdaToFhirBundle";  
+    } "CdaToFhirBundle";
+
+    cda ->
+      fhir_bundle.entry as fhir_bundle_entry_provenance,
+      fhir_bundle_entry_provenance.resource = create('Provenance') as fhir_provenance,
+      fhir_provenance.id = uuid() as fhir_provenance_id,
+      fhir_bundle_entry_provenance.fullUrl = append('urn:uuid:', fhir_provenance_id),
+      fhir_provenance.recorded = (now()) then {
+        cda then CdaToFhirTransformProvenance(cda, fhir_provenance, fhir_bundle);
+        cda then CdaFhirBundleToProvenanceTarget(fhir_bundle, fhir_provenance_id, fhir_provenance);
+      } "CdaToFhirTransformProvenanceRecord";  
 }
 
 // _________________________ Header Level Templates _________________________
@@ -1366,4 +1377,85 @@ group CdaParticipantToFhirPractitionerRole(source cda_participant: Participant2,
             fhir_practitionerRole_organization_reference.display = (cda_participant_role_scoping_entity_desc.xmlText);
         };
     };
+}
+
+// _________________________ Transform Provenance _________________________
+
+group CdaFhirBundleToProvenanceTarget(source fhir_bundle_src : Bundle, source fhir_provenance_id : string, target fhir_provenance : Provenance) {
+  fhir_bundle_src.entry as fhir_bundle_entry then {
+  
+    fhir_bundle_entry.resource as fhir_resource where $this.id.empty() or $this.id != fhir_provenance_id then {
+      fhir_bundle_entry.fullUrl as fhir_full_url ->
+        fhir_provenance.target as fhir_provenance_target,
+        fhir_provenance_target.reference = append(fhir_full_url),
+        fhir_provenance_target.type = (fhir_resource.type().name)
+        "CdaFhirBundleEntryToProvenanceTarget";
+    } "CdaFhirBundleEntryResourceIsNotThisProvenance";
+  } "CdaFhirBundleEntryLoop";
+}
+
+group CdaToFhirTransformProvenance(source cda : ClinicalDocument, target fhir_provenance : Provenance, target fhir_bundle : Bundle) {
+  cda ->
+    // orga operating the transform
+    fhir_bundle.entry as fhir_bundle_entry_organization,
+    fhir_bundle_entry_organization.resource = create('Organization') as fhir_organization,
+    fhir_organization.id = uuid() as fhir_organization_id,
+    fhir_bundle_entry_organization.fullUrl = append('urn:uuid:', fhir_organization_id),
+    fhir_organization.name = 'ELGA GmbH',                                             
+
+    // transform engine and the map, as one Device
+    fhir_bundle.entry as fhir_bundle_entry_device,
+    fhir_bundle_entry_device.resource = create('Device') as fhir_device,
+    fhir_device.id = uuid() as fhir_device_id,
+    fhir_bundle_entry_device.fullUrl = append('urn:uuid:', fhir_device_id),
+    fhir_device.identifier as fhir_device_identifier,
+    fhir_device_identifier.system = 'urn:ietf:rfc:3986',
+    fhir_device_identifier.value = 'https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-to-fhir-bundle',
+    fhir_device.deviceName as fhir_device_deviceName,
+    fhir_device_deviceName.name = 'ELGA CDA2FHIR',
+    fhir_device_deviceName.type = 'other',
+
+    // engine version
+    fhir_device.version as fhir_device_version_engine,
+    fhir_device_version_engine.type = create('CodeableConcept') as fhir_device_version_engine_type,
+    fhir_device_version_engine_type.text = 'MaLaC-HD',
+    fhir_device_version_engine.value = '1.7.0',                                        
+
+    // map version
+    fhir_device.version as fhir_device_version_map,
+    fhir_device_version_map.type = create('CodeableConcept') as fhir_device_version_map_type,
+    fhir_device_version_map_type.text = 'CDA2FHIR StructureMap',
+    fhir_device_version_map.value = '9.1.0-1.0.1-myhealtheu',                                      
+
+    fhir_device.owner = create('Reference') as fhir_device_owner,
+    fhir_device_owner.reference = append('urn:uuid:', fhir_organization_id),
+    fhir_device_owner.type = 'Organization',
+
+    fhir_provenance.activity = create('CodeableConcept') as fhir_provenance_activity,
+    fhir_provenance_activity.coding = create('Coding') as fhir_provenance_activity_coding,
+    fhir_provenance_activity_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-DataOperation',
+    fhir_provenance_activity_coding.code = 'CREATE',
+
+    fhir_provenance.agent as fhir_provenance_agent,
+    fhir_provenance_agent.type = create('CodeableConcept') as fhir_provenance_agent_type,
+    fhir_provenance_agent_type.coding as fhir_provenance_agent_type_coding_assembler,
+    fhir_provenance_agent_type_coding_assembler.system = 'http://terminology.hl7.org/CodeSystem/provenance-participant-type',
+    fhir_provenance_agent_type_coding_assembler.code = 'assembler',
+    fhir_provenance_agent_type.coding as fhir_provenance_agent_type_coding_transformer,
+    fhir_provenance_agent_type_coding_transformer.system = 'http://terminology.hl7.org/CodeSystem/provenance-participant-type',
+    fhir_provenance_agent_type_coding_transformer.code = 'transformer',
+    fhir_provenance_agent.who = create('Reference') as fhir_provenance_agent_who,
+    fhir_provenance_agent_who.reference = append('urn:uuid:', fhir_device_id),
+    fhir_provenance_agent_who.type = 'Device',
+    fhir_provenance_agent.onBehalfOf = create('Reference') as fhir_provenance_agent_onBehalfOf,
+    fhir_provenance_agent_onBehalfOf.reference = append('urn:uuid:', fhir_organization_id),
+    fhir_provenance_agent_onBehalfOf.type = 'Organization'
+    "CdaToFhirTransformProvenanceAgent";
+
+  cda.id as cda_id -> fhir_provenance.entity as fhir_provenance_entity,
+    fhir_provenance_entity.role = 'source',
+    fhir_provenance_entity.what = create('Reference') as fhir_provenance_entity_what,
+    fhir_provenance_entity_what.display = 'Source CDA document' then {
+      cda_id -> fhir_provenance_entity_what.identifier "CdaIdToProvenanceEntityIdentifier";
+    } "CdaToFhirTransformProvenanceEntity";
 }
