@@ -10800,7 +10800,15 @@
                                             <statusCode code="completed"/>
                                             <effectiveTime value="20210601130100+0200"/>
                                             <value xsi:type="PQ" unit="kU/L" value="5.18"/>
-                                            <interpretationCode code="RAST3" codeSystemName="RAST-Klassen" codeSystem="1.2.40.0.34.5.104" displayName="3.50  17.49  kU/l (high level of allergen specific IgE)"/>
+                                            <!-- <interpretationCode code="LL" codeSystemName="RAST-Klassen" codeSystem="1.2.40.0.34.5.104" displayName="3.50  17.49  kU/l (high level of allergen specific IgE)"/> -->
+                                            <interpretationCode nullFlavor="OTH">
+                                                <originalText>Klasse 3</originalText>
+                                                <translation 
+                                                    code="3" 
+                                                    codeSystem="1.2.40.0.34.5.104" 
+                                                    codeSystemName="ELGA_RAST_Klassen" 
+                                                    displayName="Klasse 3: erhöhtes spezifisches IgE (3.50–17.49 kU/l)"/>
+                                            </interpretationCode>
                                             <!-- Referenzbereich -->
                                             <referenceRange typeCode="REFV">
                                                 <observationRange classCode="OBS" moodCode="EVN.CRT">
