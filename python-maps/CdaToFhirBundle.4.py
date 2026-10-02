@@ -760,43 +760,6 @@ def CdaPatientRoleToFhirPatient(cda, cda_patientRole, fhir_patient, fhir_bundle)
                     birthplace_extension_addr = malac.models.fhir.r4.Address()
                     birthplace_extension.valueAddress = birthplace_extension_addr
                     CdaAdressCompilationToFhirAustrianAddress(cda_patient_birthaddr, birthplace_extension_addr)
-        for cda_patient_language in cda_patient.languageCommunication or []:
-            fhir_patient_communication = malac.models.fhir.r4.Patient_Communication()
-            fhir_patient.communication.append(fhir_patient_communication)
-            cda_patient_languageCode = cda_patient_language.languageCode
-            if cda_patient_languageCode is not None:
-                cda_patient_languageCode_code = cda_patient_languageCode.code
-                if cda_patient_languageCode_code is not None:
-                    if fhir_patient_communication.language is None:
-                        fhir_patient_communication.language = malac.models.fhir.r4.CodeableConcept()
-                    fhir_patient_communication_language = fhir_patient_communication.language
-                    fhir_patient_communication_language_coding = malac.models.fhir.r4.Coding()
-                    fhir_patient_communication_language.coding.append(fhir_patient_communication_language_coding)
-                    fhir_patient_communication_language_coding.system = uri(value='urn:ietf:bcp:47')
-                    fhir_patient_communication_language_coding.code = string(value=cda_patient_languageCode_code)
-            if cda_patient_language.preferenceInd is not None:
-                fhir_patient_communication.preferred = malac.models.fhir.r4.boolean()
-                BL(cda_patient_language.preferenceInd, fhir_patient_communication.preferred)
-            if cda_patient_language.modeCode is not None or cda_patient_language.proficiencyLevelCode is not None:
-                communication_extension = malac.models.fhir.r4.Extension()
-                fhir_patient_communication.extension.append(communication_extension)
-                communication_extension.url = 'http://hl7.org/fhir/StructureDefinition/patient-proficiency'
-                cda_patient_language_modeCode = cda_patient_language.modeCode
-                if cda_patient_language_modeCode is not None:
-                    communication_extension_type = malac.models.fhir.r4.Extension()
-                    communication_extension.extension.append(communication_extension_type)
-                    communication_extension_type.url = 'type'
-                    communication_extension_type_coding = malac.models.fhir.r4.Coding()
-                    communication_extension_type.valueCoding = communication_extension_type_coding
-                    CECoding(cda_patient_language_modeCode, communication_extension_type_coding)
-                cda_patient_language_proficiencyLevelCode = cda_patient_language.proficiencyLevelCode
-                if cda_patient_language_proficiencyLevelCode is not None:
-                    communication_extension_level = malac.models.fhir.r4.Extension()
-                    communication_extension.extension.append(communication_extension_level)
-                    communication_extension_level.url = 'level'
-                    communication_extension_level_coding = malac.models.fhir.r4.Coding()
-                    communication_extension_level.valueCoding = communication_extension_level_coding
-                    CECoding(cda_patient_language_proficiencyLevelCode, communication_extension_level_coding)
     if not fhirpath_utils.get(cda,'recordTarget','patientRole','patient'):
         fhir_patient_name = malac.models.fhir.r4.HumanName()
         fhir_patient.name.append(fhir_patient_name)
@@ -862,6 +825,15 @@ def CdaAuthorToFhirPractitionerAndPractitionerRole(cda_author, fhir_practitioner
     if cda_author.functionCode is not None:
         fhir_practitionerRole.specialty.append(malac.models.fhir.r4.CodeableConcept())
         transform_default(cda_author.functionCode, fhir_practitionerRole.specialty[-1])
+    if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(fhir_bundle,'meta','profile'), '==', ['http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'])):
+        if fhir_practitionerRole.meta is None:
+            fhir_practitionerRole.meta = malac.models.fhir.r4.Meta()
+        fhir_practitionerRole_meta = fhir_practitionerRole.meta
+        fhir_practitionerRole_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core'))
+        if fhir_practitioner.meta is None:
+            fhir_practitioner.meta = malac.models.fhir.r4.Meta()
+        fhir_practitioner_meta = fhir_practitioner.meta
+        fhir_practitioner_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'))
     cda_author_assignedAuthor = cda_author.assignedAuthor
     if cda_author_assignedAuthor is not None:
         for id_ in cda_author_assignedAuthor.id or []:
@@ -1037,6 +1009,15 @@ def CdaAssignedEntityToFhirPractitionerRole(cda_assignedEntity, fhir_practitione
     fhir_practitionerRole.practitioner = fhir_practitionerRole_practitioner_reference
     fhir_practitionerRole_practitioner_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
     fhir_practitionerRole_practitioner_reference.type_ = uri(value='Practitioner')
+    if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(fhir_bundle,'meta','profile'), '==', ['http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'])):
+        if fhir_practitionerRole.meta is None:
+            fhir_practitionerRole.meta = malac.models.fhir.r4.Meta()
+        fhir_practitionerRole_meta = fhir_practitionerRole.meta
+        fhir_practitionerRole_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core'))
+        if fhir_practitioner.meta is None:
+            fhir_practitioner.meta = malac.models.fhir.r4.Meta()
+        fhir_practitioner_meta = fhir_practitioner.meta
+        fhir_practitioner_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'))
     for id_ in cda_assignedEntity.id or []:
         if id_.nullFlavor is None:
             fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
@@ -1093,6 +1074,15 @@ def CdaAssociatedEntityToFhirPractitionerRole(cda_associatedEntity, fhir_practit
     fhir_practitionerRole.practitioner = fhir_practitionerRole_practitioner_reference
     fhir_practitionerRole_practitioner_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
     fhir_practitionerRole_practitioner_reference.type_ = uri(value='Practitioner')
+    if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(fhir_bundle,'meta','profile'), '==', ['http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'])):
+        if fhir_practitionerRole.meta is None:
+            fhir_practitionerRole.meta = malac.models.fhir.r4.Meta()
+        fhir_practitionerRole_meta = fhir_practitionerRole.meta
+        fhir_practitionerRole_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core'))
+        if fhir_practitioner.meta is None:
+            fhir_practitioner.meta = malac.models.fhir.r4.Meta()
+        fhir_practitioner_meta = fhir_practitioner.meta
+        fhir_practitioner_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'))
     for id_ in cda_associatedEntity.id or []:
         fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
         II(id_, fhir_practitioner.identifier[-1])
@@ -1183,6 +1173,15 @@ def CdaParticipantToFhirPractitionerRole(cda_participant, fhir_practitionerRole,
         fhir_practitionerRole.practitioner = fhir_practitionerRole_practitioner_reference
         fhir_practitionerRole_practitioner_reference.reference = string(value=('urn:uuid:' + fhir_practitioner_id.value))
         fhir_practitionerRole_practitioner_reference.type_ = uri(value='Practitioner')
+        if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(fhir_bundle,'meta','profile'), '==', ['http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'])):
+            if fhir_practitionerRole.meta is None:
+                fhir_practitionerRole.meta = malac.models.fhir.r4.Meta()
+            fhir_practitionerRole_meta = fhir_practitionerRole.meta
+            fhir_practitionerRole_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core'))
+            if fhir_practitioner.meta is None:
+                fhir_practitioner.meta = malac.models.fhir.r4.Meta()
+            fhir_practitioner_meta = fhir_practitioner.meta
+            fhir_practitioner_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'))
         for id_ in cda_participant_role.id or []:
             if id_.nullFlavor is None:
                 fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
@@ -84139,27 +84138,6 @@ conceptMap_as_7dimension_dict["elga-laboratory-observation-code-to-eHDSILabCodeW
         }
     }
 }
-
-conceptMap_as_7dimension_dict["cda-eimpf-clinicaldocument-code-2-fhir-category"] = {
-    "%": {
-        "%": {
-            "http://loinc.org": {
-                "http://loinc.org": {
-                    "11369-6": [
-                        {
-                            "relationship": "equivalent",
-                            "concept": {
-                                "system": "http://loinc.org",
-                                "code": "11369-6"
-                            },
-                            "source": "cda-eimpf-clinicaldocument-code-2-fhir-category"
-                        }
-                    ]
-                }
-            }
-        }
-    }
-}
 def II(src, tgt):
     Any(src, tgt)
     r = src.root
@@ -84352,7 +84330,7 @@ def CECodeableConcept(src, tgt):
             tgt_coding = malac.models.fhir.r4.Coding()
             tgt.coding.append(tgt_coding)
             tgt_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
-            tgt_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(cda_manufacturedMaterial_code_nullFlavor if isinstance(cda_manufacturedMaterial_code_nullFlavor, str) else cda_manufacturedMaterial_code_nullFlavor.value), out_type='code'))
+            tgt_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(src_nullFlavor if isinstance(src_nullFlavor, str) else src_nullFlavor.value), out_type='code'))
     for translation in src.translation or []:
         coding = malac.models.fhir.r4.Coding()
         tgt.coding.append(coding)
@@ -84546,7 +84524,7 @@ def CdaOrganizationCompilationToFhirOrganizationWithBundle(cda_organization, fhi
         if fhir_organization.meta is None:
             fhir_organization.meta = malac.models.fhir.r4.Meta()
         fhir_organization_meta = fhir_organization.meta
-        fhir_organization_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Organization-eu-myhealth-eu'))
+        fhir_organization_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/organization-myhealtheu-core'))
     for id_ in cda_organization.id or []:
         if id_.nullFlavor is None:
             fhir_organization.identifier.append(malac.models.fhir.r4.Identifier())
@@ -84566,7 +84544,7 @@ def CdaCustodianOrganizationToFhirOrganizationWithBundle(cda_organization, fhir_
         if fhir_organization.meta is None:
             fhir_organization.meta = malac.models.fhir.r4.Meta()
         fhir_organization_meta = fhir_organization.meta
-        fhir_organization_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Organization-eu-myhealth-eu'))
+        fhir_organization_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/organization-myhealtheu-core'))
     for id_ in cda_organization.id or []:
         if id_.nullFlavor is None:
             fhir_organization.identifier.append(malac.models.fhir.r4.Identifier())
@@ -84952,20 +84930,6 @@ def CdaLabToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle):
         fhir_serviceRequest.meta = malac.models.fhir.r4.Meta()
     fhir_serviceRequest_meta = fhir_serviceRequest.meta
     fhir_serviceRequest_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/ServiceRequest-lab-myhealtheu'))
-    fhir_composition_extenstion_01 = malac.models.fhir.r4.Extension()
-    fhir_composition.extension.append(fhir_composition_extenstion_01)
-    fhir_composition_extenstion_01.url = 'http://hl7.eu/fhir/StructureDefinition/composition-basedOn-order-or-requisition'
-    fhir_diagnosticReport_composition_reference = malac.models.fhir.r4.Reference()
-    fhir_composition_extenstion_01.valueReference = fhir_diagnosticReport_composition_reference
-    fhir_diagnosticReport_composition_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
-    fhir_diagnosticReport_composition_reference.type_ = uri(value='ServiceRequest')
-    fhir_composition_extenstion_02 = malac.models.fhir.r4.Extension()
-    fhir_composition.extension.append(fhir_composition_extenstion_02)
-    fhir_composition_extenstion_02.url = 'http://hl7.eu/fhir/laboratory/StructureDefinition/composition-diagnosticReportReference'
-    fhir_composition_diagnosticReport_reference = malac.models.fhir.r4.Reference()
-    fhir_composition_extenstion_02.valueReference = fhir_composition_diagnosticReport_reference
-    fhir_composition_diagnosticReport_reference.reference = string(value=('urn:uuid:' + fhir_diagnosticReport_id.value))
-    fhir_composition_diagnosticReport_reference.type_ = uri(value='DiagnosticReport')
     if fhir_composition.id is None:
         fhir_composition.id = malac.models.fhir.r4.string()
     fhir_composition_id = fhir_composition.id
@@ -84986,7 +84950,7 @@ def CdaLabToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle):
     if fhir_patient.meta is None:
         fhir_patient.meta = malac.models.fhir.r4.Meta()
     fhir_patient_meta = fhir_patient.meta
-    fhir_patient_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Patient-lab-myhealtheu'))
+    fhir_patient_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/patient-myhealtheu-core'))
     fhir_diagnosticReport_subject_reference = malac.models.fhir.r4.Reference()
     fhir_diagnosticReport.subject = fhir_diagnosticReport_subject_reference
     fhir_diagnosticReport_subject_reference.reference = string(value=('urn:uuid:' + fhir_patient_id.value))
@@ -85139,6 +85103,15 @@ def CdaLabHeaderToFhir(cda, fhir_composition, fhir_patient, fhir_bundle, fhir_di
                     for name in cda_informationRecipient_inner.name or []:
                         fhir_practitioner.name.append(malac.models.fhir.r4.HumanName())
                         CdaPersonNameCompilationToFhirHumanName(name, fhir_practitioner.name[-1])
+                if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(fhir_bundle,'meta','profile'), '==', ['http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'])):
+                    if fhir_practitionerRole.meta is None:
+                        fhir_practitionerRole.meta = malac.models.fhir.r4.Meta()
+                    fhir_practitionerRole_meta = fhir_practitionerRole.meta
+                    fhir_practitionerRole_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitionerRole-myhealtheu-core'))
+                    if fhir_practitioner.meta is None:
+                        fhir_practitioner.meta = malac.models.fhir.r4.Meta()
+                    fhir_practitioner_meta = fhir_practitioner.meta
+                    fhir_practitioner_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'))
                 cda_receivedOrganization = cda_intendedRecipient.receivedOrganization
                 if cda_receivedOrganization is not None:
                     fhir_bundle_entry_org = malac.models.fhir.r4.Bundle_Entry()
@@ -85348,10 +85321,6 @@ def CdaLabBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_
                 fhir_section = malac.models.fhir.r4.Composition_Section()
                 fhir_composition.section.append(fhir_section)
                 CdaAnnotationSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
-        cda_section = cda_component.section
-        if cda_section is not None:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'code') if (v1.code == 'BEIL' and v1.codeSystem == '1.2.40.0.34.5.40')]):
-                CdaLabBeilagenSectionToFhirDiagnosticReportMedia(cda_section, fhir_diagnosticReport, fhir_bundle, fhir_patient)
     if len([v1 for v1 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v1,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) == 1:
         fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
         fhir_bundle.entry.append(fhir_bundle_entry)
@@ -85370,7 +85339,7 @@ def CdaLabBodyToFhirComposition(cda, cda_structuredBody, fhir_composition, fhir_
                 if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_section,'templateId') if (v1.root == '1.2.40.0.34.6.0.11.2.102' or v1.root == '1.3.6.1.4.1.19376.1.3.3.2.1')]):
                     fhir_section = malac.models.fhir.r4.Composition_Section()
                     fhir_composition.section.append(fhir_section)
-                    CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_specimen, fhir_serviceRequest)
+                    CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest, fhir_specimen)
     if len([v1 for v1 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v1,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) == 0 or len([v2 for v2 in fhirpath_utils.descendants([cda]) if fhirpath_utils.equals(fhirpath_utils.get(v2,'root'), '==', ['1.3.6.1.4.1.19376.1.3.1.2']) == [True]]) > 1:
         for cda_component in cda_structuredBody.component or []:
             cda_section = cda_component.section
@@ -85411,7 +85380,7 @@ def CdaLabSpecimenSectionToFhirSpecimen(cda_section, fhir_patient, fhir_diagnost
                         fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_specimen_id.value))
                         CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest)
 
-def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_specimen, fhir_serviceRequest):
+def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest, fhir_specimen):
     CdaLabSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
     for cda_section_entry in cda_section.entry or []:
         cda_act = cda_section_entry.act
@@ -85436,8 +85405,12 @@ def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhi
                         fhir_section.entry.append(fhir_section_entry_reference)
                         fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
                         fhir_section_entry_reference.type_ = uri(value='Observation')
+                        fhir_diagnosticReport_result_reference = malac.models.fhir.r4.Reference()
+                        fhir_diagnosticReport.result.append(fhir_diagnosticReport_result_reference)
+                        fhir_diagnosticReport_result_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_diagnosticReport_result_reference.type_ = uri(value='Observation')
                         CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaLabOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
+                        CdaLabOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient, fhir_serviceRequest)
                         for cda_component in cda_notification_organizer.component or []:
                             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1']):
                                 cda_observation = cda_component.observation
@@ -85454,7 +85427,7 @@ def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhi
                                     fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
                                     fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
                                     CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
                         for cda_component in cda_notification_organizer.component or []:
                             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.170']):
                                 cda_observation = cda_component.observation
@@ -85471,7 +85444,7 @@ def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhi
                                     fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
                                     fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
                                     CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
             for cda_entryRelationship in cda_act.entryRelationship or []:
                 if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
                     cda_laboratory_observation = cda_entryRelationship.observation
@@ -85487,12 +85460,16 @@ def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhi
                         fhir_section.entry.append(fhir_section_entry_reference)
                         fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
                         fhir_section_entry_reference.type_ = uri(value='Observation')
+                        fhir_diagnosticReport_result_reference = malac.models.fhir.r4.Reference()
+                        fhir_diagnosticReport.result.append(fhir_diagnosticReport_result_reference)
+                        fhir_diagnosticReport_result_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                        fhir_diagnosticReport_result_reference.type_ = uri(value='Observation')
                         for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
                             if cda_laboratory_observation.performer:
                                 CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
                         if not fhirpath_utils.get(cda_entryRelationship.observation,'performer'):
                             CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
-                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
+                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
             for cda_entryRelationship in cda_act.entryRelationship or []:
                 if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.4']):
                     cda_laboratory_battery_organizer = cda_entryRelationship.organizer
@@ -85508,12 +85485,16 @@ def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhi
                         fhir_section.entry.append(fhir_section_entry_reference)
                         fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
                         fhir_section_entry_reference.type_ = uri(value='Observation')
+                        fhir_diagnosticReport_result_reference = malac.models.fhir.r4.Reference()
+                        fhir_diagnosticReport.result.append(fhir_diagnosticReport_result_reference)
+                        fhir_diagnosticReport_result_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_diagnosticReport_result_reference.type_ = uri(value='Observation')
                         for cda_laboratory_battery_organizer_performer in cda_laboratory_battery_organizer.performer:
                             if cda_laboratory_battery_organizer.performer:
                                 CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
                         if not fhirpath_utils.get(cda_entryRelationship.organizer,'performer'):
                             CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_specimen)
+                        CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_serviceRequest, fhir_specimen)
                         for cda_component in cda_laboratory_battery_organizer.component or []:
                             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
                                 cda_laboratory_observation = cda_component.observation
@@ -85534,7 +85515,7 @@ def CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen(cda, cda_section, fhi
                                             CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
                                     if not fhirpath_utils.get(cda_component.observation,'performer'):
                                         CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_specimen)
+                                    CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_serviceRequest, fhir_specimen)
 
 def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
     CdaLabSectionToFhirSection(cda_section, fhir_section, fhir_bundle)
@@ -85568,8 +85549,12 @@ def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, f
                         fhir_section.entry.append(fhir_section_entry_reference)
                         fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
                         fhir_section_entry_reference.type_ = uri(value='Observation')
+                        fhir_diagnosticReport_result_reference = malac.models.fhir.r4.Reference()
+                        fhir_diagnosticReport.result.append(fhir_diagnosticReport_result_reference)
+                        fhir_diagnosticReport_result_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_diagnosticReport_result_reference.type_ = uri(value='Observation')
                         CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaLabOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient)
+                        CdaLabOrganizerToFhirObservation(cda, cda_notification_organizer, fhir_battery_observation, fhir_patient, fhir_serviceRequest)
                         for cda_component in cda_notification_organizer.component or []:
                             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.1.1']):
                                 cda_observation = cda_component.observation
@@ -85586,7 +85571,7 @@ def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, f
                                     fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
                                     fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
                                     CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
                         for cda_component in cda_notification_organizer.component or []:
                             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.170']):
                                 cda_observation = cda_component.observation
@@ -85603,7 +85588,7 @@ def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, f
                                     fhir_battery_observation_hasMember_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
                                     fhir_battery_observation_hasMember_reference.type_ = uri(value='Observation')
                                     CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_notification_organizer, fhir_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle)
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
             for cda_entryRelationship in cda_act.entryRelationship or []:
                 if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
                     cda_laboratory_observation = cda_entryRelationship.observation
@@ -85619,12 +85604,16 @@ def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, f
                         fhir_section.entry.append(fhir_section_entry_reference)
                         fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
                         fhir_section_entry_reference.type_ = uri(value='Observation')
+                        fhir_diagnosticReport_result_reference = malac.models.fhir.r4.Reference()
+                        fhir_diagnosticReport.result.append(fhir_diagnosticReport_result_reference)
+                        fhir_diagnosticReport_result_reference.reference = string(value=('urn:uuid:' + fhir_observation_id.value))
+                        fhir_diagnosticReport_result_reference.type_ = uri(value='Observation')
                         for cda_laboratory_observation_performer in cda_laboratory_observation.performer:
                             if cda_laboratory_observation.performer:
                                 CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_observation, fhir_bundle)
                         if not fhirpath_utils.get(cda_entryRelationship.observation,'performer'):
                             CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_observation, fhir_bundle)
-                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
+                        CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
             for cda_entryRelationship in cda_act.entryRelationship or []:
                 if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_entryRelationship,'organizer','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.4']):
                     cda_laboratory_battery_organizer = cda_entryRelationship.organizer
@@ -85640,12 +85629,16 @@ def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, f
                         fhir_section.entry.append(fhir_section_entry_reference)
                         fhir_section_entry_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
                         fhir_section_entry_reference.type_ = uri(value='Observation')
+                        fhir_diagnosticReport_result_reference = malac.models.fhir.r4.Reference()
+                        fhir_diagnosticReport.result.append(fhir_diagnosticReport_result_reference)
+                        fhir_diagnosticReport_result_reference.reference = string(value=('urn:uuid:' + fhir_battery_observation_id.value))
+                        fhir_diagnosticReport_result_reference.type_ = uri(value='Observation')
                         for cda_laboratory_battery_organizer_performer in cda_laboratory_battery_organizer.performer:
                             if cda_laboratory_battery_organizer.performer:
                                 CdaPerformerToFhirObservationPerformer(cda_laboratory_battery_organizer_performer, fhir_battery_observation, fhir_bundle)
                         if not fhirpath_utils.get(cda_entryRelationship.organizer,'performer'):
                             CdaLabPerformerToObservationPerformerFirstLevel(cda, cda_act, fhir_battery_observation, fhir_bundle)
-                        CdaLabOrganizerToFhirObservation(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient)
+                        CdaLabOrganizerToFhirObservation(cda, cda_laboratory_battery_organizer, fhir_battery_observation, fhir_patient, fhir_serviceRequest)
                         for cda_component in cda_laboratory_battery_organizer.component or []:
                             if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_component,'observation','templateId') if v1.root == '1.3.6.1.4.1.19376.1.3.1.6']):
                                 cda_laboratory_observation = cda_component.observation
@@ -85666,40 +85659,7 @@ def CdaLaboratorySpecialtySectionToFhirSection(cda, cda_section, fhir_section, f
                                             CdaPerformerToFhirObservationPerformer(cda_laboratory_observation_performer, fhir_laboratory_observation, fhir_bundle)
                                     if not fhirpath_utils.get(cda_component.observation,'performer'):
                                         CdaLabPerformerToObservationPerformerSecondLevel(cda, cda_act, cda_laboratory_battery_organizer, fhir_laboratory_observation, fhir_bundle)
-                                    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle)
-
-def CdaLabBeilagenSectionToFhirDiagnosticReportMedia(cda_section, fhir_diagnosticReport, fhir_bundle, fhir_patient):
-    fhir_bundle_entry_01 = malac.models.fhir.r4.Bundle_Entry()
-    fhir_bundle.entry.append(fhir_bundle_entry_01)
-    fhir_media = malac.models.fhir.r4.Media()
-    fhir_bundle_entry_01.resource = malac.models.fhir.r4.ResourceContainer(Media=fhir_media)
-    fhir_media_id = string(value=str(uuid.uuid4()))
-    fhir_media.id = fhir_media_id
-    fhir_bundle_entry_01.fullUrl = uri(value=('urn:uuid:' + fhir_media_id.value))
-    fhir_diagnosticReport_media = malac.models.fhir.r4.DiagnosticReport_Media()
-    fhir_diagnosticReport.media.append(fhir_diagnosticReport_media)
-    fhir_diagnosticReport_media_link_reference = malac.models.fhir.r4.Reference()
-    fhir_diagnosticReport_media.link = fhir_diagnosticReport_media_link_reference
-    fhir_diagnosticReport_media_link_reference.reference = string(value=('urn:uuid:' + fhir_media_id.value))
-    fhir_diagnosticReport_media_link_reference.type_ = uri(value='Media')
-    for cda_section_entry in cda_section.entry or []:
-        cda_observationMedia = cda_section_entry.observationMedia
-        if cda_observationMedia is not None:
-            cda_observationMedia_ID = cda_observationMedia.ID
-            if cda_observationMedia_ID is not None:
-                fhir_media_identifier = malac.models.fhir.r4.Identifier()
-                fhir_media.identifier.append(fhir_media_identifier)
-                fhir_media_identifier.value = string(value=cda_observationMedia_ID)
-            fhir_media.status = string(value='completed')
-            cda_observationMedia_value = cda_observationMedia.value
-            if cda_observationMedia_value is not None:
-                if fhir_media.content is None:
-                    fhir_media.content = malac.models.fhir.r4.Attachment()
-                fhir_media_content = fhir_media.content
-                cda_mediaType = cda_observationMedia_value.mediaType
-                if cda_mediaType is not None:
-                    fhir_media_content.contentType = string(value=cda_mediaType)
-                fhir_media_content.data = base64Binary(value=re.sub("[^a-zA-Z0-9+/=]{1,}","",fhirpath.single(fhirpath_utils.get(cda_observationMedia_value,'valueOf_',strip=True))))
+                                    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_laboratory_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
 
 def CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_patient, fhir_diagnosticReport, fhir_bundle, fhir_serviceRequest):
     if fhir_specimen.meta is None:
@@ -85799,11 +85759,18 @@ def CdaLabSpecimenCollectionToFhirSpecimen(cda_procedure, fhir_specimen, fhir_pa
                     fhir_specimen.receivedTime = fhir_specimen_receivedTime
                     TSDateTime(cda_effectiveTime, fhir_specimen_receivedTime)
 
-def CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient):
+def CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient, fhir_serviceRequest):
     if fhir_observation.meta is None:
         fhir_observation.meta = malac.models.fhir.r4.Meta()
     fhir_observation_meta = fhir_observation.meta
     fhir_observation_meta.profile.append(string(value='http://fhir.ehdsi.eu/laboratory/StructureDefinition/Observation-resultslab-lab-myhealtheu'))
+    fhir_observation_basedOn_reference = malac.models.fhir.r4.Reference()
+    fhir_observation.basedOn.append(fhir_observation_basedOn_reference)
+    if fhir_serviceRequest.id is None:
+        fhir_serviceRequest.id = malac.models.fhir.r4.string()
+    fhir_serviceRequest_id = fhir_serviceRequest.id
+    fhir_observation_basedOn_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
+    fhir_observation_basedOn_reference.type_ = uri(value='ServiceRequest')
     fhir_category = malac.models.fhir.r4.CodeableConcept()
     fhir_observation.category.append(fhir_category)
     fhir_category_coding = malac.models.fhir.r4.Coding()
@@ -85864,8 +85831,8 @@ def CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_
         fhir_observation_effective_extenstion.valueCode = fhir_observation_effective_extenstion_code
         fhir_observation_effective_extenstion_code.value = 'not-applicable'
 
-def CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_organizer, fhir_observation, fhir_patient, fhir_specimen):
-    CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient)
+def CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_organizer, fhir_observation, fhir_patient, fhir_serviceRequest, fhir_specimen):
+    CdaLabOrganizerToFhirObservation(cda, cda_organizer, fhir_observation, fhir_patient, fhir_serviceRequest)
     fhir_observation_specimen_reference = malac.models.fhir.r4.Reference()
     fhir_observation.specimen = fhir_observation_specimen_reference
     if fhir_specimen.id is None:
@@ -85874,7 +85841,7 @@ def CdaLabOrganizerToFhirObservationWithSpecimen(cda, cda_organizer, fhir_observ
     fhir_observation_specimen_reference.reference = string(value=('urn:uuid:' + fhir_specimen_id.value))
     fhir_observation_specimen_reference.type_ = uri(value='Specimen')
 
-def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle):
+def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest):
     if fhir_observation.meta is None:
         fhir_observation.meta = malac.models.fhir.r4.Meta()
     fhir_observation_meta = fhir_observation.meta
@@ -85882,6 +85849,13 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
     for id_ in cda_laboratory_observation.id or []:
         fhir_observation.identifier.append(malac.models.fhir.r4.Identifier())
         II(id_, fhir_observation.identifier[-1])
+    fhir_observation_basedOn_reference = malac.models.fhir.r4.Reference()
+    fhir_observation.basedOn.append(fhir_observation_basedOn_reference)
+    if fhir_serviceRequest.id is None:
+        fhir_serviceRequest.id = malac.models.fhir.r4.string()
+    fhir_serviceRequest_id = fhir_serviceRequest.id
+    fhir_observation_basedOn_reference.reference = string(value=('urn:uuid:' + fhir_serviceRequest_id.value))
+    fhir_observation_basedOn_reference.type_ = uri(value='ServiceRequest')
     fhir_category = malac.models.fhir.r4.CodeableConcept()
     fhir_observation.category.append(fhir_category)
     fhir_category_coding = malac.models.fhir.r4.Coding()
@@ -85970,6 +85944,11 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
         performer_function_coding.code = string(value='AUTHEN')
         cda_participantRole = cda_participant.participantRole
         if cda_participantRole is not None:
+            if fhirpath.single(fhirpath_utils.equals(fhirpath_utils.get(fhir_bundle,'meta','profile'), '==', ['http://fhir.ehdsi.eu/laboratory/StructureDefinition/Bundle-lab-myhealtheu'])):
+                if fhir_practitioner.meta is None:
+                    fhir_practitioner.meta = malac.models.fhir.r4.Meta()
+                fhir_practitioner_meta = fhir_practitioner.meta
+                fhir_practitioner_meta.profile.append(string(value='http://fhir.ehdsi.eu/core/StructureDefinition/practitioner-myhealtheu-core'))
             for id__ in cda_participantRole.id or []:
                 fhir_practitioner.identifier.append(malac.models.fhir.r4.Identifier())
                 II(id__, fhir_practitioner.identifier[-1])
@@ -86033,8 +86012,8 @@ def CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, f
             fhir_type_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/referencerange-meaning')
             fhir_type_coding.code = string(value='normal')
 
-def CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_specimen):
-    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle)
+def CdaLaboratoryObservationToFhirObservationWithSpecimen(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest, fhir_specimen):
+    CdaLaboratoryObservationToFhirObservation(cda, cda_laboratory_observation, fhir_observation, fhir_patient, fhir_bundle, fhir_serviceRequest)
     fhir_observation_specimen_reference = malac.models.fhir.r4.Reference()
     fhir_observation.specimen = fhir_observation_specimen_reference
     if fhir_specimen.id is None:
@@ -86281,11 +86260,11 @@ def CdaEimpfHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bu
     CdaHeaderToFhirComposition(cda, fhir_composition, fhir_patient, fhir_bundle)
     cda_code = cda.code
     if cda_code is not None:
-        code_code = cda_code.code
-        if code_code is not None:
-            fhir_composition_category = malac.models.fhir.r4.CodeableConcept()
-            fhir_composition.category.append(fhir_composition_category)
-            fhir_composition_category.coding.append(translate_single('cda-eimpf-clinicaldocument-code-2-fhir-category', code=(code_code if isinstance(code_code, str) else code_code.value), out_type='Coding'))
+        fhir_composition_category = malac.models.fhir.r4.CodeableConcept()
+        fhir_composition.category.append(fhir_composition_category)
+        fhir_composition_category_coding = malac.models.fhir.r4.Coding()
+        fhir_composition_category.coding.append(fhir_composition_category_coding)
+        CECoding(cda_code, fhir_composition_category_coding)
     cda_code = cda.code
     if cda_code is not None:
         if fhir_composition.type_ is None:
@@ -86522,10 +86501,9 @@ def CdaEimpfSubstanceAdministrationToFhirImmunization(cda_substanceAdministratio
         if cda_manufacturedProduct is not None:
             cda_manufacturedMaterial = cda_manufacturedProduct.manufacturedMaterial
             if cda_manufacturedMaterial is not None:
-                if fhir_immunization.vaccineCode is None:
+                if cda_manufacturedMaterial.code is not None:
                     fhir_immunization.vaccineCode = malac.models.fhir.r4.CodeableConcept()
-                fhir_immunization_vaccineCode = fhir_immunization.vaccineCode
-                CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunization_vaccineCode)
+                    transform_default(cda_manufacturedMaterial.code, fhir_immunization.vaccineCode)
                 if cda_manufacturedMaterial.lotNumberText is not None:
                     if not [v2 for v1 in [cda_manufacturedMaterial.lotNumberText] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
                         fhir_immunization.lotNumber = malac.models.fhir.r4.string()
@@ -86791,191 +86769,176 @@ def CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(cda_section,
                 cda_substanceAdministration_negationInd = cda_substanceAdministration.negationInd
                 if cda_substanceAdministration_negationInd is not None:
                     if not cda_substanceAdministration_negationInd:
-                        fhir_immunizationRecommendation_recommendation_vaccineCode = malac.models.fhir.r4.CodeableConcept()
-                        fhir_immunizationRecommendation_recommendation.vaccineCode.append(fhir_immunizationRecommendation_recommendation_vaccineCode)
-                        CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_vaccineCode)
+                        if cda_manufacturedMaterial.code is not None:
+                            fhir_immunizationRecommendation_recommendation.vaccineCode.append(malac.models.fhir.r4.CodeableConcept())
+                            transform_default(cda_manufacturedMaterial.code, fhir_immunizationRecommendation_recommendation.vaccineCode[-1])
                 cda_substanceAdministration_negationInd = cda_substanceAdministration.negationInd
                 if cda_substanceAdministration_negationInd is not None:
                     if cda_substanceAdministration_negationInd:
-                        fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode = malac.models.fhir.r4.CodeableConcept()
-                        fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode.append(fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode)
-                        CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_immunizationRecommendation_recommendation_contraindicatedVaccineCode)
-        for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
-            if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedPerson'):
-                fhir_bundle_entry01 = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry01)
-                fhir_provenance = malac.models.fhir.r4.Provenance()
-                fhir_bundle_entry01.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
-                fhir_provenance_id = string(value=str(uuid.uuid4()))
-                fhir_provenance.id = fhir_provenance_id
-                fhir_bundle_entry01.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
-                if fhir_immunizationRecommendation.id is None:
-                    fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
-                fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
-                fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
-                fhir_provenance.target.append(fhir_provenance_target_reference)
-                fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
-                fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
-                fhir_bundle_entry02 = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry02)
-                fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
-                fhir_bundle_entry02.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
-                fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
-                fhir_practitionerRole.id = fhir_practitionerRole_id
-                fhir_bundle_entry02.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
-                if cda_substanceAdministration_author.time is not None:
-                    if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                        if cda_manufacturedMaterial.code is not None:
+                            fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode.append(malac.models.fhir.r4.CodeableConcept())
+                            transform_default(cda_manufacturedMaterial.code, fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode[-1])
+    for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
+        if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedPerson'):
+            fhir_bundle_entry01 = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry01)
+            fhir_provenance = malac.models.fhir.r4.Provenance()
+            fhir_bundle_entry01.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
+            fhir_provenance_id = string(value=str(uuid.uuid4()))
+            fhir_provenance.id = fhir_provenance_id
+            fhir_bundle_entry01.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
+            if fhir_immunizationRecommendation.id is None:
+                fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
+            fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
+            fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
+            fhir_provenance.target.append(fhir_provenance_target_reference)
+            fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
+            fhir_bundle_entry02 = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry02)
+            fhir_practitionerRole = malac.models.fhir.r4.PractitionerRole()
+            fhir_bundle_entry02.resource = malac.models.fhir.r4.ResourceContainer(PractitionerRole=fhir_practitionerRole)
+            fhir_practitionerRole_id = string(value=str(uuid.uuid4()))
+            fhir_practitionerRole.id = fhir_practitionerRole_id
+            fhir_bundle_entry02.fullUrl = uri(value=('urn:uuid:' + fhir_practitionerRole_id.value))
+            if cda_substanceAdministration_author.time is not None:
+                if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
+                    TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
+            cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
+            if cda_substanceAdministration_author_time is not None:
+                if cda_substanceAdministration_author_time.nullFlavor is not None:
+                    if fhir_immunizationRecommendation.date is None:
                         fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
-                cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
-                if cda_substanceAdministration_author_time is not None:
-                    if cda_substanceAdministration_author_time.nullFlavor is not None:
-                        if fhir_immunizationRecommendation.date is None:
-                            fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
-                        fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
-                        fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
-                        CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
-                CdaAuthorPersonToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_practitionerRole, fhir_bundle)
-        for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
-            if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedAuthoringDevice'):
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_provenance = malac.models.fhir.r4.Provenance()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
-                fhir_provenance_id = string(value=str(uuid.uuid4()))
-                fhir_provenance.id = fhir_provenance_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
-                if fhir_immunizationRecommendation.id is None:
-                    fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
-                fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
-                fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
-                fhir_provenance.target.append(fhir_provenance_target_reference)
-                fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
-                fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
-                if cda_substanceAdministration_author.time is not None:
-                    if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
+                    fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
+            CdaAuthorPersonToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_practitionerRole, fhir_bundle)
+    for cda_substanceAdministration_author in cda_substanceAdministration.author or []:
+        if fhirpath_utils.get(cda_substanceAdministration_author,'assignedAuthor','assignedAuthoringDevice'):
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_provenance = malac.models.fhir.r4.Provenance()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
+            fhir_provenance_id = string(value=str(uuid.uuid4()))
+            fhir_provenance.id = fhir_provenance_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
+            if fhir_immunizationRecommendation.id is None:
+                fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
+            fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
+            fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
+            fhir_provenance.target.append(fhir_provenance_target_reference)
+            fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
+            if cda_substanceAdministration_author.time is not None:
+                if not [v2 for v1 in [cda_substanceAdministration_author.time] for v2 in fhirpath_utils.get(v1,'nullFlavor')]:
+                    fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
+                    TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
+            cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
+            if cda_substanceAdministration_author_time is not None:
+                if cda_substanceAdministration_author_time.nullFlavor is not None:
+                    if fhir_immunizationRecommendation.date is None:
                         fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        TSDateTime(cda_substanceAdministration_author.time, fhir_immunizationRecommendation.date)
-                cda_substanceAdministration_author_time = cda_substanceAdministration_author.time
-                if cda_substanceAdministration_author_time is not None:
-                    if cda_substanceAdministration_author_time.nullFlavor is not None:
-                        if fhir_immunizationRecommendation.date is None:
-                            fhir_immunizationRecommendation.date = malac.models.fhir.r4.dateTime()
-                        fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
-                        fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
-                        fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
-                        CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
-                CdaAuthorDeviceToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_bundle)
-        for cda_participant in cda_substanceAdministration.participant or []:
-            if cda_participant.typeCode != 'AUT':
-                fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
-                fhir_bundle.entry.append(fhir_bundle_entry)
-                fhir_provenance = malac.models.fhir.r4.Provenance()
-                fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
-                fhir_provenance_id = string(value=str(uuid.uuid4()))
-                fhir_provenance.id = fhir_provenance_id
-                fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
-                if fhir_immunizationRecommendation.id is None:
-                    fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
-                fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
-                fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
-                fhir_provenance.target.append(fhir_provenance_target_reference)
-                fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
-                fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
-                CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle)
-        for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.2']):
-                cda_observation = cda_substanceAdministration_entryRelationship.observation
-                if cda_observation is not None:
-                    if cda_observation.code is not None:
-                        fhir_immunizationRecommendation_recommendation.targetDisease = malac.models.fhir.r4.CodeableConcept()
-                        CDCodeableConcept(cda_observation.code, fhir_immunizationRecommendation_recommendation.targetDisease)
-        for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'act','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.17']):
-                cda_act = cda_substanceAdministration_entryRelationship.act
-                if cda_act is not None:
-                    cda_act_text = cda_act.text
-                    if cda_act_text is not None:
-                        cda_act_text_reference = cda_act_text.reference
-                        if cda_act_text_reference is not None:
-                            cda_section_text = cda_section.text
-                            if cda_section_text is not None:
-                                cda_act_text_reference_value = cda_act_text_reference.value
-                                if cda_act_text_reference_value is not None:
-                                    fhir_narrative = malac.models.fhir.r4.Narrative()
-                                    fhir_narrative_div = utils.strucdoctext2html(malac.models.fhir.r4, cda_section_text)
-                                    fhir_narrative.div = fhir_narrative_div
-                                    fhir_string = malac.models.fhir.r4.string()
-                                    fhir_string = string(value=str(fhir_narrative_div))
-                                    fhir_substring_01 = malac.models.fhir.r4.string()
-                                    fhir_substring_01 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_string,fhirpath_utils.indexof(fhir_string, fhirpath_utils.substring(cda_act_text_reference_value,[1],[])),[])))
-                                    fhir_substring_02 = malac.models.fhir.r4.string()
-                                    fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
-                                    fhir_immunizationRecommendation_recommendation.description = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
-        for cda_substanceAdministration_reference in cda_substanceAdministration.reference or []:
-            if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_reference,'externalDocument','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.14']):
-                cda_substanceAdministration_reference_externalDocument = cda_substanceAdministration_reference.externalDocument
-                if cda_substanceAdministration_reference_externalDocument is not None:
-                    for cda_substanceAdministration_reference_externalDocument_id in cda_substanceAdministration_reference_externalDocument.id or []:
-                        fhir_immunizationRecommendation_identifier = malac.models.fhir.r4.Identifier()
-                        fhir_immunizationRecommendation.identifier.append(fhir_immunizationRecommendation_identifier)
-                        fhir_immunizationRecommendation_identifier.use = string(value='secondary')
-                        II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunizationRecommendation_identifier)
-                    if cda_substanceAdministration_reference_externalDocument.code is not None:
-                        fhir_immunizationRecommendation_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
-                        CDCodeableConcept(cda_substanceAdministration_reference_externalDocument.code, fhir_immunizationRecommendation_identifier.type_)
-        for cda_substanceAdministration_precondition in cda_substanceAdministration.precondition or []:
-            cda_criterion = cda_substanceAdministration_precondition.criterion
-            if cda_criterion is not None:
-                cda_criterion_code = cda_criterion.code
-                if cda_criterion_code is not None:
-                    if cda_criterion_code.nullFlavor is None:
-                        cda_criterion_code_code = cda_criterion_code.code
-                        if cda_criterion_code_code is not None:
-                            fhir_immunizationRecommendation_recommendation_series = string(value=str(getattr(cda_criterion_code_code, 'value', cda_criterion_code_code if cda_criterion_code_code is not None else '')))
-                            fhir_immunizationRecommendation_recommendation.series = fhir_immunizationRecommendation_recommendation_series
-                            fhir_immunizationRecommendation_recommendation_series_extension = malac.models.fhir.r4.Extension()
-                            fhir_immunizationRecommendation_recommendation_series.extension.append(fhir_immunizationRecommendation_recommendation_series_extension)
-                            fhir_immunizationRecommendation_recommendation_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
-                            fhir_coding = malac.models.fhir.r4.Coding()
-                            fhir_immunizationRecommendation_recommendation_series_extension.valueCoding = fhir_coding
-                            CECoding(cda_criterion_code, fhir_coding)
-                cda_criterion_value = cda_criterion.value
-                if cda_criterion_value is not None:
-                    if cda_criterion_value.nullFlavor is None:
-                        for cda_criterion_value_code in (cda_criterion_value.code if isinstance(cda_criterion_value.code, list) else ([] if not cda_criterion_value.code else [cda_criterion_value.code])):
-                            fhir_immunizationRecommendation_recommendation_doseNumber = string(value=str(getattr(cda_criterion_value_code, 'value', cda_criterion_value_code if cda_criterion_value_code is not None else '')))
-                            fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
-                            fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
-                            fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
-                            fhir_immunizationRecommendation_recommendation_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
-                            fhir_coding = malac.models.fhir.r4.Coding()
-                            fhir_immunizationRecommendation_recommendation_doseNumber_extension.valueCoding = fhir_coding
-                            CECoding(cda_criterion_value, fhir_coding)
-                cda_criterion_value = cda_criterion.value
-                if cda_criterion_value is not None:
-                    if cda_criterion_value.nullFlavor is not None:
-                        fhir_immunizationRecommendation_recommendation_doseNumber = malac.models.fhir.r4.string()
+                    fhir_immunizationRecommendation_date = fhir_immunizationRecommendation.date
+                    fhir_immunizationRecommendation_date_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_date.extension.append(fhir_immunizationRecommendation_date_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_substanceAdministration_author_time, fhir_immunizationRecommendation_date_extension)
+            CdaAuthorDeviceToFhirProvenance(cda_substanceAdministration_author, fhir_provenance, fhir_bundle)
+    for cda_participant in cda_substanceAdministration.participant or []:
+        if cda_participant.typeCode != 'AUT':
+            fhir_bundle_entry = malac.models.fhir.r4.Bundle_Entry()
+            fhir_bundle.entry.append(fhir_bundle_entry)
+            fhir_provenance = malac.models.fhir.r4.Provenance()
+            fhir_bundle_entry.resource = malac.models.fhir.r4.ResourceContainer(Provenance=fhir_provenance)
+            fhir_provenance_id = string(value=str(uuid.uuid4()))
+            fhir_provenance.id = fhir_provenance_id
+            fhir_bundle_entry.fullUrl = uri(value=('urn:uuid:' + fhir_provenance_id.value))
+            if fhir_immunizationRecommendation.id is None:
+                fhir_immunizationRecommendation.id = malac.models.fhir.r4.string()
+            fhir_immunizationRecommendation_id = fhir_immunizationRecommendation.id
+            fhir_provenance_target_reference = malac.models.fhir.r4.Reference()
+            fhir_provenance.target.append(fhir_provenance_target_reference)
+            fhir_provenance_target_reference.reference = string(value=('urn:uuid:' + fhir_immunizationRecommendation_id.value))
+            fhir_provenance_target_reference.type_ = uri(value='ImmunizationRecommendation')
+            CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle)
+    for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'observation','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.2']):
+            cda_observation = cda_substanceAdministration_entryRelationship.observation
+            if cda_observation is not None:
+                if cda_observation.code is not None:
+                    fhir_immunizationRecommendation_recommendation.targetDisease = malac.models.fhir.r4.CodeableConcept()
+                    CDCodeableConcept(cda_observation.code, fhir_immunizationRecommendation_recommendation.targetDisease)
+    for cda_substanceAdministration_entryRelationship in cda_substanceAdministration.entryRelationship or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_entryRelationship,'act','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.17']):
+            cda_act = cda_substanceAdministration_entryRelationship.act
+            if cda_act is not None:
+                cda_act_text = cda_act.text
+                if cda_act_text is not None:
+                    cda_act_text_reference = cda_act_text.reference
+                    if cda_act_text_reference is not None:
+                        cda_section_text = cda_section.text
+                        if cda_section_text is not None:
+                            cda_act_text_reference_value = cda_act_text_reference.value
+                            if cda_act_text_reference_value is not None:
+                                fhir_narrative = malac.models.fhir.r4.Narrative()
+                                fhir_narrative_div = utils.strucdoctext2html(malac.models.fhir.r4, cda_section_text)
+                                fhir_narrative.div = fhir_narrative_div
+                                fhir_string = malac.models.fhir.r4.string()
+                                fhir_string = string(value=str(fhir_narrative_div))
+                                fhir_substring_01 = malac.models.fhir.r4.string()
+                                fhir_substring_01 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_string,fhirpath_utils.indexof(fhir_string, fhirpath_utils.substring(cda_act_text_reference_value,[1],[])),[])))
+                                fhir_substring_02 = malac.models.fhir.r4.string()
+                                fhir_substring_02 = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_01,fhirpath_utils.add(fhirpath_utils.indexof(fhir_substring_01, ['>']), [1]),[])))
+                                fhir_immunizationRecommendation_recommendation.description = string(value=fhirpath.single(fhirpath_utils.substring(fhir_substring_02,[0],fhirpath_utils.indexof(fhir_substring_02, ['<']))))
+    for cda_substanceAdministration_reference in cda_substanceAdministration.reference or []:
+        if fhirpath.single([v1 for v1 in fhirpath_utils.get(cda_substanceAdministration_reference,'externalDocument','templateId') if v1.root == '1.2.40.0.34.6.0.11.3.14']):
+            cda_substanceAdministration_reference_externalDocument = cda_substanceAdministration_reference.externalDocument
+            if cda_substanceAdministration_reference_externalDocument is not None:
+                for cda_substanceAdministration_reference_externalDocument_id in cda_substanceAdministration_reference_externalDocument.id or []:
+                    fhir_immunizationRecommendation_identifier = malac.models.fhir.r4.Identifier()
+                    fhir_immunizationRecommendation.identifier.append(fhir_immunizationRecommendation_identifier)
+                    fhir_immunizationRecommendation_identifier.use = string(value='secondary')
+                    II(cda_substanceAdministration_reference_externalDocument_id, fhir_immunizationRecommendation_identifier)
+                if cda_substanceAdministration_reference_externalDocument.code is not None:
+                    fhir_immunizationRecommendation_identifier.type_ = malac.models.fhir.r4.CodeableConcept()
+                    CDCodeableConcept(cda_substanceAdministration_reference_externalDocument.code, fhir_immunizationRecommendation_identifier.type_)
+    for cda_substanceAdministration_precondition in cda_substanceAdministration.precondition or []:
+        cda_criterion = cda_substanceAdministration_precondition.criterion
+        if cda_criterion is not None:
+            cda_criterion_code = cda_criterion.code
+            if cda_criterion_code is not None:
+                if cda_criterion_code.nullFlavor is None:
+                    cda_criterion_code_code = cda_criterion_code.code
+                    if cda_criterion_code_code is not None:
+                        fhir_immunizationRecommendation_recommendation_series = string(value=str(getattr(cda_criterion_code_code, 'value', cda_criterion_code_code if cda_criterion_code_code is not None else '')))
+                        fhir_immunizationRecommendation_recommendation.series = fhir_immunizationRecommendation_recommendation_series
+                        fhir_immunizationRecommendation_recommendation_series_extension = malac.models.fhir.r4.Extension()
+                        fhir_immunizationRecommendation_recommendation_series.extension.append(fhir_immunizationRecommendation_recommendation_series_extension)
+                        fhir_immunizationRecommendation_recommendation_series_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                        fhir_coding = malac.models.fhir.r4.Coding()
+                        fhir_immunizationRecommendation_recommendation_series_extension.valueCoding = fhir_coding
+                        CECoding(cda_criterion_code, fhir_coding)
+            cda_criterion_value = cda_criterion.value
+            if cda_criterion_value is not None:
+                if cda_criterion_value.nullFlavor is None:
+                    for cda_criterion_value_code in (cda_criterion_value.code if isinstance(cda_criterion_value.code, list) else ([] if not cda_criterion_value.code else [cda_criterion_value.code])):
+                        fhir_immunizationRecommendation_recommendation_doseNumber = string(value=str(getattr(cda_criterion_value_code, 'value', cda_criterion_value_code if cda_criterion_value_code is not None else '')))
                         fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
                         fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
                         fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
-                        CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension)
-
-def CdaVaccineCodeToFhirVaccineCode(cda_manufacturedMaterial, fhir_vaccineCode):
-    cda_manufacturedMaterial_code = cda_manufacturedMaterial.code
-    if cda_manufacturedMaterial_code is not None:
-        if cda_manufacturedMaterial_code.nullFlavor == 'NA' or cda_manufacturedMaterial_code.nullFlavor == 'OTH':
-            cda_manufacturedMaterial_code_nullFlavor = cda_manufacturedMaterial_code.nullFlavor
-            if cda_manufacturedMaterial_code_nullFlavor is not None:
-                fhir_vaccineCode_coding = malac.models.fhir.r4.Coding()
-                fhir_vaccineCode.coding.append(fhir_vaccineCode_coding)
-                fhir_vaccineCode_coding.system = uri(value='http://terminology.hl7.org/CodeSystem/data-absent-reason')
-                fhir_vaccineCode_coding.code = string(value=translate_single('v3-NullFlavor-2-data-absent-reason', code=(cda_manufacturedMaterial_code_nullFlavor if isinstance(cda_manufacturedMaterial_code_nullFlavor, str) else cda_manufacturedMaterial_code_nullFlavor.value), out_type='code'))
-    cda_manufacturedMaterial_code = cda_manufacturedMaterial.code
-    if cda_manufacturedMaterial_code is not None:
-        if cda_manufacturedMaterial_code.nullFlavor is None:
-            CECodeableConcept(cda_manufacturedMaterial_code, fhir_vaccineCode)
+                        fhir_immunizationRecommendation_recommendation_doseNumber_extension.url = 'http://hl7.org/fhir/StructureDefinition/iso21090-codedString'
+                        fhir_coding = malac.models.fhir.r4.Coding()
+                        fhir_immunizationRecommendation_recommendation_doseNumber_extension.valueCoding = fhir_coding
+                        CECoding(cda_criterion_value, fhir_coding)
+            cda_criterion_value = cda_criterion.value
+            if cda_criterion_value is not None:
+                if cda_criterion_value.nullFlavor is not None:
+                    fhir_immunizationRecommendation_recommendation_doseNumber = malac.models.fhir.r4.string()
+                    fhir_immunizationRecommendation_recommendation.doseNumberString = fhir_immunizationRecommendation_recommendation_doseNumber
+                    fhir_immunizationRecommendation_recommendation_doseNumber_extension = malac.models.fhir.r4.Extension()
+                    fhir_immunizationRecommendation_recommendation_doseNumber.extension.append(fhir_immunizationRecommendation_recommendation_doseNumber_extension)
+                    CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension)
 
 def CdaParticipantToFhirProvenance(cda_participant, fhir_provenance, fhir_bundle):
     cda_participant_time = cda_participant.time
@@ -87176,12 +87139,12 @@ def CdaPerformerToFhirProvenance(cda_performer, fhir_provenance, fhir_practition
         CdaAssignedEntityToFhirPractitionerRole(cda_performer_assignedEntity, fhir_practitionerRole, fhir_bundle)
 
 def CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practitionerRole, fhir_bundle):
-    cda_participant_time = cda_author.time
-    if cda_participant_time is not None:
-        if cda_participant_time.nullFlavor is None:
+    cda_author_time = cda_author.time
+    if cda_author_time is not None:
+        if cda_author_time.nullFlavor is None:
             fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
             fhir_provenance.occurredDateTime = fhir_provenance_occurred
-            TSDateTime(cda_participant_time, fhir_provenance_occurred)
+            TSDateTime(cda_author_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
@@ -87210,12 +87173,12 @@ def CdaAuthorPersonToFhirProvenance(cda_author, fhir_provenance, fhir_practition
     CdaAuthorToFhirPractitionerRole(cda_author, fhir_practitionerRole, fhir_bundle)
 
 def CdaAuthorDeviceToFhirProvenance(cda_author, fhir_provenance, fhir_bundle):
-    cda_participant_time = cda_author.time
-    if cda_participant_time is not None:
-        if cda_participant_time.nullFlavor is None:
+    cda_author_time = cda_author.time
+    if cda_author_time is not None:
+        if cda_author_time.nullFlavor is None:
             fhir_provenance_occurred = malac.models.fhir.r4.dateTime()
             fhir_provenance.occurredDateTime = fhir_provenance_occurred
-            TSDateTime(cda_participant_time, fhir_provenance_occurred)
+            TSDateTime(cda_author_time, fhir_provenance_occurred)
     if fhir_provenance.recorded is None:
         fhir_provenance.recorded = malac.models.fhir.r4.instant()
     fhir_provenance_recorded = fhir_provenance.recorded
