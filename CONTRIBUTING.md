@@ -1,3 +1,65 @@
+# Need for CONTRIBUTING
+
+- Issue Inheritance 
+- Reviewing an Merging PRs 
+- Labeling of Issues 
+- Automation & Multi Branch Dev facilitation  
+- Reference to Code Style 
+- Explanation of how to use toolchain 
+- Onboarding 
+- Creating Issues: Problem Descr. and DoD
+- Base for evaluating if PR is accatable quality and style. 
+
+
+
+
+Target Audiance: 
+- FML Dev (ELGA)
+- OpenSource Contributers (FHIRTypes?)
+- Consumers?
+
+After reading this guide, you will know:
+
+- How to use GitHub to report issues.
+- How to clone main and run the tool chain.
+- How to help resolve existing issues.
+- How to contribute to the Repository documentation.
+- How to contribute to the mapping.
+
+
+# 1. Reporting an Issue 
+
+CDA2FHIR uses [Github Issue Tracking](https://github.com/HL7Austria/CDA2FHIR/issues). Primarily new content and features. 
+
+See our [maintenance policy](maintenance and release management) for information on which versions are supported.
+
+## 1.1 Creating an Issue 
+
+If you want to contribute to new content, features or found a problem search the [Issues](https://github.com/HL7Austria/CDA2FHIR/issues) on GitHub, in case it has already been reported. If you cannot find any open GitHub issues addressing the problem you found, your next step will be to open a [new issue](issue template).
+
+
+We've provided an issue template for you so that when creating an issue you include all the information needed to determine in what way and dimension it will contribute to this project.
+
+Each issue needs to include a title and clear description of the problem. Make sure to include as much relevant information as possible including lincs to specifications, requirements, code sample or failing test that demonstrates the behaviour.  Your goal should be to make it easy for yourself - and others - to contribute to the issue.
+
+# 2. Running the toolchain 
+
+See [README](README.md) for now
+
+
+# 3. Helping to Resolve Existing Issues
+
+## Testing FML code 
+
+We currently have two git actoins. convert_and_validate.yml must pass. Snapshot_diff should be reviewed if output is as expected. For Issues which deal with qa&tooling, governance there is currently now established Resolving process. 
+
+
+
+
+
+
+
+
 # Contributing to CDA2FHIR
 
 See [README](README.md) for what the repo is.
