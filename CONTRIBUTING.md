@@ -11,6 +11,26 @@
 - Base for evaluating if PR is accatable quality and style. 
 - Keeping it flexible enough to adjust for future architecture and devops pivots. 
 
+Summary:
+The FML SOP shall provide an overview of how FML is authored. It shall be project-agnostic and shall fit into and build upon the Standards and Architecture SOPs. It shall point to the project-specific SOPs (AMHEN, PORTAL) and describe requirement and change management at a meta level. In short, it shall remain project-agnostic while pointing to the project-specific requirement and change management SOPs.
+The FML SOP and other internal company SOPs shall not be referenced in the CDA2FHIR repository, as they are classified TLP:AMBER.
+CONTRIBUTING.md shall serve as a work instruction. It shall fit into the overarching FML SOP and the requirement and change processes of the Portal and AMHEN.
+CONTRIBUTING.md should primarily be written and used by the elga-fml-dev-team. It shall give issues and PRs structure, scope, and a definition of done. It shall specify how labels are used and provide criteria for labeling issues. It shall specify naming conventions for titles and branch names and mention the FML code style.
+
+Action Items:
+KWU:
+Pls check in with CHO for the latest Standards SOPs.
+Pls check how we author SOPs so that they interconnect (Standards with Architecture -> FML with other open-source SOPs, e.g., FHIR IGs).
+How can we keep SOPs generic enough for open-source development? How do we reference WIs/CONTRIBUTING.md files?
+How do we manage TLP:AMBER SOPs vs. TLP:CLEAR CONTRIBUTING.md files?
+CRE:
+Create issue and PR templates.
+Create naming conventions for branches (and issue titles).
+Describe the label strategy and give advice on how to label issues (which criteria correspond to which labels).
+Reference the FML style and give minimal advice on how to write FML rules.
+Describe issue creation and nesting.
+Describe the PR review and merge procedure.
+
 
 
 
