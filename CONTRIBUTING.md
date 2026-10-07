@@ -9,6 +9,7 @@
 - Onboarding 
 - Creating Issues: Problem Descr. and DoD
 - Base for evaluating if PR is accatable quality and style. 
+- Keeping it flexible enough to adjust for future architecture and devops pivots. 
 
 
 
