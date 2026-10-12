@@ -8882,7 +8882,8 @@ group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_
   cda_organizer ->
     fhir_observation.subject = create('Reference') as fhir_observation_subject_reference,
     fhir_patient.id as fhir_patient_id,
-    fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id)
+    fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_observation_subject_reference.type = 'Patient'
     "FhirObservationSubject";
 
   // organizer.code
@@ -8958,7 +8959,8 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   cda_laboratory_observation ->
     fhir_observation.subject = create('Reference') as fhir_observation_subject_reference,
     fhir_patient.id as fhir_patient_id,
-    fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id)
+    fhir_observation_subject_reference.reference = append('urn:uuid:', fhir_patient_id),
+    fhir_observation_subject_reference.type = 'Patient'
     "FhirObservationSubject";
 
   // observation/code[not(@nullFlavor)]

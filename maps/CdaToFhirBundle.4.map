@@ -807,7 +807,8 @@ group CdaPatientRoleToFhirPatient(source cda: ClinicalDocument, source cda_patie
           fhir_bundle_entry.fullUrl = append('urn:uuid:', fhir_contact_organization_id),
 
           fhir_patient_contact.organization = create('Reference') as fhir_contact_organization_reference,
-          fhir_contact_organization_reference.reference = append('urn:uuid:', fhir_contact_organization_id)
+          fhir_contact_organization_reference.reference = append('urn:uuid:', fhir_contact_organization_id),
+          fhir_contact_organization_reference.type = 'Organization'
           "CdaPatientGuardianOrganizationNameToFhirContactOrganizationReference";
       } "CdaPatientGuardianOrganizationToFhirPatientContactOrganization";
     } "CdaPatientGuardianToFhirPatientContact";
