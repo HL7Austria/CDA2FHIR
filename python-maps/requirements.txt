@@ -1,1 +1,1 @@
-malac-hd[cda]==1.6.0
+malac-hd[cda]==1.7.0
