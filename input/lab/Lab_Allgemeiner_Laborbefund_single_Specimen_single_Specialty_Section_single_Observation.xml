@@ -2617,7 +2617,7 @@
                                         <participantRole classCode="SPEC">
                                             <id extension="BL-080212-02" root="1.2.40.0.34.99.4613.22.3"/>
                                             <playingEntity>
-                                                <code code="258580003" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Whole blood sample"/>
+                                                <code code="119361006" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Whole blood sample"/>
                                             </playingEntity>
                                         </participantRole>
                                     </participant>
@@ -2679,6 +2679,15 @@
                                     <statusCode code="completed"/>
                                     <effectiveTime value="20210601130100+0200"/>
                                     <value xsi:type="CD" code="260415000" codeSystem="2.16.840.1.113883.6.96" codeSystemName="SNOMED CT" displayName="Not detected (qualifier value)"/>
+                                    <!-- <interpretationCode code="RAST3" codeSystemName="HL7:ObservationInterpretation" codeSystem="2.16.840.1.113883.5.83" displayName="Normal"/> --> 
+                                    <interpretationCode nullFlavor="OTH">
+                                        <originalText>Klasse 3</originalText>
+                                        <translation 
+                                            code="3" 
+                                            codeSystem="1.2.40.0.34.5.104" 
+                                            codeSystemName="ELGA_RAST_Klassen" 
+                                            displayName="Klasse 3: erhöhtes spezifisches IgE (3.50–17.49 kU/l)"/>
+                                    </interpretationCode>
                                 </observation>
                                 
                             </entryRelationship>

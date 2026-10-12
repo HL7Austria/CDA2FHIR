@@ -3,14 +3,14 @@ map "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir-bundle
 //
 // Mapping CDA2FHIR
 //
-
+// ok
 conceptmap "cda-lab-clinicaldocument-code-2-fhir-category" {
   prefix s = "http://loinc.org"
 
   s: "11502-2" == s: "26436-6"
   s: "18725-2" == s: "18725-2"
 }
-
+//ok
 conceptmap "cda-sdtc-statuscode-2-fhir-diagnosticreport-status" {
   prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActStatus"
   prefix t = "http://hl7.org/fhir/diagnostic-report-status"
@@ -19,6 +19,36 @@ conceptmap "cda-sdtc-statuscode-2-fhir-diagnosticreport-status" {
   s:"nullified" == t:"entered-in-error"
 }
 
+conceptmap "elga-humanactSite-to-eHDSIBodySiteWithExceptions" {
+  prefix s = "http://terminology.hl7.org/CodeSystem/v3-ActSite"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIBodySiteWithExceptions"
+
+  s: "LACF" == t: "OTH" // This is the only code that occurs in the CDA example docs. - Needs to be reviewed 
+  s: "BE" == t: "BE"
+
+}
+
+conceptmap "elga-specimentype-to-eHDSILabSpecimenTypeWithExceptions"{
+  prefix s = "https://termgit.elga.gv.at/ValueSet/elga-probenmaterial"
+  prefix u = "https://termgit.elga.gv.at/ValueSet/elga-specimentype"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions"
+
+  s: "119361006" == t: "119361006"// This is the only code that occurs in the CDA example docs. - Needs to be reviewed 
+  s: "258580003" == t: "OTH"// This is the only code that occurs in the CDA example docs. - Needs to be reviewed 
+}
+
+conceptmap "elga-observationinterpretation-to-eHDSIObservationInterpretationWithExceptions" {
+  prefix s = "https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation"
+  prefix t = "http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions"
+
+  s: "H" == t: "H"
+  s: "N" == t: "N"
+  s: "L" == t: "L"
+  s: "RAST3" == t: "OTH"
+  s: "A" == t: "A"
+  s: "LL" == t: "TESTTESTTEST"
+  s: "HH" == t: "HH"
+}
 // TODO: complete mapping
 // 
 // ConceptMap is being used for the Observation.value-elements of the following templates
@@ -31,6 +61,7 @@ conceptmap "cda-sdtc-statuscode-2-fhir-diagnosticreport-status" {
 // in essence the following mappings are covered:
 //  https://termgit.elga.gv.at/ValueSet/elga-significantpathogens TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
 //  https://termgit.elga.gv.at/ValueSet/ems-meldepflichtige-krankheiten TO http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
+// See https://github.com/HL7Austria/CDA2FHIR/issues/257
 conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValueLaboratory" {
   prefix a = "https://termgit.elga.gv.at/CodeSystem/elga-significantpathogens"
   prefix b = "https://termgit.elga.gv.at/CodeSystem/icd-10-bmg-2017"
@@ -42,7 +73,7 @@ conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValue
   a: "SP015" == t: "112283007"
   b: "A00" == t: "75953000"
 }
-
+// see https://github.com/HL7Austria/CDA2FHIR/issues/257
 // TODO refactor with proper conceptmap translate if possible
 // conceptmap "elga-nachweisergebnis-to-fhir-eHDSI-presence-absence"{
 //   prefix s = "https://termgit.elga.gv.at/ValueSet-elga-observationinterpretation.html"
@@ -54,6 +85,149 @@ conceptmap "elga-notifiable-condition-case-ident-value-to-eHDSIResultsCodedValue
 //   s: "89292003"   == t: "89292003"   // Rare 
 // }
 
+conceptmap "elga-labor-structure-to-ehdsi-study-types-with-exceptions" {
+  prefix s = "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
+  prefix t = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix v = "http://loinc.org"
+  
+  s: "1" == t: "OTH"
+  s: "100" == t: "OTH"
+  s: "200" == t: "OTH"
+  s: "300" == t: "OTH"
+  s: "400" == t: "OTH"
+  s: "500" == t: "OTH"
+  s: "600" == t: "OTH"
+  s: "900" == t: "OTH"
+  s: "1000" == t: "OTH"
+  s: "1100" == t: "OTH"
+  s: "1300" == t: "OTH"
+  s: "1400" == t: "OTH"
+  s: "1500" == t: "OTH"
+  s: "1600" == t: "OTH"
+  s: "1800" == t: "OTH"
+  s: "2300" == t: "OTH"
+  s: "2500" == t: "OTH"
+}
+
+
+//
+// ConceptMap for mapping elga-laborstruktur organizer codes to eHDSILabCodeWithExceptions.
+// See https://github.com/HL7Austria/CDA2FHIR/issues/257
+conceptmap "elga-labor-structure-to-ehdsi-observation-code" {
+  prefix e = "https://termgit.elga.gv.at/CodeSystem/elga-laborparameterergaenzung"
+  prefix t = "http://terminology.hl7.org/CodeSystem/v3-NullFlavor"
+  prefix v = "http://loinc.org"
+
+    e: "1" == t: "OTH"
+  e: "10" == t: "OTH"
+  e: "20" == t: "OTH"
+  e: "100" == t: "OTH"
+  e: "200" == t: "OTH"
+  e: "300" == t: "OTH"
+  e: "400" == t: "OTH"
+  e: "500" == t: "OTH"
+  e: "600" == t: "OTH"
+  e: "900" == t: "OTH"
+  e: "1000" == t: "OTH"
+  e: "1100" == t: "OTH"
+  e: "1300" == t: "OTH"
+  e: "1400" == t: "OTH"
+  e: "1500" == t: "OTH"
+  e: "1600" == t: "OTH"
+  e: "1800" == t: "OTH"
+  e: "2300" == t: "OTH"
+  e: "2500" == t: "OTH"
+
+  e: "01850" == t: "OTH"
+  e: "01860" == t: "OTH"
+  e: "01870" == t: "OTH"
+
+  e: "02060" == t: "OTH"
+  e: "02070" == t: "OTH"
+  e: "02080" == t: "OTH"
+  e: "02090" == t: "OTH"
+  e: "02100" == t: "OTH"
+  e: "02110" == t: "OTH"
+  e: "02120" == t: "OTH"
+  e: "02130" == t: "OTH"
+
+  e: "03010" == t: "03010"
+  e: "03020" == t: "OTH"
+  e: "03030" == t: "OTH"
+  e: "03050" == t: "OTH"
+
+  e: "04140" == t: "OTH"
+  e: "04150" == t: "OTH"
+  e: "04160" == t: "OTH"
+  e: "04170" == t: "OTH"
+
+  e: "05180" == t: "OTH"
+  e: "05190" == t: "OTH"
+  e: "05200" == t: "OTH"
+  e: "05210" == t: "OTH"
+  e: "05220" == t: "OTH"
+
+  e: "06330" == t: "OTH"
+  e: "06340" == t: "OTH"
+  e: "06350" == t: "OTH"
+
+  e: "07230" == t: "OTH"
+  e: "07240" == t: "OTH"
+  e: "07250" == t: "OTH"
+
+  e: "08260" == t: "OTH"
+  e: "08270" == t: "OTH"
+  e: "08280" == t: "OTH"
+  e: "08290" == t: "OTH"
+  e: "08300" == t: "OTH"
+  e: "08310" == t: "OTH"
+  e: "08320" == t: "OTH"
+
+  e: "10780" == t: "OTH"
+  e: "10790" == t: "OTH"
+  e: "10800" == t: "OTH"
+  e: "10810" == t: "OTH"
+  e: "10820" == t: "OTH"
+
+  e: "11360" == t: "OTH"
+  e: "11370" == t: "OTH"
+  e: "11380" == t: "OTH"
+  e: "11390" == t: "OTH"
+  e: "11400" == t: "OTH"
+  e: "11410" == t: "OTH"
+  e: "11420" == t: "OTH"
+  e: "11430" == t: "OTH"
+  e: "11440" == t: "OTH"
+  e: "11450" == t: "OTH"
+  e: "11460" == t: "OTH"
+  e: "11470" == t: "OTH"
+
+  e: "12010" == t: "OTH"
+  e: "12020" == t: "OTH"
+  e: "12030" == t: "OTH"
+  e: "12040" == t: "OTH"
+  e: "12050" == t: "OTH"
+  e: "12060" == t: "OTH"
+  e: "12070" == t: "OTH"
+  e: "12080" == t: "OTH"
+  e: "12090" == t: "OTH"
+  e: "12095" == t: "OTH"
+
+  e: "13730" == t: "OTH"
+  e: "13740" == t: "OTH"
+  e: "13750" == t: "OTH"
+
+  e: "14760" == t: "OTH"
+
+  e: "15770" == t: "OTH"
+
+  e: "16830" == t: "OTH"
+  e: "16840" == t: "OTH"
+  e: "16841" == t: "OTH"
+
+  e: "17880" == t: "OTH"
+  e: "17890" == t: "OTH"
+}
 // Excel: terminology_mapping/MVC_Map_elga-laboratory-observation-code-to-eHDSILabCodeWithExceptions.xlsx
 //
 // ConceptMap is being used for laboratory observations and captures the following mappings:
@@ -8421,17 +8595,31 @@ group CdaLabSpecimenSectionToFhirSpecimen(source cda_section: Section, target fh
 }
 
 group CdaLabSectionToFhirSection(source cda_section: Section, target fhir_section, target fhir_bundle: Bundle) extends CdaSectionToFhirSection {
+  // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   // section.code
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
-  cda_section.code -> fhir_section.code;
-  // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-  // ONLY FOR TESTING
-  cda_section.code -> fhir_section.code as fhir_section_code,
-    fhir_section_code.coding as fhir_section_code_coding,
-    fhir_section_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_section_code_coding.code = 'OTH'
-    "CdaSectionCodeToFhirCompositionSectionCode";
+  // cda_section.code -> fhir_section.code;
+  // // TODO: remove before production
+  // // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+  // // ONLY FOR TESTING
+  // cda_section.code -> fhir_section.code as fhir_section_code,
+  //   fhir_section_code.coding as fhir_section_code_coding,
+  //   fhir_section_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+  //   fhir_section_code_coding.code = 'OTH'
+  //   "CdaSectionCodeToFhirCompositionSectionCode";
+  cda_section.code as cda_section_code,
+  cda_section_code.code as cda_section_code_code -> 
+    translate(cda_section_code_code,'#elga-labor-structure-to-ehdsi-study-types-with-exceptions', 'Coding') as mapping_result_coding then {
+      mapping_result_coding where ($this.code != cda_section_code_code) -> 
+        fhir_section.code as fhir_section_code,
+        fhir_section_code.coding = mapping_result_coding then {
+          cda_section_code -> fhir_section_code.coding;
+        };
+      mapping_result_coding where ($this.code = cda_section_code_code) then {
+        cda_section_code -> fhir_section.code; 
+      };
+    };
+
 }
 
 group CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen (source cda: ClinicalDocument, source cda_section: Section, target fhir_section, target fhir_patient: Patient, target fhir_diagnosticReport: DiagnosticReport, target fhir_bundle: Bundle, target fhir_serviceRequest: ServiceRequest, target fhir_specimen: Specimen) extends CdaLabSectionToFhirSection {
@@ -8838,18 +9026,21 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
         IVLTSPeriod(cda_effectiveTime, fhir_specimen_collection_collected)
         "CdaSpecimenEffectiveTimeToFhirSpecimenCollectedDateTime";
 
-      // Entnahmeort
-      // procedure.targetSiteCode
-      // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-humanactsite to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabStudyTypeWithExceptions
-      cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
-      // TODO: remove before production
-      // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-      // ONLY FOR TESTING
-      cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
-        fhir_specimen_collection_bodySite.coding as fhir_specimen_collection_bodySite_coding,
-        fhir_specimen_collection_bodySite_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-        fhir_specimen_collection_bodySite_coding.code = 'OTH'
-        "CdaProcedureTargetSiteCodeToFhirSpecimenBodySite";
+      // cda_procedure.targetSiteCode -> fhir_specimen_collection.bodySite;
+      // In the case that input == output not display name is mapped. 
+      cda_procedure.targetSiteCode as cda_targetSiteCode where ($this.nullFlavor.exists().not()) then {
+        cda_targetSiteCode.code as cda_targetSiteCode_code -> 
+         translate(cda_targetSiteCode_code, '#elga-humanactSite-to-eHDSIBodySiteWithExceptions', 'Coding') as mapping_result_coding then {
+            mapping_result_coding where ($this.code != cda_targetSiteCode_code) -> 
+              fhir_specimen_collection.bodySite as fhir_specimen_collection_bodySite,
+              fhir_specimen_collection_bodySite.coding = mapping_result_coding then {
+                cda_targetSiteCode -> fhir_specimen_collection_bodySite.coding;
+              };
+            mapping_result_coding where ($this.code = cda_targetSiteCode_code) then {
+              cda_targetSiteCode -> fhir_specimen_collection.bodySite; 
+            };
+          };
+        } "CdaProcedureTargetSiteCodeToFhirSpecimenBodySiteNoNullFlavor";
 
       // Für die Abnahme verantwortlichen Person/Organisation
       // procedure.performer
@@ -8881,17 +9072,40 @@ group CdaLabSpecimenCollectionToFhirSpecimen(source cda_procedure: Procedure, ta
             cda_participantRole.id -> fhir_specimen.identifier;
             // procedure.participant.participantRole.playingEntity.code
             // TODO mapping on CTS required from
-            //   https://termgit.elga.gv.at/ValueSet/elga-probenmaterial to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
-            //   https://termgit.elga.gv.at/ValueSet/elga-specimentype to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
-            cda_playingEntity.code -> fhir_specimen.type;
-            // TODO: remove before production
-            // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-            // ONLY FOR TESTING
-            cda_playingEntity.code -> fhir_specimen.type as fhir_specimen_type,
-              fhir_specimen_type.coding as fhir_specimen_type_coding,
-              fhir_specimen_type_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-              fhir_specimen_type_coding.code = 'OTH'
-              "CdaSpecimentTypeToFhirSpecimenType";
+            //   https://termgit.elga.gv.at/ValueSet/elga-probenmaterial to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions // Deprecated URL? https://fhir.ehdsi.eu/laboratory/ValueSet-eHDSILabSpecimenTypeWithExceptions.html
+            
+            // This VS is specified in the Basisleitfäden: (https://art-decor.org/ad/#/elga-/rules/templates/1.2.40.0.34.11.30021/2014-03-04T00:00:00) 
+
+              // https://termgit.elga.gv.at/ValueSet/elga-specimentype to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabSpecimenTypeWithExceptions
+
+            // Where does the elga-specimentype ValueSet come from? I only see ELGA_Probenmaterial_VS specified in 
+            // proceudre.participant.participantRole.playingEntity.code https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.161/2021-01-18T13:46:31
+
+            // cda_playingEntity.code -> fhir_specimen.type;
+            // // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
+            // // TODO: remove before production
+            // // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+            // // ONLY FOR TESTING
+            // cda_playingEntity.code -> fhir_specimen.type as fhir_specimen_type,
+            //   fhir_specimen_type.coding as fhir_specimen_type_coding,
+            //   fhir_specimen_type_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+            //   fhir_specimen_type_coding.code = 'OTH'
+            //   "CdaSpecimentTypeToFhirSpecimenType";
+            // Probably possible to extract to a group 
+            // In the case that input == output not display name is mapped. 
+            cda_playingEntity.code as cda_playingEntity_code then {
+              cda_playingEntity_code.code as cda_playingEntity_code -> 
+                translate(cda_playingEntity_code, '#elga-specimentype-to-eHDSILabSpecimenTypeWithExceptions', 'Coding') as mapping_result_coding then {
+                  mapping_result_coding where ($this.code != cda_playingEntity_code) ->  
+                    fhir_specimen.type as fhir_specimen_type,
+                    fhir_specimen_type.coding = mapping_result_coding then {
+                      cda_playingEntity.code -> fhir_specimen_type.coding;
+                    };
+                  mapping_result_coding where ($this.code = cda_playingEntity_code) then {
+                    cda_playingEntity.code -> fhir_specimen.type;
+                  };
+                };
+            }"CdaPlayingEntityCodeToFhirSpecimenType";
           };
         };
       };
@@ -8956,16 +9170,35 @@ group CdaLabOrganizerToFhirObservation(source cda: ClinicalDocument, source cda_
   // organizer.code
   cda_organizer.code -> fhir_observation.category;
 
+  // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions
-  cda_organizer.code -> fhir_observation.code;
-  // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
-  // ONLY FOR TESTING
-  cda_organizer.code where ($this.codeSystem != '2.16.840.1.113883.6.1') -> fhir_observation.code as fhir_observation_code,
-    fhir_observation_code.coding as fhir_observation_code_coding,
-    fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_observation_code_coding.code = 'OTH'
-    "CdaObservationCodeToFhirObservationCodeNullFlavor";
+  // In the case that input == output the original code is mapped without adding an additional coding.
+  cda_organizer.code as cda_organizer_code then {
+    cda_organizer_code.code as cda_organizer_code_value ->
+      translate(cda_organizer_code_value, '#elga-labor-structure-to-ehdsi-observation-code', 'Coding') as mapping_result_coding then {
+        mapping_result_coding where ($this.code != cda_organizer_code_value) ->
+          fhir_observation.code as fhir_observation_code,
+          fhir_observation_code.coding = mapping_result_coding then {
+            cda_organizer_code -> fhir_observation_code.coding;
+          };
+        mapping_result_coding where ($this.code = cda_organizer_code_value) then {
+          cda_organizer_code -> fhir_observation.code;
+        };
+      };
+  } "CdaOrganizerCodeToFhirObservationCode";
+
+
+  // // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
+  // // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-laborstruktur to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSILabCodeWithExceptions
+  // cda_organizer.code -> fhir_observation.code;
+  // // TODO: remove before production
+  // // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
+  // // ONLY FOR TESTING
+  // cda_organizer.code where ($this.codeSystem != '2.16.840.1.113883.6.1') -> fhir_observation.code as fhir_observation_code,
+  //   fhir_observation_code.coding as fhir_observation_code_coding,
+  //   fhir_observation_code_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+  //   fhir_observation_code_coding.code = 'OTH'
+  //   "CdaObservationCodeToFhirObservationCodeNullFlavor";
 
   // Add observation.code for compliance with fhir r4 
   cda_organizer where ($this.code).exists().not() -> fhir_observation.code as fhir_observation_code,
@@ -9091,6 +9324,7 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   //   - Case Identification: https://art-decor.org/ad/#/at-lab-/rules/templates/1.2.40.0.34.6.0.11.3.170/2020-09-29T11:27:13
   // - CDA Laborbefund v2
   //   - Notification Condition: https://art-decor.org/ad/#/elga-/rules/templates/1.3.6.1.4.1.19376.1.3.1.1.1/2013-09-09T00:00:00
+  // ToDo: // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
   cda_laboratory_observation where templateId.where(root='1.3.6.1.4.1.19376.1.3.1.1.1' or root='1.3.6.1.4.1.19376.1.3.1.1.2') then 
     CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue(cda_laboratory_observation, fhir_observation)
     "CdaLabNotifiableConditionCaseIdentificationValueToFhirObservationValue";
@@ -9099,15 +9333,41 @@ group CdaLaboratoryObservationToFhirObservation(source cda: ClinicalDocument, so
   // TODO mapping on CTS required from https://termgit.elga.gv.at/ValueSet/elga-observationinterpretation to http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIObservationInterpretationWithExceptions
   // cda_laboratory_observation.interpretationCode -> fhir_observation.interpretation;
   // TODO: remove before production
-  // PREREQUISITES FOR PRODUCTION: mapping exists in CTS
   // ONLY FOR TESTING
-  cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
-    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
-    fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
-    fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
-    fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
-    "CdaObservationInterpretationCodeToFhirObservationInterpretation";
 
+  // // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
+  // cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation as fhir_observation_interpretation,
+  //   fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_01,
+  //   fhir_observation_interpretation.coding as fhir_observation_interpretation_coding_02,
+  //   fhir_observation_interpretation_coding_02.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+  //   fhir_observation_interpretation_coding_02.code = 'OTH' then CECoding(cda_laboratory_observation_interpretationCode, fhir_observation_interpretation_coding_01)
+  //   "CdaObservationInterpretationCodeToFhirObservationInterpretation";
+
+  cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode where ($this.nullFlavor.exists().not()) then {
+    cda_laboratory_observation_interpretationCode.code as cda_laboratory_observation_interpretationCode_code -> 
+      translate(cda_laboratory_observation_interpretationCode_code, '#elga-observationinterpretation-to-eHDSIObservationInterpretationWithExceptions', 'Coding') as mapping_result_coding then {
+        mapping_result_coding where ($this.code != cda_laboratory_observation_interpretationCode_code) -> 
+          fhir_observation.interpretation as fhir_observation_interpretation,
+          fhir_observation_interpretation.coding = mapping_result_coding then {
+            cda_laboratory_observation_interpretationCode -> fhir_observation_interpretation.coding;
+          };  
+        };
+         mapping_result_coding where ($this.code = cda_laboratory_observation_interpretationCode_code) then {
+          cda_laboratory_observation_interpretationCode -> fhir_observation.interpretation; 
+          
+        };
+      };
+  
+  cda_laboratory_observation.interpretationCode as cda_laboratory_observation_interpretationCode where ($this.nullFlavor.exists()) then {
+    cda_laboratory_observation_interpretationCode -> 
+      fhir_observation.interpretation as fhir_observation_interpretation,
+      fhir_observation_interpretation.coding as fhir_observation_interpretation_coding,
+      fhir_observation_interpretation_coding.system = 'http://terminology.hl7.org/CodeSystem/v3-NullFlavor',
+        fhir_observation_interpretation_coding.code = 'OTH' then {
+          cda_laboratory_observation_interpretationCode.translation as cda_code_translation then CDCodeableConcept (cda_code_translation, fhir_observation_interpretation);
+        };
+  };
+  
   // observation.performer
   //   This element is being dealt with in 
   //     CdaLaboratorySpecialtySectionToFhirSectionWithSpecimen()
@@ -9291,6 +9551,7 @@ group CdaLaboratoryObservationValueToFhirObservationValue(source cda_laboratory_
     cda_laboratory_observation.value: CD as cda_observation_value then {
 
       // TODO refactor with proper conceptmap translate if possible
+      // For detailed explanation see: https://github.com/HL7Austria/CDA2FHIR/issues/257
       cda_laboratory_observation where cda_laboratory_observation.value.exists((code='260415000' or code='260373001' or code='260413007' or code='89292003' or code='57176003' or code='260354000' or code='260396001') and codeSystem='2.16.840.1.113883.6.96') then {
         // deal with those codes from https://termgit.elga.gv.at/ValueSet/elga-nachweisergebnis
         // which do have a counterpart in http://fhir.ehdsi.eu/laboratory/ValueSet/eHDSIResultsCodedValueLaboratory
