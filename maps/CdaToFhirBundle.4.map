@@ -68,7 +68,7 @@ uses "http://hl7.org/fhir/4.3/StructureDefinition/Specimen" alias Specimen as ta
 imports "http://hl7.at/fhir/HL7ATCoreProfiles/4.0.1/StructureMap/at-cda-to-fhir-types"
 imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-lab-to-fhir-bundle"
 imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-eimpf-to-fhir-bundle"
-
+imports "https://fhir.hl7.at/elga/cda2fhir/r4/StructureMap/at-cda-emed-to-fhir-bundle"
 
 // _________________________ Document Level Template  _________________________
 
@@ -109,7 +109,7 @@ group CdaToFhirBundle(source cda: ClinicalDocument, target fhir_bundle: Bundle) 
       // CDA e-Impfpass -> FHIR
       cda_code.code as code_code where ($this = '11369-6') then CdaEimpfToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
       // CDA e-Medikation -> FHIR
-      // TODO
+      cda_code.code as code_code where ($this = '56445-0') then CdaEmedToFhirBundle(cda, fhir_patient, fhir_composition, fhir_bundle);
     } "CdaToFhirBundle";  
 }
 
@@ -614,7 +614,7 @@ group CdaHeaderToFhir(source cda: ClinicalDocument, target fhir_composition: Com
       // ClinicalDocument.documentationOf.serviceEvent.code
       cda_documentationOf_serviceEvent.code -> fhir_composition_event.code;
       // ClinicalDocument.documentationOf.serviceEvent.effectiveTime
-      cda_documentationOf_serviceEvent.effectiveTime -> fhir_composition_event.period;
+      cda_documentationOf_serviceEvent.effectiveTime where ($this.nullFlavor.exists().not()) -> fhir_composition_event.period;
       // ClinicalDocument.documentationOf.serviceEvent.performer
       // see document type specific group
     };
