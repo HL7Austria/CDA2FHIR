@@ -1,0 +1,33 @@
+# Merge gate for the TODO → sub-issues workflow (issue #418).
+#
+# Fails while any `TODO #<n>: …` comment for the PR branch's own issue still remains in
+# the tracked code, so a PR from branch `<No>-<slug>` cannot merge with issue #<No>'s
+# TODOs unfinished. The issue number is parsed from the head branch; if the branch has
+# no leading number the gate guards against *any* open TODO.
+#
+# To actually block the merge button, make the `gate` check REQUIRED in the branch
+# protection / ruleset of the target branch(es) — a repo setting, not something a
+# workflow can grant itself.
+
+name: TODO merge gate
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Fail if unfinished TODOs remain for this branch's issue
+        run: |
+          python scripts/todo_subissues.py gate --branch "${{ github.head_ref }}"

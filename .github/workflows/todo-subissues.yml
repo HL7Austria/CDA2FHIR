@@ -1,0 +1,62 @@
+# Auto-create linked sub-issues from `TODO #<n>` code comments (issue #418).
+#
+# On every push to a feature branch, diff the pushed range and turn each newly added
+# `TODO #<n>: …` comment into a sub-issue under #<n> (linked via GitHub's native
+# sub-issue API, pointing at the file+line). A removed TODO closes its sub-issue; a
+# moved one is a no-op. De-duplication is by a fingerprint stored in the sub-issue body,
+# so re-pushes / rebases don't create duplicates. See scripts/todo_subissues.py.
+
+name: TODO → sub-issues
+
+on:
+  push:
+    branches-ignore:
+      - elga
+      - myhealtheu
+      - '*-dev'      # dev/integration branches: sub-issues already exist from the feature branch
+
+permissions:
+  contents: read
+  issues: write      # create / label / comment / close sub-issues
+
+# One run per branch; a newer push supersedes an in-flight one.
+concurrency:
+  group: todo-subissues-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out (full history for the push diff)
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      # For a brand-new branch the push 'before' is all-zero; fall back to the fork
+      # point off the default branch so only genuinely new TODOs are picked up.
+      - name: Determine diff base
+        id: range
+        run: |
+          BEFORE='${{ github.event.before }}'
+          if [ -z "$BEFORE" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+            DEF='${{ github.event.repository.default_branch }}'
+            git fetch --no-tags origin "$DEF" || true
+            BASE="$(git merge-base "origin/$DEF" HEAD 2>/dev/null || true)"
+          else
+            BASE="$BEFORE"
+          fi
+          echo "base=$BASE" >> "$GITHUB_OUTPUT"
+
+      - name: Sync TODOs → sub-issues
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/todo_subissues.py sync \
+            --repo "$GITHUB_REPOSITORY" \
+            --base "${{ steps.range.outputs.base }}" \
+            --head "${{ github.event.after }}"
