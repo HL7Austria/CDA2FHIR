@@ -694,12 +694,7 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
               // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString.extension.coding
               CECoding(cda_criterion_value, fhir_coding);
         };
-        // substanceAdministration/precondition/criterion/value -> Immunization.protocolApplied.doseNumberString
-        // based on https://hl7.eu/fhir/base-r5/missing-data.html
-        cda_criterion.value as cda_criterion_value where ($this.nullFlavor.exists()) -> 
-          fhir_immunizationRecommendation_recommendation.doseNumber = create('string') as fhir_immunizationRecommendation_recommendation_doseNumber,
-          fhir_immunizationRecommendation_recommendation_doseNumber.extension as fhir_immunizationRecommendation_recommendation_doseNumber_extension then 
-          CdaNullFlavorToFhirDataAbsentReason(cda_criterion_value, fhir_immunizationRecommendation_recommendation_doseNumber_extension); 
+        
       }; 
     }; 
   };
