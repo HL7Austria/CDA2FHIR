@@ -548,11 +548,11 @@ group CdaEimpfSubstanceAdministrationToFhirImmunizationRecommendation(source cda
         // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial
         cda_manufacturedProduct.manufacturedMaterial as cda_manufacturedMaterial then {
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> ImmunizationRecommendation.recommendation.vaccineCode
-          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = false) then {
+          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = true) then {
             cda_manufacturedMaterial.code -> fhir_immunizationRecommendation_recommendation.vaccineCode;
           };
           // substanceAdministration/consumable/manufacturedProduct/manufacturedMaterial/code -> ImmunizationRecommendation.recommendation.contraindicatedVaccineCode
-          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = true) then {
+          cda_substanceAdministration.negationInd as cda_substanceAdministration_negationInd where ($this = false) then {
             cda_manufacturedMaterial.code -> fhir_immunizationRecommendation_recommendation.contraindicatedVaccineCode;
           };
 
